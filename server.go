@@ -36,6 +36,9 @@ func setup() {
 		configuration := *config.GetConfiguration()
 		// log configuration
 		utils.LogStruct("Configuration", &configuration)
+		// TODO: only for testing here
+		utils.ReadIpConfig(basePath)
+		utils.LogStruct("Ip Config", *config.GetIpConfiguration())
 	} else {
 		panic("No configuration path found...")
 	}

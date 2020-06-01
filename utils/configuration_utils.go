@@ -46,6 +46,8 @@ func readConfigurationFromFile(configFile string) {
 			}
 		}
 	}
+	// close file
+	_ = data.Close()
 }
 
 // parse line of configuration and split it into key/value
