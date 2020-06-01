@@ -11,10 +11,10 @@ import (
 // Read configuration from k8s-management
 func ReadConfiguration(basePath string) {
 	// read plain configuration
-	readConfigurationFromFile(basePath + "/" + constants.DIR_CONFIG + "/" + constants.FILENAME_CONFIGURATION)
+	readConfigurationFromFile(basePath + "/" + constants.DirConfig + "/" + constants.FilenameConfiguration)
 	// check if there is an custom configuration
-	if FileExists(basePath + "/" + constants.DIR_CONFIG + "/" + constants.FILENAME_CONFIGURATION_CUSTOM) {
-		readConfigurationFromFile(basePath + "/" + constants.DIR_CONFIG + "/" + constants.FILENAME_CONFIGURATION_CUSTOM)
+	if FileExists(basePath + "/" + constants.DirConfig + "/" + constants.FilenameConfigurationCustom) {
+		readConfigurationFromFile(basePath + "/" + constants.DirConfig + "/" + constants.FilenameConfigurationCustom)
 	}
 	// check if there is an alternative configuration path and try to read config from there
 	configuration := *config.GetConfiguration()

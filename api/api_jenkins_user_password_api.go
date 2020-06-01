@@ -2,7 +2,7 @@ package api
 
 import (
 	"encoding/json"
-	"golang.org/x/crypto/bcrypt"
+	"k8s-management-go/utils"
 	"log"
 	"net/http"
 )
@@ -27,7 +27,7 @@ func JenkinsUserPasswordApi(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// create bcrypt hash from password
-		hash, err := bcrypt.GenerateFromPassword([]byte(jenkinsUserPassword.Password), bcrypt.MinCost)
+		hashedPassword, err := utils.EncryptJenkinsUserPassword(jenkinsUserPassword.Password)
 		if err != nil {
 			log.Println(err)
 			http.Error(w, `{"message": "cannot create bcrypted password"}`, http.StatusBadRequest)
@@ -36,7 +36,7 @@ func JenkinsUserPasswordApi(w http.ResponseWriter, r *http.Request) {
 
 		// assign bcrypt to new JenkinsUserPassword struct
 		encryptedJenkinsUserPassword := JenkinsUserPassword{
-			Password: "#jbcrypt:" + string(hash),
+			Password: hashedPassword,
 		}
 
 		// marshall object to JSON
