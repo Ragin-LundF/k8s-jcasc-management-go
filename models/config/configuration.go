@@ -9,6 +9,8 @@ type Configuration struct {
 	LogLevel string
 	// secrets file
 	GlobalSecretsFile string
+	// Alternative ConfigFile
+	AlternativeConfigFile string
 	// IP config
 	IpConfig struct {
 		IpConfigFile            string
@@ -19,15 +21,19 @@ type Configuration struct {
 		ProjectsBaseDirectory  string
 		TemplatesBaseDirectory string
 	}
+	// Jenkins configuration
 	Jenkins struct {
+		// JCasC relevant data
 		JCasC struct {
 			ConfigurationUrl string
 		}
+		// JobDSL relevant data
 		JobDSL struct {
 			BaseUrl             string
 			RepoValidatePattern string
 			SeedJobScriptUrl    string
 		}
+		// Jenkins Helm Chart relevant data
 		Helm struct {
 			Master struct {
 				AdminPassword                       string
@@ -51,6 +57,7 @@ type Configuration struct {
 			}
 		}
 	}
+	// Nginx relevant data
 	Nginx struct {
 		Ingress struct {
 			AnnotationClass string
@@ -64,6 +71,7 @@ type Configuration struct {
 			}
 		}
 	}
+	// Loadbalancer relevant data
 	LoadBalancer struct {
 		Enabled bool
 		Port    struct {
@@ -73,15 +81,18 @@ type Configuration struct {
 			HttpsTarget uint64
 		}
 	}
+	// Kubernetes relevant data
 	Kubernetes struct {
 		ServerCertificate string
 	}
+	// Default credential ids
 	CredentialIds struct {
 		DefaultDockerRegistry  string
 		DefaultMavenRepository string
 		DefaultNpmRepository   string
 		DefaultVcsRepository   string
 	}
+	// internal configuration
 	K8sManagement struct {
 		VersionCheck     bool
 		VersionCheckTool string
@@ -178,6 +189,8 @@ func AssignToConfiguration(key string, value string) {
 			configuration.K8sManagement.VersionCheckTool = value
 		case "K8S_MGMT_ENCRYPTION_TOOL":
 			configuration.K8sManagement.EncryptionTool = value
+		case "K8S_MGMT_ALTERNATIVE_CONFIG_FILE":
+			configuration.AlternativeConfigFile = value
 		}
 	}
 }

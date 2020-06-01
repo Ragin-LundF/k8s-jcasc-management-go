@@ -10,8 +10,23 @@ import (
 
 // Read configuration from k8s-management
 func ReadConfiguration(basePath string) {
+	// read plain configuration
+	readConfigurationFromFile(basePath + "/" + constants.DIR_CONFIG + "/" + constants.FILENAME_CONFIGURATION)
+	// check if there is an custom configuration
+	if FileExists(basePath + "/" + constants.DIR_CONFIG + "/" + constants.FILENAME_CONFIGURATION_CUSTOM) {
+		readConfigurationFromFile(basePath + "/" + constants.DIR_CONFIG + "/" + constants.FILENAME_CONFIGURATION_CUSTOM)
+	}
+	// check if there is an alternative configuration path and try to read config from there
+	configuration := *config.GetConfiguration()
+	if configuration.AlternativeConfigFile != "" && FileExists(basePath+"/"+configuration.AlternativeConfigFile) {
+		readConfigurationFromFile(basePath + "/" + configuration.AlternativeConfigFile)
+	}
+}
+
+// Read configuration from k8s-management config file
+func readConfigurationFromFile(configFile string) {
 	// read configuration file. Replace unneeded double quotes if needed.
-	data, err := os.Open(basePath + "/" + constants.DIR_CONFIG + "/" + constants.FILENAME_CONFIGURATION)
+	data, err := os.Open(configFile)
 	// check for error
 	if err != nil {
 		panic(err)
@@ -26,7 +41,7 @@ func ReadConfiguration(basePath string) {
 			line := strings.TrimSpace(scanner.Text())
 			// if line is not a comment (marker: "#") parse the configuration and assign it to the config
 			if line != "" && !strings.HasPrefix(line, "#") {
-				key, value := ParseConfigurationLine(line)
+				key, value := parseConfigurationLine(line)
 				config.AssignToConfiguration(key, value)
 			}
 		}
@@ -34,7 +49,7 @@ func ReadConfiguration(basePath string) {
 }
 
 // parse line of configuration and split it into key/value
-func ParseConfigurationLine(line string) (key string, value string) {
+func parseConfigurationLine(line string) (key string, value string) {
 	// split line on "="
 	lineArray := strings.Split(line, "=")
 	// assign to variables
