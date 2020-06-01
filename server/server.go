@@ -1,4 +1,4 @@
-package api
+package server
 
 import (
 	"k8s-management-go/models/config"
