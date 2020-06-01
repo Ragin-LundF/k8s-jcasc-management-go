@@ -4,11 +4,9 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"strings"
 )
 
 func GpgEncryptSecrets(secretsFilePath string, password string) (info string, err error) {
-	secretsFilePath = strings.Replace(secretsFilePath, "/./", "/", -1)
 	cmd := exec.Command("gpg", "--batch", "--yes", "--passphrase", password, "-c", secretsFilePath)
 	err = cmd.Run()
 	if err != nil {
@@ -22,7 +20,6 @@ func GpgEncryptSecrets(secretsFilePath string, password string) (info string, er
 }
 
 func GpgDecryptSecrets(secretsFilePath string, password string) (info string, err error) {
-	secretsFilePath = strings.Replace(secretsFilePath, "/./", "/", -1)
 	cmd := exec.Command("gpg", "--batch", "--yes", "--passphrase", password, secretsFilePath)
 	err = cmd.Run()
 	if err != nil {

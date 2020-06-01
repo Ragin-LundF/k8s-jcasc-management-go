@@ -34,7 +34,7 @@ func startCommandAction(command string) (info string, err error) {
 	case constants.CommandDecryptSecrets:
 		info, err = DecryptSecretsFile()
 	case constants.CommandApplySecrets:
-		fmt.Println("start apply secrets")
+		info, err = ApplySecretsToNamespace()
 	case constants.CommandApplySecretsToAll:
 		fmt.Println("start apply secrets to all")
 	case constants.CommandCreateProject:

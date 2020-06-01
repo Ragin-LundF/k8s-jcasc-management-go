@@ -4,6 +4,7 @@ package constants
 const DirConfig = "config"
 const FilenameConfiguration = "k8s_jcasc_mgmt.cnf"
 const FilenameConfigurationCustom = "k8s_jcasc_custom.cnf"
+const SecretsFileEncodedEnding = ".gpg"
 
 // commands
 const CommandMenu = "menu"

@@ -2,6 +2,7 @@ package cli
 
 import (
 	"errors"
+	"k8s-management-go/constants"
 	"k8s-management-go/models/config"
 	"k8s-management-go/utils/encryption"
 	"log"
@@ -24,13 +25,13 @@ func EncryptSecretsFile() (info string, err error) {
 	password, err := dialogPassword("Password for secrets file", validate)
 	if err != nil {
 		log.Println(err)
-		return "", err
+		return info, err
 	}
 	// let password confirm
 	passwordConfirm, err := dialogPassword("Confirm password for secrets file", validate)
 	if err != nil {
 		log.Println(err)
-		return "", err
+		return info, err
 	}
 
 	// check if passwords match
@@ -39,7 +40,7 @@ func EncryptSecretsFile() (info string, err error) {
 	}
 
 	// encrypt secrets file
-	secretsFilePath := config.GetConfiguration().BasePath + "/" + config.GetConfiguration().GlobalSecretsFile
+	secretsFilePath := config.GetGlobalSecretsFile()
 	info, err = encryption.GpgEncryptSecrets(secretsFilePath, password)
 
 	return info, err
@@ -49,9 +50,9 @@ func DecryptSecretsFile() (info string, err error) {
 	password, err := dialogPassword("Password for secrets file", nil)
 	if err != nil {
 		log.Println(err)
-		return "", err
+		return info, err
 	}
-	secretsFilePath := config.GetConfiguration().BasePath + "/" + config.GetConfiguration().GlobalSecretsFile + ".gpg"
+	secretsFilePath := config.GetGlobalSecretsFile() + constants.SecretsFileEncodedEnding
 	info, err = encryption.GpgDecryptSecrets(secretsFilePath, password)
 
 	return info, err

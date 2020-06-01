@@ -1,6 +1,9 @@
 package config
 
-import "strconv"
+import (
+	"strconv"
+	"strings"
+)
 
 var configuration Configuration
 
@@ -103,6 +106,27 @@ type Configuration struct {
 
 func GetConfiguration() *Configuration {
 	return &configuration
+}
+
+// helper method for IP configuration file
+func GetIpConfigurationFile() string {
+	return filePathWithBasePath(configuration.IpConfig.IpConfigFile)
+}
+
+// helper method for secrets file
+func GetGlobalSecretsFile() string {
+	return filePathWithBasePath(configuration.GlobalSecretsFile)
+}
+
+// helper method to calculate the correct filepath
+func filePathWithBasePath(configurationFilePath string) string {
+	if configuration.BasePath != "" {
+		configurationFilePath = configuration.BasePath + "/" + configurationFilePath
+		if strings.Contains(configurationFilePath, "/./") {
+			configurationFilePath = strings.Replace(configurationFilePath, "/./", "/", -1)
+		}
+	}
+	return configurationFilePath
 }
 
 func AssignToConfiguration(key string, value string) {

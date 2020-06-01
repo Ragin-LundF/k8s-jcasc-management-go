@@ -11,7 +11,7 @@ func ReadIpConfig(basePath string) {
 	configuration := *config.GetConfiguration()
 
 	// read configuration file. Replace unneeded double quotes if needed.
-	data, err := os.Open(basePath + "/" + configuration.IpConfig.IpConfigFile)
+	data, err := os.Open(config.GetIpConfigurationFile())
 
 	// check for error
 	if err != nil {
