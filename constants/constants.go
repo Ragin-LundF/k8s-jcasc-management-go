@@ -21,3 +21,11 @@ const CommandQuit = "quit"
 
 // error
 const ErrorPromptFailed = "prompt failed"
+
+// colors
+const ColorNormal = "\033[0m"
+const ColorInfo = "\033[1;34m"
+const ColorNotice = "\033[1;36m"
+const ColorWarning = "\033[1;33m"
+const ColorError = "\033[1;31m"
+const ColorDebug = "\033[0;36m"

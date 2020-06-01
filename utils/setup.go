@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"k8s-management-go/utils/config"
 	"os"
 	"strings"
 )
@@ -25,8 +26,8 @@ func Setup() {
 		basePath = strings.TrimSuffix(basePath, "/")
 
 		// read configuration
-		ReadConfiguration(basePath)
-		ReadIpConfig(basePath)
+		config.ReadConfiguration(basePath)
+		config.ReadIpConfig(basePath)
 	} else {
 		panic("No configuration path found...")
 	}

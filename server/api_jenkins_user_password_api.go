@@ -2,7 +2,7 @@ package server
 
 import (
 	"encoding/json"
-	"k8s-management-go/utils"
+	"k8s-management-go/utils/encryption"
 	"log"
 	"net/http"
 )
@@ -27,7 +27,7 @@ func JenkinsUserPasswordApi(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// create bcrypt hash from password
-		hashedPassword, err := utils.EncryptJenkinsUserPassword(jenkinsUserPassword.Password)
+		hashedPassword, err := encryption.EncryptJenkinsUserPassword(jenkinsUserPassword.Password)
 		if err != nil {
 			log.Println(err)
 			http.Error(w, `{"message": "cannot create bcrypted password"}`, http.StatusBadRequest)

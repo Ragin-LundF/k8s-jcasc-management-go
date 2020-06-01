@@ -3,6 +3,8 @@ package cli
 import (
 	"fmt"
 	"k8s-management-go/constants"
+	"k8s-management-go/models/config"
+	"k8s-management-go/utils/encryption"
 	"os"
 )
 
@@ -12,39 +14,45 @@ type state struct {
 }
 
 // Workflow entrypoint
-func Workflow() {
-	selectedCommand := Menu()
-	startCommandAction(selectedCommand)
+func Workflow(info string, err error) {
+	selectedCommand := Menu(info, err)
+	info, err = startCommandAction(selectedCommand)
 	// recall Workflow to show menu after finished actions
-	Workflow()
+	Workflow(info, err)
 }
 
 // process the selected command and start the action
-func startCommandAction(command string) {
+func startCommandAction(command string) (info string, err error) {
+	// reset info and error
+	info = ""
+	err = nil
+
+	// evaluate the command
 	switch command {
 	case constants.CommandInstall:
 		fmt.Println("start install")
 	case constants.CommandUninstall:
 		fmt.Println("start uninstall")
 	case constants.CommandUpgrade:
-		fmt.Println("start uninstall")
+		fmt.Println("start upgrade")
 	case constants.CommandEncryptSecrets:
-		fmt.Println("start uninstall")
+		info, err = encryption.GpgEncryptSecrets(config.GetConfiguration().BasePath + "/" + config.GetConfiguration().GlobalSecretsFile)
 	case constants.CommandDecryptSecrets:
-		fmt.Println("start uninstall")
+		info, err = encryption.GpgDecryptSecrets(config.GetConfiguration().BasePath + "/" + config.GetConfiguration().GlobalSecretsFile + ".gpg")
 	case constants.CommandApplySecrets:
-		fmt.Println("start uninstall")
+		fmt.Println("start apply secrets")
 	case constants.CommandApplySecretsToAll:
-		fmt.Println("start uninstall")
+		fmt.Println("start apply secrets to all")
 	case constants.CommandCreateProject:
-		fmt.Println("start uninstall")
+		fmt.Println("start create project")
 	case constants.CommandCreateDeploymentOnlyProject:
-		fmt.Println("start uninstall")
+		fmt.Println("start create deployment project")
 	case constants.CommandCreateJenkinsUserPassword:
-		CreateJenkinsUserPassword()
+		info, err = CreateJenkinsUserPassword()
 	case constants.CommandQuit:
 		os.Exit(0)
 	case constants.ErrorPromptFailed:
 		os.Exit(0)
 	}
+	return info, err
 }

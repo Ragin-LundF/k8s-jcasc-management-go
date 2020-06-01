@@ -1,9 +1,10 @@
-package utils
+package config
 
 import (
 	"bufio"
 	"k8s-management-go/constants"
 	"k8s-management-go/models/config"
+	"k8s-management-go/utils/files"
 	"os"
 	"strings"
 )
@@ -13,12 +14,14 @@ func ReadConfiguration(basePath string) {
 	// read plain configuration
 	readConfigurationFromFile(basePath + "/" + constants.DirConfig + "/" + constants.FilenameConfiguration)
 	// check if there is an custom configuration
-	if FileExists(basePath + "/" + constants.DirConfig + "/" + constants.FilenameConfigurationCustom) {
+	if files.FileExists(basePath + "/" + constants.DirConfig + "/" + constants.FilenameConfigurationCustom) {
 		readConfigurationFromFile(basePath + "/" + constants.DirConfig + "/" + constants.FilenameConfigurationCustom)
 	}
 	// check if there is an alternative configuration path and try to read config from there
 	configuration := *config.GetConfiguration()
-	if configuration.AlternativeConfigFile != "" && FileExists(basePath+"/"+configuration.AlternativeConfigFile) {
+	config.AssignToConfiguration("K8S_MGMT_BASE_PATH", basePath)
+
+	if configuration.AlternativeConfigFile != "" && files.FileExists(basePath+"/"+configuration.AlternativeConfigFile) {
 		readConfigurationFromFile(basePath + "/" + configuration.AlternativeConfigFile)
 	}
 }

@@ -14,9 +14,22 @@ type menu struct {
 	Spacer      string
 }
 
-func Menu() string {
+func Menu(info string, err error) string {
 	// clear screen
 	fmt.Println("\033[2J")
+
+	// If errors not emtpy, show them
+	if err != nil {
+		fmt.Printf("%v[ERROR]: %v%v", constants.ColorError, err, constants.ColorNormal)
+		fmt.Println()
+		fmt.Println()
+	}
+	// If infos are available, show them
+	if info != "" {
+		fmt.Printf("%v[INFO]: %v%v", constants.ColorInfo, info, constants.ColorNormal)
+		fmt.Println()
+		fmt.Println()
+	}
 
 	// Menu structure
 	menuStructure := []menu{

@@ -5,6 +5,7 @@ import "strconv"
 var configuration Configuration
 
 type Configuration struct {
+	BasePath string
 	// Log Level
 	LogLevel string
 	// secrets file
@@ -191,6 +192,8 @@ func AssignToConfiguration(key string, value string) {
 			configuration.K8sManagement.EncryptionTool = value
 		case "K8S_MGMT_ALTERNATIVE_CONFIG_FILE":
 			configuration.AlternativeConfigFile = value
+		case "K8S_MGMT_BASE_PATH":
+			configuration.BasePath = value
 		}
 	}
 }

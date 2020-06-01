@@ -9,5 +9,5 @@ func main() {
 	// setup the system and read config
 	utils.Setup()
 	// start UI workflow
-	cli.Workflow()
+	cli.Workflow("", nil)
 }

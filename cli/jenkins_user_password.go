@@ -5,16 +5,14 @@ import (
 	"fmt"
 	"github.com/atotto/clipboard"
 	"github.com/manifoldco/promptui"
-	"k8s-management-go/utils"
+	"k8s-management-go/utils/encryption"
 	"log"
 	"strings"
 )
 
-type confirm struct {
-	Selection string
-}
-
-func CreateJenkinsUserPassword() {
+func CreateJenkinsUserPassword() (info string, err error) {
+	// empty info
+	info = ""
 	// Validator for password (keep it simple for now)
 	validate := func(input string) error {
 		if len(input) < 4 {
@@ -36,51 +34,30 @@ func CreateJenkinsUserPassword() {
 	// check if everything was ok
 	if err != nil {
 		fmt.Printf("Prompt failed %v\n", err)
-		return
+		return info, err
 	}
 
 	// encrypt password with bcrypt
-	hashedPassword, err := utils.EncryptJenkinsUserPassword(plainPassword)
+	hashedPassword, err := encryption.EncryptJenkinsUserPassword(plainPassword)
 	if err != nil {
 		log.Println(err)
-		return
+		return info, err
 	}
 
-	// clear screen
-	fmt.Println("\033[2J")
-
-	// Template for displaying confirm dialog
-	dialogConfim := []confirm{
-		{Selection: "yes"},
-		{Selection: "no"},
-	}
-
-	templates := &promptui.SelectTemplates{
-		Label:    "Do you want to copy the password to the clipboard?",
-		Active:   "\U000027A4 {{ .Selection | green }}",
-		Inactive: "  {{ .Selection | cyan }}",
-		Selected: "\U000027A4 {{ .Selection | red | cyan }}",
-		Details: `
+	templateDetails := `
 --------- Encrypted Password ----------
-{{ "Password    :" | faint }}	` + hashedPassword,
-	}
+{{ "Password    :" | faint }}	` + hashedPassword
 
-	confirmDialogPrompt := promptui.Select{
-		Label:     "Your password: {{ hashedPassword }}",
-		Items:     dialogConfim,
-		Templates: templates,
-		Size:      2,
-	}
+	resultConfirm := dialogConfirm(
+		"Do you want to copy the password to the clipboard?",
+		"Selection",
+		templateDetails,
+		"Your password: "+hashedPassword,
+	)
 
-	_, resultConfirm, err := confirmDialogPrompt.Run()
-
-	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
-		return
-	}
-
-	if resultConfirm == "{yes}" {
+	if resultConfirm {
 		// copy to clipboard
-		_ = clipboard.WriteAll(hashedPassword)
+		err = clipboard.WriteAll(hashedPassword)
 	}
+	return "Created password: " + hashedPassword, err
 }
