@@ -28,6 +28,7 @@ func CreateJenkinsUserPassword() (info string, err error) {
 	promptPlainPassword := promptui.Prompt{
 		Label:    "Plain Password",
 		Validate: validate,
+		Mask:     '*',
 	}
 	plainPassword, err := promptPlainPassword.Run()
 
