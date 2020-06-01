@@ -12,8 +12,10 @@ import (
 
 func main() {
 	setup()
+	http.HandleFunc("/v1/k8smgmt/menu", api.MenuApi)
 	http.HandleFunc("/v1/k8smgmt/configuration", api.ConfigurationApi)
 	http.HandleFunc("/v1/k8smgmt/configuration/ip", api.IpConfigurationApi)
+	http.HandleFunc("/v1/k8smgmt/jenkins/password", api.JenkinsUserPasswordApi)
 	log.Fatal(http.ListenAndServe(":80", nil))
 }
 
