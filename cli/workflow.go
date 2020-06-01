@@ -36,7 +36,7 @@ func startCommandAction(command string) (info string, err error) {
 	case constants.CommandApplySecrets:
 		info, err = ApplySecretsToNamespace()
 	case constants.CommandApplySecretsToAll:
-		fmt.Println("start apply secrets to all")
+		info, err = ApplySecretsToAllNamespaces()
 	case constants.CommandCreateProject:
 		fmt.Println("start create project")
 	case constants.CommandCreateDeploymentOnlyProject:

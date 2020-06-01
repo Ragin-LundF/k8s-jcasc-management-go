@@ -57,6 +57,53 @@ func ApplySecretsToNamespace() (info string, err error) {
 	return info, err
 }
 
+func ApplySecretsToAllNamespaces() (info string, err error) {
+	// get password
+	password, err := dialogPassword("Password for secrets file", nil)
+	if err != nil {
+		log.Println(err)
+		return info, err
+	}
+
+	// decrypt secrets file
+	secretsFilePath := config.GetGlobalSecretsFile()
+	info, err = encryption.GpgDecryptSecrets(secretsFilePath+constants.SecretsFileEncodedEnding, password)
+	if err != nil {
+		log.Println(err)
+		return info, err
+	}
+
+	// apply secret to namespaces
+	infos := ""
+	nsErrs := ""
+	for _, ip := range config.GetIpConfiguration().Ips {
+		infoNs, nsErr := applySecretToNamespace(secretsFilePath, ip.Namespace)
+		if infoNs != "" {
+			infos = infos + "\n" + infoNs
+		}
+		if nsErr != nil {
+			nsErrs = nsErrs + "\n" + nsErr.Error()
+		}
+	}
+
+	// delete decrypted file
+	rmErr := os.Remove(secretsFilePath)
+
+	// Error handling for apply and remove
+	if nsErrs != "" {
+		err = errors.New(nsErrs)
+	}
+	if rmErr != nil {
+		if err != nil {
+			err = errors.New(err.Error() + rmErr.Error())
+		} else {
+			err = rmErr
+		}
+	}
+
+	return info, err
+}
+
 func selectNamespace() (namespace string, err error) {
 	// Template for displaying menu
 	templates := &promptui.SelectTemplates{
