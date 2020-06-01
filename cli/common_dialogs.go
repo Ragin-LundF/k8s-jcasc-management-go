@@ -9,9 +9,12 @@ type confirm struct {
 	Selection string
 }
 
-func dialogConfirm(templateLabel string, templateSelector string, templateDetails string, dialogLabel string) bool {
-	// clear screen
+func ClearScreen() {
 	fmt.Println("\033[2J")
+}
+
+func dialogConfirm(templateLabel string, templateSelector string, templateDetails string, dialogLabel string) bool {
+	ClearScreen()
 
 	// Template for displaying confirm dialog
 	dialogConfim := []confirm{
@@ -44,4 +47,22 @@ func dialogConfirm(templateLabel string, templateSelector string, templateDetail
 	} else {
 		return true
 	}
+}
+
+func dialogPassword(label string, validate promptui.ValidateFunc) (password string, err error) {
+	ClearScreen()
+
+	// Prepare prompt
+	promptPlainPassword := promptui.Prompt{
+		Label:    label,
+		Validate: validate,
+		Mask:     '*',
+	}
+	password, err = promptPlainPassword.Run()
+
+	// check if everything was ok
+	if err != nil {
+		fmt.Printf("Prompt failed %v\n", err)
+	}
+	return password, err
 }

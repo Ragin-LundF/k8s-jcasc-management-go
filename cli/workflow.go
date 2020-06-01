@@ -3,8 +3,6 @@ package cli
 import (
 	"fmt"
 	"k8s-management-go/constants"
-	"k8s-management-go/models/config"
-	"k8s-management-go/utils/encryption"
 	"os"
 )
 
@@ -23,10 +21,6 @@ func Workflow(info string, err error) {
 
 // process the selected command and start the action
 func startCommandAction(command string) (info string, err error) {
-	// reset info and error
-	info = ""
-	err = nil
-
 	// evaluate the command
 	switch command {
 	case constants.CommandInstall:
@@ -36,9 +30,9 @@ func startCommandAction(command string) (info string, err error) {
 	case constants.CommandUpgrade:
 		fmt.Println("start upgrade")
 	case constants.CommandEncryptSecrets:
-		info, err = encryption.GpgEncryptSecrets(config.GetConfiguration().BasePath + "/" + config.GetConfiguration().GlobalSecretsFile)
+		info, err = EncryptSecretsFile()
 	case constants.CommandDecryptSecrets:
-		info, err = encryption.GpgDecryptSecrets(config.GetConfiguration().BasePath + "/" + config.GetConfiguration().GlobalSecretsFile + ".gpg")
+		info, err = DecryptSecretsFile()
 	case constants.CommandApplySecrets:
 		fmt.Println("start apply secrets")
 	case constants.CommandApplySecretsToAll:

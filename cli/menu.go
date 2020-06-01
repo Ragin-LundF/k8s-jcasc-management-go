@@ -16,7 +16,7 @@ type menu struct {
 
 func Menu(info string, err error) string {
 	// clear screen
-	fmt.Println("\033[2J")
+	ClearScreen()
 
 	// If errors not emtpy, show them
 	if err != nil {
