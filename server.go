@@ -1,14 +1,20 @@
 package main
 
 import (
+	"k8s-management-go/api"
 	"k8s-management-go/models/config"
 	"k8s-management-go/utils"
+	"log"
+	"net/http"
 	"os"
 	"strings"
 )
 
 func main() {
 	setup()
+	http.HandleFunc("/v1/k8smgmt/configuration", api.ConfigurationApi)
+	http.HandleFunc("/v1/k8smgmt/configuration/ip", api.IpConfigurationApi)
+	log.Fatal(http.ListenAndServe(":80", nil))
 }
 
 // initial setup
