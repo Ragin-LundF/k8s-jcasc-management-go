@@ -1,19 +1,12 @@
 package server
 
 import (
-	"k8s-management-go/models/config"
-	"k8s-management-go/utils"
 	"log"
 	"net/http"
 )
 
 // Experimental server
 func StartServer() {
-	// receive configuration
-	configuration := *config.GetConfiguration()
-	// log configuration
-	utils.LogStruct("Configuration", &configuration)
-
 	// register API
 	http.HandleFunc("/v1/k8smgmt/menu", MenuApi)
 	http.HandleFunc("/v1/k8smgmt/configuration", ConfigurationApi)
