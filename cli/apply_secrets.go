@@ -2,27 +2,24 @@ package cli
 
 import (
 	"errors"
-	"fmt"
-	"github.com/manifoldco/promptui"
 	"k8s-management-go/constants"
 	"k8s-management-go/models/config"
 	"k8s-management-go/utils/encryption"
 	"log"
 	"os"
 	"os/exec"
-	"strings"
 )
 
 func ApplySecretsToNamespace() (info string, err error) {
 	// select namespace
-	namespace, err := selectNamespace()
+	namespace, err := DialogAskForNamespace()
 	if err != nil {
 		log.Println(err)
 		return info, err
 	}
 
 	// get password
-	password, err := dialogPassword("Password for secrets file", nil)
+	password, err := DialogPassword("Password for secrets file", nil)
 	if err != nil {
 		log.Println(err)
 		return info, err
@@ -59,7 +56,7 @@ func ApplySecretsToNamespace() (info string, err error) {
 
 func ApplySecretsToAllNamespaces() (info string, err error) {
 	// get password
-	password, err := dialogPassword("Password for secrets file", nil)
+	password, err := DialogPassword("Password for secrets file", nil)
 	if err != nil {
 		log.Println(err)
 		return info, err
@@ -102,46 +99,6 @@ func ApplySecretsToAllNamespaces() (info string, err error) {
 	}
 
 	return info, err
-}
-
-func selectNamespace() (namespace string, err error) {
-	// Template for displaying menu
-	templates := &promptui.SelectTemplates{
-		Label:    "{{ . }}?",
-		Active:   "\U000027A4 {{ .Namespace | green }}",
-		Inactive: "  {{ .Namespace | cyan }}",
-		Selected: "\U000027A4 {{ .Namespace | red | cyan }}",
-		Details: `
---------- Namespace selection ----------
-{{ "Namespace: " | faint }}	{{ .Namespace }}
-{{ "IP       : " | faint }}	{{ .Ip }}`,
-	}
-
-	// searcher (with "/")
-	searcher := func(input string, index int) bool {
-		namespaceItem := config.GetIpConfiguration().Ips[index]
-		name := strings.Replace(strings.ToLower(namespaceItem.Namespace), " ", "", -1)
-		input = strings.Replace(strings.ToLower(input), " ", "", -1)
-
-		return strings.Contains(name, input)
-	}
-
-	prompt := promptui.Select{
-		Label:     "Please select the namespace to which the secrets should be applied",
-		Items:     config.GetIpConfiguration().Ips,
-		Templates: templates,
-		Size:      12,
-		Searcher:  searcher,
-	}
-
-	i, _, err := prompt.Run()
-	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
-	} else {
-		namespace = config.GetIpConfiguration().Ips[i].Namespace
-	}
-
-	return namespace, err
 }
 
 func applySecretToNamespace(secretsFilePath string, namespace string) (info string, err error) {

@@ -4,6 +4,7 @@ package constants
 const DirConfig = "config"
 const FilenameConfiguration = "k8s_jcasc_mgmt.cnf"
 const FilenameConfigurationCustom = "k8s_jcasc_custom.cnf"
+const FilenamePvcClaim = "pvc_claim.yaml"
 const SecretsFileEncodedEnding = ".gpg"
 
 // commands

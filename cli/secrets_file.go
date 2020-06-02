@@ -22,13 +22,13 @@ func EncryptSecretsFile() (info string, err error) {
 	}
 
 	// read password
-	password, err := dialogPassword("Password for secrets file", validate)
+	password, err := DialogPassword("Password for secrets file", validate)
 	if err != nil {
 		log.Println(err)
 		return info, err
 	}
 	// let password confirm
-	passwordConfirm, err := dialogPassword("Confirm password for secrets file", validate)
+	passwordConfirm, err := DialogPassword("Confirm password for secrets file", validate)
 	if err != nil {
 		log.Println(err)
 		return info, err
@@ -47,7 +47,7 @@ func EncryptSecretsFile() (info string, err error) {
 }
 
 func DecryptSecretsFile() (info string, err error) {
-	password, err := dialogPassword("Password for secrets file", nil)
+	password, err := DialogPassword("Password for secrets file", nil)
 	if err != nil {
 		log.Println(err)
 		return info, err

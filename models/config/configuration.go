@@ -1,8 +1,8 @@
 package config
 
 import (
+	"k8s-management-go/utils/files"
 	"strconv"
-	"strings"
 )
 
 var configuration Configuration
@@ -110,21 +110,18 @@ func GetConfiguration() *Configuration {
 
 // helper method for IP configuration file
 func GetIpConfigurationFile() string {
-	return filePathWithBasePath(configuration.IpConfig.IpConfigFile)
+	return FilePathWithBasePath(configuration.IpConfig.IpConfigFile)
 }
 
 // helper method for secrets file
 func GetGlobalSecretsFile() string {
-	return filePathWithBasePath(configuration.GlobalSecretsFile)
+	return FilePathWithBasePath(configuration.GlobalSecretsFile)
 }
 
 // helper method to calculate the correct filepath
-func filePathWithBasePath(configurationFilePath string) string {
+func FilePathWithBasePath(configurationFilePath string) string {
 	if configuration.BasePath != "" {
-		configurationFilePath = configuration.BasePath + "/" + configurationFilePath
-		if strings.Contains(configurationFilePath, "/./") {
-			configurationFilePath = strings.Replace(configurationFilePath, "/./", "/", -1)
-		}
+		configurationFilePath = files.AddFilePath(configuration.BasePath, configurationFilePath)
 	}
 	return configurationFilePath
 }

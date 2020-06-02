@@ -20,8 +20,8 @@ func CreateJenkinsUserPassword() (info string, err error) {
 		return nil
 	}
 
-	plainPassword, err := dialogPassword("Password", validate)
-	plainPasswordConfirm, err := dialogPassword("Retype your password", validate)
+	plainPassword, err := DialogPassword("Password", validate)
+	plainPasswordConfirm, err := DialogPassword("Retype your password", validate)
 
 	if plainPassword == plainPasswordConfirm {
 		// encrypt password with bcrypt
@@ -35,7 +35,7 @@ func CreateJenkinsUserPassword() (info string, err error) {
 --------- Encrypted Password ----------
 {{ "Password    :" | faint }}	` + hashedPassword
 
-		resultConfirm := dialogConfirm(
+		resultConfirm := DialogConfirm(
 			"Do you want to copy the password to the clipboard?",
 			"Selection",
 			templateDetails,
