@@ -7,7 +7,6 @@ import (
 	"k8s-management-go/models/config"
 	"k8s-management-go/utils/files"
 	"log"
-	"os"
 	"os/exec"
 	"strings"
 )
@@ -60,14 +59,7 @@ func InstallPersistenceVolumeClaim() (info string, err error) {
 		pvcName := pvcClaimValues.Metadata.Name
 
 		// read all pvc from K8S
-		cmd := exec.Command("kubectl", "-n", namespace, "get", "pvc")
-		if err := cmd.Run(); err != nil {
-			log.Println(err)
-			return info, err
-		}
-
-		// Get output of command
-		output, err := cmd.Output()
+		output, err := exec.Command("kubectl", "-n", namespace, "get", "pvc").Output()
 		if err != nil {
 			log.Println(err)
 			return info, err
