@@ -98,9 +98,7 @@ type Configuration struct {
 	}
 	// internal configuration
 	K8sManagement struct {
-		VersionCheck     bool
-		VersionCheckTool string
-		EncryptionTool   string
+		VersionCheck bool
 	}
 }
 
@@ -207,10 +205,6 @@ func AssignToConfiguration(key string, value string) {
 			configuration.CredentialIds.DefaultVcsRepository = value
 		case "K8S_MGMT_VERSION_CHECK":
 			configuration.K8sManagement.VersionCheck, _ = strconv.ParseBool(value)
-		case "K8S_MGMT_VERSION_CHECK_TOOL":
-			configuration.K8sManagement.VersionCheckTool = value
-		case "K8S_MGMT_ENCRYPTION_TOOL":
-			configuration.K8sManagement.EncryptionTool = value
 		case "K8S_MGMT_ALTERNATIVE_CONFIG_FILE":
 			configuration.AlternativeConfigFile = value
 		case "K8S_MGMT_BASE_PATH":
