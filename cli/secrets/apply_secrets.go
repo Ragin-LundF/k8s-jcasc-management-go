@@ -24,7 +24,7 @@ func ApplySecrets() (info string, err error) {
 
 func ApplySecretsToNamespace(namespace string) (info string, err error) {
 	// get password
-	password, err := dialogs.DialogPassword("Password for secrets file", nil)
+	password, err := dialogs.DialogAskForPassword("Password for secrets file", nil)
 	if err != nil {
 		log.Println(err)
 		return info, err
@@ -61,7 +61,7 @@ func ApplySecretsToNamespace(namespace string) (info string, err error) {
 
 func ApplySecretsToAllNamespaces() (info string, err error) {
 	// get password
-	password, err := dialogs.DialogPassword("Password for secrets file", nil)
+	password, err := dialogs.DialogAskForPassword("Password for secrets file", nil)
 	if err != nil {
 		log.Println(err)
 		return info, err

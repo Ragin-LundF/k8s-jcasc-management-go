@@ -1,11 +1,19 @@
 package constants
 
-// common config
+// directory and file configuration
 const DirConfig = "config"
+const DirProjectScripts = "scripts"
+const DirProjectScriptsInstallPrefix = "i_"
+const DirProjectScriptsUninstallPrefix = "d_"
+const DirHelmJenkinsMaster = "/charts/jenkins-master"
 const FilenameConfiguration = "k8s_jcasc_mgmt.cnf"
 const FilenameConfigurationCustom = "k8s_jcasc_custom.cnf"
+const FilenameJenkinsConfigurationAsCode = "jcasc_config.yaml"
+const FilenameJenkinsHelmValues = "jenkins_helm_values.yaml"
+const FilenameNginxIngressControllerHelmValues = "nginx_ingress_helm_values.yaml"
 const FilenamePvcClaim = "pvc_claim.yaml"
 const SecretsFileEncodedEnding = ".gpg"
+const ScriptsFileEnding = ".sh"
 
 // commands
 const CommandMenu = "menu"
@@ -20,6 +28,10 @@ const CommandCreateProject = "createProject"
 const CommandCreateDeploymentOnlyProject = "createDeploymentOnlyProject"
 const CommandCreateJenkinsUserPassword = "createJenkinsUserPassword"
 const CommandQuit = "quit"
+
+// helm commands
+const HelmCommandInstall = "install"
+const HelmCommandUpgrade = "upgrade"
 
 // error
 const ErrorPromptFailed = "prompt failed"

@@ -26,7 +26,7 @@ func CheckAndCreateNamespace(namespace string) (info string, err error) {
 			return info, err
 		}
 		// return kubectl output
-		info = info + "\nKubectl output:"
+		info = info + "\nKubectl Namespace creation output:"
 		info = info + "\n==============="
 		info = info + string(outputNsCreate)
 		info = info + "\n==============="

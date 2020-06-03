@@ -12,17 +12,17 @@ import (
 // Read configuration from k8s-management
 func ReadConfiguration(basePath string) {
 	// read plain configuration
-	readConfigurationFromFile(files.AddFilePath(files.AddFilePath(basePath, constants.DirConfig), constants.FilenameConfiguration))
+	readConfigurationFromFile(files.AppendPath(files.AppendPath(basePath, constants.DirConfig), constants.FilenameConfiguration))
 	// check if there is an custom configuration
-	if files.FileExists(files.AddFilePath(files.AddFilePath(basePath, constants.DirConfig), constants.FilenameConfigurationCustom)) {
-		readConfigurationFromFile(files.AddFilePath(files.AddFilePath(basePath, constants.DirConfig), constants.FilenameConfigurationCustom))
+	if files.FileOrDirectoryExists(files.AppendPath(files.AppendPath(basePath, constants.DirConfig), constants.FilenameConfigurationCustom)) {
+		readConfigurationFromFile(files.AppendPath(files.AppendPath(basePath, constants.DirConfig), constants.FilenameConfigurationCustom))
 	}
 	// check if there is an alternative configuration path and try to read config from there
 	configuration := *config.GetConfiguration()
 	config.AssignToConfiguration("K8S_MGMT_BASE_PATH", basePath)
 
-	if configuration.AlternativeConfigFile != "" && files.FileExists(files.AddFilePath(basePath, configuration.AlternativeConfigFile)) {
-		readConfigurationFromFile(files.AddFilePath(basePath, configuration.AlternativeConfigFile))
+	if configuration.AlternativeConfigFile != "" && files.FileOrDirectoryExists(files.AppendPath(basePath, configuration.AlternativeConfigFile)) {
+		readConfigurationFromFile(files.AppendPath(basePath, configuration.AlternativeConfigFile))
 	}
 }
 

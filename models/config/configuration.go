@@ -121,7 +121,7 @@ func GetGlobalSecretsFile() string {
 // helper method to calculate the correct filepath
 func FilePathWithBasePath(configurationFilePath string) string {
 	if configuration.BasePath != "" {
-		configurationFilePath = files.AddFilePath(configuration.BasePath, configurationFilePath)
+		configurationFilePath = files.AppendPath(configuration.BasePath, configurationFilePath)
 	}
 	return configurationFilePath
 }

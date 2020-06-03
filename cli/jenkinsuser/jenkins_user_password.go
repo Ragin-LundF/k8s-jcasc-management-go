@@ -21,8 +21,8 @@ func CreateJenkinsUserPassword() (info string, err error) {
 		return nil
 	}
 
-	plainPassword, err := dialogs.DialogPassword("Password", validate)
-	plainPasswordConfirm, err := dialogs.DialogPassword("Retype your password", validate)
+	plainPassword, err := dialogs.DialogAskForPassword("Password", validate)
+	plainPasswordConfirm, err := dialogs.DialogAskForPassword("Retype your password", validate)
 
 	if plainPassword == plainPasswordConfirm {
 		// encrypt password with bcrypt

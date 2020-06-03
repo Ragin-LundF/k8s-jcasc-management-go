@@ -32,13 +32,13 @@ type PvcClaimValuesYaml struct {
 }
 
 // install PVC is needed
-func InstallPersistenceVolumeClaim(namespace string) (info string, err error) {
+func PersistenceVolumeClaimInstall(namespace string) (info string, err error) {
 	// prepare file directories
-	projectDir := files.AddFilePath(config.FilePathWithBasePath(config.GetConfiguration().Directories.ProjectsBaseDirectory), namespace)
-	pvcClaimValuesFilePath := files.AddFilePath(projectDir, constants.FilenamePvcClaim)
+	projectDir := files.AppendPath(config.FilePathWithBasePath(config.GetConfiguration().Directories.ProjectsBaseDirectory), namespace)
+	pvcClaimValuesFilePath := files.AppendPath(projectDir, constants.FilenamePvcClaim)
 
 	// open file
-	if files.FileExists(pvcClaimValuesFilePath) {
+	if files.FileOrDirectoryExists(pvcClaimValuesFilePath) {
 		// variable to check, if pvc already exists
 		infoLog, err, pvcName := readPvcNameFromFile(pvcClaimValuesFilePath)
 		info = info + infoLog
@@ -64,7 +64,7 @@ func InstallPersistenceVolumeClaim(namespace string) (info string, err error) {
 				log.Println(err)
 				return info, err
 			}
-			info = info + "\nKubectl output:"
+			info = info + "\nKubectl PVC install output:"
 			info = info + "\n==============="
 			info = info + string(outputInstallPvc)
 			info = info + "\n==============="

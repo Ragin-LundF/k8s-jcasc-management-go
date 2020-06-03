@@ -28,11 +28,11 @@ func startCommandAction(command string) (info string, err error) {
 	// evaluate the command
 	switch command {
 	case constants.CommandInstall:
-		info, err = install.InstallJenkins()
+		info, err = install.JenkinsInstallOrUpgrade(constants.HelmCommandInstall)
 	case constants.CommandUninstall:
 		fmt.Println("start uninstall")
 	case constants.CommandUpgrade:
-		fmt.Println("start upgrade")
+		info, err = install.JenkinsInstallOrUpgrade(constants.HelmCommandUpgrade)
 	case constants.CommandEncryptSecrets:
 		info, err = secrets.EncryptSecretsFile()
 	case constants.CommandDecryptSecrets:

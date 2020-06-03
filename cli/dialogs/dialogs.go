@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/manifoldco/promptui"
 	"k8s-management-go/models/config"
+	"log"
 	"strings"
 )
 
@@ -48,7 +49,7 @@ func DialogConfirm(templateLabel string, templateSelector string, templateDetail
 	// result processing
 	if err != nil || resultConfirm != "{yes}" {
 		if err != nil {
-			fmt.Printf("Prompt failed %v\n", err)
+			log.Printf("Prompt failed %v\n", err)
 		}
 		return false
 	} else {
@@ -57,7 +58,7 @@ func DialogConfirm(templateLabel string, templateSelector string, templateDetail
 }
 
 // Common password dialog
-func DialogPassword(label string, validate promptui.ValidateFunc) (password string, err error) {
+func DialogAskForPassword(label string, validate promptui.ValidateFunc) (password string, err error) {
 	ClearScreen()
 
 	// Prepare prompt
@@ -70,11 +71,36 @@ func DialogPassword(label string, validate promptui.ValidateFunc) (password stri
 
 	// check if everything was ok
 	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
+		log.Printf("Prompt failed %v\n", err)
 	}
 	return password, err
 }
 
+// Ask for deployment name
+func DialogAskForDeploymentName(label string, validate promptui.ValidateFunc) (deploymentName string, err error) {
+	ClearScreen()
+
+	// try to read deployment name from configuration
+	deploymentName = config.GetConfiguration().Jenkins.Helm.Master.DeploymentName
+	// check if something was set
+	if deploymentName == "" {
+		// No pre-configured deployment name found -> ask for a new one
+		// Prepare prompt
+		promptDeploymentName := promptui.Prompt{
+			Label:    label,
+			Validate: validate,
+		}
+		deploymentName, err = promptDeploymentName.Run()
+
+		// check if everything was ok
+		if err != nil {
+			log.Printf("Prompt failed %v\n", err)
+		}
+	}
+	return deploymentName, err
+}
+
+// dialog to ask for the namespace
 func DialogAskForNamespace() (namespace string, err error) {
 	// Template for displaying menu
 	templates := &promptui.SelectTemplates{
@@ -107,7 +133,7 @@ func DialogAskForNamespace() (namespace string, err error) {
 
 	i, _, err := prompt.Run()
 	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
+		log.Printf("Prompt failed %v\n", err)
 	} else {
 		namespace = config.GetIpConfiguration().Ips[i].Namespace
 	}
