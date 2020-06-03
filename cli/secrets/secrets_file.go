@@ -1,7 +1,8 @@
-package cli
+package secrets
 
 import (
 	"errors"
+	"k8s-management-go/cli/dialogs"
 	"k8s-management-go/constants"
 	"k8s-management-go/models/config"
 	"k8s-management-go/utils/encryption"
@@ -22,13 +23,13 @@ func EncryptSecretsFile() (info string, err error) {
 	}
 
 	// read password
-	password, err := DialogPassword("Password for secrets file", validate)
+	password, err := dialogs.DialogPassword("Password for secrets file", validate)
 	if err != nil {
 		log.Println(err)
 		return info, err
 	}
 	// let password confirm
-	passwordConfirm, err := DialogPassword("Confirm password for secrets file", validate)
+	passwordConfirm, err := dialogs.DialogPassword("Confirm password for secrets file", validate)
 	if err != nil {
 		log.Println(err)
 		return info, err
@@ -47,7 +48,7 @@ func EncryptSecretsFile() (info string, err error) {
 }
 
 func DecryptSecretsFile() (info string, err error) {
-	password, err := DialogPassword("Password for secrets file", nil)
+	password, err := dialogs.DialogPassword("Password for secrets file", nil)
 	if err != nil {
 		log.Println(err)
 		return info, err

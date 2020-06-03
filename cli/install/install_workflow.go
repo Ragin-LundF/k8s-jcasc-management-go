@@ -1,9 +1,14 @@
-package cli
+package install
+
+import (
+	"k8s-management-go/cli/dialogs"
+	"k8s-management-go/cli/secrets"
+)
 
 // workflow for Jenkins installation
 func InstallJenkins() (info string, err error) {
 	// ask for namespace
-	namespace, err := DialogAskForNamespace()
+	namespace, err := dialogs.DialogAskForNamespace()
 	if err != nil {
 		return info, err
 	}
@@ -14,7 +19,7 @@ func InstallJenkins() (info string, err error) {
 		return info, err
 	}
 	// install secrets
-	infoLog, err = ApplySecretsToNamespace(namespace)
+	infoLog, err = secrets.ApplySecretsToNamespace(namespace)
 	info = info + infoLog
 	if err != nil {
 		return info, err

@@ -1,4 +1,4 @@
-package cli
+package install
 
 import (
 	"k8s-management-go/constants"

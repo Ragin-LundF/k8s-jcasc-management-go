@@ -1,7 +1,8 @@
-package cli
+package secrets
 
 import (
 	"errors"
+	"k8s-management-go/cli/dialogs"
 	"k8s-management-go/constants"
 	"k8s-management-go/models/config"
 	"k8s-management-go/utils/encryption"
@@ -12,7 +13,7 @@ import (
 
 func ApplySecrets() (info string, err error) {
 	// select namespace
-	namespace, err := DialogAskForNamespace()
+	namespace, err := dialogs.DialogAskForNamespace()
 	if err != nil {
 		log.Println(err)
 		return info, err
@@ -23,7 +24,7 @@ func ApplySecrets() (info string, err error) {
 
 func ApplySecretsToNamespace(namespace string) (info string, err error) {
 	// get password
-	password, err := DialogPassword("Password for secrets file", nil)
+	password, err := dialogs.DialogPassword("Password for secrets file", nil)
 	if err != nil {
 		log.Println(err)
 		return info, err
@@ -60,7 +61,7 @@ func ApplySecretsToNamespace(namespace string) (info string, err error) {
 
 func ApplySecretsToAllNamespaces() (info string, err error) {
 	// get password
-	password, err := DialogPassword("Password for secrets file", nil)
+	password, err := dialogs.DialogPassword("Password for secrets file", nil)
 	if err != nil {
 		log.Println(err)
 		return info, err

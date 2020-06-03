@@ -1,8 +1,9 @@
-package cli
+package jenkinsuser
 
 import (
 	"errors"
 	"github.com/atotto/clipboard"
+	"k8s-management-go/cli/dialogs"
 	"k8s-management-go/utils/encryption"
 	"log"
 	"strings"
@@ -20,8 +21,8 @@ func CreateJenkinsUserPassword() (info string, err error) {
 		return nil
 	}
 
-	plainPassword, err := DialogPassword("Password", validate)
-	plainPasswordConfirm, err := DialogPassword("Retype your password", validate)
+	plainPassword, err := dialogs.DialogPassword("Password", validate)
+	plainPasswordConfirm, err := dialogs.DialogPassword("Retype your password", validate)
 
 	if plainPassword == plainPasswordConfirm {
 		// encrypt password with bcrypt
@@ -35,7 +36,7 @@ func CreateJenkinsUserPassword() (info string, err error) {
 --------- Encrypted Password ----------
 {{ "Password    :" | faint }}	` + hashedPassword
 
-		resultConfirm := DialogConfirm(
+		resultConfirm := dialogs.DialogConfirm(
 			"Do you want to copy the password to the clipboard?",
 			"Selection",
 			templateDetails,

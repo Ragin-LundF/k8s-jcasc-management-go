@@ -1,8 +1,9 @@
-package cli
+package menu
 
 import (
 	"fmt"
 	"github.com/manifoldco/promptui"
+	"k8s-management-go/cli/dialogs"
 	"k8s-management-go/constants"
 	"strings"
 )
@@ -16,7 +17,7 @@ type menu struct {
 
 func Menu(info string, err error) string {
 	// clear screen
-	ClearScreen()
+	dialogs.ClearScreen()
 
 	// If errors not emtpy, show them
 	if err != nil {
