@@ -102,10 +102,10 @@ This can be changed on the `jcasc_config.yaml` file under the `jenkins.securityR
 
 To use this tool, you need to have the following tools installed:
 
+* golang >= 1.14
 * shell (sh/bash for scripts support)
 * for encryption one of (can be configured):
     * gpg
-    * openssl
 * [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 * [helm 3](https://helm.sh/)
 
