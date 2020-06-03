@@ -102,38 +102,12 @@ This can be changed on the `jcasc_config.yaml` file under the `jenkins.securityR
 
 To use this tool, you need to have the following tools installed:
 
-* bash
+* shell (sh/bash for scripts support)
 * for encryption one of (can be configured):
     * gpg
     * openssl
 * [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 * [helm 3](https://helm.sh/)
-
-Optional the tool can use `whiptail` (`newt`) or `dialog` for a better workflow.
-
-### Installation whiptail/newt ###
-
-- Debian: `apt-get install whiptail`
-- Ubuntu: `apt-get install whiptail`
-- Alpine: `apk add newt`
-- Arch Linux: `pacman -S whiptail`
-- Kali Linux: `apt-get install whiptail`
-- CentOS: `yum install newt`
-- Fedora: `dnf install newt`
-- OS X: `brew install newt`
-- Raspbian: `apt-get install whiptail`
-
-### Installation dialog ###
-
-- Debian: `apt-get install dialog`
-- Ubuntu: `apt-get install dialog`
-- Alpine: `apk add dialog`
-- Arch Linux: `pacman -S dialog`
-- Kali Linux: `apt-get install dialog`
-- CentOS: `yum install dialog`
-- Fedora: `dnf install dialog`
-- OS X: `brew install dialog`
-- Raspbian: `apt-get install dialog`
 
 # Basic concept #
 
@@ -154,15 +128,15 @@ Optional the tool can use `whiptail` (`newt`) or `dialog` for a better workflow.
 By having all things stored in VCS repositories, which are normally backed up, it is possible to recreate every instance in no-time.
 It is impossible to misconfigure a Jenkins instance, because the configuration can be reloaded from this remote repository and all configurations are completely versioned.
 
-Also every develops maybe can have admin access to play around with the Jenkins, because they can not destroy the system permanently with the beloved "I have nothing done..." statement. 
+Also, every develops maybe can have admin access to play around with the Jenkins, because they can not destroy the system permanently with the beloved "I have nothing done..." statement. 
 
 If the K8S cluster or server crashes, it is possible to redeploy everything as it was in minutes, because also the job definition is stored in a VCS repository.
 
 # Build slaves #
 The pre-defined slave-containers will not work directly.
-Every build slave container needs to setup the jenkins home work directory and jenkins user/group with `uid`/`gid` `1000`.
+Every build slave container needs to set up the jenkins home work directory and jenkins user/group with `uid`/`gid` `1000`.
 
-Also the build slaves did not need to have any jenkins agent or something else. Only the user/group and the workdir is needed.
+Also, the build slaves did not need to have any jenkins agent or something else. Only the user/group and the workdir is needed.
 
 To resolve the problem, that build containers directly shut down, simply add an entrypoint with a `tail -f /dev/null`.
 
