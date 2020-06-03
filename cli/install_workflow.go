@@ -13,6 +13,12 @@ func InstallJenkins() (info string, err error) {
 	if err != nil {
 		return info, err
 	}
+	// install secrets
+	infoLog, err = ApplySecretsToNamespace(namespace)
+	info = info + infoLog
+	if err != nil {
+		return info, err
+	}
 	// check if PVC was specified and install it if needed
 	infoLog, err = InstallPersistenceVolumeClaim(namespace)
 	info = info + infoLog

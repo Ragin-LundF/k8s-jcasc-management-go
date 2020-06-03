@@ -34,7 +34,7 @@ func startCommandAction(command string) (info string, err error) {
 	case constants.CommandDecryptSecrets:
 		info, err = DecryptSecretsFile()
 	case constants.CommandApplySecrets:
-		info, err = ApplySecretsToNamespace()
+		info, err = ApplySecrets()
 	case constants.CommandApplySecretsToAll:
 		info, err = ApplySecretsToAllNamespaces()
 	case constants.CommandCreateProject:

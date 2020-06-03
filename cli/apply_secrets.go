@@ -10,14 +10,18 @@ import (
 	"os/exec"
 )
 
-func ApplySecretsToNamespace() (info string, err error) {
+func ApplySecrets() (info string, err error) {
 	// select namespace
 	namespace, err := DialogAskForNamespace()
 	if err != nil {
 		log.Println(err)
 		return info, err
 	}
+	info, err = ApplySecretsToNamespace(namespace)
+	return info, err
+}
 
+func ApplySecretsToNamespace(namespace string) (info string, err error) {
 	// get password
 	password, err := DialogPassword("Password for secrets file", nil)
 	if err != nil {
