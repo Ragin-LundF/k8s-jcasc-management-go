@@ -1,6 +1,7 @@
 package install
 
 import (
+	"errors"
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/cli/secrets"
 	"k8s-management-go/app/constants"
@@ -16,16 +17,22 @@ func JenkinsInstallOrUpgrade(helmCommand string) (info string, err error) {
 		return info, err
 	}
 
+	// first check if namespace directory exists
+	projectPath := files.AppendPath(
+		config.GetProjectBaseDirectory(),
+		namespace,
+	)
+	if !files.FileOrDirectoryExists(projectPath) {
+		return info, errors.New("Project directory not found: [" + projectPath + "]")
+	}
+
 	// check if project configuration contains Jenkins Helm values file
 	jenkinsHelmValuesFile := files.AppendPath(
-		files.AppendPath(
-			config.GetProjectBaseDirectory(),
-			namespace,
-		),
 		constants.FilenameJenkinsHelmValues,
+		projectPath,
 	)
 	jenkinsHelmValuesExist := files.FileOrDirectoryExists(jenkinsHelmValuesFile)
-	info = info + "No Jenkins Helm chart found in path [" + jenkinsHelmValuesFile + "]."
+	info = info + "\nNo Jenkins Helm chart found in path [" + jenkinsHelmValuesFile + "]."
 
 	// check if namespace is available or create a new one if not
 	infoLog, err := CheckAndCreateNamespace(namespace)

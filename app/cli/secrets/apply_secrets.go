@@ -3,9 +3,7 @@ package secrets
 import (
 	"errors"
 	"k8s-management-go/app/cli/dialogs"
-	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models/config"
-	"k8s-management-go/app/utils/encryption"
 	"k8s-management-go/app/utils/logger"
 	"os"
 	"os/exec"
@@ -23,25 +21,16 @@ func ApplySecrets() (info string, err error) {
 	return info, err
 }
 
+// apply secrets to one namespace
 func ApplySecretsToNamespace(namespace string) (info string, err error) {
-	log := logger.Log()
-	// get password
-	password, err := dialogs.DialogAskForPassword("Password for secrets file", nil)
-	if err != nil {
-		log.Error(err)
-		return info, err
-	}
-
-	// decrypt secrets file
-	secretsFilePath := config.GetGlobalSecretsFile()
-	info, err = encryption.GpgDecryptSecrets(secretsFilePath+constants.SecretsFileEncodedEnding, password)
-	if err != nil {
-		log.Error(err)
-		return info, err
-	}
+	// Decrypt secrets file
+	infoLog, err := DecryptSecretsFile()
+	info = info + infoLog
 
 	// apply secret to namespace
-	info, nsErr := applySecretToNamespace(secretsFilePath, namespace)
+	secretsFilePath := config.GetGlobalSecretsFile()
+	infoLog, nsErr := applySecretsToNamespace(secretsFilePath, namespace)
+	info = info + infoLog
 
 	// delete decrypted file
 	rmErr := os.Remove(secretsFilePath)
@@ -61,28 +50,14 @@ func ApplySecretsToNamespace(namespace string) (info string, err error) {
 	return info, err
 }
 
+// apply secrets to all namespaces
 func ApplySecretsToAllNamespaces() (info string, err error) {
-	log := logger.Log()
-	// get password
-	password, err := dialogs.DialogAskForPassword("Password for secrets file", nil)
-	if err != nil {
-		log.Error(err)
-		return info, err
-	}
-
-	// decrypt secrets file
-	secretsFilePath := config.GetGlobalSecretsFile()
-	info, err = encryption.GpgDecryptSecrets(secretsFilePath+constants.SecretsFileEncodedEnding, password)
-	if err != nil {
-		log.Error(err)
-		return info, err
-	}
-
 	// apply secret to namespaces
 	infos := ""
 	nsErrs := ""
+	secretsFilePath := config.GetGlobalSecretsFile()
 	for _, ip := range config.GetIpConfiguration().Ips {
-		infoNs, nsErr := applySecretToNamespace(secretsFilePath, ip.Namespace)
+		infoNs, nsErr := applySecretsToNamespace(secretsFilePath, ip.Namespace)
 		if infoNs != "" {
 			infos = infos + "\n" + infoNs
 		}
@@ -109,7 +84,8 @@ func ApplySecretsToAllNamespaces() (info string, err error) {
 	return info, err
 }
 
-func applySecretToNamespace(secretsFilePath string, namespace string) (info string, err error) {
+// execute the secrets file
+func applySecretsToNamespace(secretsFilePath string, namespace string) (info string, err error) {
 	log := logger.Log()
 	// execute decrypted file
 	cmd := exec.Command("sh", "-c", secretsFilePath)
