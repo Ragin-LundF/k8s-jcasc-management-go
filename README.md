@@ -33,8 +33,6 @@ Open:
 
 * [Kubernetes Jenkins as Code management](#kubernetes-jenkins-as-code-management)
   * [Prerequisites](#prerequisites)
-  * [Installation whiptail/newt](#installation-whiptailnewt)
-  * [Installation dialog](#installation-dialog)
 * [Basic concept](#basic-concept)
   * [Advantages](#advantages)
 * [Build slaves](#build-slaves)
@@ -48,10 +46,6 @@ Open:
 * [IP Management](#ip-management)
 * [Additional tools](#additional-tools)
   * [k8sfullconfigexport](#k8sfullconfigexport)
-* [Screenshots](#screenshots)
-  * [Standard k8s-jcasc-management](#standard-k8s-jcasc-management)
-  * [Whiptail based k8s-jcasc-management](#whiptail-based-k8s-jcasc-management)
-  * [Dialog based k8s-jcasc-management](#dialog-based-k8s-jcasc-management)
 * [Helpful links](#helpful-links)
 
 # Kubernetes Jenkins as Code management #
