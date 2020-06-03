@@ -31,3 +31,7 @@ const ColorNotice = "\033[1;36m"
 const ColorWarning = "\033[1;33m"
 const ColorError = "\033[1;31m"
 const ColorDebug = "\033[0;36m"
+
+// kubectl field names
+const KubectlOutputFieldNamespace = "NAME"
+const KubectlOutputFieldPvcName = "NAME"

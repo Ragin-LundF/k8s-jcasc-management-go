@@ -24,7 +24,7 @@ func startCommandAction(command string) (info string, err error) {
 	// evaluate the command
 	switch command {
 	case constants.CommandInstall:
-		fmt.Println("start install")
+		info, err = InstallJenkins()
 	case constants.CommandUninstall:
 		fmt.Println("start uninstall")
 	case constants.CommandUpgrade:
