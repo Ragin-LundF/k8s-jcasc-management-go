@@ -17,18 +17,15 @@ func JenkinsInstallOrUpgrade(helmCommand string) (info string, err error) {
 	}
 
 	// check if project configuration contains Jenkins Helm values file
-	jenkinsHelmValuesExist := files.FileOrDirectoryExists(
+	jenkinsHelmValuesFile := files.AppendPath(
 		files.AppendPath(
-			files.AppendPath(
-				files.AppendPath(
-					config.GetConfiguration().BasePath,
-					config.GetConfiguration().Directories.ProjectsBaseDirectory,
-				),
-				namespace,
-			),
-			constants.FilenameJenkinsHelmValues,
+			config.GetProjectBaseDirectory(),
+			namespace,
 		),
+		constants.FilenameJenkinsHelmValues,
 	)
+	jenkinsHelmValuesExist := files.FileOrDirectoryExists(jenkinsHelmValuesFile)
+	info = info + "No Jenkins Helm chart found in path [" + jenkinsHelmValuesFile + "]."
 
 	// check if namespace is available or create a new one if not
 	infoLog, err := CheckAndCreateNamespace(namespace)

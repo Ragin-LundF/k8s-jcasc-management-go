@@ -5,6 +5,7 @@ import (
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models/config"
 	"k8s-management-go/app/utils/files"
+	"k8s-management-go/app/utils/logger"
 	"os"
 	"strings"
 )
@@ -28,10 +29,12 @@ func ReadConfiguration(basePath string) {
 
 // Read configuration from k8s-management config file
 func readConfigurationFromFile(configFile string) {
+	log := logger.Log()
 	// read configuration file. Replace unneeded double quotes if needed.
 	data, err := os.Open(configFile)
 	// check for error
 	if err != nil {
+		log.Error(err)
 		panic(err)
 	} else {
 		// everything seems to be ok. Read data with line scanner

@@ -6,16 +6,17 @@ import (
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models/config"
 	"k8s-management-go/app/utils/encryption"
-	"log"
+	"k8s-management-go/app/utils/logger"
 	"os"
 	"os/exec"
 )
 
 func ApplySecrets() (info string, err error) {
+	log := logger.Log()
 	// select namespace
 	namespace, err := dialogs.DialogAskForNamespace()
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return info, err
 	}
 	info, err = ApplySecretsToNamespace(namespace)
@@ -23,10 +24,11 @@ func ApplySecrets() (info string, err error) {
 }
 
 func ApplySecretsToNamespace(namespace string) (info string, err error) {
+	log := logger.Log()
 	// get password
 	password, err := dialogs.DialogAskForPassword("Password for secrets file", nil)
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return info, err
 	}
 
@@ -34,7 +36,7 @@ func ApplySecretsToNamespace(namespace string) (info string, err error) {
 	secretsFilePath := config.GetGlobalSecretsFile()
 	info, err = encryption.GpgDecryptSecrets(secretsFilePath+constants.SecretsFileEncodedEnding, password)
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return info, err
 	}
 
@@ -60,10 +62,11 @@ func ApplySecretsToNamespace(namespace string) (info string, err error) {
 }
 
 func ApplySecretsToAllNamespaces() (info string, err error) {
+	log := logger.Log()
 	// get password
 	password, err := dialogs.DialogAskForPassword("Password for secrets file", nil)
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return info, err
 	}
 
@@ -71,7 +74,7 @@ func ApplySecretsToAllNamespaces() (info string, err error) {
 	secretsFilePath := config.GetGlobalSecretsFile()
 	info, err = encryption.GpgDecryptSecrets(secretsFilePath+constants.SecretsFileEncodedEnding, password)
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return info, err
 	}
 
@@ -107,6 +110,7 @@ func ApplySecretsToAllNamespaces() (info string, err error) {
 }
 
 func applySecretToNamespace(secretsFilePath string, namespace string) (info string, err error) {
+	log := logger.Log()
 	// execute decrypted file
 	cmd := exec.Command("sh", "-c", secretsFilePath)
 	cmd.Env = append(os.Environ(),
@@ -114,7 +118,7 @@ func applySecretToNamespace(secretsFilePath string, namespace string) (info stri
 	)
 	err = cmd.Run()
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 	} else {
 		info = "Secrets to namespace [" + namespace + "] applied"
 	}

@@ -3,6 +3,7 @@ package config
 import (
 	"k8s-management-go/app/utils/files"
 	"strconv"
+	"strings"
 )
 
 var configuration Configuration
@@ -22,7 +23,7 @@ type Configuration struct {
 	}
 	// Directory configuration
 	Directories struct {
-		ProjectsBaseDirectory  string
+		projectsBaseDirectory  string
 		TemplatesBaseDirectory string
 	}
 	// Jenkins configuration
@@ -116,6 +117,17 @@ func GetGlobalSecretsFile() string {
 	return FilePathWithBasePath(configuration.GlobalSecretsFile)
 }
 
+// Get project base directory with full path
+func GetProjectBaseDirectory() string {
+	if strings.HasPrefix(configuration.Directories.projectsBaseDirectory, "./") {
+		return FilePathWithBasePath(configuration.Directories.projectsBaseDirectory)
+	} else if strings.HasPrefix(configuration.Directories.projectsBaseDirectory, "../") {
+		return FilePathWithBasePath(configuration.Directories.projectsBaseDirectory)
+	} else {
+		return configuration.Directories.projectsBaseDirectory
+	}
+}
+
 // helper method to calculate the correct filepath
 func FilePathWithBasePath(configurationFilePath string) string {
 	if configuration.BasePath != "" {
@@ -136,7 +148,7 @@ func AssignToConfiguration(key string, value string) {
 		case "IP_CONFIG_FILE_DUMMY_PREFIX":
 			configuration.IpConfig.IpConfigFileDummyPrefix = value
 		case "PROJECTS_BASE_DIRECTORY":
-			configuration.Directories.ProjectsBaseDirectory = value
+			configuration.Directories.projectsBaseDirectory = value
 		case "TEMPLATES_BASE_DIRECTORY":
 			configuration.Directories.TemplatesBaseDirectory = value
 		case "JENKINS_JCASC_CONFIGURATION_URL":
