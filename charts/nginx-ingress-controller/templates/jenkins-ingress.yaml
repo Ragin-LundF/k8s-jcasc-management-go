@@ -1,0 +1,19 @@
+{{- if .Values.k8sJenkinsMgmt.ingress.enabled }}
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: jenkins-ingress-nginx
+  namespace: {{ .Values.k8sJenkinsMgmt.ingress.namespace }}
+  {{- if .Values.k8sJenkinsMgmt.ingress.annotationIngressClass }}
+  annotations:
+    kubernetes.io/ingress.class: "{{ .Values.k8sJenkinsMgmt.ingress.annotationIngressClass }}"
+  {{- end }}
+spec:
+  rules:
+    - http:
+        paths:
+          - path: {{ .Values.k8sJenkinsMgmt.ingress.jenkinsUriPrefix }}
+            backend:
+              serviceName: {{ .Values.k8sJenkinsMgmt.ingress.jenkinsDeploymentName }}
+              servicePort: 8080
+{{- end }}

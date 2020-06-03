@@ -1,0 +1,21 @@
+k8sJenkinsMgmt:
+    ingress:
+        annotationIngressClass: ##NGINX_INGRESS_ANNOTATION_CLASS##
+        namespace: ##NAMESPACE##
+        loadbalancerIp: ##PUBLIC_IP_ADDRESS##
+        deploymentName: ##NGINX_INGRESS_DEPLOYMENT_NAME##
+        jenkinsDeploymentName: ##JENKINS_MASTER_DEPLOYMENT_NAME##
+        jenkinsUriPrefix: ##JENKINS_MASTER_DEFAULT_URI_PREFIX##
+        containerImage: ##NGINX_INGRESS_CONTROLLER_CONTAINER_IMAGE##
+        imagePullSecrets: ##NGINX_INGRESS_CONTROLLER_CONTAINER_PULL_SECRETS##
+        controllerForNamespace:
+            enabled: ##NGINX_INGRESS_CONTROLLER_FOR_NAMESPACE##
+    loadbalancer:
+        enabled: ##NGINX_LOADBALANCER_ENABLED##
+        ports:
+            http:
+                port: ##NGINX_LOADBALANCER_HTTP_PORT##
+                targetPort: ##NGINX_LOADBALANCER_HTTP_TARGETPORT##
+            https:
+                port: ##NGINX_LOADBALANCER_HTTPS_PORT##
+                targetPort: ##NGINX_LOADBALANCER_HTTPS_TARGETPORT##

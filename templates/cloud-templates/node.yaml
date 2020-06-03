@@ -1,0 +1,36 @@
+# POD with npm. Define "node" as agent label to use this POD in your pipeline
+# This POD inherits from 'pipeline-base-container', which results in parallel deployment of all containers.
+# With this, all containers, that are defined under 'pipeline-base-container' can also be used in the pipeline.
+- name: "node"
+  serviceAccount: "##JENKINS_MASTER_DEPLOYMENT_NAME##-agent"
+  instanceCap: 10
+  idleMinutes: 0
+  slaveConnectTimeout: "500"
+  label: "node"
+  inheritFrom: "pipeline-base-container"
+  imagePullSecrets:
+    - name: ##KUBERNETES_DOCKER_REGISTRY_CREDENTIALS_ID##
+  containers:
+    - name: "node"
+      image: "node:latest"
+      privileged: false
+      alwaysPullImage: true
+      workingDir: "/home/jenkins/agent"
+      runAsUser: "1000"
+      runAsGroup: "1000"
+      command: ""
+      args: ""
+      ttyEnabled: true
+      resourceRequestCpu: "500m"
+      resourceLimitCpu: "2000m"
+      resourceRequestMemory: "500Gi"
+      resourceLimitMemory: "2Gi"
+      envVars:
+        - secretEnvVar:
+            key: 'NPM_USERNAME'
+            secretName: '##NPM_REPOSITORY_SECRETS_CREDENTIALS_ID##'
+            secretKey: 'username'
+        - secretEnvVar:
+            key: 'NPM_PASSWORD'
+            secretName: '##NPM_REPOSITORY_SECRETS_CREDENTIALS_ID##'
+            secretKey: 'password'

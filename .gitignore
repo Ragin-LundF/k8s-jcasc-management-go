@@ -1,3 +1,10 @@
 # Default ignored files
 .idea/*
 *.iml
+
+# secrets.sh should never be commited unencrypted!
+secrets.sh
+# the only exception is the template file, because it should not contain real data
+!/templates/secrets.sh
+# ignore the custom config, because this is special for projects
+/config/k8s_jcasc_custom.cnf

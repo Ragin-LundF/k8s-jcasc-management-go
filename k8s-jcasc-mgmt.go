@@ -1,8 +1,8 @@
 package main
 
 import (
-	"k8s-management-go/cli"
-	"k8s-management-go/utils"
+	"k8s-management-go/app/cli"
+	"k8s-management-go/app/utils"
 )
 
 func main() {

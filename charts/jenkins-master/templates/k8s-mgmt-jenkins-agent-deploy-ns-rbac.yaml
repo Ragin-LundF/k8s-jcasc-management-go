@@ -1,0 +1,48 @@
+{{- if .Values.k8smanagement.rbac.additionalNamespaces }}
+# assign .Values to local variable that it is accessible inside the range
+{{- $root := . -}}
+
+{{- range $namespace := .Values.k8smanagement.rbac.additionalNamespaces }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ template "jenkins.fullname" $root }}-agent-deployments
+  namespace: {{ $namespace }}
+  labels:
+    "app.kubernetes.io/name": '{{ template "jenkins.name" $root }}'
+    "helm.sh/chart": "{{ $root.Chart.Name }}-{{ $root.Chart.Version }}"
+    "app.kubernetes.io/managed-by": "{{ $root.Release.Service }}"
+    "app.kubernetes.io/instance": "{{ $root.Release.Name }}"
+    "app.kubernetes.io/component": "{{ $root.Values.master.componentName }}"
+rules:
+  - apiGroups: ["", "apps"]
+    resources: ["configmaps", "services", "deployments", "replicasets", "pods", "statefulsets", "secrets", "persistentvolumeclaims"]
+    verbs: ["*"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["ingresses"]
+    verbs: ["*"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ template "jenkins.fullname" $root }}-agent-deployments
+  namespace: {{ $namespace }}
+  labels:
+    "app.kubernetes.io/name": '{{ template "jenkins.name" $root }}'
+    "helm.sh/chart": "{{ $root.Chart.Name }}-{{ $root.Chart.Version }}"
+    "app.kubernetes.io/managed-by": "{{ $root.Release.Service }}"
+    "app.kubernetes.io/instance": "{{ $root.Release.Name }}"
+    "app.kubernetes.io/component": "{{ $root.Values.master.componentName }}"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ template "jenkins.fullname" $root }}-agent-deployments
+subjects:
+  - kind: ServiceAccount
+    name: {{ template "jenkins.fullname" $root }}-agent
+    namespace: {{ template "jenkins.namespace" $root }}
+
+{{- end }}
+{{- end }}

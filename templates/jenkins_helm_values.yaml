@@ -1,0 +1,84 @@
+master:
+  image: "##JENKINS_MASTER_CONTAINER_IMAGE##"
+  tag: "##JENKINS_MASTER_CONTAINER_IMAGE_TAG##"
+  imagePullPolicy: "##JENKINS_MASTER_CONTAINER_PULL_POLICY##"
+  imagePullSecretName: ##JENKINS_MASTER_CONTAINER_IMAGE_PULL_SECRET_NAME##
+  # need 1 executor as default to execute the seed job
+  numExecutors: 1
+  # must be exclusive for jobs distribution
+  executorMode: "EXCLUSIVE"
+
+  # give a custom label to the master instance, that the seed job can run in it
+  customJenkinsLabels: [
+    "##JENKINS_MASTER_DEFAULT_LABEL##"
+  ]
+  # Define, if we want to allow anonymous read access
+  authorizationStrategy: |-
+      <authorizationStrategy class="hudson.security.FullControlOnceLoggedInAuthorizationStrategy">
+        <denyAnonymousReadAccess>##JENKINS_MASTER_DENY_ANONYMOUS_READ_ACCESS##</denyAnonymousReadAccess>
+      </authorizationStrategy>
+  # Define a admin password here. Normally it does not matter who has access, because settings can be reloaded from the repository.
+  # But for security reasons try to use a password, that is not easy and avoid to give anonymous read access to the project where Jenkins is located.
+  adminPassword: "##JENKINS_MASTER_ADMIN_PASSWORD##"
+  # We do not want to execute Jenkins as root. The Jenkins container are using 1000:1000 as jenkins:jenkins user/group
+  runAsUser: 1000
+  fsGroup: 1000
+  # because we want to "proxy" jenkins via ingress routing, we have to set the Uri Prefix here
+  jenkinsUriPrefix: "##JENKINS_MASTER_DEFAULT_URI_PREFIX##"
+  installPlugins:
+    - authorize-project:latest
+    - blueocean:latest
+    - blueocean-bitbucket-pipeline:latest
+    - configuration-as-code:latest
+    - configuration-as-code-support:latest
+    - credentials-binding:latest
+    - cucumber-reports:latest
+    - docker-build-step:latest
+    - git:latest
+    - job-dsl:latest
+    - kubernetes:latest
+    - kubernetes-credentials-provider:latest
+    - kubernetes-cd:latest
+    - metrics:latest
+    - multiple-scms:latest
+    - pipeline-config-history:latest
+    - role-strategy:latest
+    - sonar:latest
+    - ssh-agent:latest
+    - stashNotifier:latest
+    - workflow-aggregator:latest
+    - workflow-job:latest
+  initScripts: [
+    # disable script approval; it is necessary to add the ";" at the end, because helm parses the script in one line!
+    import javaposse.jobdsl.plugin.GlobalJobDslSecurityConfiguration;
+      import jenkins.model.GlobalConfiguration;
+      GlobalConfiguration.all().get(GlobalJobDslSecurityConfiguration.class).useScriptSecurity=false;
+      GlobalConfiguration.all().get(GlobalJobDslSecurityConfiguration.class).save();
+  ]
+  JCasC:
+    enabled: true
+  sidecars:
+    configAutoReload:
+      # folder in the pod that should hold the collected dashboards:
+      folder: "##JENKINS_JCASC_CONFIGURATION_URL##"
+
+persistence:
+  existingClaim: ##JENKINS_MASTER_PERSISTENCE_EXISTING_CLAIM##
+  storageClass: ##JENKINS_MASTER_PERSISTENCE_STORAGE_CLASS##
+  accessMode: ##JENKINS_MASTER_PERSISTENCE_ACCESS_MODE##
+  size: ##JENKINS_MASTER_PERSISTENCE_STORAGE_SIZE##
+
+## Install Default RBAC roles and bindings
+rbac:
+  create: true
+  readSecrets: true
+
+# To let the jenkins deploy and to automate everything, create the service account.
+serviceAccountAgent:
+  # Specifies whether a ServiceAccount should be created
+  create: true
+
+k8smanagement:
+  rbac:
+    # list of additional namespaces that should be deployable (adds RBAC roles to those namespaces)
+    additionalNamespaces: {}

@@ -1,0 +1,37 @@
+# POD with gradle and java. Define "gradle_java" as agent label to use this POD in your pipeline
+# This POD inherits from 'pipeline-base-container', which results in parallel deployment of all containers.
+# With this, all containers, that are defined under 'pipeline-base-container' can also be used in the pipeline.
+- name: "gradle_java"
+  serviceAccount: "##JENKINS_MASTER_DEPLOYMENT_NAME##-agent"
+  instanceCap: 10
+  idleMinutes: 0
+  slaveConnectTimeout: "500"
+  label: "gradle_java"
+  inheritFrom: "pipeline-base-container"
+  imagePullSecrets:
+    - name: ##KUBERNETES_DOCKER_REGISTRY_CREDENTIALS_ID##
+  containers:
+    # add container with the name 'gradle'. This can be used in the pipeline to execute commands on this container
+    - name: "gradle"
+      image: "gradle:latest"
+      privileged: false
+      alwaysPullImage: true
+      workingDir: "/home/jenkins/agent"
+      runAsUser: "1000"
+      runAsGroup: "1000"
+      command: ""
+      args: ""
+      ttyEnabled: true
+      resourceRequestCpu: "500m"
+      resourceLimitCpu: "3000m"
+      resourceRequestMemory: "500Mi"
+      resourceLimitMemory: "2Gi"
+      envVars:
+        - secretEnvVar:
+            key: 'ORG_GRADLE_PROJECT_mavenUser'
+            secretName: '##MAVEN_REPOSITORY_SECRETS_CREDENTIALS_ID##'
+            secretKey: 'username'
+        - secretEnvVar:
+            key: 'ORG_GRADLE_PROJECT_mavenPassword'
+            secretName: '##MAVEN_REPOSITORY_SECRETS_CREDENTIALS_ID##'
+            secretKey: 'password'
