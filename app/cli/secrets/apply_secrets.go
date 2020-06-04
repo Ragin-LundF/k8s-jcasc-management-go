@@ -4,17 +4,14 @@ import (
 	"errors"
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/models/config"
-	"k8s-management-go/app/utils/logger"
 	"os"
 	"os/exec"
 )
 
 func ApplySecrets() (info string, err error) {
-	log := logger.Log()
 	// select namespace
 	namespace, err := dialogs.DialogAskForNamespace()
 	if err != nil {
-		log.Error(err)
 		return info, err
 	}
 	info, err = ApplySecretsToNamespace(namespace)
@@ -86,7 +83,6 @@ func ApplySecretsToAllNamespaces() (info string, err error) {
 
 // execute the secrets file
 func applySecretsToNamespace(secretsFilePath string, namespace string) (info string, err error) {
-	log := logger.Log()
 	// execute decrypted file
 	cmd := exec.Command("sh", "-c", secretsFilePath)
 	cmd.Env = append(os.Environ(),
@@ -94,7 +90,7 @@ func applySecretsToNamespace(secretsFilePath string, namespace string) (info str
 	)
 	err = cmd.Run()
 	if err != nil {
-		log.Error(err)
+		return info, err
 	} else {
 		info = "Secrets to namespace [" + namespace + "] applied"
 	}

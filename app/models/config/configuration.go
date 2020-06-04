@@ -120,10 +120,13 @@ func GetGlobalSecretsFile() string {
 // Get project base directory with full path
 func GetProjectBaseDirectory() string {
 	if strings.HasPrefix(configuration.Directories.projectsBaseDirectory, "./") {
+		// if it starts with current directory add base path
 		return FilePathWithBasePath(configuration.Directories.projectsBaseDirectory)
 	} else if strings.HasPrefix(configuration.Directories.projectsBaseDirectory, "../") {
+		// if it starts with subdirectory add base path
 		return FilePathWithBasePath(configuration.Directories.projectsBaseDirectory)
 	} else {
+		// it seems to be an absolute path, use only the project directory
 		return configuration.Directories.projectsBaseDirectory
 	}
 }

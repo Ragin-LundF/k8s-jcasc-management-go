@@ -5,12 +5,10 @@ import (
 	"github.com/atotto/clipboard"
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/utils/encryption"
-	"k8s-management-go/app/utils/logger"
 	"strings"
 )
 
 func CreateJenkinsUserPassword() (info string, err error) {
-	log := logger.Log()
 	// Validator for password (keep it simple for now)
 	validate := func(input string) error {
 		if len(input) < 4 {
@@ -29,7 +27,6 @@ func CreateJenkinsUserPassword() (info string, err error) {
 		// encrypt password with bcrypt
 		hashedPassword, err := encryption.EncryptJenkinsUserPassword(plainPassword)
 		if err != nil {
-			log.Error(err)
 			return info, err
 		}
 

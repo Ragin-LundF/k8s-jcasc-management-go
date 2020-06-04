@@ -6,12 +6,10 @@ import (
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models/config"
 	"k8s-management-go/app/utils/encryption"
-	"k8s-management-go/app/utils/logger"
 	"strings"
 )
 
 func EncryptSecretsFile() (info string, err error) {
-	log := logger.Log()
 	// Validator for password (keep it simple for now)
 	validate := func(input string) error {
 		if len(input) < 4 {
@@ -26,13 +24,11 @@ func EncryptSecretsFile() (info string, err error) {
 	// read password
 	password, err := dialogs.DialogAskForPassword("Password for secrets file", validate)
 	if err != nil {
-		log.Error(err)
 		return info, err
 	}
 	// let password confirm
 	passwordConfirm, err := dialogs.DialogAskForPassword("Confirm password for secrets file", validate)
 	if err != nil {
-		log.Error(err)
 		return info, err
 	}
 
@@ -49,10 +45,8 @@ func EncryptSecretsFile() (info string, err error) {
 }
 
 func DecryptSecretsFile() (info string, err error) {
-	log := logger.Log()
 	password, err := dialogs.DialogAskForPassword("Password for secrets file", nil)
 	if err != nil {
-		log.Error(err)
 		return info, err
 	}
 	secretsFilePath := config.GetGlobalSecretsFile() + constants.SecretsFileEncodedEnding

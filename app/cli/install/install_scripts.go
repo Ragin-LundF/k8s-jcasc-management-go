@@ -4,12 +4,10 @@ import (
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models/config"
 	"k8s-management-go/app/utils/files"
-	"k8s-management-go/app/utils/logger"
 	"os/exec"
 )
 
 func ShellScriptsInstall(namespace string) (info string, err error) {
-	log := logger.Log()
 	// calculate path to script folder
 	var scriptFolder = files.AppendPath(
 		files.AppendPath(
@@ -41,7 +39,6 @@ func ShellScriptsInstall(namespace string) (info string, err error) {
 			scriptWithPath := files.AppendPath(scriptFolder, file)
 			outputCmd, err := exec.Command("sh", "-c", scriptWithPath).Output()
 			if err != nil {
-				log.Error(err)
 				return info, err
 			}
 

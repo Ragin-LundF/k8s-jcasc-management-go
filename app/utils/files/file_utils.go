@@ -31,13 +31,11 @@ func ListFilesOfDirectory(directory string) (files *[]string, err error) {
 
 // list files of a directory if it exists with a filter
 func ListFilesOfDirectoryWithFilter(directory string, filter *FileFilter) (files *[]string, err error) {
-	log := logger.Log()
 	// check if the directory exists before reading from directory
 	directoryExists := FileOrDirectoryExists(directory)
 	if directoryExists {
 		fileList, err := ioutil.ReadDir(directory)
 		if err != nil {
-			log.Error(err)
 			return files, err
 		}
 

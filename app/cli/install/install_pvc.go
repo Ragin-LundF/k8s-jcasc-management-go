@@ -8,7 +8,6 @@ import (
 	"k8s-management-go/app/models/config"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/kubectl"
-	"k8s-management-go/app/utils/logger"
 	"os/exec"
 )
 
@@ -33,7 +32,6 @@ type PvcClaimValuesYaml struct {
 
 // install PVC is needed
 func PersistenceVolumeClaimInstall(namespace string) (info string, err error) {
-	log := logger.Log()
 	// prepare file directories
 	projectDir := files.AppendPath(config.FilePathWithBasePath(config.GetProjectBaseDirectory()), namespace)
 	pvcClaimValuesFilePath := files.AppendPath(projectDir, constants.FilenamePvcClaim)
@@ -44,7 +42,6 @@ func PersistenceVolumeClaimInstall(namespace string) (info string, err error) {
 		infoLog, err, pvcName := readPvcNameFromFile(pvcClaimValuesFilePath)
 		info = info + infoLog
 		if err != nil {
-			log.Error(err)
 			return info, err
 		}
 		// if no name was found, something was wrong here...
@@ -62,7 +59,6 @@ func PersistenceVolumeClaimInstall(namespace string) (info string, err error) {
 			info = info + "\nPVC specification, but no PVC found in namespace...try to install it."
 			outputInstallPvc, err := exec.Command("kubectl", "-n", namespace, "apply", "-f", pvcClaimValuesFilePath).Output()
 			if err != nil {
-				log.Error(err)
 				return info, err
 			}
 			info = info + "\nKubectl PVC install output:"
@@ -98,12 +94,10 @@ func readPvcNameFromFile(pvcClaimValuesFilePath string) (info string, err error,
 
 // internal function to check if PVC is available in namespace
 func isPvcAvailableInNamespace(namespace string, pvcName string) (info string, err error, pvcExists bool) {
-	log := logger.Log()
 	pvcExists = false
 	// read all pvc from K8S
 	output, err := exec.Command("kubectl", "-n", namespace, "get", "pvc").Output()
 	if err != nil {
-		log.Error(err)
 		return info, err, false
 	}
 
