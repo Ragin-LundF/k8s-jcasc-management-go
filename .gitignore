@@ -8,3 +8,5 @@ secrets.sh
 !/templates/secrets.sh
 # ignore the custom config, because this is special for projects
 /config/k8s_jcasc_custom.cnf
+# exclude .log files
+**/*.log
