@@ -20,15 +20,15 @@ func ExecutorKubectl(command string, args []string) (output string, info string,
 	// append args from method
 	argsForCommand = append(argsForCommand, args...)
 
-	info = info + constants.NewLine + "Executing K8S command:"
-	info = info + constants.NewLine + "kubectl " + strings.Join(argsForCommand, " ")
+	info = info + constants.NewLine + "[ExecKubectl] Executing K8S command:"
+	info = info + constants.NewLine + "[ExecKubectl] kubectl " + strings.Join(argsForCommand, " ")
 	log.Info(info)
 
 	// execute
 	cmdOutput, err := exec.Command("kubectl", argsForCommand...).CombinedOutput()
 	if err != nil {
 		// log output error
-		log.Error("-> K8S command failed. Output:")
+		log.Error("[ExecKubectl] -> K8S command failed. Output:")
 		log.Error(string(cmdOutput) + constants.NewLine + err.Error())
 
 		err = errors.New(string(cmdOutput) + constants.NewLine + err.Error())
