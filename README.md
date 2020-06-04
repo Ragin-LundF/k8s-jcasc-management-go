@@ -39,6 +39,7 @@ Open:
 * [Configuration](#configuration)
   * [Configure alternative configuration with overlays](#configure-alternative-configuration-with-overlays)
 * [How to use](#how-to-use)
+  * [Debugging](#debugging)
   * [Templates](#templates)
     * [Deployment-only Namespaces](#deployment-only-namespaces)
     * [Sub-Templates (cloud-templates)](#sub-templates-cloud-templates)
@@ -259,6 +260,15 @@ You can also add one of the following flags:
 | -logfile=<path/to/logfile> | Set the path/name to a logfile. If this flag was set, the system logs into this file. | `-logfile="/var/log/k8smgmt.log"` |
 | -logencoding=<encoding> | Set log encoding of the logger (`zap`). Default is `json`. Possible values are: `json` or `console` | `-logencoding=console` |
 | -server=<true|false> | *Experimental*. Starts the system as a server. Currently it has not enough functions to talk about... | `-server=true` |
+
+## Debugging ##
+
+For debugging it is highly recommended, to use the following option:
+
+```bash
+go run k8s-jcasc-mgmt.go -logfile=debug.log -logencoding=console -dry-run
+```
+This logs the output in console format, which makes it much more readable. With the `-dry-run` option it renders only the Helm Charts and outputs them into the logfile.
 
 ## Templates ##
 
