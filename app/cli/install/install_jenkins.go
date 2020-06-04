@@ -10,7 +10,7 @@ import (
 )
 
 // install Jenkins with Helm
-func HelmInstallJenkins(command string, deploymentName string, namespace string) (info string, err error) {
+func HelmInstallJenkins(command string, namespace string, deploymentName string) (info string, err error) {
 	log := logger.Log()
 
 	info = info + constants.NewLine + "Try to install Jenkins..."
@@ -24,7 +24,9 @@ func HelmInstallJenkins(command string, deploymentName string, namespace string)
 				namespace,
 			),
 			constants.FilenameJenkinsHelmValues,
-		) // execute Helm command
+		)
+
+		// execute Helm command
 		cmd := exec.Command("helm", command, deploymentName, helmChartsJenkinsDirectory, "-n", namespace, "-f", helmChartsJenkinsValuesFile)
 		outputCmd, err := cmd.CombinedOutput()
 		if err != nil {

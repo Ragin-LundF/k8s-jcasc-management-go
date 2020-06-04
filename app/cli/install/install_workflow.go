@@ -10,7 +10,7 @@ import (
 )
 
 // workflow for Jenkins installation
-func JenkinsInstallOrUpgrade(helmCommand string) (info string, err error) {
+func DoUpgradeOrInstall(helmCommand string) (info string, err error) {
 	// ask for namespace
 	namespace, err := dialogs.DialogAskForNamespace()
 	if err != nil {
@@ -51,7 +51,7 @@ func JenkinsInstallOrUpgrade(helmCommand string) (info string, err error) {
 	if jenkinsHelmValuesExist {
 		// apply secrets
 		infoLog, err = secrets.ApplySecretsToNamespace(namespace)
-		info = info + infoLog
+		info = info + constants.NewLine + infoLog
 		if err != nil {
 			return info, err
 		}
@@ -63,8 +63,8 @@ func JenkinsInstallOrUpgrade(helmCommand string) (info string, err error) {
 		}
 
 		// install Jenkins
-		infoLog, err := HelmInstallJenkins(helmCommand, deploymentName, namespace)
-		info = info + infoLog
+		infoLog, err := HelmInstallJenkins(helmCommand, namespace, deploymentName)
+		info = info + constants.NewLine + infoLog
 		if err != nil {
 			return info, err
 		}
@@ -74,14 +74,14 @@ func JenkinsInstallOrUpgrade(helmCommand string) (info string, err error) {
 
 	// install Nginx ingress controller
 	infoLog, err = HelmInstallNginxIngressController(helmCommand, namespace, jenkinsHelmValuesExist)
-	info = info + infoLog
+	info = info + constants.NewLine + infoLog
 	if err != nil {
 		return info, err
 	}
 
 	// install scripts
 	infoLog, err = ShellScriptsInstall(namespace)
-	info = info + infoLog
+	info = info + constants.NewLine + infoLog
 	if err != nil {
 		return info, err
 	}

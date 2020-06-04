@@ -1,4 +1,4 @@
-package install
+package uninstall
 
 import (
 	"errors"
@@ -8,7 +8,7 @@ import (
 	"os/exec"
 )
 
-func ShellScriptsInstall(namespace string) (info string, err error) {
+func ShellScriptsUninstall(namespace string) (info string, err error) {
 	// calculate path to script folder
 	var scriptFolder = files.AppendPath(
 		files.AppendPath(
@@ -22,7 +22,7 @@ func ShellScriptsInstall(namespace string) (info string, err error) {
 	var isScriptsDirectoryAvailable = files.FileOrDirectoryExists(scriptFolder)
 	if isScriptsDirectoryAvailable {
 		// prepare file filter for install
-		filePrefix := constants.DirProjectScriptsInstallPrefix
+		filePrefix := constants.DirProjectScriptsUninstallPrefix
 		scriptFileEnding := constants.ScriptsFileEnding
 		var fileFilter = files.FileFilter{
 			Prefix: &filePrefix,
@@ -36,7 +36,7 @@ func ShellScriptsInstall(namespace string) (info string, err error) {
 
 		// iterate over filtered file array and execute scripts
 		for _, file := range *fileArray {
-			info = info + constants.NewLine + "Installing script [" + namespace + "/" + constants.DirProjectScripts + "/" + file + "]"
+			info = info + constants.NewLine + "Uninstalling script [" + namespace + "/" + constants.DirProjectScripts + "/" + file + "]"
 			// Execute scripts
 			scriptWithPath := files.AppendPath(scriptFolder, file)
 			outputCmd, err := exec.Command("sh", "-c", scriptWithPath).CombinedOutput()

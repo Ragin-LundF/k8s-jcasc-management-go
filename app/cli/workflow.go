@@ -6,6 +6,7 @@ import (
 	"k8s-management-go/app/cli/jenkinsuser"
 	"k8s-management-go/app/cli/menu"
 	"k8s-management-go/app/cli/secrets"
+	"k8s-management-go/app/cli/uninstall"
 	"k8s-management-go/app/constants"
 	"os"
 )
@@ -28,11 +29,11 @@ func startCommandAction(command string) (info string, err error) {
 	// evaluate the command
 	switch command {
 	case constants.CommandInstall:
-		info, err = install.JenkinsInstallOrUpgrade(constants.HelmCommandInstall)
+		info, err = install.DoUpgradeOrInstall(constants.HelmCommandInstall)
 	case constants.CommandUninstall:
-		fmt.Println("start uninstall")
+		info, err = uninstall.DoUninstall()
 	case constants.CommandUpgrade:
-		info, err = install.JenkinsInstallOrUpgrade(constants.HelmCommandUpgrade)
+		info, err = install.DoUpgradeOrInstall(constants.HelmCommandUpgrade)
 	case constants.CommandEncryptSecrets:
 		info, err = secrets.EncryptSecretsFile()
 	case constants.CommandDecryptSecrets:
