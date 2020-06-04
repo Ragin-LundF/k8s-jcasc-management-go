@@ -19,7 +19,7 @@ func ReadConfiguration(basePath string) {
 		readConfigurationFromFile(files.AppendPath(files.AppendPath(basePath, constants.DirConfig), constants.FilenameConfigurationCustom))
 	}
 	// check if there is an alternative configuration path and try to read config from there
-	configuration := *config.GetConfiguration()
+	configuration := config.GetConfiguration()
 	config.AssignToConfiguration("K8S_MGMT_BASE_PATH", basePath)
 
 	if configuration.AlternativeConfigFile != "" && files.FileOrDirectoryExists(files.AppendPath(basePath, configuration.AlternativeConfigFile)) {

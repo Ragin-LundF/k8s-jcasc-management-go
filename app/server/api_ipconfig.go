@@ -10,7 +10,7 @@ func IpConfigurationApi(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	switch r.Method {
 	case "GET":
-		ipConfiguration := *config.GetIpConfiguration()
+		ipConfiguration := config.GetIpConfiguration()
 		ipConfigurationAsJson, _ := json.MarshalIndent(ipConfiguration, "", "\t")
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(ipConfigurationAsJson))

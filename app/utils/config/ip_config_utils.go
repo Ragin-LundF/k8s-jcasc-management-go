@@ -7,8 +7,8 @@ import (
 	"strings"
 )
 
-func ReadIpConfig(basePath string) {
-	configuration := *config.GetConfiguration()
+func ReadIpConfig() {
+	configuration := config.GetConfiguration()
 
 	// read configuration file. Replace unneeded double quotes if needed.
 	data, err := os.Open(config.GetIpConfigurationFile())

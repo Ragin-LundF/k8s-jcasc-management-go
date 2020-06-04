@@ -13,8 +13,8 @@ type IpConfiguration struct {
 
 var ipConfig IpConfiguration
 
-func GetIpConfiguration() *IpConfiguration {
-	return &ipConfig
+func GetIpConfiguration() IpConfiguration {
+	return ipConfig
 }
 
 func AddIpAndNamespaceToConfiguration(namespace string, ip string) {

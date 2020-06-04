@@ -103,8 +103,8 @@ type Configuration struct {
 	}
 }
 
-func GetConfiguration() *Configuration {
-	return &configuration
+func GetConfiguration() Configuration {
+	return configuration
 }
 
 // helper method for IP configuration file
