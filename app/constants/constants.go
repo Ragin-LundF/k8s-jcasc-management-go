@@ -49,5 +49,4 @@ const ColorError = "\033[1;31m"
 const ColorDebug = "\033[0;36m"
 
 // kubectl field names
-const KubectlOutputFieldNamespace = "NAME"
-const KubectlOutputFieldPvcName = "NAME"
+const KubectlFieldName = "NAME"

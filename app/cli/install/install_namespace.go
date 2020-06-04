@@ -13,7 +13,9 @@ func CheckAndCreateNamespace(namespace string) (info string, err error) {
 	infoLog, err, nsIsAvailable := isNamespaceAvailable(namespace)
 	info = info + infoLog
 	if err != nil {
-		return info, err
+		log.Error(err)
+		// it is ok, that the namespace is not available
+		return info, nil
 	}
 
 	// namespace is not available
@@ -37,7 +39,7 @@ func CheckAndCreateNamespace(namespace string) (info string, err error) {
 		log.Info("[Install Namespace] Namespace [" + namespace + "] found.")
 		info = info + constants.NewLine + "Namespace [" + namespace + "] found."
 	}
-	return info, err
+	return info, nil
 }
 
 // check if namespace is available
@@ -53,7 +55,7 @@ func isNamespaceAvailable(namespace string) (info string, err error, namespaceIs
 
 	// check if output contains the namespace
 	if kubectlCmdOutput != "" {
-		namespaceIsAvailable = kubectl.CheckIfKubectlOutputContainsValueForField(kubectlCmdOutput, constants.KubectlOutputFieldNamespace, namespace)
+		namespaceIsAvailable = kubectl.CheckIfKubectlOutputContainsValueForField(kubectlCmdOutput, constants.KubectlFieldName, namespace)
 	} else {
 		namespaceIsAvailable = false
 	}

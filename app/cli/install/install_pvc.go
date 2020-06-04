@@ -120,7 +120,7 @@ func isPvcAvailableInNamespace(namespace string, pvcName string) (info string, e
 
 	// check if output contains pvcName
 	if kubectlCmdOutput != "" {
-		pvcExists = kubectl.CheckIfKubectlOutputContainsValueForField(kubectlCmdOutput, constants.KubectlOutputFieldPvcName, pvcName)
+		pvcExists = kubectl.CheckIfKubectlOutputContainsValueForField(kubectlCmdOutput, constants.KubectlFieldName, pvcName)
 	}
 	return info, err, pvcExists
 }
