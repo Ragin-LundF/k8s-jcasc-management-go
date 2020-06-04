@@ -10,7 +10,7 @@ import (
 )
 
 // Menu struct
-type menu struct {
+type MenuitemModel struct {
 	Name        string
 	Description string
 	Spacer      string
@@ -38,21 +38,9 @@ func Menu(info string, err error) string {
 	}
 
 	// Menu structure
-	menuStructure := []menu{
-		{Name: constants.CommandInstall, Spacer: "                      .-|-:. ", Description: "Install Jenkins of a project"},
-		{Name: constants.CommandUninstall, Spacer: "                    .-|-:. ", Description: "Uninstall Jenkins of a project"},
-		{Name: constants.CommandUpgrade, Spacer: "                      .-|-:. ", Description: "Upgrade Jenkins in a project"},
-		{Name: constants.CommandEncryptSecrets, Spacer: "               .-|-:. ", Description: "Encrypt the secrets file"},
-		{Name: constants.CommandDecryptSecrets, Spacer: "               .-|-:. ", Description: "Decrypt the secrets file"},
-		{Name: constants.CommandApplySecrets, Spacer: "                 .-|-:. ", Description: "Apply secrets of a project to Kubernetes"},
-		{Name: constants.CommandApplySecretsToAll, Spacer: "            .-|-:. ", Description: "Apply secrets to all projects in Kubernetes"},
-		{Name: constants.CommandCreateProject, Spacer: "                .-|-:. ", Description: "Create a new project"},
-		{Name: constants.CommandCreateDeploymentOnlyProject, Spacer: "  .-|-:. ", Description: "Create a new deployment only project"},
-		{Name: constants.CommandCreateJenkinsUserPassword, Spacer: "    .-|-:. ", Description: "Create a password for Jenkins user"},
-		{Name: constants.CommandQuit, Spacer: "                         .-|-:. ", Description: "Quit"},
-	}
+	menuStructure := CreateMenuItems()
 
-	// Template for displaying menu
+	// Template for displaying MenuitemModel
 	templates := &promptui.SelectTemplates{
 		Label:    "{{ . }}?",
 		Active:   "\U000027A4 {{ .Name | green }}{{ .Spacer }}{{ .Description | white }}",
@@ -89,4 +77,24 @@ func Menu(info string, err error) string {
 	}
 
 	return menuStructure[i].Name
+}
+
+// create menuitems
+func CreateMenuItems() []MenuitemModel {
+	// Menu structure
+	menuStructure := []MenuitemModel{
+		{Name: constants.CommandInstall, Spacer: "                      .-|-:. ", Description: "Install Jenkins of a project"},
+		{Name: constants.CommandUninstall, Spacer: "                    .-|-:. ", Description: "Uninstall Jenkins of a project"},
+		{Name: constants.CommandUpgrade, Spacer: "                      .-|-:. ", Description: "Upgrade Jenkins in a project"},
+		{Name: constants.CommandEncryptSecrets, Spacer: "               .-|-:. ", Description: "Encrypt the secrets file"},
+		{Name: constants.CommandDecryptSecrets, Spacer: "               .-|-:. ", Description: "Decrypt the secrets file"},
+		{Name: constants.CommandApplySecrets, Spacer: "                 .-|-:. ", Description: "Apply secrets of a project to Kubernetes"},
+		{Name: constants.CommandApplySecretsToAll, Spacer: "            .-|-:. ", Description: "Apply secrets to all projects in Kubernetes"},
+		{Name: constants.CommandCreateProject, Spacer: "                .-|-:. ", Description: "Create a new project"},
+		{Name: constants.CommandCreateDeploymentOnlyProject, Spacer: "  .-|-:. ", Description: "Create a new deployment only project"},
+		{Name: constants.CommandCreateJenkinsUserPassword, Spacer: "    .-|-:. ", Description: "Create a password for Jenkins user"},
+		{Name: constants.CommandQuit, Spacer: "                         .-|-:. ", Description: "Quit"},
+	}
+
+	return menuStructure
 }

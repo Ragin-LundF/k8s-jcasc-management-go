@@ -2,16 +2,12 @@ package server
 
 import (
 	"encoding/json"
+	"k8s-management-go/app/cli/menu"
 	"net/http"
 )
 
-type MenuElement struct {
-	Name        string
-	Description string
-}
-
 type Menu struct {
-	Elements []MenuElement
+	Elements []menu.MenuitemModel
 }
 
 func MenuApi(w http.ResponseWriter, r *http.Request) {
@@ -28,50 +24,7 @@ func MenuApi(w http.ResponseWriter, r *http.Request) {
 }
 
 func createMenu() Menu {
-	menu := Menu{
-		[]MenuElement{
-			{
-				Name:        "Install",
-				Description: "Install projects",
-			},
-			{
-				Name:        "Uninstall",
-				Description: "Uninstall project",
-			},
-			{
-				Name:        "Upgrade",
-				Description: "Upgrade a project",
-			},
-			{
-				Name:        "Encrypt Secrets",
-				Description: "Encrypt the secrets file",
-			},
-			{
-				Name:        "Decrypt Secrets",
-				Description: "Decrypt the secrets file",
-			},
-			{
-				Name:        "Apply Secrets",
-				Description: "Apply secrets to one namespace",
-			},
-			{
-				Name:        "Apply Secrets to all namespaces",
-				Description: "Apply secrets to all namespaces",
-			},
-			{
-				Name:        "Create Project",
-				Description: "Create a project",
-			},
-			{
-				Name:        "Create Deployment Project",
-				Description: "Create a project without Jenkins to manage IP, Ingress and Loadbalancer",
-			},
-			{
-				Name:        "Create Jenkins User Password",
-				Description: "Create a password for Jenkins user",
-			},
-		},
-	}
+	menuitemsStructure := Menu{menu.CreateMenuItems()}
 
-	return menu
+	return menuitemsStructure
 }
