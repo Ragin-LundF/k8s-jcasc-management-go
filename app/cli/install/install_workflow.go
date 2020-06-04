@@ -72,7 +72,12 @@ func JenkinsInstallOrUpgrade(helmCommand string) (info string, err error) {
 		info = info + constants.NewLine + "No Jenkins Helm chart found in path [" + jenkinsHelmValuesFile + "]."
 	}
 
-	// TODO install ingress
+	// install Nginx ingress controller
+	infoLog, err = HelmInstallNginxIngressController(helmCommand, namespace, jenkinsHelmValuesExist)
+	info = info + infoLog
+	if err != nil {
+		return info, err
+	}
 
 	// install scripts
 	infoLog, err = ShellScriptsInstall(namespace)
