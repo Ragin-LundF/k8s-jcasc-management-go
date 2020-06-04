@@ -12,6 +12,7 @@ import (
 // workflow for Jenkins installation
 func DoUpgradeOrInstall(helmCommand string) (info string, err error) {
 	// ask for namespace
+	var infoLog string
 	namespace, err := dialogs.DialogAskForNamespace()
 	if err != nil {
 		return info, err
@@ -26,18 +27,21 @@ func DoUpgradeOrInstall(helmCommand string) (info string, err error) {
 		return info, errors.New("Project directory not found: [" + projectPath + "]")
 	}
 
-	// check if namespace is available or create a new one if not
-	infoLog, err := CheckAndCreateNamespace(namespace)
-	info = info + constants.NewLine + infoLog
-	if err != nil {
-		return info, err
-	}
+	// create namespace and pvc only, if it is not dry-run only
+	if !config.GetConfiguration().K8sManagement.DryRunOnly {
+		// check if namespace is available or create a new one if not
+		infoLog, err = CheckAndCreateNamespace(namespace)
+		info = info + constants.NewLine + infoLog
+		if err != nil {
+			return info, err
+		}
 
-	// check if PVC was specified and install it if needed
-	infoLog, err = PersistenceVolumeClaimInstall(namespace)
-	info = info + constants.NewLine + infoLog
-	if err != nil {
-		return info, err
+		// check if PVC was specified and install it if needed
+		infoLog, err = PersistenceVolumeClaimInstall(namespace)
+		info = info + constants.NewLine + infoLog
+		if err != nil {
+			return info, err
+		}
 	}
 
 	// check if project configuration contains Jenkins Helm values file
@@ -49,11 +53,14 @@ func DoUpgradeOrInstall(helmCommand string) (info string, err error) {
 
 	// apply secrets only if Jenkins Helm values are existing
 	if jenkinsHelmValuesExist {
-		// apply secrets
-		infoLog, err = secrets.ApplySecretsToNamespace(namespace)
-		info = info + constants.NewLine + infoLog
-		if err != nil {
-			return info, err
+		// apply secrets only, if it is not dry-run only
+		if !config.GetConfiguration().K8sManagement.DryRunOnly {
+			// apply secrets
+			infoLog, err = secrets.ApplySecretsToNamespace(namespace)
+			info = info + constants.NewLine + infoLog
+			if err != nil {
+				return info, err
+			}
 		}
 
 		// ask for deployment name
@@ -79,11 +86,14 @@ func DoUpgradeOrInstall(helmCommand string) (info string, err error) {
 		return info, err
 	}
 
-	// install scripts
-	infoLog, err = ShellScriptsInstall(namespace)
-	info = info + constants.NewLine + infoLog
-	if err != nil {
-		return info, err
+	// install scripts only, if it is not dry-run only
+	if !config.GetConfiguration().K8sManagement.DryRunOnly {
+		// install scripts
+		infoLog, err = ShellScriptsInstall(namespace)
+		info = info + constants.NewLine + infoLog
+		if err != nil {
+			return info, err
+		}
 	}
 
 	return info, err

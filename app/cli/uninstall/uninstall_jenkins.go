@@ -3,28 +3,34 @@ package uninstall
 import (
 	"errors"
 	"k8s-management-go/app/constants"
+	"k8s-management-go/app/models/config"
+	"k8s-management-go/app/utils/helm"
 	"k8s-management-go/app/utils/logger"
-	"os/exec"
 )
 
 // uninstall Jenkins with Helm
 func HelmUninstallJenkins(namespace string, deploymentName string) (info string, err error) {
 	log := logger.Log()
+	log.Info("[Uninstall Jenkins] Try to uninstall Jenkins on namespace [" + namespace + "] with deployment name [" + deploymentName + "]...")
 
 	// execute Helm command
-	cmd := exec.Command("helm", "uninstall", deploymentName, "-n", namespace)
-	outputCmd, err := cmd.CombinedOutput()
+	helmCmdArgs := []string{
+		deploymentName,
+		"-n", namespace,
+	}
+	// add dry-run flags if necessary
+	if config.GetConfiguration().K8sManagement.DryRunOnly {
+		helmCmdArgs = append(helmCmdArgs, "--dry-run", "--debug")
+	}
+	helmCmdOutput, infoLog, err := helm.ExecutorHelm("uninstall", helmCmdArgs)
+	info = info + constants.NewLine + infoLog
 	if err != nil {
-		log.Error("Failed to execute: " + cmd.String())
+		log.Error("[Uninstall Jenkins] Unable to uninstall Jenkins on namespace [" + namespace + "] with deployment name [" + deploymentName + "].")
 		info = info + constants.NewLine + "Jenkins uninstall aborted. See errors."
-		err = errors.New(string(outputCmd) + constants.NewLine + err.Error())
+		err = errors.New(helmCmdOutput + constants.NewLine + err.Error())
 		return info, err
 	}
-
-	info = info + constants.NewLine + "Helm Jenkins uninstall output:"
-	info = info + constants.NewLine + "==============="
-	info = info + string(outputCmd)
-	info = info + constants.NewLine + "==============="
+	log.Info("[Uninstall Jenkins] Uninstall Jenkins on namespace [" + namespace + "] with deployment name [" + deploymentName + "] done.")
 
 	return info, err
 }

@@ -5,16 +5,16 @@ import (
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models/config"
 	"k8s-management-go/app/utils/files"
+	"k8s-management-go/app/utils/helm"
 	"k8s-management-go/app/utils/logger"
-	"os/exec"
-	"strings"
+	"strconv"
 )
 
 // install Jenkins with Helm
 func HelmInstallNginxIngressController(command string, namespace string, jenkinsIngressEnabled bool) (info string, err error) {
 	log := logger.Log()
-
-	info = info + constants.NewLine + "Try to install Nginx Ingress Controller..."
+	log.Info("[Install NginxIngressCtrl] Trying to install nginx-ingress-controller on namespace [" + namespace + "] while Jenkins exists [" + strconv.FormatBool(jenkinsIngressEnabled) + "]...")
+	info = info + constants.NewLine + "Trying to install nginx-ingress-controller..."
 
 	// create var with path to ingress controller helm values
 	helmChartsNginxIngressCtrlValuesFile := files.AppendPath(
@@ -28,6 +28,7 @@ func HelmInstallNginxIngressController(command string, namespace string, jenkins
 	// check if nginx ingress controller helm values are existing
 	// if this is the case -> install it
 	if files.FileOrDirectoryExists(helmChartsNginxIngressCtrlValuesFile) {
+		log.Info("[Install NginxIngressCtrl] nginx-ingress-controller values.yaml file found for namespace [" + namespace + "].")
 		// check if command is ok
 		if command == constants.HelmCommandInstall || command == constants.HelmCommandUpgrade {
 			// prepare files and directories
@@ -37,7 +38,6 @@ func HelmInstallNginxIngressController(command string, namespace string, jenkins
 
 			// execute Helm command
 			argsForCommand := []string{
-				command,
 				nginxIngressCtrlDeploymentName,
 				helmChartsNginxIngressCtrlDirectory,
 				"-n", namespace,
@@ -46,7 +46,8 @@ func HelmInstallNginxIngressController(command string, namespace string, jenkins
 
 			// if Jenkins is not active for this namespace, then disable Jenkins ingress routing
 			if jenkinsIngressEnabled == false {
-				info = info + constants.NewLine + "Disabling Jenkins ingress routing, because Jenkins is not available."
+				log.Info("[Install NginxIngressCtrl] Jenkins is not available for the namespace [" + namespace + "]. Disabling Jenkins ingress routing.")
+				info = info + constants.NewLine + "Jenkins is not available for the namespace [" + namespace + "]. Disabling Jenkins ingress routing."
 				argsForCommand = append(argsForCommand, "--set", "k8sJenkinsMgmt.ingress.enabled=false")
 			}
 
@@ -56,26 +57,31 @@ func HelmInstallNginxIngressController(command string, namespace string, jenkins
 			}
 
 			// execute command
-			cmd := exec.Command("helm", argsForCommand...)
-			log.Info("Executing command: [helm " + strings.Join(argsForCommand, " ") + "]")
+			log.Info("[Install NginxIngressCtrl] Start installing nginx-ingress-controller on namespace [" + namespace + "] with Helm...")
+			helmCmdOutput, infoLog, err := helm.ExecutorHelm(command, argsForCommand)
+			info = info + constants.NewLine + infoLog
 
-			outputCmd, err := cmd.CombinedOutput()
-			if err != nil {
-				log.Error("Failed to execute: " + cmd.String())
-				info = info + constants.NewLine + "Nginx Ingress Controller installation aborted. See errors."
-				err = errors.New(string(outputCmd) + constants.NewLine + err.Error())
-				return info, err
+			// first write output of dry-run...
+			if config.GetConfiguration().K8sManagement.DryRunOnly {
+				log.Info("[Install NginxIngressCtrl] Output of dry-run for namespace [" + namespace + "]")
+				log.Info(helmCmdOutput)
 			}
 
-			info = info + constants.NewLine + "Helm Nginx Ingress Controller install output:"
-			info = info + constants.NewLine + "==============="
-			info = info + string(outputCmd)
-			info = info + constants.NewLine + "==============="
+			if err != nil {
+				info = info + constants.NewLine + "nginx-ingress-controller installation aborted. See errors."
+				return info, err
+			}
+			log.Info("[Install NginxIngressCtrl] Done installing Jenkins on namespace [" + namespace + "] with Helm...")
+			info = info + constants.NewLine + "nginx-ingress-controller install Helm output:"
+			info = info + constants.NewLine + helmCmdOutput
 		} else {
 			// helm command was wrong -> abort
-			return info, errors.New("Helm command [" + command + "] unknown.")
+			log.Error("[Install NginxIngressCtrl] nginx-ingress-controller installation: Helm command [" + command + "] unknown.")
+			return info, errors.New("nginx-ingress-controller installation: Helm command [" + command + "] unknown.")
 		}
 	} else {
+		log.Info("[Install NginxIngressCtrl] No nginx-ingress-controller values.yaml file found for namespace [" + namespace + "].")
+		log.Info("[Install NginxIngressCtrl] Skipping nginx-ingress-controller installation for namespace [" + namespace + "].")
 		info = info + constants.NewLine + "No nginx-ingress-controller values.yaml for namespace [" + namespace + "] found."
 		info = info + constants.NewLine + "Skipping nginx-ingress-controller values.yaml installation."
 	}

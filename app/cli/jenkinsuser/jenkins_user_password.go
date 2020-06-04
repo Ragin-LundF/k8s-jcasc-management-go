@@ -5,10 +5,13 @@ import (
 	"github.com/atotto/clipboard"
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/utils/encryption"
+	"k8s-management-go/app/utils/logger"
 	"strings"
 )
 
 func CreateJenkinsUserPassword() (info string, err error) {
+	log := logger.Log()
+	log.Info("[Encrypt JenkinsUser Password] Ask for plain password...")
 	// Validator for password (keep it simple for now)
 	validate := func(input string) error {
 		if len(input) < 4 {
@@ -24,11 +27,13 @@ func CreateJenkinsUserPassword() (info string, err error) {
 	plainPasswordConfirm, err := dialogs.DialogAskForPassword("Retype your password", validate)
 
 	if plainPassword == plainPasswordConfirm {
+		log.Info("[Encrypt JenkinsUser Password] Entered passwords did match...")
 		// encrypt password with bcrypt
 		hashedPassword, err := encryption.EncryptJenkinsUserPassword(plainPassword)
 		if err != nil {
 			return info, err
 		}
+		log.Info("[Encrypt JenkinsUser Password] Password successfully encrypted...")
 
 		templateDetails := `
 --------- Encrypted Password ----------
@@ -44,9 +49,12 @@ func CreateJenkinsUserPassword() (info string, err error) {
 		if resultConfirm {
 			// copy to clipboard
 			err = clipboard.WriteAll(hashedPassword)
+			log.Error("[Encrypt JenkinsUser Password] Unable to copy password to clipboard...")
+			log.Error(err)
 		}
 		return "Created password: " + hashedPassword, err
 	} else {
+		log.Error("[Encrypt JenkinsUser Password] Passwords did not match...")
 		return info, errors.New("Passwords did not match!")
 	}
 }

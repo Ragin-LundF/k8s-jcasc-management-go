@@ -50,7 +50,7 @@ func DialogConfirm(templateLabel string, templateSelector string, templateDetail
 	// result processing
 	if err != nil || resultConfirm != "{yes}" {
 		if err != nil {
-			log.Error("Prompt confirm dialog failed %v\n", err)
+			log.Error("[DialogConfirm] Prompt confirm dialog failed %v\n", err)
 		}
 		return false
 	} else {
@@ -73,7 +73,7 @@ func DialogAskForPassword(label string, validate promptui.ValidateFunc) (passwor
 
 	// check if everything was ok
 	if err != nil {
-		log.Error("Prompt ask for password failed %v\n", err)
+		log.Error("[DialogAskForPassword] Prompt ask for password failed %v\n", err)
 	}
 	return password, err
 }
@@ -97,7 +97,7 @@ func DialogAskForDeploymentName(label string, validate promptui.ValidateFunc) (d
 
 		// check if everything was ok
 		if err != nil {
-			log.Error("Prompt ask for deployment name failed %v\n", err)
+			log.Error("[DialogAskForDeploymentName] Prompt ask for deployment name failed %v\n", err)
 		}
 	}
 	return deploymentName, err
@@ -139,7 +139,7 @@ func DialogAskForNamespace() (namespace string, err error) {
 
 	i, _, err := prompt.Run()
 	if err != nil {
-		log.Error("Prompt ask for namespace failed %v\n", err)
+		log.Error("[DialogAskForNamespace] Prompt ask for namespace failed %v\n", err)
 	} else {
 		namespace = config.GetIpConfiguration().Ips[i].Namespace
 	}

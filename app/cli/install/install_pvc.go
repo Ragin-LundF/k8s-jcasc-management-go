@@ -8,7 +8,7 @@ import (
 	"k8s-management-go/app/models/config"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/kubectl"
-	"os/exec"
+	"k8s-management-go/app/utils/logger"
 )
 
 type PvcClaimValuesYaml struct {
@@ -32,42 +32,53 @@ type PvcClaimValuesYaml struct {
 
 // install PVC is needed
 func PersistenceVolumeClaimInstall(namespace string) (info string, err error) {
+	log := logger.Log()
+	log.Info("[PVC Install] Check if PVC should be installed on namespace [" + namespace + "]")
 	// prepare file directories
 	projectDir := files.AppendPath(config.GetProjectBaseDirectory(), namespace)
 	pvcClaimValuesFilePath := files.AppendPath(projectDir, constants.FilenamePvcClaim)
 
 	// open file
 	if files.FileOrDirectoryExists(pvcClaimValuesFilePath) {
+		log.Info("[PVC Install] Kubernetes PVC specification found for namespace [" + namespace + "]...")
 		// variable to check, if pvc already exists
 		infoLog, err, pvcName := readPvcNameFromFile(pvcClaimValuesFilePath)
-		info = info + infoLog
+		info = info + constants.NewLine + infoLog
 		if err != nil {
 			return info, err
 		}
 		// if no name was found, something was wrong here...
 		if pvcName == nil || *pvcName == "" {
+			log.Error("[PVC Install] PVC specification was found for namespace [" + namespace + "], but no name was specified.")
 			err = errors.New("PVC specification was found for namespace [" + namespace + "], but no name was specified.")
 			return info, err
 		}
 
 		// check if pvc is already available in namespace
+		log.Info("[PVC Install] Checking if PVC [" + *pvcName + "] is already available for namespace [" + namespace + "].")
 		infoLog, err, pvcExists := isPvcAvailableInNamespace(namespace, *pvcName)
 		info = info + infoLog
 
 		// no PVC found, so install it
 		if !pvcExists {
-			info = info + constants.NewLine + "PVC specification, but no PVC found in namespace...try to install it."
-			outputInstallPvc, err := exec.Command("kubectl", "-n", namespace, "apply", "-f", pvcClaimValuesFilePath).CombinedOutput()
+			log.Info("[PVC Install] PVC [" + *pvcName + "] does not exist in namespace [" + namespace + "]. Trying to install it...")
+			info = info + constants.NewLine + "PVC [" + *pvcName + "] does not exist in namespace [" + namespace + "]. Trying to install it..."
+
+			kubectlCmdArgs := []string{
+				"-n", namespace,
+				"-f", pvcClaimValuesFilePath,
+			}
+			_, infoLog, err := kubectl.ExecutorKubectl("apply", kubectlCmdArgs)
+			info = info + constants.NewLine + infoLog
 			if err != nil {
-				err = errors.New(string(outputInstallPvc) + constants.NewLine + err.Error())
+				log.Error("[PVC Install] Cannot create PVC [" + *pvcName + "] for namespace [" + namespace + "]")
+				info = "Cannot create PVC [" + *pvcName + "] for namespace [" + namespace + "]" + constants.NewLine + info
 				return info, err
 			}
-			info = info + constants.NewLine + "Kubectl PVC install output:"
-			info = info + constants.NewLine + "==============="
-			info = info + string(outputInstallPvc)
-			info = info + constants.NewLine + "==============="
+			log.Info("[PVC Install] Finished creating PVC [" + *pvcName + "] for namespace [" + namespace + "]...")
 		} else {
-			info = info + constants.NewLine + "Found namespace [" + *pvcName + "]...No need to install it."
+			log.Info("[PVC Install] PVC [" + *pvcName + "] in namespace [" + namespace + "] found. No need to install it...")
+			info = info + constants.NewLine + "PVC [" + *pvcName + "] in namespace [" + namespace + "] found. No need to install it..."
 		}
 	}
 
@@ -97,16 +108,19 @@ func readPvcNameFromFile(pvcClaimValuesFilePath string) (info string, err error,
 func isPvcAvailableInNamespace(namespace string, pvcName string) (info string, err error, pvcExists bool) {
 	pvcExists = false
 	// read all pvc from K8S
-	output, err := exec.Command("kubectl", "-n", namespace, "get", "pvc").CombinedOutput()
+	kubectlCmdArgs := []string{
+		"-n", namespace,
+		"pvc",
+	}
+	kubectlCmdOutput, infoLog, err := kubectl.ExecutorKubectl("get", kubectlCmdArgs)
+	info = info + constants.NewLine + infoLog
 	if err != nil {
-		err = errors.New(string(output) + constants.NewLine + err.Error())
 		return info, err, false
 	}
 
 	// check if output contains pvcName
-	if output != nil {
-		pvcExists = kubectl.CheckIfKubectlOutputContainsValueForField(string(output), constants.KubectlOutputFieldPvcName, pvcName)
-		info = info + constants.NewLine + "PVC [" + pvcName + "] already exists in namespace [" + namespace + "]."
+	if kubectlCmdOutput != "" {
+		pvcExists = kubectl.CheckIfKubectlOutputContainsValueForField(kubectlCmdOutput, constants.KubectlOutputFieldPvcName, pvcName)
 	}
 	return info, err, pvcExists
 }

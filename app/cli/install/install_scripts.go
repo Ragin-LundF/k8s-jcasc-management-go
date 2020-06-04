@@ -5,10 +5,13 @@ import (
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models/config"
 	"k8s-management-go/app/utils/files"
+	"k8s-management-go/app/utils/logger"
 	"os/exec"
 )
 
 func ShellScriptsInstall(namespace string) (info string, err error) {
+	log := logger.Log()
+	log.Info("[Install Scripts] Searching for install scripts for namespace [" + namespace + "] ")
 	// calculate path to script folder
 	var scriptFolder = files.AppendPath(
 		files.AppendPath(
@@ -19,8 +22,10 @@ func ShellScriptsInstall(namespace string) (info string, err error) {
 	)
 
 	// check if folder exists
+	log.Info("[Install Scripts] Search for shell scripts in folder [" + scriptFolder + "]")
 	var isScriptsDirectoryAvailable = files.FileOrDirectoryExists(scriptFolder)
 	if isScriptsDirectoryAvailable {
+		log.Info("[Install Scripts] Found folder [" + scriptFolder + "]. Start searching for files...")
 		// prepare file filter for install
 		filePrefix := constants.DirProjectScriptsInstallPrefix
 		scriptFileEnding := constants.ScriptsFileEnding
@@ -31,26 +36,29 @@ func ShellScriptsInstall(namespace string) (info string, err error) {
 		// list files which match to filter
 		fileArray, err := files.ListFilesOfDirectoryWithFilter(scriptFolder, &fileFilter)
 		if err != nil {
+			log.Error("[Install Scripts] Error while filtering for install files in directory [" + scriptFolder + "].")
 			return info, err
 		}
 
 		// iterate over filtered file array and execute scripts
 		for _, file := range *fileArray {
-			info = info + constants.NewLine + "Installing script [" + namespace + "/" + constants.DirProjectScripts + "/" + file + "]"
-			// Execute scripts
 			scriptWithPath := files.AppendPath(scriptFolder, file)
+			log.Info("[Install Scripts] Trying to execute install script [" + scriptWithPath + "]")
+			info = info + constants.NewLine + "Trying to execute install script [" + scriptWithPath + "]"
+			// Execute scripts
 			outputCmd, err := exec.Command("sh", "-c", scriptWithPath).CombinedOutput()
+			info = info + constants.NewLine + string(outputCmd)
 			if err != nil {
 				err = errors.New(string(outputCmd) + constants.NewLine + err.Error())
+				log.Error("Unable to execute script [" + scriptWithPath + "]")
+				log.Error(err)
+
 				return info, err
 			}
-
-			// collect output
-			info = info + constants.NewLine + "Output of script [" + scriptWithPath + "]:"
-			info = info + constants.NewLine + "==============="
-			info = info + string(outputCmd)
-			info = info + constants.NewLine + "==============="
+			log.Info("[Install Scripts] Install script output of [" + scriptWithPath + "]:")
+			log.Info(outputCmd)
 		}
 	}
+	log.Info("[Install Scripts] Scripts install for namespace [" + namespace + "] done...")
 	return info, err
 }

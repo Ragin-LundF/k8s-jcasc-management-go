@@ -5,16 +5,16 @@ import (
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models/config"
 	"k8s-management-go/app/utils/files"
+	"k8s-management-go/app/utils/helm"
 	"k8s-management-go/app/utils/logger"
-	"os/exec"
-	"strings"
 )
 
 // install Jenkins with Helm
 func HelmInstallJenkins(command string, namespace string, deploymentName string) (info string, err error) {
 	log := logger.Log()
-
+	log.Info("[Install Jenkins] Try to install Jenkins on namespace [" + namespace + "] with deployment name [" + deploymentName + "]...")
 	info = info + constants.NewLine + "Try to install Jenkins..."
+
 	// check if command is ok
 	if command == constants.HelmCommandInstall || command == constants.HelmCommandUpgrade {
 		// prepare files and directories
@@ -29,7 +29,6 @@ func HelmInstallJenkins(command string, namespace string, deploymentName string)
 
 		// execute Helm command
 		argsForCommand := []string{
-			command,
 			deploymentName,
 			helmChartsJenkinsDirectory,
 		}
@@ -38,23 +37,26 @@ func HelmInstallJenkins(command string, namespace string, deploymentName string)
 		}
 		argsForCommand = append(argsForCommand, "-n", namespace, "-f", helmChartsJenkinsValuesFile)
 
-		cmd := exec.Command("helm", argsForCommand...)
-		log.Info("Executing command: [helm " + strings.Join(argsForCommand, " ") + "]")
+		log.Info("[Install Jenkins] Start installing Jenkins with Helm...")
+		helmCmdOutput, infoLog, err := helm.ExecutorHelm(command, argsForCommand)
+		info = info + constants.NewLine + infoLog
 
-		outputCmd, err := cmd.CombinedOutput()
+		// first write output of dry-run...
+		if config.GetConfiguration().K8sManagement.DryRunOnly {
+			log.Info("[Install Jenkins] Output of dry-run for namespace [" + namespace + "]")
+			log.Info(helmCmdOutput)
+		}
 		if err != nil {
-			log.Error("Failed to execute: " + cmd.String())
-			info = info + constants.NewLine + "Jenkins installation aborted. See errors."
-			err = errors.New(string(outputCmd) + constants.NewLine + err.Error())
+			log.Error("[Install Jenkins] Cannot install Jenkins on namespace [" + namespace + "] with deployment name [" + deploymentName + "]")
+			info = "Jenkins installation not successful. See errors." + constants.NewLine + info
 			return info, err
 		}
-
-		info = info + constants.NewLine + "Helm Jenkins install output:"
-		info = info + constants.NewLine + "==============="
-		info = info + string(outputCmd)
-		info = info + constants.NewLine + "==============="
+		log.Info("[Install Jenkins] Done installing Jenkins with Helm...")
+		info = info + constants.NewLine + "Helm output:"
+		info = info + constants.NewLine + helmCmdOutput
 	} else {
 		// helm command was wrong -> abort
+		log.Error("[Install Jenkins] Helm command [" + command + "] unknown.")
 		return info, errors.New("Helm command [" + command + "] unknown.")
 	}
 
