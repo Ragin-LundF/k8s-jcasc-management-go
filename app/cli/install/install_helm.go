@@ -26,11 +26,11 @@ func HelmInstallJenkins(command string, deploymentName string, namespace string)
 			constants.FilenameJenkinsHelmValues,
 		) // execute Helm command
 		cmd := exec.Command("helm", command, deploymentName, helmChartsJenkinsDirectory, "-n", namespace, "-f", helmChartsJenkinsValuesFile)
-		outputCmd, err := cmd.Output()
+		outputCmd, err := cmd.CombinedOutput()
 		if err != nil {
 			log.Error("Failed to execute: " + cmd.String())
 			info = info + constants.NewLine + "Jenkins installation aborted. See errors."
-			err = errors.New(constants.NewLine + err.Error())
+			err = errors.New(string(outputCmd) + constants.NewLine + err.Error())
 			return info, err
 		}
 

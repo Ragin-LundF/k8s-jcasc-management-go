@@ -1,6 +1,7 @@
 package install
 
 import (
+	"errors"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models/config"
 	"k8s-management-go/app/utils/files"
@@ -37,8 +38,9 @@ func ShellScriptsInstall(namespace string) (info string, err error) {
 		for _, file := range *fileArray {
 			// Execute scripts
 			scriptWithPath := files.AppendPath(scriptFolder, file)
-			outputCmd, err := exec.Command("sh", "-c", scriptWithPath).Output()
+			outputCmd, err := exec.Command("sh", "-c", scriptWithPath).CombinedOutput()
 			if err != nil {
+				err = errors.New(string(outputCmd) + constants.NewLine + err.Error())
 				return info, err
 			}
 

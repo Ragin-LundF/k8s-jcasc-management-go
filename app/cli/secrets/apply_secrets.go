@@ -89,8 +89,9 @@ func applySecretsToNamespace(secretsFilePath string, namespace string) (info str
 	cmd.Env = append(os.Environ(),
 		"NAMESPACE="+namespace,
 	)
-	output, err := cmd.Output()
+	output, err := cmd.CombinedOutput()
 	if err != nil {
+		err = errors.New(string(output) + constants.NewLine + err.Error())
 		info = info + constants.NewLine + "Apply secrets failed! See errors."
 		return info, err
 	} else {

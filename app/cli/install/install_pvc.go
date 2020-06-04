@@ -57,8 +57,9 @@ func PersistenceVolumeClaimInstall(namespace string) (info string, err error) {
 		// no PVC found, so install it
 		if !pvcExists {
 			info = info + constants.NewLine + "PVC specification, but no PVC found in namespace...try to install it."
-			outputInstallPvc, err := exec.Command("kubectl", "-n", namespace, "apply", "-f", pvcClaimValuesFilePath).Output()
+			outputInstallPvc, err := exec.Command("kubectl", "-n", namespace, "apply", "-f", pvcClaimValuesFilePath).CombinedOutput()
 			if err != nil {
+				err = errors.New(string(outputInstallPvc) + constants.NewLine + err.Error())
 				return info, err
 			}
 			info = info + constants.NewLine + "Kubectl PVC install output:"
@@ -96,8 +97,9 @@ func readPvcNameFromFile(pvcClaimValuesFilePath string) (info string, err error,
 func isPvcAvailableInNamespace(namespace string, pvcName string) (info string, err error, pvcExists bool) {
 	pvcExists = false
 	// read all pvc from K8S
-	output, err := exec.Command("kubectl", "-n", namespace, "get", "pvc").Output()
+	output, err := exec.Command("kubectl", "-n", namespace, "get", "pvc").CombinedOutput()
 	if err != nil {
+		err = errors.New(string(output) + constants.NewLine + err.Error())
 		return info, err, false
 	}
 

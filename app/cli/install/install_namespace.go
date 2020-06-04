@@ -1,6 +1,7 @@
 package install
 
 import (
+	"errors"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/utils/kubectl"
 	"os/exec"
@@ -18,9 +19,10 @@ func CheckAndCreateNamespace(namespace string) (info string, err error) {
 	if !nsIsAvailable {
 		// namespace does not exist, so create one
 		info = info + constants.NewLine + "Namespace [" + namespace + "] does not exist! Try to create it..."
-		outputNsCreate, err := exec.Command("kubectl", "create", "namespace", namespace).Output()
+		outputNsCreate, err := exec.Command("kubectl", "create", "namespace", namespace).CombinedOutput()
 		if err != nil {
 			info = info + constants.NewLine + "Namespace creation failed."
+			err = errors.New(string(outputNsCreate) + constants.NewLine + err.Error())
 			return info, err
 		}
 		// return kubectl output
@@ -36,8 +38,9 @@ func CheckAndCreateNamespace(namespace string) (info string, err error) {
 
 // check if namespace is available
 func isNamespaceAvailable(namespace string) (info string, err error, namespaceIsAvailable bool) {
-	outputCmd, err := exec.Command("kubectl", "get", "namespaces").Output()
+	outputCmd, err := exec.Command("kubectl", "get", "namespaces").CombinedOutput()
 	if err != nil {
+		err = errors.New(string(outputCmd) + constants.NewLine + err.Error())
 		return info, err, false
 	}
 
