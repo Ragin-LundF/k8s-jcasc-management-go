@@ -7,7 +7,7 @@ Currently, it is not fully working!
 To test it, you have to clone [k8s-jcasc-management](https://github.com/Ragin-LundF/k8s-jcasc-management) and to set the path to this directory as first argument:
 
 ```bash
-go run k8s-jcasc-mgmt.go -basepath="/path/to/k8s-jcasc-management"
+go run k8s-jcasc-mgmt.go
 ```
 
 ## Prerequisites
