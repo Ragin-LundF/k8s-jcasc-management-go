@@ -15,12 +15,12 @@ type FileFilter struct {
 // check if file exists
 func FileOrDirectoryExists(fileNameWithPath string) bool {
 	log := logger.Log()
-	info, err := os.Stat(fileNameWithPath)
+	_, err := os.Stat(fileNameWithPath)
 	if os.IsNotExist(err) {
 		log.Error("Unable to find file [" + fileNameWithPath + "]")
 		return false
 	}
-	return !info.IsDir()
+	return true
 }
 
 // list files of a directory if it exists

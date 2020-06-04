@@ -21,19 +21,20 @@ func Menu(info string, err error) string {
 	dialogs.ClearScreen()
 	log := logger.Log()
 
-	// If errors not emtpy, show them
-	if err != nil {
-		fmt.Printf("%v[ERROR]: %v%v", constants.ColorError, err, constants.ColorNormal)
-		fmt.Println()
-		fmt.Println()
-		log.Error(err)
-	}
 	// If infos are available, show them
 	if info != "" {
-		fmt.Printf("%v[INFO]: %v%v", constants.ColorInfo, info, constants.ColorNormal)
+		fmt.Printf("%v[INFO]\n%v%v", constants.ColorInfo, info, constants.ColorNormal)
 		fmt.Println()
 		fmt.Println()
 		log.Info(info)
+	}
+
+	// If errors not emtpy, show them
+	if err != nil {
+		fmt.Printf("%v[ERRORS]\n%v%v", constants.ColorError, err, constants.ColorNormal)
+		fmt.Println()
+		fmt.Println()
+		log.Error(err)
 	}
 
 	// Menu structure

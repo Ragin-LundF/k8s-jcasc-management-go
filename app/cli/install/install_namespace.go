@@ -17,17 +17,19 @@ func CheckAndCreateNamespace(namespace string) (info string, err error) {
 	// namespace is not available
 	if !nsIsAvailable {
 		// namespace does not exist, so create one
-		info = info + "\nNamespace [" + namespace + "] does not exist! Try to create it..."
+		info = info + constants.NewLine + "Namespace [" + namespace + "] does not exist! Try to create it..."
 		outputNsCreate, err := exec.Command("kubectl", "create", "namespace", namespace).Output()
 		if err != nil {
-			info = info + "\nNamespace creation failed."
+			info = info + constants.NewLine + "Namespace creation failed."
 			return info, err
 		}
 		// return kubectl output
-		info = info + "\nKubectl Namespace creation output:"
-		info = info + "\n==============="
+		info = info + constants.NewLine + "Kubectl Namespace creation output:"
+		info = info + constants.NewLine + "==============="
 		info = info + string(outputNsCreate)
-		info = info + "\n==============="
+		info = info + constants.NewLine + "==============="
+	} else {
+		info = info + constants.NewLine + "Namespace [" + namespace + "] found."
 	}
 	return info, err
 }

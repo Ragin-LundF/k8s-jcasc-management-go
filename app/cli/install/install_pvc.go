@@ -56,17 +56,17 @@ func PersistenceVolumeClaimInstall(namespace string) (info string, err error) {
 
 		// no PVC found, so install it
 		if !pvcExists {
-			info = info + "\nPVC specification, but no PVC found in namespace...try to install it."
+			info = info + constants.NewLine + "PVC specification, but no PVC found in namespace...try to install it."
 			outputInstallPvc, err := exec.Command("kubectl", "-n", namespace, "apply", "-f", pvcClaimValuesFilePath).Output()
 			if err != nil {
 				return info, err
 			}
-			info = info + "\nKubectl PVC install output:"
-			info = info + "\n==============="
+			info = info + constants.NewLine + "Kubectl PVC install output:"
+			info = info + constants.NewLine + "==============="
 			info = info + string(outputInstallPvc)
-			info = info + "\n==============="
+			info = info + constants.NewLine + "==============="
 		} else {
-			info = info + "\nFound namespace [" + *pvcName + "]...No need to install it."
+			info = info + constants.NewLine + "Found namespace [" + *pvcName + "]...No need to install it."
 		}
 	}
 
@@ -104,7 +104,7 @@ func isPvcAvailableInNamespace(namespace string, pvcName string) (info string, e
 	// check if output contains pvcName
 	if output != nil {
 		pvcExists = kubectl.CheckIfKubectlOutputContainsValueForField(string(output), constants.KubectlOutputFieldPvcName, pvcName)
-		info = info + "\nPVC [" + pvcName + "] already exists in namespace [" + namespace + "]."
+		info = info + constants.NewLine + "PVC [" + pvcName + "] already exists in namespace [" + namespace + "]."
 	}
 	return info, err, pvcExists
 }

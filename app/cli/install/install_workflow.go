@@ -26,27 +26,27 @@ func JenkinsInstallOrUpgrade(helmCommand string) (info string, err error) {
 		return info, errors.New("Project directory not found: [" + projectPath + "]")
 	}
 
-	// check if project configuration contains Jenkins Helm values file
-	jenkinsHelmValuesFile := files.AppendPath(
-		constants.FilenameJenkinsHelmValues,
-		projectPath,
-	)
-	jenkinsHelmValuesExist := files.FileOrDirectoryExists(jenkinsHelmValuesFile)
-	info = info + "\nNo Jenkins Helm chart found in path [" + jenkinsHelmValuesFile + "]."
-
 	// check if namespace is available or create a new one if not
 	infoLog, err := CheckAndCreateNamespace(namespace)
-	info = info + infoLog
+	info = info + constants.NewLine + infoLog
 	if err != nil {
 		return info, err
 	}
 
 	// check if PVC was specified and install it if needed
 	infoLog, err = PersistenceVolumeClaimInstall(namespace)
-	info = info + infoLog
+	info = info + constants.NewLine + infoLog
 	if err != nil {
 		return info, err
 	}
+
+	// check if project configuration contains Jenkins Helm values file
+	jenkinsHelmValuesFile := files.AppendPath(
+		projectPath,
+		constants.FilenameJenkinsHelmValues,
+	)
+	jenkinsHelmValuesExist := files.FileOrDirectoryExists(jenkinsHelmValuesFile)
+	info = info + constants.NewLine + "No Jenkins Helm chart found in path [" + jenkinsHelmValuesFile + "]."
 
 	// apply secrets only if Jenkins Helm values are existing
 	if jenkinsHelmValuesExist {

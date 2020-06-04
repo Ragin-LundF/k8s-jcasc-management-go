@@ -43,10 +43,10 @@ func ShellScriptsInstall(namespace string) (info string, err error) {
 			}
 
 			// collect output
-			info = info + "\nOutput of script [" + scriptWithPath + "]:"
-			info = info + "\n==============="
+			info = info + constants.NewLine + "Output of script [" + scriptWithPath + "]:"
+			info = info + constants.NewLine + "==============="
 			info = info + string(outputCmd)
-			info = info + "\n==============="
+			info = info + constants.NewLine + "==============="
 		}
 	}
 	return info, err

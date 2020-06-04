@@ -1,5 +1,8 @@
 package constants
 
+// common
+const NewLine = "\n"
+
 // directory and file configuration
 const DirConfig = "config"
 const DirProjectScripts = "scripts"

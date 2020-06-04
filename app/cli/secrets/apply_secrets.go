@@ -3,6 +3,7 @@ package secrets
 import (
 	"errors"
 	"k8s-management-go/app/cli/dialogs"
+	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models/config"
 	"os"
 	"os/exec"
@@ -22,12 +23,12 @@ func ApplySecrets() (info string, err error) {
 func ApplySecretsToNamespace(namespace string) (info string, err error) {
 	// Decrypt secrets file
 	infoLog, err := DecryptSecretsFile()
-	info = info + infoLog
+	info = info + constants.NewLine + infoLog
 
 	// apply secret to namespace
 	secretsFilePath := config.GetGlobalSecretsFile()
 	infoLog, nsErr := applySecretsToNamespace(secretsFilePath, namespace)
-	info = info + infoLog
+	info = info + constants.NewLine + infoLog
 
 	// delete decrypted file
 	rmErr := os.Remove(secretsFilePath)
@@ -56,10 +57,10 @@ func ApplySecretsToAllNamespaces() (info string, err error) {
 	for _, ip := range config.GetIpConfiguration().Ips {
 		infoNs, nsErr := applySecretsToNamespace(secretsFilePath, ip.Namespace)
 		if infoNs != "" {
-			infos = infos + "\n" + infoNs
+			infos = infos + constants.NewLine + infoNs
 		}
 		if nsErr != nil {
-			nsErrs = nsErrs + "\n" + nsErr.Error()
+			nsErrs = nsErrs + constants.NewLine + nsErr.Error()
 		}
 	}
 
@@ -92,7 +93,7 @@ func applySecretsToNamespace(secretsFilePath string, namespace string) (info str
 	if err != nil {
 		return info, err
 	} else {
-		info = "Secrets to namespace [" + namespace + "] applied"
+		info = "Applied secrets to namespace [" + namespace + "]"
 	}
 
 	return info, err
