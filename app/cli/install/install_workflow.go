@@ -46,7 +46,6 @@ func JenkinsInstallOrUpgrade(helmCommand string) (info string, err error) {
 		constants.FilenameJenkinsHelmValues,
 	)
 	jenkinsHelmValuesExist := files.FileOrDirectoryExists(jenkinsHelmValuesFile)
-	info = info + constants.NewLine + "No Jenkins Helm chart found in path [" + jenkinsHelmValuesFile + "]."
 
 	// apply secrets only if Jenkins Helm values are existing
 	if jenkinsHelmValuesExist {
@@ -69,6 +68,8 @@ func JenkinsInstallOrUpgrade(helmCommand string) (info string, err error) {
 		if err != nil {
 			return info, err
 		}
+	} else {
+		info = info + constants.NewLine + "No Jenkins Helm chart found in path [" + jenkinsHelmValuesFile + "]."
 	}
 
 	// install scripts

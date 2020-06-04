@@ -5,11 +5,14 @@ import (
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models/config"
 	"k8s-management-go/app/utils/files"
+	"k8s-management-go/app/utils/logger"
 	"os/exec"
 )
 
 // install Jenkins with Helm
 func HelmInstallJenkins(command string, deploymentName string, namespace string) (info string, err error) {
+	log := logger.Log()
+
 	info = info + constants.NewLine + "Try to install Jenkins..."
 	// check if command is ok
 	if command == constants.HelmCommandInstall || command == constants.HelmCommandUpgrade {
@@ -22,9 +25,12 @@ func HelmInstallJenkins(command string, deploymentName string, namespace string)
 			),
 			constants.FilenameJenkinsHelmValues,
 		) // execute Helm command
-		outputCmd, err := exec.Command("helm", command, deploymentName, helmChartsJenkinsDirectory, "-n", namespace, "-f", helmChartsJenkinsValuesFile).Output()
+		cmd := exec.Command("helm", command, deploymentName, helmChartsJenkinsDirectory, "-n", namespace, "-f", helmChartsJenkinsValuesFile)
+		outputCmd, err := cmd.Output()
 		if err != nil {
+			log.Error("Failed to execute: " + cmd.String())
 			info = info + constants.NewLine + "Jenkins installation aborted. See errors."
+			err = errors.New(constants.NewLine + err.Error())
 			return info, err
 		}
 

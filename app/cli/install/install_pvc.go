@@ -33,7 +33,7 @@ type PvcClaimValuesYaml struct {
 // install PVC is needed
 func PersistenceVolumeClaimInstall(namespace string) (info string, err error) {
 	// prepare file directories
-	projectDir := files.AppendPath(config.FilePathWithBasePath(config.GetProjectBaseDirectory()), namespace)
+	projectDir := files.AppendPath(config.GetProjectBaseDirectory(), namespace)
 	pvcClaimValuesFilePath := files.AppendPath(projectDir, constants.FilenamePvcClaim)
 
 	// open file
