@@ -58,7 +58,7 @@ func Setup() {
 
 	// read configuration
 	config.ReadConfiguration(basePath)
-	config.ReadIpConfig(basePath)
+	config.ReadIpConfig()
 
 	// start experimental server
 	if serverStart {
