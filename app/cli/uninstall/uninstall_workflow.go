@@ -40,9 +40,10 @@ func DoUninstall() (info string, err error) {
 		// try to uninstall scripts
 		infoLog, err = ShellScriptsUninstall(namespace)
 		info = info + constants.NewLine + infoLog
-		if err != nil {
-			return info, err
-		}
+
+		// nginx-ingress-controller cleanup
+		infoLog, _ := CleanupK8sNginxIngressController(namespace)
+		info = info + constants.NewLine + infoLog
 	}
 
 	return info, err
