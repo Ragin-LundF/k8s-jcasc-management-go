@@ -7,6 +7,7 @@ import (
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/logger"
 	"os/exec"
+	"strings"
 )
 
 // install Jenkins with Helm
@@ -30,18 +31,34 @@ func HelmInstallNginxIngressController(command string, namespace string, jenkins
 		// check if command is ok
 		if command == constants.HelmCommandInstall || command == constants.HelmCommandUpgrade {
 			// prepare files and directories
-			helmChartsNginxIngressCtrlDirectory := files.AppendPath(config.GetConfiguration().BasePath, constants.DirHelmJenkinsMaster)
+			helmChartsNginxIngressCtrlDirectory := files.AppendPath(config.GetConfiguration().BasePath, constants.DirHelmNginxIngressCtrl)
 			// execute Helm command
 			nginxIngressCtrlDeploymentName := config.GetConfiguration().Nginx.Ingress.Controller.DeploymentName
 
+			// execute Helm command
+			argsForCommand := []string{
+				command,
+				nginxIngressCtrlDeploymentName,
+				helmChartsNginxIngressCtrlDirectory,
+				"-n", namespace,
+				"-f", helmChartsNginxIngressCtrlValuesFile,
+			}
+
 			// if Jenkins is not active for this namespace, then disable Jenkins ingress routing
-			var jenkinsIngressSetParam = ""
 			if jenkinsIngressEnabled == false {
 				info = info + constants.NewLine + "Disabling Jenkins ingress routing, because Jenkins is not available."
-				jenkinsIngressSetParam = "--set k8sJenkinsMgmt.ingress.enabled=false"
+				argsForCommand = append(argsForCommand, "--set", "k8sJenkinsMgmt.ingress.enabled=false")
 			}
+
+			// add dry-run and debug if necessary
+			if config.GetConfiguration().K8sManagement.DryRunOnly {
+				argsForCommand = append(argsForCommand, "--dry-run", "--debug")
+			}
+
 			// execute command
-			cmd := exec.Command("helm", command, nginxIngressCtrlDeploymentName, helmChartsNginxIngressCtrlDirectory, "-n", namespace, "-f", helmChartsNginxIngressCtrlValuesFile, jenkinsIngressSetParam)
+			cmd := exec.Command("helm", argsForCommand...)
+			log.Info("Executing command: [helm " + strings.Join(argsForCommand, " ") + "]")
+
 			outputCmd, err := cmd.CombinedOutput()
 			if err != nil {
 				log.Error("Failed to execute: " + cmd.String())

@@ -100,6 +100,7 @@ type Configuration struct {
 	// internal configuration
 	K8sManagement struct {
 		VersionCheck bool
+		DryRunOnly   bool
 	}
 }
 
@@ -224,6 +225,8 @@ func AssignToConfiguration(key string, value string) {
 			configuration.AlternativeConfigFile = value
 		case "K8S_MGMT_BASE_PATH":
 			configuration.BasePath = value
+		case "K8S_MGMT_DRY_RUN_DEBUG":
+			configuration.K8sManagement.DryRunOnly, _ = strconv.ParseBool(value)
 		}
 	}
 }

@@ -7,11 +7,12 @@ import (
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/logger"
 	"os"
+	"strconv"
 	"strings"
 )
 
 // Read configuration from k8s-management
-func ReadConfiguration(basePath string) {
+func ReadConfiguration(basePath string, dryRunDebug bool) {
 	// read plain configuration
 	readConfigurationFromFile(files.AppendPath(files.AppendPath(basePath, constants.DirConfig), constants.FilenameConfiguration))
 	// check if there is an custom configuration
@@ -21,6 +22,7 @@ func ReadConfiguration(basePath string) {
 	// check if there is an alternative configuration path and try to read config from there
 	configuration := config.GetConfiguration()
 	config.AssignToConfiguration("K8S_MGMT_BASE_PATH", basePath)
+	config.AssignToConfiguration("K8S_MGMT_DRY_RUN_DEBUG", strconv.FormatBool(dryRunDebug))
 
 	if configuration.AlternativeConfigFile != "" && files.FileOrDirectoryExists(files.AppendPath(basePath, configuration.AlternativeConfigFile)) {
 		readConfigurationFromFile(files.AppendPath(basePath, configuration.AlternativeConfigFile))

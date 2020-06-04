@@ -7,6 +7,7 @@ import (
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/logger"
 	"os/exec"
+	"strings"
 )
 
 // install Jenkins with Helm
@@ -27,7 +28,19 @@ func HelmInstallJenkins(command string, namespace string, deploymentName string)
 		)
 
 		// execute Helm command
-		cmd := exec.Command("helm", command, deploymentName, helmChartsJenkinsDirectory, "-n", namespace, "-f", helmChartsJenkinsValuesFile)
+		argsForCommand := []string{
+			command,
+			deploymentName,
+			helmChartsJenkinsDirectory,
+		}
+		if config.GetConfiguration().K8sManagement.DryRunOnly {
+			argsForCommand = append(argsForCommand, "--dry-run", "--debug")
+		}
+		argsForCommand = append(argsForCommand, "-n", namespace, "-f", helmChartsJenkinsValuesFile)
+
+		cmd := exec.Command("helm", argsForCommand...)
+		log.Info("Executing command: [helm " + strings.Join(argsForCommand, " ") + "]")
+
 		outputCmd, err := cmd.CombinedOutput()
 		if err != nil {
 			log.Error("Failed to execute: " + cmd.String())

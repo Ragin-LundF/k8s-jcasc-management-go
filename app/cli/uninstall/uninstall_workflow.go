@@ -3,8 +3,6 @@ package uninstall
 import (
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/models/config"
-	"k8s-management-go/app/utils/files"
 )
 
 // workflow for uninstall
@@ -14,12 +12,6 @@ func DoUninstall() (info string, err error) {
 	if err != nil {
 		return info, err
 	}
-
-	// first check if namespace directory exists
-	projectPath := files.AppendPath(
-		config.GetProjectBaseDirectory(),
-		namespace,
-	)
 
 	// ask for deployment name
 	deploymentName, err := dialogs.DialogAskForDeploymentName("Deployment name", nil)

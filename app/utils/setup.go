@@ -15,16 +15,19 @@ import (
 func Setup() {
 	// configure flags
 	logFileFlag := flag.String("logfile", "", "Logging output file. If empty it logs to console.")
+	logEncoding := flag.String("logencoding", "", "Logging output encoding. If empty it logs as json.")
 	basePathFlag := flag.String("basepath", "", "base path to k8s-jcasc-management")
 	serverStartFlag := flag.Bool("server", false, "start k8s-jcasc-management-go as a server")
+	dryRunFlag := flag.Bool("dry-run", false, "execute helm charts with --dry-run --debug flags")
 	helpFlag := flag.Bool("help", false, "show help")
 	flag.Parse()
 
 	// define main path
 	logger.LogFilePath = *logFileFlag
+	logger.LogEncoding = *logEncoding
 	basePath := ""
-	serverStart := false
-	serverStart = *serverStartFlag
+	serverStart := *serverStartFlag
+	dryRunDebug := *dryRunFlag
 	if os.Getenv("K8S_MGMT_BASE_PATH") != "" {
 		// base path from environment variables
 		basePath = os.Getenv("K8S_MGMT_BASE_PATH")
@@ -57,7 +60,7 @@ func Setup() {
 	}
 
 	// read configuration
-	config.ReadConfiguration(basePath)
+	config.ReadConfiguration(basePath, dryRunDebug)
 	config.ReadIpConfig()
 
 	// start experimental server
