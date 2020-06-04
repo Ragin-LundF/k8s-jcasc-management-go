@@ -251,6 +251,14 @@ The simplest way is to call the script without arguments. Everything else will b
 go run k8s-jcasc-mgmt.go
 ```
 
+You can also add one of the following flags:
+
+| Flag | Description | Example |
+| --- | --- | --- |
+| -basepath=<basepath> | Set the basepath where the config and templates can be found. The default is the current directory. This can be used to re-use the configuration from the `bash` version. | `-basepath="/project/k8s-management/"` |
+| -logfile=<path/to/logfile> | Set the path/name to a logfile. If this flag was set, the system logs into this file. | `-logfile="/var/log/k8smgmt.log"` |
+| -server=<true|false> | *Experimental*. Starts the system as a server. Currently it has not enough functions to talk about... | `-server=true` |
+
 ## Templates ##
 
 At the `templates` directory contains the following:
