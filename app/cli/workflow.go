@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"k8s-management-go/app/cli/install"
 	"k8s-management-go/app/cli/jenkinsuser"
+	"k8s-management-go/app/cli/logoutput"
 	"k8s-management-go/app/cli/menu"
 	"k8s-management-go/app/cli/secrets"
 	"k8s-management-go/app/cli/uninstall"
@@ -20,6 +21,8 @@ type state struct {
 func Workflow(info string, err error) {
 	selectedCommand := menu.Menu(info, err)
 	info, err = startCommandAction(selectedCommand)
+	// show output
+	logoutput.DialogShowInfoAndError(info, err)
 	// recall Workflow to show menu after finished actions
 	Workflow(info, err)
 }
