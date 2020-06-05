@@ -50,6 +50,13 @@ func ProcessProjectCreate(namespace string, ipAddress string, jenkinsSystemMsg s
 		return info, err
 	}
 
+	// Replace Jenkins seed job repository
+	successful, err = ProcessJenkinsJobsRepo(newProjectDir, jobsCfgRepo)
+	if !successful || err != nil {
+		os.RemoveAll(newProjectDir)
+		return info, err
+	}
+
 	return info, err
 }
 
