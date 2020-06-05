@@ -50,8 +50,7 @@ func ShellScriptsInstall(namespace string) (info string, err error) {
 			info = info + constants.NewLine + string(outputCmd)
 			if err != nil {
 				err = errors.New(string(outputCmd) + constants.NewLine + err.Error())
-				log.Error("Unable to execute script [" + scriptWithPath + "]")
-				log.Error(err)
+				log.Error("Unable to execute script ["+scriptWithPath+"] %v\n", err)
 
 				return info, err
 			}

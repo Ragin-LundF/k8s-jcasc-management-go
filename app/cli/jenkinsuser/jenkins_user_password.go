@@ -49,8 +49,7 @@ func CreateJenkinsUserPassword() (info string, err error) {
 		if resultConfirm {
 			// copy to clipboard
 			err = clipboard.WriteAll(hashedPassword)
-			log.Error("[Encrypt JenkinsUser Password] Unable to copy password to clipboard...")
-			log.Error(err)
+			log.Error("[Encrypt JenkinsUser Password] Unable to copy password to clipboard... %v\n", err)
 		}
 		return "Created password: " + hashedPassword, err
 	} else {

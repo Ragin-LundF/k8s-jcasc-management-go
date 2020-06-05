@@ -24,8 +24,7 @@ func GpgEncryptSecrets(secretsFilePath string, password string) (info string, er
 	// after everything was ok -> delete original file
 	err = os.Remove(secretsFilePath)
 	if err != nil {
-		log.Error("[GPG Encrypt] Unable to remove secrets file [" + secretsFilePath + "]...")
-		log.Error(err)
+		log.Error("[GPG Encrypt] Unable to remove secrets file ["+secretsFilePath+"]... %v\n", err)
 	}
 
 	return info, err

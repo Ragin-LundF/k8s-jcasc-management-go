@@ -3,7 +3,7 @@ package kubectl
 import (
 	"errors"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/utils"
+	"k8s-management-go/app/utils/arrays"
 	"k8s-management-go/app/utils/logger"
 	"strings"
 )
@@ -72,7 +72,7 @@ func FindFieldIndexInKubectlOutput(kubectlOutput string, fieldName string) (line
 				if strings.Contains(kubectlOutputLine, fieldName) {
 					lineIndex = lIdx
 					kubectlLineFields := strings.Fields(kubectlOutputLine)
-					fieldIdx = utils.IndexOfArr(fieldName, kubectlLineFields)
+					fieldIdx = arrays.IndexOfArr(fieldName, kubectlLineFields)
 					// found index, abort loop
 					if fieldIdx > -1 {
 						break

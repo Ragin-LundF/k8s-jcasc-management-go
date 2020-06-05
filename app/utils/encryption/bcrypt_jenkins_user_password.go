@@ -11,8 +11,7 @@ func EncryptJenkinsUserPassword(plainPassword string) (hashedPassword string, er
 	// create bcrypt hash from password
 	hashByte, err := bcrypt.GenerateFromPassword([]byte(plainPassword), bcrypt.MinCost)
 	if err != nil {
-		log.Error("[EncryptJenkinsUserPassword] Unable to encrypt password...")
-		log.Error(err)
+		log.Error("[EncryptJenkinsUserPassword] Unable to encrypt password... %v\n", err)
 		return "", err
 	}
 	return "#jbcrypt:" + string(hashByte), err

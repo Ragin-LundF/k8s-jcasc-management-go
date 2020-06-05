@@ -20,7 +20,9 @@ func DialogShowInfoAndError(info string, err error) {
 	dialogs.ClearScreen()
 
 	// Prepare log output for info
-	infoErrArray := prepareInfo(info)
+	var infoErrArray []logoutput
+	infoErrArray = append(infoErrArray, logoutput{Type: "INFO", Entry: "Navigate or search for log entries."})
+	infoErrArray = append(infoErrArray, prepareInfo(info)...)
 	infoErrArray = append(infoErrArray, prepareErr(err)...)
 
 	// Template for displaying MenuitemModel

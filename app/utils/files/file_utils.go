@@ -37,8 +37,7 @@ func ListFilesOfDirectoryWithFilter(directory string, filter *FileFilter) (files
 	if directoryExists {
 		fileList, err := ioutil.ReadDir(directory)
 		if err != nil {
-			log.Error("[File Utils] Unable to read directory [" + directory + "]")
-			log.Error(err)
+			log.Error("[File Utils] Unable to read directory ["+directory+"] %v\n", err)
 			return files, err
 		}
 

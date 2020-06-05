@@ -124,8 +124,7 @@ func deleteFromKubernetes(namespace string, kubernetesType string, filterValue s
 	// extract NAME values from kubectl output
 	fieldValues, err := kubectl.FindFieldValuesInKubectlOutput(kubectlCmdOutput, constants.KubectlFieldName)
 	if err != nil {
-		log.Error("[deleteFromKubernetes] Unable to find [" + kubernetesType + "] in namespace [" + namespace + "]...")
-		log.Error(err)
+		log.Error("[deleteFromKubernetes] Unable to find ["+kubernetesType+"] in namespace ["+namespace+"]... %v\n", err)
 	}
 
 	// found some roles, try to delete them

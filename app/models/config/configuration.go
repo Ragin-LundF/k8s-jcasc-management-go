@@ -23,7 +23,7 @@ type Configuration struct {
 	}
 	// Directory configuration
 	Directories struct {
-		projectsBaseDirectory  string
+		ProjectsBaseDirectory  string
 		TemplatesBaseDirectory string
 	}
 	// Jenkins configuration
@@ -120,15 +120,25 @@ func GetGlobalSecretsFile() string {
 
 // Get project base directory with full path
 func GetProjectBaseDirectory() string {
-	if strings.HasPrefix(configuration.Directories.projectsBaseDirectory, "./") {
+	return calculateFullDirectoryPath(configuration.Directories.ProjectsBaseDirectory)
+}
+
+// Get project template directory with full path
+func GetProjectTemplateDirectory() string {
+	return calculateFullDirectoryPath(configuration.Directories.TemplatesBaseDirectory)
+}
+
+// calculate full directory path
+func calculateFullDirectoryPath(targetDir string) string {
+	if strings.HasPrefix(targetDir, "./") {
 		// if it starts with current directory add base path
-		return FilePathWithBasePath(configuration.Directories.projectsBaseDirectory)
-	} else if strings.HasPrefix(configuration.Directories.projectsBaseDirectory, "../") {
+		return FilePathWithBasePath(targetDir)
+	} else if strings.HasPrefix(targetDir, "../") {
 		// if it starts with subdirectory add base path
-		return FilePathWithBasePath(configuration.Directories.projectsBaseDirectory)
+		return FilePathWithBasePath(targetDir)
 	} else {
 		// it seems to be an absolute path, use only the project directory
-		return configuration.Directories.projectsBaseDirectory
+		return targetDir
 	}
 }
 
@@ -152,7 +162,7 @@ func AssignToConfiguration(key string, value string) {
 		case "IP_CONFIG_FILE_DUMMY_PREFIX":
 			configuration.IpConfig.IpConfigFileDummyPrefix = value
 		case "PROJECTS_BASE_DIRECTORY":
-			configuration.Directories.projectsBaseDirectory = value
+			configuration.Directories.ProjectsBaseDirectory = value
 		case "TEMPLATES_BASE_DIRECTORY":
 			configuration.Directories.TemplatesBaseDirectory = value
 		case "JENKINS_JCASC_CONFIGURATION_URL":

@@ -6,6 +6,7 @@ const NewLine = "\n"
 // directory and file configuration
 const DirConfig = "config"
 const DirProjectScripts = "scripts"
+const DirProjectTemplateCloudTemplates = "cloud-templates"
 const DirProjectScriptsInstallPrefix = "i_"
 const DirProjectScriptsUninstallPrefix = "d_"
 const DirHelmJenkinsMaster = "/charts/jenkins-master"

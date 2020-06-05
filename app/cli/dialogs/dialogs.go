@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/manifoldco/promptui"
 	"k8s-management-go/app/models/config"
+	"k8s-management-go/app/utils/arrays"
 	"k8s-management-go/app/utils/logger"
 	"strings"
 )
@@ -78,6 +79,17 @@ func DialogAskForPassword(label string, validate promptui.ValidateFunc) (passwor
 	return password, err
 }
 
+// prompt to enter something
+func DialogPrompt(label string, validate promptui.ValidateFunc) (answer string, err error) {
+	promptEntry := promptui.Prompt{
+		Label:    label,
+		Validate: validate,
+	}
+	answer, err = promptEntry.Run()
+
+	return answer, err
+}
+
 // Ask for deployment name
 func DialogAskForDeploymentName(label string, validate promptui.ValidateFunc) (deploymentName string, err error) {
 	log := logger.Log()
@@ -89,12 +101,7 @@ func DialogAskForDeploymentName(label string, validate promptui.ValidateFunc) (d
 	if deploymentName == "" {
 		// No pre-configured deployment name found -> ask for a new one
 		// Prepare prompt
-		promptDeploymentName := promptui.Prompt{
-			Label:    label,
-			Validate: validate,
-		}
-		deploymentName, err = promptDeploymentName.Run()
-
+		deploymentName, err = DialogPrompt(label, validate)
 		// check if everything was ok
 		if err != nil {
 			log.Error("[DialogAskForDeploymentName] Prompt ask for deployment name failed %v\n", err)
@@ -145,4 +152,68 @@ func DialogAskForNamespace() (namespace string, err error) {
 	}
 
 	return namespace, err
+}
+
+type CloudTemplatesDialog struct {
+	CloudTemplateFiles     []string
+	SelectedCloudTemplates []string
+}
+
+// dialog to ask for cloud templates
+func DialogAskForCloudTemplates(cloudTemplateDialog *CloudTemplatesDialog) (err error) {
+	log := logger.Log()
+	ClearScreen()
+
+	// Template for displaying menu
+	templates := &promptui.SelectTemplates{
+		Label:    "{{ . }}?",
+		Active:   "\U000027A4 {{ . | green }}",
+		Inactive: "  {{ . | cyan }}",
+		Selected: "\U000027A4 {{ . | red | cyan }}",
+		Details: `
+--------- Selected Cloud Templates: ----------
+{{ "Selected templates: " | faint }}	` + strings.Join(cloudTemplateDialog.SelectedCloudTemplates, ", "),
+	}
+
+	// searcher (with "/")
+	searcher := func(input string, index int) bool {
+		templateItem := cloudTemplateDialog.CloudTemplateFiles[index]
+		name := strings.Replace(strings.ToLower(templateItem), " ", "", -1)
+		input = strings.Replace(strings.ToLower(input), " ", "", -1)
+
+		return strings.Contains(name, input)
+	}
+
+	prompt := promptui.Select{
+		Label:     "Please select the cloud templates you want to use for this namespace",
+		Items:     cloudTemplateDialog.CloudTemplateFiles,
+		Templates: templates,
+		Size:      12,
+		Searcher:  searcher,
+	}
+
+	i, _, err := prompt.Run()
+	if err != nil {
+		log.Error("[DialogAskForCloudTemplates] Prompt ask for cloud templates failed %v\n", err)
+	} else {
+		if i > 0 {
+			foundElement := -1
+			// first look, if entry already exists and if it was found, remove it
+			for idx, selectedElementInCloudTemplates := range cloudTemplateDialog.SelectedCloudTemplates {
+				if selectedElementInCloudTemplates == cloudTemplateDialog.CloudTemplateFiles[i] {
+					cloudTemplateDialog.SelectedCloudTemplates = arrays.RemoveElementFromStringArr(cloudTemplateDialog.SelectedCloudTemplates, idx)
+					foundElement = idx
+					break
+				}
+			}
+
+			// element was not found -> add it
+			if foundElement == -1 {
+				cloudTemplateDialog.SelectedCloudTemplates = append(cloudTemplateDialog.SelectedCloudTemplates, cloudTemplateDialog.CloudTemplateFiles[i])
+			}
+			err = DialogAskForCloudTemplates(cloudTemplateDialog)
+		}
+	}
+
+	return err
 }
