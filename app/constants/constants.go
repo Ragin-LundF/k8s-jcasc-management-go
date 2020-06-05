@@ -52,3 +52,6 @@ const ColorDebug = "\033[0;36m"
 
 // kubectl field names
 const KubectlFieldName = "NAME"
+
+// Template Strings
+const TemplateJenkinsCloudTemplates = "##K8S_MGMT_JENKINS_CLOUD_TEMPLATES##"

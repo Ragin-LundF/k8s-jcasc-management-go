@@ -15,17 +15,31 @@ func ProcessProjectCreate(namespace string, ipAddress string, jenkinsSystemMsg s
 	newProjectDir := files.AppendPath(models.GetProjectBaseDirectory(), namespace)
 
 	// create new project directory
-	info, err = createNewProjectDirectory(newProjectDir)
+	infoLog, err := createNewProjectDirectory(newProjectDir)
+	info = info + constants.NewLine + infoLog
 	if err != nil {
 		return info, err
 	}
 
 	// copy necessary files
-	info, err = copyTemplatesToNewDirectory(newProjectDir, len(existingPvc) > 0, createDeploymentOnlyProject)
+	infoLog, err = copyTemplatesToNewDirectory(newProjectDir, len(existingPvc) > 0, createDeploymentOnlyProject)
+	info = info + constants.NewLine + infoLog
+	if err != nil {
+		os.RemoveAll(newProjectDir)
+		return info, err
+	}
 
 	// add IP and namespace to IP configuration
 	successful, err := config.AddToIpConfigFile(namespace, ipAddress)
 	if !successful || err != nil {
+		os.RemoveAll(newProjectDir)
+		return info, err
+	}
+
+	// processing cloud templates
+	successful, err = ProcessCloudTemplates(newProjectDir, selectedCloudTemplates)
+	if !successful || err != nil {
+		os.RemoveAll(newProjectDir)
 		return info, err
 	}
 

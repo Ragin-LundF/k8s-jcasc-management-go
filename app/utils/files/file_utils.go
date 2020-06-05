@@ -126,3 +126,26 @@ func CopyFile(src string, dst string) (bytesWritten int64, err error) {
 
 	return nBytes, err
 }
+
+// replace content in file
+func ReplaceStringInFile(filePath string, stringToReplace string, newString string) (success bool, err error) {
+	log := logger.Log()
+
+	// read file
+	read, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		log.Error("[ReplaceStringInFile] Cannot read file [%v] \n%v", filePath, err)
+		return false, err
+	}
+
+	// replace content
+	newContents := strings.Replace(string(read), stringToReplace, newString, -1)
+
+	// write changes
+	err = ioutil.WriteFile(filePath, []byte(newContents), 0)
+	if err != nil {
+		log.Error("[ReplaceStringInFile] Cannot write file [%v] \n%v", filePath, err)
+		return false, err
+	}
+	return true, err
+}
