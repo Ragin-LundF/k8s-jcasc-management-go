@@ -19,7 +19,7 @@ rules:
   - apiGroups: ["", "apps"]
     resources: ["configmaps", "services", "deployments", "replicasets", "pods", "statefulsets", "secrets", "persistentvolumeclaims"]
     verbs: ["*"]
-  - apiGroups: ["networking.k8s.io"]
+  - apiGroups: ["networking.k8s.io", "extensions"]
     resources: ["ingresses"]
     verbs: ["*"]
 
