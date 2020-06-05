@@ -3,7 +3,7 @@ package createproject
 import (
 	"errors"
 	"k8s-management-go/app/cli/dialogs"
-	"k8s-management-go/app/models/config"
+	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/logger"
 	"regexp"
 	"strings"
@@ -19,7 +19,7 @@ func ProjectWizardAskForIpAddress() (ipAddress string, err error) {
 			return errors.New("IP address is not valid! ")
 		}
 		// check, that ip address was not already used
-		for _, ipConfig := range config.GetIpConfiguration().Ips {
+		for _, ipConfig := range models.GetIpConfiguration().Ips {
 			if strings.ToLower(ipConfig.Ip) == strings.ToLower(input) {
 				return errors.New("IP address already in use! ")
 			}
