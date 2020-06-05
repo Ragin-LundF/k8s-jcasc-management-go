@@ -71,7 +71,7 @@ func ProjectWizardWorkflow() (info string, err error) {
 	info = info + constants.NewLine + "[ProjectWizardWorkflow] -> Ask for cloud templates...done"
 
 	// Process data and create project
-	infoLog, err = ProcessProjectCreate(namespace, ipAddress, jenkinsSystemMsg, jobsCfgRepo, existingPvc, selectedCloudTemplates)
+	infoLog, err = ProcessProjectCreate(namespace, ipAddress, jenkinsSystemMsg, jobsCfgRepo, existingPvc, selectedCloudTemplates, false)
 	info = info + constants.NewLine + infoLog
 
 	return info, err

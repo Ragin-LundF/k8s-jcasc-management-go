@@ -17,6 +17,7 @@ const FilenameJenkinsConfigurationAsCode = "jcasc_config.yaml"
 const FilenameJenkinsHelmValues = "jenkins_helm_values.yaml"
 const FilenameNginxIngressControllerHelmValues = "nginx_ingress_helm_values.yaml"
 const FilenamePvcClaim = "pvc_claim.yaml"
+const FilenameSecrets = "secrets.sh"
 const SecretsFileEncodedEnding = ".gpg"
 const ScriptsFileEnding = ".sh"
 
