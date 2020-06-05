@@ -5,7 +5,7 @@ import (
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/cli/secrets"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/models/config"
+	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
 )
 
@@ -20,7 +20,7 @@ func DoUpgradeOrInstall(helmCommand string) (info string, err error) {
 
 	// first check if namespace directory exists
 	projectPath := files.AppendPath(
-		config.GetProjectBaseDirectory(),
+		models.GetProjectBaseDirectory(),
 		namespace,
 	)
 	if !files.FileOrDirectoryExists(projectPath) {
@@ -28,7 +28,7 @@ func DoUpgradeOrInstall(helmCommand string) (info string, err error) {
 	}
 
 	// create namespace and pvc only, if it is not dry-run only
-	if !config.GetConfiguration().K8sManagement.DryRunOnly {
+	if !models.GetConfiguration().K8sManagement.DryRunOnly {
 		// check if namespace is available or create a new one if not
 		infoLog, err = CheckAndCreateNamespace(namespace)
 		info = info + constants.NewLine + infoLog
@@ -54,7 +54,7 @@ func DoUpgradeOrInstall(helmCommand string) (info string, err error) {
 	// apply secrets only if Jenkins Helm values are existing
 	if jenkinsHelmValuesExist {
 		// apply secrets only, if it is not dry-run only
-		if !config.GetConfiguration().K8sManagement.DryRunOnly {
+		if !models.GetConfiguration().K8sManagement.DryRunOnly {
 			// apply secrets
 			infoLog, err = secrets.ApplySecretsToNamespace(namespace)
 			info = info + constants.NewLine + infoLog
@@ -87,7 +87,7 @@ func DoUpgradeOrInstall(helmCommand string) (info string, err error) {
 	}
 
 	// install scripts only, if it is not dry-run only
-	if !config.GetConfiguration().K8sManagement.DryRunOnly {
+	if !models.GetConfiguration().K8sManagement.DryRunOnly {
 		// install scripts
 		infoLog, err = ShellScriptsInstall(namespace)
 		info = info + constants.NewLine + infoLog

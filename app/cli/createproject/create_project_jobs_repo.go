@@ -3,7 +3,7 @@ package createproject
 import (
 	"errors"
 	"k8s-management-go/app/cli/dialogs"
-	"k8s-management-go/app/models/config"
+	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/logger"
 	"regexp"
 )
@@ -17,7 +17,7 @@ func ProjectWizardAskForJobsConfigurationRepository() (jenkinsSysMsg string, err
 			return errors.New("Should not be longer than 512 characters. ")
 		}
 		// Regex regex to validate repository
-		regex := regexp.MustCompile(config.GetConfiguration().Jenkins.JobDSL.RepoValidatePattern)
+		regex := regexp.MustCompile(models.GetConfiguration().Jenkins.JobDSL.RepoValidatePattern)
 		if !regex.Match([]byte(input)) {
 			return errors.New("Wrong repository name! ")
 		}

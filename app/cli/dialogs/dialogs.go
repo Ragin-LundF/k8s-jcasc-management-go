@@ -3,7 +3,7 @@ package dialogs
 import (
 	"fmt"
 	"github.com/manifoldco/promptui"
-	"k8s-management-go/app/models/config"
+	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/arrays"
 	"k8s-management-go/app/utils/logger"
 	"strings"
@@ -96,7 +96,7 @@ func DialogAskForDeploymentName(label string, validate promptui.ValidateFunc) (d
 	ClearScreen()
 
 	// try to read deployment name from configuration
-	deploymentName = config.GetConfiguration().Jenkins.Helm.Master.DeploymentName
+	deploymentName = models.GetConfiguration().Jenkins.Helm.Master.DeploymentName
 	// check if something was set
 	if deploymentName == "" {
 		// No pre-configured deployment name found -> ask for a new one
@@ -129,7 +129,7 @@ func DialogAskForNamespace() (namespace string, err error) {
 
 	// searcher (with "/")
 	searcher := func(input string, index int) bool {
-		namespaceItem := config.GetIpConfiguration().Ips[index]
+		namespaceItem := models.GetIpConfiguration().Ips[index]
 		name := strings.Replace(strings.ToLower(namespaceItem.Namespace), " ", "", -1)
 		input = strings.Replace(strings.ToLower(input), " ", "", -1)
 
@@ -138,7 +138,7 @@ func DialogAskForNamespace() (namespace string, err error) {
 
 	prompt := promptui.Select{
 		Label:     "Please select the namespace to which the secrets should be applied",
-		Items:     config.GetIpConfiguration().Ips,
+		Items:     models.GetIpConfiguration().Ips,
 		Templates: templates,
 		Size:      12,
 		Searcher:  searcher,
@@ -148,7 +148,7 @@ func DialogAskForNamespace() (namespace string, err error) {
 	if err != nil {
 		log.Error("[DialogAskForNamespace] Prompt ask for namespace failed %v\n", err)
 	} else {
-		namespace = config.GetIpConfiguration().Ips[i].Namespace
+		namespace = models.GetIpConfiguration().Ips[i].Namespace
 	}
 
 	return namespace, err

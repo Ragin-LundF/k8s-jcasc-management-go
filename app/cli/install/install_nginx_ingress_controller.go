@@ -3,7 +3,7 @@ package install
 import (
 	"errors"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/models/config"
+	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/helm"
 	"k8s-management-go/app/utils/logger"
@@ -19,7 +19,7 @@ func HelmInstallNginxIngressController(command string, namespace string, jenkins
 	// create var with path to ingress controller helm values
 	helmChartsNginxIngressCtrlValuesFile := files.AppendPath(
 		files.AppendPath(
-			config.GetProjectBaseDirectory(),
+			models.GetProjectBaseDirectory(),
 			namespace,
 		),
 		constants.FilenameNginxIngressControllerHelmValues,
@@ -32,9 +32,9 @@ func HelmInstallNginxIngressController(command string, namespace string, jenkins
 		// check if command is ok
 		if command == constants.HelmCommandInstall || command == constants.HelmCommandUpgrade {
 			// prepare files and directories
-			helmChartsNginxIngressCtrlDirectory := files.AppendPath(config.GetConfiguration().BasePath, constants.DirHelmNginxIngressCtrl)
+			helmChartsNginxIngressCtrlDirectory := files.AppendPath(models.GetConfiguration().BasePath, constants.DirHelmNginxIngressCtrl)
 			// execute Helm command
-			nginxIngressCtrlDeploymentName := config.GetConfiguration().Nginx.Ingress.Controller.DeploymentName
+			nginxIngressCtrlDeploymentName := models.GetConfiguration().Nginx.Ingress.Controller.DeploymentName
 
 			// execute Helm command
 			argsForCommand := []string{
@@ -52,7 +52,7 @@ func HelmInstallNginxIngressController(command string, namespace string, jenkins
 			}
 
 			// add dry-run and debug if necessary
-			if config.GetConfiguration().K8sManagement.DryRunOnly {
+			if models.GetConfiguration().K8sManagement.DryRunOnly {
 				argsForCommand = append(argsForCommand, "--dry-run", "--debug")
 			}
 
@@ -62,7 +62,7 @@ func HelmInstallNginxIngressController(command string, namespace string, jenkins
 			info = info + constants.NewLine + infoLog
 
 			// first write output of dry-run...
-			if config.GetConfiguration().K8sManagement.DryRunOnly {
+			if models.GetConfiguration().K8sManagement.DryRunOnly {
 				log.Info("[Install NginxIngressCtrl] Output of dry-run for namespace [" + namespace + "]")
 				log.Info(helmCmdOutput)
 			}

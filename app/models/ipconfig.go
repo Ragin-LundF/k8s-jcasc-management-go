@@ -1,4 +1,4 @@
-package config
+package models
 
 // basic IP struct
 type Ip struct {

@@ -1,18 +1,18 @@
 package createproject
 
 import (
-	"fmt"
-	"io"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/models/config"
+	"k8s-management-go/app/models"
+	"k8s-management-go/app/utils/config"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/logger"
 	"os"
 )
 
+// Processing project creation
 func ProcessProjectCreate(namespace string, ipAddress string, jenkinsSystemMsg string, jobsCfgRepo string, existingPvc string, selectedCloudTemplates []string, createDeploymentOnlyProject bool) (info string, err error) {
 	// calculate the target directory
-	newProjectDir := files.AppendPath(config.GetProjectBaseDirectory(), namespace)
+	newProjectDir := files.AppendPath(models.GetProjectBaseDirectory(), namespace)
 
 	// create new project directory
 	info, err = createNewProjectDirectory(newProjectDir)
@@ -20,8 +20,15 @@ func ProcessProjectCreate(namespace string, ipAddress string, jenkinsSystemMsg s
 		return info, err
 	}
 
+	// copy necessary files
 	info, err = copyTemplatesToNewDirectory(newProjectDir, len(existingPvc) > 0, createDeploymentOnlyProject)
-	// dummy processing
+
+	// add IP and namespace to IP configuration
+	successful, err := config.AddToIpConfigFile(namespace, ipAddress)
+	if !successful || err != nil {
+		return info, err
+	}
+
 	return info, err
 }
 
@@ -47,9 +54,9 @@ func createNewProjectDirectory(newProjectDir string) (info string, err error) {
 
 // copy files to new directory
 func copyTemplatesToNewDirectory(projectDirectory string, copyPersistentVolume bool, createDeploymentOnlyProject bool) (info string, err error) {
-	templateDirectory := config.GetProjectTemplateDirectory()
+	templateDirectory := models.GetProjectTemplateDirectory()
 	// copy nginx-ingress-controller values.yaml
-	_, err = copyFile(
+	_, err = files.CopyFile(
 		files.AppendPath(templateDirectory, constants.FilenameNginxIngressControllerHelmValues),
 		files.AppendPath(projectDirectory, constants.FilenameNginxIngressControllerHelmValues),
 	)
@@ -60,7 +67,7 @@ func copyTemplatesToNewDirectory(projectDirectory string, copyPersistentVolume b
 	// if it is not a deployment only project, copy more files
 	if !createDeploymentOnlyProject {
 		// copy Jenkins values.yaml
-		_, err = copyFile(
+		_, err = files.CopyFile(
 			files.AppendPath(templateDirectory, constants.FilenameJenkinsHelmValues),
 			files.AppendPath(projectDirectory, constants.FilenameJenkinsHelmValues),
 		)
@@ -69,7 +76,7 @@ func copyTemplatesToNewDirectory(projectDirectory string, copyPersistentVolume b
 		}
 
 		// copy Jenkins JCasC config.yaml
-		_, err = copyFile(
+		_, err = files.CopyFile(
 			files.AppendPath(templateDirectory, constants.FilenameJenkinsConfigurationAsCode),
 			files.AppendPath(projectDirectory, constants.FilenameJenkinsConfigurationAsCode),
 		)
@@ -79,7 +86,7 @@ func copyTemplatesToNewDirectory(projectDirectory string, copyPersistentVolume b
 
 		// copy existing PVC values.yaml
 		if copyPersistentVolume {
-			_, err = copyFile(
+			_, err = files.CopyFile(
 				files.AppendPath(templateDirectory, constants.FilenamePvcClaim),
 				files.AppendPath(projectDirectory, constants.FilenamePvcClaim),
 			)
@@ -89,8 +96,8 @@ func copyTemplatesToNewDirectory(projectDirectory string, copyPersistentVolume b
 		}
 
 		// copy secrets to project
-		if config.GetConfiguration().GlobalSecretsFile == "" {
-			_, err = copyFile(
+		if models.GetConfiguration().GlobalSecretsFile == "" {
+			_, err = files.CopyFile(
 				files.AppendPath(templateDirectory, constants.FilenameSecrets),
 				files.AppendPath(projectDirectory, constants.FilenameSecrets),
 			)
@@ -101,30 +108,4 @@ func copyTemplatesToNewDirectory(projectDirectory string, copyPersistentVolume b
 	}
 
 	return info, err
-}
-
-func copyFile(src string, dst string) (bytesWritten int64, err error) {
-	srcFileStat, err := os.Stat(src)
-	if err != nil {
-		return 0, err
-	}
-
-	if !srcFileStat.Mode().IsRegular() {
-		return 0, fmt.Errorf("%s is not a regular file", src)
-	}
-
-	srcFile, err := os.Open(src)
-	if err != nil {
-		return 0, err
-	}
-	defer srcFile.Close()
-
-	dstFile, err := os.Create(dst)
-	if err != nil {
-		return 0, err
-	}
-	defer dstFile.Close()
-	nBytes, err := io.Copy(dstFile, srcFile)
-
-	return nBytes, err
 }

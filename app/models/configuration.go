@@ -1,4 +1,4 @@
-package config
+package models
 
 import (
 	"k8s-management-go/app/utils/files"

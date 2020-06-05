@@ -5,7 +5,7 @@ import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/models/config"
+	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/kubectl"
 	"k8s-management-go/app/utils/logger"
@@ -35,7 +35,7 @@ func PersistenceVolumeClaimInstall(namespace string) (info string, err error) {
 	log := logger.Log()
 	log.Info("[PVC Install] Check if PVC should be installed on namespace [" + namespace + "]")
 	// prepare file directories
-	projectDir := files.AppendPath(config.GetProjectBaseDirectory(), namespace)
+	projectDir := files.AppendPath(models.GetProjectBaseDirectory(), namespace)
 	pvcClaimValuesFilePath := files.AppendPath(projectDir, constants.FilenamePvcClaim)
 
 	// open file

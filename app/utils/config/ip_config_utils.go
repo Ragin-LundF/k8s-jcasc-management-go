@@ -2,16 +2,18 @@ package config
 
 import (
 	"bufio"
-	"k8s-management-go/app/models/config"
+	"k8s-management-go/app/models"
+	"k8s-management-go/app/utils/logger"
 	"os"
 	"strings"
 )
 
 func ReadIpConfig() {
-	configuration := config.GetConfiguration()
+	configuration := models.GetConfiguration()
 
 	// read configuration file. Replace unneeded double quotes if needed.
-	data, err := os.Open(config.GetIpConfigurationFile())
+	data, err := os.Open(models.GetIpConfigurationFile())
+	defer data.Close()
 
 	// check for error
 	if err != nil {
@@ -28,12 +30,10 @@ func ReadIpConfig() {
 			// if line is not a comment (marker: "#") parse the configuration and assign it to the config
 			if line != "" && !strings.HasPrefix(line, "#") && !strings.HasPrefix(line, configuration.IpConfig.IpConfigFileDummyPrefix) {
 				namespace, ip := parseIpConfigurationLine(line)
-				config.AddIpAndNamespaceToConfiguration(namespace, ip)
+				models.AddIpAndNamespaceToConfiguration(namespace, ip)
 			}
 		}
 	}
-	// close file
-	_ = data.Close()
 }
 
 // parse line of configuration and split it into key/value
@@ -48,4 +48,21 @@ func parseIpConfigurationLine(line string) (namespace string, ip string) {
 		namespace = strings.Replace(namespace, "\"", "", -1)
 	}
 	return namespace, ip
+}
+
+// Add IP to IP config file
+func AddToIpConfigFile(namespace string, ip string) (success bool, err error) {
+	log := logger.Log()
+	ipconfigFile, err := os.OpenFile(models.GetIpConfigurationFile(), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	defer ipconfigFile.Close()
+	if err != nil {
+		log.Error("[AddToIpConfigFile] Unable to open IP config file [%v]. \n%v", models.GetIpConfigurationFile(), err)
+		return false, err
+	}
+
+	if _, err := ipconfigFile.WriteString(namespace + " " + ip + "\n"); err != nil {
+		log.Error("[AddToIpConfigFile] Unable to add new IP and namespace to file [%v]. \n%v", models.GetIpConfigurationFile(), err)
+		return false, err
+	}
+	return true, err
 }

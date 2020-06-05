@@ -3,7 +3,7 @@ package uninstall
 import (
 	"errors"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/models/config"
+	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/helm"
 	"k8s-management-go/app/utils/logger"
 )
@@ -15,11 +15,11 @@ func HelmUninstallNginxIngressController(namespace string) (info string, err err
 
 	// execute Helm command
 	helmCmdArgs := []string{
-		config.GetConfiguration().Nginx.Ingress.Controller.DeploymentName,
+		models.GetConfiguration().Nginx.Ingress.Controller.DeploymentName,
 		"-n", namespace,
 	}
 	// add dry-run flags if necessary
-	if config.GetConfiguration().K8sManagement.DryRunOnly {
+	if models.GetConfiguration().K8sManagement.DryRunOnly {
 		helmCmdArgs = append(helmCmdArgs, "--dry-run", "--debug")
 	}
 	helmCmdOutput, infoLog, err := helm.ExecutorHelm("uninstall", helmCmdArgs)

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/models/config"
+	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/encryption"
 	"strings"
 )
@@ -38,7 +38,7 @@ func EncryptSecretsFile() (info string, err error) {
 	}
 
 	// encrypt secrets file
-	secretsFilePath := config.GetGlobalSecretsFile()
+	secretsFilePath := models.GetGlobalSecretsFile()
 	info, err = encryption.GpgEncryptSecrets(secretsFilePath, password)
 
 	return info, err
@@ -49,7 +49,7 @@ func DecryptSecretsFile() (info string, err error) {
 	if err != nil {
 		return info, err
 	}
-	secretsFilePath := config.GetGlobalSecretsFile() + constants.SecretsFileEncodedEnding
+	secretsFilePath := models.GetGlobalSecretsFile() + constants.SecretsFileEncodedEnding
 	info, err = encryption.GpgDecryptSecrets(secretsFilePath, password)
 
 	return info, err

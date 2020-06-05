@@ -3,7 +3,7 @@ package install
 import (
 	"errors"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/models/config"
+	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/helm"
 	"k8s-management-go/app/utils/logger"
@@ -18,10 +18,10 @@ func HelmInstallJenkins(command string, namespace string, deploymentName string)
 	// check if command is ok
 	if command == constants.HelmCommandInstall || command == constants.HelmCommandUpgrade {
 		// prepare files and directories
-		helmChartsJenkinsDirectory := files.AppendPath(config.GetConfiguration().BasePath, constants.DirHelmJenkinsMaster)
+		helmChartsJenkinsDirectory := files.AppendPath(models.GetConfiguration().BasePath, constants.DirHelmJenkinsMaster)
 		helmChartsJenkinsValuesFile := files.AppendPath(
 			files.AppendPath(
-				config.GetProjectBaseDirectory(),
+				models.GetProjectBaseDirectory(),
 				namespace,
 			),
 			constants.FilenameJenkinsHelmValues,
@@ -32,7 +32,7 @@ func HelmInstallJenkins(command string, namespace string, deploymentName string)
 			deploymentName,
 			helmChartsJenkinsDirectory,
 		}
-		if config.GetConfiguration().K8sManagement.DryRunOnly {
+		if models.GetConfiguration().K8sManagement.DryRunOnly {
 			argsForCommand = append(argsForCommand, "--dry-run", "--debug")
 		}
 		argsForCommand = append(argsForCommand, "-n", namespace, "-f", helmChartsJenkinsValuesFile)
@@ -42,7 +42,7 @@ func HelmInstallJenkins(command string, namespace string, deploymentName string)
 		info = info + constants.NewLine + infoLog
 
 		// first write output of dry-run...
-		if config.GetConfiguration().K8sManagement.DryRunOnly {
+		if models.GetConfiguration().K8sManagement.DryRunOnly {
 			log.Info("[Install Jenkins] Output of dry-run for namespace [" + namespace + "]")
 			log.Info(helmCmdOutput)
 		}

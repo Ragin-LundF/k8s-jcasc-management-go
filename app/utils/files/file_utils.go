@@ -1,6 +1,8 @@
 package files
 
 import (
+	"fmt"
+	"io"
 	"io/ioutil"
 	"k8s-management-go/app/utils/logger"
 	"os"
@@ -96,4 +98,31 @@ func AppendPath(originalPath string, pathExtension string) (extendedPath string)
 		extendedPath = originalPath + "/" + pathExtension
 	}
 	return extendedPath
+}
+
+// copy file from src to destination
+func CopyFile(src string, dst string) (bytesWritten int64, err error) {
+	srcFileStat, err := os.Stat(src)
+	if err != nil {
+		return 0, err
+	}
+
+	if !srcFileStat.Mode().IsRegular() {
+		return 0, fmt.Errorf("%s is not a regular file", src)
+	}
+
+	srcFile, err := os.Open(src)
+	if err != nil {
+		return 0, err
+	}
+	defer srcFile.Close()
+
+	dstFile, err := os.Create(dst)
+	if err != nil {
+		return 0, err
+	}
+	defer dstFile.Close()
+	nBytes, err := io.Copy(dstFile, srcFile)
+
+	return nBytes, err
 }

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/models/config"
+	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/logger"
 )
@@ -13,7 +13,7 @@ func ProjectWizardAskForCloudTemplates() (cloudTemplates []string, info string, 
 	log := logger.Log()
 
 	// look if cloud templates are available
-	cloudTemplatePath := files.AppendPath(config.GetProjectTemplateDirectory(), constants.DirProjectTemplateCloudTemplates)
+	cloudTemplatePath := files.AppendPath(models.GetProjectTemplateDirectory(), constants.DirProjectTemplateCloudTemplates)
 	if !files.FileOrDirectoryExists(cloudTemplatePath) {
 		info = info + constants.NewLine + "No cloud template directory found. Skip this step "
 		log.Info("[ProjectWizardAskForCloudTemplates] %v", info)

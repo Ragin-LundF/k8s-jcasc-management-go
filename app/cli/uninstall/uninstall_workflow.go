@@ -3,7 +3,7 @@ package uninstall
 import (
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/models/config"
+	"k8s-management-go/app/models"
 )
 
 // workflow for uninstall
@@ -36,7 +36,7 @@ func DoUninstall() (info string, err error) {
 	}
 
 	// in dry-run we do not want to uninstall the scripts
-	if !config.GetConfiguration().K8sManagement.DryRunOnly {
+	if !models.GetConfiguration().K8sManagement.DryRunOnly {
 		// try to uninstall scripts
 		infoLog, err = ShellScriptsUninstall(namespace)
 		info = info + constants.NewLine + infoLog

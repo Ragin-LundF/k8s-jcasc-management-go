@@ -4,7 +4,7 @@ import (
 	"errors"
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/models/config"
+	"k8s-management-go/app/models"
 	"os"
 	"os/exec"
 )
@@ -26,7 +26,7 @@ func ApplySecretsToNamespace(namespace string) (info string, err error) {
 	info = info + constants.NewLine + infoLog
 
 	// apply secret to namespace
-	secretsFilePath := config.GetGlobalSecretsFile()
+	secretsFilePath := models.GetGlobalSecretsFile()
 	infoLog, nsErr := applySecretsToNamespace(secretsFilePath, namespace)
 	info = info + constants.NewLine + infoLog
 
@@ -53,8 +53,8 @@ func ApplySecretsToAllNamespaces() (info string, err error) {
 	// apply secret to namespaces
 	infos := ""
 	nsErrs := ""
-	secretsFilePath := config.GetGlobalSecretsFile()
-	for _, ip := range config.GetIpConfiguration().Ips {
+	secretsFilePath := models.GetGlobalSecretsFile()
+	for _, ip := range models.GetIpConfiguration().Ips {
 		infoNs, nsErr := applySecretsToNamespace(secretsFilePath, ip.Namespace)
 		if infoNs != "" {
 			infos = infos + constants.NewLine + infoNs

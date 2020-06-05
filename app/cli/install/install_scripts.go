@@ -3,7 +3,7 @@ package install
 import (
 	"errors"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/models/config"
+	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/logger"
 	"os/exec"
@@ -15,7 +15,7 @@ func ShellScriptsInstall(namespace string) (info string, err error) {
 	// calculate path to script folder
 	var scriptFolder = files.AppendPath(
 		files.AppendPath(
-			config.GetProjectBaseDirectory(),
+			models.GetProjectBaseDirectory(),
 			namespace,
 		),
 		constants.DirProjectScripts,

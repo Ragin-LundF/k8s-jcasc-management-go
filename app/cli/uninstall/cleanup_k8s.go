@@ -3,7 +3,7 @@ package uninstall
 import (
 	"errors"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/models/config"
+	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/kubectl"
 	"k8s-management-go/app/utils/logger"
 	"strings"
@@ -37,7 +37,7 @@ func CleanupNginxIngressCtrlRoles(namespace string) (info string, err error) {
 	log := logger.Log()
 	log.Info("[CleanupNginxIngressCtrlRoles] Start to cleanup nginx-ingress Roles for namespace [" + namespace + "]...")
 
-	searchValue := config.GetConfiguration().Nginx.Ingress.Controller.DeploymentName
+	searchValue := models.GetConfiguration().Nginx.Ingress.Controller.DeploymentName
 	info, err = deleteFromKubernetes(namespace, "role", searchValue)
 
 	log.Info("[CleanupNginxIngressCtrlRoles] Cleanup nginx-ingress Roles for namespace [" + namespace + "] done.")
@@ -49,7 +49,7 @@ func CleanupNginxIngressCtrlRoleBindings(namespace string) (info string, err err
 	log := logger.Log()
 	log.Info("[CleanupNginxIngressCtrlRoleBindings] Start to cleanup nginx-ingress RoleBindings for namespace [" + namespace + "]...")
 
-	searchValue := config.GetConfiguration().Nginx.Ingress.Controller.DeploymentName
+	searchValue := models.GetConfiguration().Nginx.Ingress.Controller.DeploymentName
 	info, err = deleteFromKubernetes(namespace, "rolebindings", searchValue)
 
 	log.Info("[CleanupNginxIngressCtrlRoleBindings] Cleanup nginx-ingress RoleBindings for namespace [" + namespace + "] done.")
@@ -61,7 +61,7 @@ func CleanupNginxIngressCtrlServiceAccounts(namespace string) (info string, err 
 	log := logger.Log()
 	log.Info("[CleanupNginxIngressCtrlServiceAccounts] Start to cleanup nginx-ingress ServiceAccounts for namespace [" + namespace + "]...")
 
-	searchValue := config.GetConfiguration().Nginx.Ingress.Controller.DeploymentName
+	searchValue := models.GetConfiguration().Nginx.Ingress.Controller.DeploymentName
 	info, err = deleteFromKubernetes(namespace, "sa", searchValue)
 
 	log.Info("[CleanupNginxIngressCtrlServiceAccounts] Cleanup nginx-ingress ServiceAccounts for namespace [" + namespace + "] done.")
@@ -73,7 +73,7 @@ func CleanupNginxIngressCtrlClusterRoles(namespace string) (info string, err err
 	log := logger.Log()
 	log.Info("[CleanupNginxIngressCtrlClusterRoles] Start to cleanup nginx-ingress ClusterRoles for namespace [" + namespace + "]...")
 
-	searchValue := config.GetConfiguration().Nginx.Ingress.Controller.DeploymentName + "-clusterrole-" + namespace
+	searchValue := models.GetConfiguration().Nginx.Ingress.Controller.DeploymentName + "-clusterrole-" + namespace
 	info, err = deleteFromKubernetes(namespace, "clusterrole", searchValue)
 
 	log.Info("[CleanupNginxIngressCtrlClusterRoles] Cleanup nginx-ingress ClusterRoles for namespace [" + namespace + "] done.")
@@ -85,7 +85,7 @@ func CleanupNginxIngressCtrlClusterRoleBinding(namespace string) (info string, e
 	log := logger.Log()
 	log.Info("[CleanupNginxIngressCtrlClusterRoleBinding] Start to cleanup nginx-ingress ClusterRoleBinding for namespace [" + namespace + "]...")
 
-	searchValue := config.GetConfiguration().Nginx.Ingress.Controller.DeploymentName + "-clusterrole-nisa-binding-" + namespace
+	searchValue := models.GetConfiguration().Nginx.Ingress.Controller.DeploymentName + "-clusterrole-nisa-binding-" + namespace
 	info, err = deleteFromKubernetes(namespace, "clusterrolebinding", searchValue)
 
 	log.Info("[CleanupNginxIngressCtrlClusterRoleBinding] Cleanup nginx-ingress ClusterRoleBinding for namespace [" + namespace + "] done.")
@@ -97,7 +97,7 @@ func CleanupNginxIngressCtrlIngress(namespace string) (info string, err error) {
 	log := logger.Log()
 	log.Info("[CleanupNginxIngressCtrlClusterRoleBinding] Start to cleanup nginx-ingress ingress routes for namespace [" + namespace + "]...")
 
-	searchValue := config.GetConfiguration().Nginx.Ingress.Controller.DeploymentName
+	searchValue := models.GetConfiguration().Nginx.Ingress.Controller.DeploymentName
 	info, err = deleteFromKubernetes(namespace, "ingress", searchValue)
 
 	log.Info("[CleanupNginxIngressCtrlClusterRoleBinding] Cleanup nginx-ingress ingress routes for namespace [" + namespace + "] done.")

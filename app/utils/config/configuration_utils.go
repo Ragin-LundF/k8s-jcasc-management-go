@@ -3,7 +3,7 @@ package config
 import (
 	"bufio"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/models/config"
+	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/logger"
 	"os"
@@ -20,9 +20,9 @@ func ReadConfiguration(basePath string, dryRunDebug bool) {
 		readConfigurationFromFile(files.AppendPath(files.AppendPath(basePath, constants.DirConfig), constants.FilenameConfigurationCustom))
 	}
 	// check if there is an alternative configuration path and try to read config from there
-	configuration := config.GetConfiguration()
-	config.AssignToConfiguration("K8S_MGMT_BASE_PATH", basePath)
-	config.AssignToConfiguration("K8S_MGMT_DRY_RUN_DEBUG", strconv.FormatBool(dryRunDebug))
+	configuration := models.GetConfiguration()
+	models.AssignToConfiguration("K8S_MGMT_BASE_PATH", basePath)
+	models.AssignToConfiguration("K8S_MGMT_DRY_RUN_DEBUG", strconv.FormatBool(dryRunDebug))
 
 	if configuration.AlternativeConfigFile != "" && files.FileOrDirectoryExists(files.AppendPath(basePath, configuration.AlternativeConfigFile)) {
 		readConfigurationFromFile(files.AppendPath(basePath, configuration.AlternativeConfigFile))
@@ -50,7 +50,7 @@ func readConfigurationFromFile(configFile string) {
 			// if line is not a comment (marker: "#") parse the configuration and assign it to the config
 			if line != "" && !strings.HasPrefix(line, "#") {
 				key, value := parseConfigurationLine(line)
-				config.AssignToConfiguration(key, value)
+				models.AssignToConfiguration(key, value)
 			}
 		}
 	}
