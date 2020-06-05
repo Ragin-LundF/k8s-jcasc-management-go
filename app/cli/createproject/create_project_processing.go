@@ -43,6 +43,13 @@ func ProcessProjectCreate(namespace string, ipAddress string, jenkinsSystemMsg s
 		return info, err
 	}
 
+	// Replace Jenkins system message
+	successful, err = ProcessJenkinsSystemMessage(newProjectDir, jenkinsSystemMsg)
+	if !successful || err != nil {
+		os.RemoveAll(newProjectDir)
+		return info, err
+	}
+
 	return info, err
 }
 

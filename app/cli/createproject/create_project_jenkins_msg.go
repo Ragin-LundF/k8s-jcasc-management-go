@@ -3,6 +3,8 @@ package createproject
 import (
 	"errors"
 	"k8s-management-go/app/cli/dialogs"
+	"k8s-management-go/app/constants"
+	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/logger"
 )
 
@@ -31,4 +33,16 @@ func ProjectWizardAskForJenkinsSystemMessage(namespace string) (jenkinsSysMsg st
 	}
 
 	return jenkinsSysMsg, err
+}
+
+// Replace jenkins system message
+func ProcessJenkinsSystemMessage(projectDirectory string, jenkinsSysMsg string) (success bool, err error) {
+	log := logger.Log()
+	jenkinsHelmValuesFile := files.AppendPath(projectDirectory, constants.FilenameJenkinsConfigurationAsCode)
+	successful, err := files.ReplaceStringInFile(jenkinsHelmValuesFile, constants.TemplateJenkinsSystemMessage, jenkinsSysMsg)
+	if !successful || err != nil {
+		log.Error("[ProcessJenkinsSystemMessage] Can not replace Jenkins System msg in file [%v], \n%v", jenkinsHelmValuesFile, err)
+		return false, err
+	}
+	return true, err
 }

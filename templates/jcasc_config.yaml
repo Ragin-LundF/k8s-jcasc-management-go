@@ -1,5 +1,5 @@
 jenkins:
-  systemMessage: "##PROJECT_DIRECTORY## Jenkins in namespace ##NAMESPACE##"
+  systemMessage: "##K8S_MGMT_JENKINS_SYSTEM_MESSAGE##"
 
   authorizationStrategy:
     roleBased:

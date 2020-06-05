@@ -55,3 +55,4 @@ const KubectlFieldName = "NAME"
 
 // Template Strings
 const TemplateJenkinsCloudTemplates = "##K8S_MGMT_JENKINS_CLOUD_TEMPLATES##"
+const TemplateJenkinsSystemMessage = "##K8S_MGMT_JENKINS_SYSTEM_MESSAGE##"
