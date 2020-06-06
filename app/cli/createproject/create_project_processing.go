@@ -102,7 +102,7 @@ func createNewProjectDirectory(newProjectDir string) (info string, err error) {
 	info = "Trying to create a new project directory..."
 
 	// create directory
-	err = os.Mkdir(newProjectDir, os.ModePerm)
+	err = os.MkdirAll(newProjectDir, os.ModePerm)
 	if err != nil {
 		log.Error("[createNewProjectDirectory] Trying to create a new project directory [%v]...error. \n%v", newProjectDir, err)
 		info = info + constants.NewLine + "Error while creating project directory."

@@ -43,7 +43,7 @@ func ProcessTemplateJenkinsJobsRepo(projectDirectory string, jenkinsJobsRepo str
 	log := logger.Log()
 	jenkinsHelmValuesFile := files.AppendPath(projectDirectory, constants.FilenameJenkinsConfigurationAsCode)
 	if files.FileOrDirectoryExists(jenkinsHelmValuesFile) {
-		successful, err := files.ReplaceStringInFile(jenkinsHelmValuesFile, constants.TemplateJenkinsJobDslSeedJobScriptUrl, jenkinsJobsRepo)
+		successful, err := files.ReplaceStringInFile(jenkinsHelmValuesFile, constants.TemplateJobDefinitionRepository, jenkinsJobsRepo)
 		if !successful || err != nil {
 			log.Error("[ProcessTemplateJenkinsJobsRepo] Can not replace Jenkins seed job repository in file [%v], \n%v", jenkinsHelmValuesFile, err)
 			return false, err
