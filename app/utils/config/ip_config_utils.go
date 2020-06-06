@@ -3,6 +3,7 @@ package config
 import (
 	"bufio"
 	"k8s-management-go/app/models"
+	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/logger"
 	"os"
 	"strings"
@@ -10,6 +11,11 @@ import (
 
 func ReadIpConfig() {
 	configuration := models.GetConfiguration()
+
+	// if IP config file does not exist, create it
+	if !files.FileOrDirectoryExists(models.GetIpConfigurationFile()) {
+		os.Create(models.GetIpConfigurationFile())
+	}
 
 	// read configuration file. Replace unneeded double quotes if needed.
 	data, err := os.Open(models.GetIpConfigurationFile())
