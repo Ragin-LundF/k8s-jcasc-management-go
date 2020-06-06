@@ -149,6 +149,14 @@ func replaceGlobalConfiguration(projectDirectory string) (success bool, err erro
 	if !success || err != nil {
 		return false, err
 	}
+	success, err = replaceGlobalConfigurationJCasCValues(projectDirectory)
+	if !success || err != nil {
+		return false, err
+	}
+	success, err = replaceGlobalConfigurationPvcValues(projectDirectory)
+	if !success || err != nil {
+		return false, err
+	}
 	return success, err
 }
 
@@ -172,6 +180,42 @@ func replaceGlobalConfigurationNginxIngressControllerHelmValues(projectDirectory
 		files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxLoadbalancerHttpTargetPort, strconv.FormatUint(models.GetConfiguration().LoadBalancer.Port.HttpTarget, 10))
 		files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxLoadbalancerHttpsPort, strconv.FormatUint(models.GetConfiguration().LoadBalancer.Port.Https, 10))
 		files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxLoadbalancerHttpsTargetPort, strconv.FormatUint(models.GetConfiguration().LoadBalancer.Port.HttpsTarget, 10))
+	}
+	return true, err
+}
+
+// Replace Jenkins Configuration as Code default values
+func replaceGlobalConfigurationJCasCValues(projectDirectory string) (success bool, err error) {
+	var jcascFile = files.AppendPath(projectDirectory, constants.FilenameJenkinsConfigurationAsCode)
+	if files.FileOrDirectoryExists(jcascFile) {
+		// Jenkins
+		files.ReplaceStringInFile(jcascFile, constants.TemplateJenkinsMasterDeploymentName, models.GetConfiguration().Jenkins.Helm.Master.DeploymentName)
+		files.ReplaceStringInFile(jcascFile, constants.TemplateJenkinsMasterDefaultUriPrefix, models.GetConfiguration().Jenkins.Helm.Master.DefaultUriPrefix)
+		files.ReplaceStringInFile(jcascFile, constants.TemplateJenkinsMasterDefaultLabel, models.GetConfiguration().Jenkins.Helm.Master.Label)
+		files.ReplaceStringInFile(jcascFile, constants.TemplateJenkinsJobDslSeedJobScriptUrl, models.GetConfiguration().Jenkins.JobDSL.SeedJobScriptUrl)
+		files.ReplaceStringInFile(jcascFile, constants.TemplateJenkinsMasterAdminPasswordEncrypted, models.GetConfiguration().Jenkins.Helm.Master.AdminPasswordEncrypted)
+		files.ReplaceStringInFile(jcascFile, constants.TemplateJenkinsMasterUserPasswordEncrypted, models.GetConfiguration().Jenkins.Helm.Master.DefaultProjectUserPasswordEncrypted)
+		// Kubernetes configuration
+		files.ReplaceStringInFile(jcascFile, constants.TemplateKubernetesServerCertificate, models.GetConfiguration().Kubernetes.ServerCertificate)
+		// CredentialIds
+		files.ReplaceStringInFile(jcascFile, constants.TemplateCredentialsIdKubernetesDockerRegistry, models.GetConfiguration().CredentialIds.DefaultDockerRegistry)
+		files.ReplaceStringInFile(jcascFile, constants.TemplateCredentialsIdMaven, models.GetConfiguration().CredentialIds.DefaultMavenRepository)
+		files.ReplaceStringInFile(jcascFile, constants.TemplateCredentialsIdNpm, models.GetConfiguration().CredentialIds.DefaultNpmRepository)
+		files.ReplaceStringInFile(jcascFile, constants.TemplateCredentialsIdVcs, models.GetConfiguration().CredentialIds.DefaultVcsRepository)
+	}
+	return true, err
+}
+
+// Replace PVC default values
+func replaceGlobalConfigurationPvcValues(projectDirectory string) (success bool, err error) {
+	var pvcFile = files.AppendPath(projectDirectory, constants.FilenamePvcClaim)
+	if files.FileOrDirectoryExists(pvcFile) {
+		// Jenkins
+		files.ReplaceStringInFile(pvcFile, constants.TemplateJenkinsMasterDeploymentName, models.GetConfiguration().Jenkins.Helm.Master.DeploymentName)
+		// PVC
+		files.ReplaceStringInFile(pvcFile, constants.TemplatePvcStorageSize, models.GetConfiguration().Jenkins.Helm.Master.Persistence.Size)
+		files.ReplaceStringInFile(pvcFile, constants.TemplatePvcAccessMode, models.GetConfiguration().Jenkins.Helm.Master.Persistence.AccessMode)
+		files.ReplaceStringInFile(pvcFile, constants.TemplatePvcStorageClass, models.GetConfiguration().Jenkins.Helm.Master.Persistence.StorageClass)
 	}
 	return true, err
 }
