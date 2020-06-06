@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"fmt"
 	"k8s-management-go/app/cli/createproject"
 	"k8s-management-go/app/cli/install"
 	"k8s-management-go/app/cli/jenkinsuser"
@@ -47,9 +46,9 @@ func startCommandAction(command string) (info string, err error) {
 	case constants.CommandApplySecretsToAll:
 		info, err = secrets.ApplySecretsToAllNamespaces()
 	case constants.CommandCreateProject:
-		info, err = createproject.ProjectWizardWorkflow()
+		info, err = createproject.ProjectWizardWorkflow(false)
 	case constants.CommandCreateDeploymentOnlyProject:
-		fmt.Println("start create deployment project")
+		info, err = createproject.ProjectWizardWorkflow(true)
 	case constants.CommandCreateJenkinsUserPassword:
 		info, err = jenkinsuser.CreateJenkinsUserPassword()
 	case constants.CommandQuit:

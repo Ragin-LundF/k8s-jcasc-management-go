@@ -17,17 +17,10 @@ go run k8s-jcasc-mgmt.go
 ## Status implementation
 
 Finished:
-- Install Jenkins
-- Upgrade Jenkins
-- Uninstall Jenkins
-- Create password for Jenkins user
-- Encrypt / decrypt secrets file (global)
-- Apply secrets to namespace
-- Apply secrets to all namespaces
+- Functionality is equal to bash version
 
-Open:
-- Create project
-- Create project for deployment
+Open Tasks:
+- Code optimizations
 
 # Table of content #
 
