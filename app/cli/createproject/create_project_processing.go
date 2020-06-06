@@ -182,6 +182,10 @@ func replaceGlobalConfiguration(projectDirectory string) (success bool, err erro
 	if !success || err != nil {
 		return false, err
 	}
+	success, err = replaceGlobalConfigurationJenkinsHelmValues(projectDirectory)
+	if !success || err != nil {
+		return false, err
+	}
 	success, err = replaceGlobalConfigurationPvcValues(projectDirectory)
 	if !success || err != nil {
 		return false, err
@@ -209,6 +213,30 @@ func replaceGlobalConfigurationNginxIngressControllerHelmValues(projectDirectory
 		files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxLoadbalancerHttpTargetPort, strconv.FormatUint(models.GetConfiguration().LoadBalancer.Port.HttpTarget, 10))
 		files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxLoadbalancerHttpsPort, strconv.FormatUint(models.GetConfiguration().LoadBalancer.Port.Https, 10))
 		files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxLoadbalancerHttpsTargetPort, strconv.FormatUint(models.GetConfiguration().LoadBalancer.Port.HttpsTarget, 10))
+	}
+	return true, err
+}
+
+// Replace Jenkins Helm default values
+func replaceGlobalConfigurationJenkinsHelmValues(projectDirectory string) (success bool, err error) {
+	var jenkinsHelmValues = files.AppendPath(projectDirectory, constants.FilenameJenkinsHelmValues)
+	if files.FileOrDirectoryExists(jenkinsHelmValues) {
+		// Jenkins
+		files.ReplaceStringInFile(jenkinsHelmValues, constants.TemplateJenkinsMasterDeploymentName, models.GetConfiguration().Jenkins.Helm.Master.DeploymentName)
+		files.ReplaceStringInFile(jenkinsHelmValues, constants.TemplateJenkinsMasterDefaultUriPrefix, models.GetConfiguration().Jenkins.Helm.Master.DefaultUriPrefix)
+		files.ReplaceStringInFile(jenkinsHelmValues, constants.TemplateJenkinsMasterDenyAnonymousReadAccess, models.GetConfiguration().Jenkins.Helm.Master.DenyAnonymousReadAccess)
+		files.ReplaceStringInFile(jenkinsHelmValues, constants.TemplateJenkinsMasterAdminPassword, models.GetConfiguration().Jenkins.Helm.Master.AdminPassword)
+		files.ReplaceStringInFile(jenkinsHelmValues, constants.TemplateJenkinsMasterDefaultLabel, models.GetConfiguration().Jenkins.Helm.Master.Label)
+		files.ReplaceStringInFile(jenkinsHelmValues, constants.TemplateJenkinsMasterContainerImage, models.GetConfiguration().Jenkins.Helm.Master.Container.Image)
+		files.ReplaceStringInFile(jenkinsHelmValues, constants.TemplateJenkinsMasterContainerImageTag, models.GetConfiguration().Jenkins.Helm.Master.Container.ImageTag)
+		files.ReplaceStringInFile(jenkinsHelmValues, constants.TemplateJenkinsMasterContainerImagePullSecretName, models.GetConfiguration().Jenkins.Helm.Master.Container.PullSecretName)
+		files.ReplaceStringInFile(jenkinsHelmValues, constants.TemplateJenkinsMasterContainerPullPolicy, models.GetConfiguration().Jenkins.Helm.Master.Container.PullPolicy)
+		// PVC
+		files.ReplaceStringInFile(jenkinsHelmValues, constants.TemplatePvcStorageClass, models.GetConfiguration().Jenkins.Helm.Master.Persistence.StorageClass)
+		files.ReplaceStringInFile(jenkinsHelmValues, constants.TemplatePvcAccessMode, models.GetConfiguration().Jenkins.Helm.Master.Persistence.AccessMode)
+		files.ReplaceStringInFile(jenkinsHelmValues, constants.TemplatePvcStorageSize, models.GetConfiguration().Jenkins.Helm.Master.Persistence.Size)
+		// JCasC
+		files.ReplaceStringInFile(jenkinsHelmValues, constants.TemplateJenkinsJcascConfigurationUrl, models.GetConfiguration().Jenkins.JCasC.ConfigurationUrl)
 	}
 	return true, err
 }
