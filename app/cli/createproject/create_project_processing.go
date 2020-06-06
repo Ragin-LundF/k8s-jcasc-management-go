@@ -12,6 +12,7 @@ import (
 
 // Processing project creation
 func ProcessProjectCreate(namespace string, ipAddress string, jenkinsSystemMsg string, jobsCfgRepo string, existingPvc string, selectedCloudTemplates []string, createDeploymentOnlyProject bool) (info string, err error) {
+	info = logger.InfoLog(info, "Start processing templates...")
 	// calculate the target directory
 	newProjectDir := files.AppendPath(models.GetProjectBaseDirectory(), namespace)
 
@@ -31,66 +32,94 @@ func ProcessProjectCreate(namespace string, ipAddress string, jenkinsSystemMsg s
 	}
 
 	// add IP and namespace to IP configuration
+	info = logger.InfoLog(info, "-> Start adding IP address to ipconfig file...")
 	success, err := config.AddToIpConfigFile(namespace, ipAddress)
 	if !success || err != nil {
+		info = logger.InfoLog(info, "-> Start adding IP address to ipconfig file...aborted. See errors")
 		os.RemoveAll(newProjectDir)
 		return info, err
 	}
+	info = logger.InfoLog(info, "-> Start adding IP address to ipconfig file...done")
 
 	// processing cloud templates
+	info = logger.InfoLog(info, "-> Start template processing: Jenkins cloud templates...")
 	success, err = ProcessTemplateCloudTemplates(newProjectDir, selectedCloudTemplates)
 	if !success || err != nil {
+		info = logger.InfoLog(info, "-> Start template processing: Jenkins cloud templates...aborted. See errors")
 		os.RemoveAll(newProjectDir)
 		return info, err
 	}
+	info = logger.InfoLog(info, "-> Start template processing: Jenkins cloud templates...done")
 
 	// Replace Jenkins system message
+	info = logger.InfoLog(info, "-> Start template processing: Jenkins system message...")
 	success, err = ProcessTemplateJenkinsSystemMessage(newProjectDir, jenkinsSystemMsg)
 	if !success || err != nil {
+		info = logger.InfoLog(info, "-> Start template processing: Jenkins system message...aborted. See errors")
 		os.RemoveAll(newProjectDir)
 		return info, err
 	}
+	info = logger.InfoLog(info, "-> Start template processing: Jenkins system message...done")
 
 	// Replace Jenkins seed job repository
+	info = logger.InfoLog(info, "-> Start template processing: Jenkins Jobs repository...")
 	success, err = ProcessTemplateJenkinsJobsRepo(newProjectDir, jobsCfgRepo)
 	if !success || err != nil {
+		info = logger.InfoLog(info, "-> Start template processing: Jenkins Jobs repository...aborted. See errors")
 		os.RemoveAll(newProjectDir)
 		return info, err
 	}
+	info = logger.InfoLog(info, "-> Start template processing: Jenkins Jobs repository...done")
 
+	// Replace global configuration
+	info = logger.InfoLog(info, "-> Start template processing: Global configuration...")
 	success, err = replaceGlobalConfiguration(newProjectDir)
 	if !success || err != nil {
+		info = logger.InfoLog(info, "-> Start template processing: Global configuration...aborted. See errors")
 		os.RemoveAll(newProjectDir)
 		return info, err
 	}
+	info = logger.InfoLog(info, "-> Start template processing: Global configuration...done")
 
 	// Replace namespace
+	info = logger.InfoLog(info, "-> Start template processing: namespaces...")
 	success, err = ProcessTemplateNamespace(newProjectDir, namespace)
 	if !success || err != nil {
+		info = logger.InfoLog(info, "-> Start template processing: namespaces...aborted. See errors")
 		os.RemoveAll(newProjectDir)
 		return info, err
 	}
+	info = logger.InfoLog(info, "-> Start template processing: namespaces...done")
 
 	// Replace ip address
+	info = logger.InfoLog(info, "-> Start template processing: IP addresses...")
 	success, err = ProcessTemplateIpAddress(newProjectDir, ipAddress)
 	if !success || err != nil {
+		info = logger.InfoLog(info, "-> Start template processing: IP addresses...aborted. See errors")
 		os.RemoveAll(newProjectDir)
 		return info, err
 	}
+	info = logger.InfoLog(info, "-> Start template processing: IP addresses...done")
 
 	// Replace project directory with namespace name
+	info = logger.InfoLog(info, "-> Start template processing: Project directory for JCasC...")
 	success, err = replaceProjectDirectoryInTemplatesWithNamespace(newProjectDir, namespace)
 	if !success || err != nil {
+		info = logger.InfoLog(info, "-> Start template processing: Project directory for JCasC...aborted. See errors")
 		os.RemoveAll(newProjectDir)
 		return info, err
 	}
+	info = logger.InfoLog(info, "-> Start template processing: Project directory for JCasC...done")
 
 	// Replace pvc name
+	info = logger.InfoLog(info, "-> Start template processing: Persistent volume claim...")
 	success, err = ProcessTemplatePvcExistingClaim(newProjectDir, existingPvc)
 	if !success || err != nil {
+		info = logger.InfoLog(info, "-> Start template processing: Persistent volume claim...aborted. See errors")
 		os.RemoveAll(newProjectDir)
 		return info, err
 	}
+	info = logger.InfoLog(info, "-> Start template processing: Persistent volume claim...done")
 
 	return info, err
 }
@@ -98,8 +127,7 @@ func ProcessProjectCreate(namespace string, ipAddress string, jenkinsSystemMsg s
 // create new project directory
 func createNewProjectDirectory(newProjectDir string) (info string, err error) {
 	log := logger.Log()
-	log.Info("[createNewProjectDirectory] Trying to create a new project directory...")
-	info = "Trying to create a new project directory..."
+	info = logger.InfoLog(info, "Trying to create a new project directory...")
 
 	// create directory
 	err = os.MkdirAll(newProjectDir, os.ModePerm)
@@ -109,67 +137,89 @@ func createNewProjectDirectory(newProjectDir string) (info string, err error) {
 		return info, err
 	}
 	// successful
-	log.Info("[createNewProjectDirectory] Trying to create a new project directory...done")
-	info = info + constants.NewLine + "Trying to create a new project directory...done"
+	info = logger.InfoLog(info, "Trying to create a new project directory...done")
 
 	return info, err
 }
 
 // copy files to new directory
 func copyTemplatesToNewDirectory(projectDirectory string, copyPersistentVolume bool, createDeploymentOnlyProject bool) (info string, err error) {
+	log := logger.Log()
+	info = logger.InfoLog(info, "Starting to copy templates...")
 	templateDirectory := models.GetProjectTemplateDirectory()
 	// copy nginx-ingress-controller values.yaml
+	info = logger.InfoLog(info, "-> Copy ["+constants.FilenameNginxIngressControllerHelmValues+"]...")
 	_, err = files.CopyFile(
 		files.AppendPath(templateDirectory, constants.FilenameNginxIngressControllerHelmValues),
 		files.AppendPath(projectDirectory, constants.FilenameNginxIngressControllerHelmValues),
 	)
 	if err != nil {
+		log.Error("Unable to copy [%v] to [%v] \n%v", constants.FilenameNginxIngressControllerHelmValues, projectDirectory, err)
+		info = logger.InfoLog(info, "-> Copy ["+constants.FilenameNginxIngressControllerHelmValues+"]...aborted. See errors.")
 		return info, err
 	}
+	info = logger.InfoLog(info, "-> Copy ["+constants.FilenameNginxIngressControllerHelmValues+"]...done")
 
 	// if it is not a deployment only project, copy more files
 	if !createDeploymentOnlyProject {
+		info = logger.InfoLog(info, "-> Copy ["+constants.FilenameJenkinsHelmValues+"]...")
 		// copy Jenkins values.yaml
 		_, err = files.CopyFile(
 			files.AppendPath(templateDirectory, constants.FilenameJenkinsHelmValues),
 			files.AppendPath(projectDirectory, constants.FilenameJenkinsHelmValues),
 		)
 		if err != nil {
+			log.Error("Unable to copy [%v] to [%v] \n%v", constants.FilenameJenkinsHelmValues, projectDirectory, err)
+			info = logger.InfoLog(info, "-> Copy ["+constants.FilenameJenkinsHelmValues+"]...aborted. See errors.")
 			return info, err
 		}
+		info = logger.InfoLog(info, "-> Copy ["+constants.FilenameJenkinsHelmValues+"]...done")
 
 		// copy Jenkins JCasC config.yaml
+		info = logger.InfoLog(info, "-> Copy ["+constants.FilenameJenkinsConfigurationAsCode+"]...")
 		_, err = files.CopyFile(
 			files.AppendPath(templateDirectory, constants.FilenameJenkinsConfigurationAsCode),
 			files.AppendPath(projectDirectory, constants.FilenameJenkinsConfigurationAsCode),
 		)
 		if err != nil {
+			log.Error("Unable to copy [%v] to [%v] \n%v", constants.FilenameJenkinsConfigurationAsCode, projectDirectory, err)
+			info = logger.InfoLog(info, "-> Copy ["+constants.FilenameJenkinsConfigurationAsCode+"]...aborted. See errors.")
 			return info, err
 		}
+		info = logger.InfoLog(info, "-> Copy ["+constants.FilenameJenkinsConfigurationAsCode+"]...done")
 
 		// copy existing PVC values.yaml
 		if copyPersistentVolume {
+			info = logger.InfoLog(info, "-> Copy ["+constants.FilenamePvcClaim+"]...")
 			_, err = files.CopyFile(
 				files.AppendPath(templateDirectory, constants.FilenamePvcClaim),
 				files.AppendPath(projectDirectory, constants.FilenamePvcClaim),
 			)
 			if err != nil {
+				log.Error("Unable to copy [%v] to [%v] \n%v", constants.FilenamePvcClaim, projectDirectory, err)
+				info = logger.InfoLog(info, "-> Copy ["+constants.FilenamePvcClaim+"]...aborted. See errors.")
 				return info, err
 			}
+			info = logger.InfoLog(info, "-> Copy ["+constants.FilenamePvcClaim+"]...done")
 		}
 
 		// copy secrets to project
 		if models.GetConfiguration().GlobalSecretsFile == "" {
+			info = logger.InfoLog(info, "-> Copy ["+constants.FilenameSecrets+"]...")
 			_, err = files.CopyFile(
 				files.AppendPath(templateDirectory, constants.FilenameSecrets),
 				files.AppendPath(projectDirectory, constants.FilenameSecrets),
 			)
 			if err != nil {
+				log.Error("Unable to copy [%v] to [%v] \n%v", constants.FilenameSecrets, projectDirectory, err)
+				info = logger.InfoLog(info, "-> Copy ["+constants.FilenameSecrets+"]...aborted. See errors.")
 				return info, err
 			}
+			info = logger.InfoLog(info, "-> Copy ["+constants.FilenameSecrets+"]...done")
 		}
 	}
 
+	info = logger.InfoLog(info, "Starting to copy templates...done")
 	return info, err
 }
 
