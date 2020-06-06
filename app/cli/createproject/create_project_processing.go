@@ -38,21 +38,21 @@ func ProcessProjectCreate(namespace string, ipAddress string, jenkinsSystemMsg s
 	}
 
 	// processing cloud templates
-	success, err = ProcessCloudTemplates(newProjectDir, selectedCloudTemplates)
+	success, err = ProcessTemplateCloudTemplates(newProjectDir, selectedCloudTemplates)
 	if !success || err != nil {
 		os.RemoveAll(newProjectDir)
 		return info, err
 	}
 
 	// Replace Jenkins system message
-	success, err = ProcessJenkinsSystemMessage(newProjectDir, jenkinsSystemMsg)
+	success, err = ProcessTemplateJenkinsSystemMessage(newProjectDir, jenkinsSystemMsg)
 	if !success || err != nil {
 		os.RemoveAll(newProjectDir)
 		return info, err
 	}
 
 	// Replace Jenkins seed job repository
-	success, err = ProcessJenkinsJobsRepo(newProjectDir, jobsCfgRepo)
+	success, err = ProcessTemplateJenkinsJobsRepo(newProjectDir, jobsCfgRepo)
 	if !success || err != nil {
 		os.RemoveAll(newProjectDir)
 		return info, err
@@ -63,6 +63,35 @@ func ProcessProjectCreate(namespace string, ipAddress string, jenkinsSystemMsg s
 		os.RemoveAll(newProjectDir)
 		return info, err
 	}
+
+	// Replace namespace
+	success, err = ProcessTemplateNamespace(newProjectDir, namespace)
+	if !success || err != nil {
+		os.RemoveAll(newProjectDir)
+		return info, err
+	}
+
+	// Replace ip address
+	success, err = ProcessTemplateIpAddress(newProjectDir, ipAddress)
+	if !success || err != nil {
+		os.RemoveAll(newProjectDir)
+		return info, err
+	}
+
+	// Replace project directory with namespace name
+	success, err = replaceProjectDirectoryInTemplatesWithNamespace(newProjectDir, namespace)
+	if !success || err != nil {
+		os.RemoveAll(newProjectDir)
+		return info, err
+	}
+
+	// Replace pvc name
+	success, err = ProcessTemplatePvcExistingClaim(newProjectDir, existingPvc)
+	if !success || err != nil {
+		os.RemoveAll(newProjectDir)
+		return info, err
+	}
+
 	return info, err
 }
 
@@ -216,6 +245,27 @@ func replaceGlobalConfigurationPvcValues(projectDirectory string) (success bool,
 		files.ReplaceStringInFile(pvcFile, constants.TemplatePvcStorageSize, models.GetConfiguration().Jenkins.Helm.Master.Persistence.Size)
 		files.ReplaceStringInFile(pvcFile, constants.TemplatePvcAccessMode, models.GetConfiguration().Jenkins.Helm.Master.Persistence.AccessMode)
 		files.ReplaceStringInFile(pvcFile, constants.TemplatePvcStorageClass, models.GetConfiguration().Jenkins.Helm.Master.Persistence.StorageClass)
+	}
+	return true, err
+}
+
+// replace project directory with namespace name
+func replaceProjectDirectoryInTemplatesWithNamespace(projectDirectory string, namespace string) (success bool, err error) {
+	log := logger.Log()
+
+	templateFiles := []string{
+		files.AppendPath(projectDirectory, constants.FilenameJenkinsConfigurationAsCode),
+		files.AppendPath(projectDirectory, constants.FilenameJenkinsHelmValues),
+	}
+
+	for _, templateFile := range templateFiles {
+		if files.FileOrDirectoryExists(templateFile) {
+			successful, err := files.ReplaceStringInFile(templateFile, constants.TemplateProjectDirectory, namespace)
+			if !successful || err != nil {
+				log.Error("[replaceProjectDirectoryInTemplatesWithNamespace] Can not replace project directory in file [%v], \n%v", templateFile, err)
+				return false, err
+			}
+		}
 	}
 	return true, err
 }

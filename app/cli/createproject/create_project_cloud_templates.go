@@ -55,7 +55,7 @@ func ProjectWizardAskForCloudTemplates() (cloudTemplates []string, info string, 
 }
 
 // add cloud templates to project template
-func ProcessCloudTemplates(projectDirectory string, cloudTemplateFiles []string) (success bool, err error) {
+func ProcessTemplateCloudTemplates(projectDirectory string, cloudTemplateFiles []string) (success bool, err error) {
 	log := logger.Log()
 	targetFile := files.AppendPath(projectDirectory, constants.FilenameJenkinsConfigurationAsCode)
 	// if file exists -> try to replace files
@@ -71,7 +71,7 @@ func ProcessCloudTemplates(projectDirectory string, cloudTemplateFiles []string)
 				cloudTemplateFileWithPath := files.AppendPath(cloudTemplatePath, cloudTemplate)
 				read, err := ioutil.ReadFile(cloudTemplateFileWithPath)
 				if err != nil {
-					log.Error("[ProcessCloudTemplates] Can not read cloud template [%v] \n%v", cloudTemplateFileWithPath, err)
+					log.Error("[ProcessTemplateCloudTemplates] Can not read cloud template [%v] \n%v", cloudTemplateFileWithPath, err)
 					return false, err
 				}
 				cloudTemplateContent = cloudTemplateContent + "\n" + string(read)
