@@ -42,10 +42,12 @@ func ProjectWizardAskForJobsConfigurationRepository() (jenkinsSysMsg string, err
 func ProcessJenkinsJobsRepo(projectDirectory string, jenkinsJobsRepo string) (success bool, err error) {
 	log := logger.Log()
 	jenkinsHelmValuesFile := files.AppendPath(projectDirectory, constants.FilenameJenkinsConfigurationAsCode)
-	successful, err := files.ReplaceStringInFile(jenkinsHelmValuesFile, constants.TemplateJenkinsJobDslSeedJobScriptUrl, jenkinsJobsRepo)
-	if !successful || err != nil {
-		log.Error("[ProcessJenkinsJobsRepo] Can not replace Jenkins seed job repository in file [%v], \n%v", jenkinsHelmValuesFile, err)
-		return false, err
+	if files.FileOrDirectoryExists(jenkinsHelmValuesFile) {
+		successful, err := files.ReplaceStringInFile(jenkinsHelmValuesFile, constants.TemplateJenkinsJobDslSeedJobScriptUrl, jenkinsJobsRepo)
+		if !successful || err != nil {
+			log.Error("[ProcessJenkinsJobsRepo] Can not replace Jenkins seed job repository in file [%v], \n%v", jenkinsHelmValuesFile, err)
+			return false, err
+		}
 	}
 	return true, err
 }

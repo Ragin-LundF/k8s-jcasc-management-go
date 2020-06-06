@@ -7,6 +7,7 @@ import (
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/logger"
 	"os"
+	"strconv"
 )
 
 // Processing project creation
@@ -30,33 +31,38 @@ func ProcessProjectCreate(namespace string, ipAddress string, jenkinsSystemMsg s
 	}
 
 	// add IP and namespace to IP configuration
-	successful, err := config.AddToIpConfigFile(namespace, ipAddress)
-	if !successful || err != nil {
+	success, err := config.AddToIpConfigFile(namespace, ipAddress)
+	if !success || err != nil {
 		os.RemoveAll(newProjectDir)
 		return info, err
 	}
 
 	// processing cloud templates
-	successful, err = ProcessCloudTemplates(newProjectDir, selectedCloudTemplates)
-	if !successful || err != nil {
+	success, err = ProcessCloudTemplates(newProjectDir, selectedCloudTemplates)
+	if !success || err != nil {
 		os.RemoveAll(newProjectDir)
 		return info, err
 	}
 
 	// Replace Jenkins system message
-	successful, err = ProcessJenkinsSystemMessage(newProjectDir, jenkinsSystemMsg)
-	if !successful || err != nil {
+	success, err = ProcessJenkinsSystemMessage(newProjectDir, jenkinsSystemMsg)
+	if !success || err != nil {
 		os.RemoveAll(newProjectDir)
 		return info, err
 	}
 
 	// Replace Jenkins seed job repository
-	successful, err = ProcessJenkinsJobsRepo(newProjectDir, jobsCfgRepo)
-	if !successful || err != nil {
+	success, err = ProcessJenkinsJobsRepo(newProjectDir, jobsCfgRepo)
+	if !success || err != nil {
 		os.RemoveAll(newProjectDir)
 		return info, err
 	}
 
+	success, err = replaceGlobalConfiguration(newProjectDir)
+	if !success || err != nil {
+		os.RemoveAll(newProjectDir)
+		return info, err
+	}
 	return info, err
 }
 
@@ -136,4 +142,36 @@ func copyTemplatesToNewDirectory(projectDirectory string, copyPersistentVolume b
 	}
 
 	return info, err
+}
+
+func replaceGlobalConfiguration(projectDirectory string) (success bool, err error) {
+	success, err = replaceGlobalConfigurationNginxIngressControllerHelmValues(projectDirectory)
+	if !success || err != nil {
+		return false, err
+	}
+	return success, err
+}
+
+// Replace nginx ingress helm values.yaml
+func replaceGlobalConfigurationNginxIngressControllerHelmValues(projectDirectory string) (success bool, err error) {
+	var nginxHelmValuesFile = files.AppendPath(projectDirectory, constants.FilenameNginxIngressControllerHelmValues)
+	if files.FileOrDirectoryExists(nginxHelmValuesFile) {
+		// Replace global vars in nginx file
+		// Jenkins related placeholder
+		files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateJenkinsMasterDeploymentName, models.GetConfiguration().Jenkins.Helm.Master.DeploymentName)
+		files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateJenkinsMasterDefaultUriPrefix, models.GetConfiguration().Jenkins.Helm.Master.DefaultUriPrefix)
+		// Nginx ingress controller placeholder
+		files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxIngressDeploymentName, models.GetConfiguration().Nginx.Ingress.Controller.DeploymentName)
+		files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxIngressControllerContainerImage, models.GetConfiguration().Nginx.Ingress.Controller.Container.Name)
+		files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxIngressControllerContainerPullSecrets, models.GetConfiguration().Nginx.Ingress.Controller.Container.PullSecret)
+		files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxIngressControllerContainerForNamespace, strconv.FormatBool(models.GetConfiguration().Nginx.Ingress.Controller.Container.Namespace))
+		files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxIngressAnnotationClass, models.GetConfiguration().Nginx.Ingress.AnnotationClass)
+		// Loadbalancer placeholder
+		files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxLoadbalancerEnabled, strconv.FormatBool(models.GetConfiguration().LoadBalancer.Enabled))
+		files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxLoadbalancerHttpPort, strconv.FormatUint(models.GetConfiguration().LoadBalancer.Port.Http, 10))
+		files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxLoadbalancerHttpTargetPort, strconv.FormatUint(models.GetConfiguration().LoadBalancer.Port.HttpTarget, 10))
+		files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxLoadbalancerHttpsPort, strconv.FormatUint(models.GetConfiguration().LoadBalancer.Port.Https, 10))
+		files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxLoadbalancerHttpsTargetPort, strconv.FormatUint(models.GetConfiguration().LoadBalancer.Port.HttpsTarget, 10))
+	}
+	return true, err
 }

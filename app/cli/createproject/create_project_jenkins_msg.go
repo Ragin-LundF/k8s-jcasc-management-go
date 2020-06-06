@@ -39,10 +39,12 @@ func ProjectWizardAskForJenkinsSystemMessage(namespace string) (jenkinsSysMsg st
 func ProcessJenkinsSystemMessage(projectDirectory string, jenkinsSysMsg string) (success bool, err error) {
 	log := logger.Log()
 	jenkinsHelmValuesFile := files.AppendPath(projectDirectory, constants.FilenameJenkinsConfigurationAsCode)
-	successful, err := files.ReplaceStringInFile(jenkinsHelmValuesFile, constants.TemplateJenkinsSystemMessage, jenkinsSysMsg)
-	if !successful || err != nil {
-		log.Error("[ProcessJenkinsSystemMessage] Can not replace Jenkins System msg in file [%v], \n%v", jenkinsHelmValuesFile, err)
-		return false, err
+	if files.FileOrDirectoryExists(jenkinsHelmValuesFile) {
+		successful, err := files.ReplaceStringInFile(jenkinsHelmValuesFile, constants.TemplateJenkinsSystemMessage, jenkinsSysMsg)
+		if !successful || err != nil {
+			log.Error("[ProcessJenkinsSystemMessage] Can not replace Jenkins System msg in file [%v], \n%v", jenkinsHelmValuesFile, err)
+			return false, err
+		}
 	}
 	return true, err
 }

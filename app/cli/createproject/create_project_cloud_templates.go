@@ -57,38 +57,42 @@ func ProjectWizardAskForCloudTemplates() (cloudTemplates []string, info string, 
 // add cloud templates to project template
 func ProcessCloudTemplates(projectDirectory string, cloudTemplateFiles []string) (success bool, err error) {
 	log := logger.Log()
-	// first check if there are templates which should be processed
-	if cap(cloudTemplateFiles) > 0 {
-		// prepare vars and directory
-		var cloudTemplateContent string
-		var cloudTemplatePath = files.AppendPath(models.GetProjectTemplateDirectory(), constants.DirProjectTemplateCloudTemplates)
+	targetFile := files.AppendPath(projectDirectory, constants.FilenameJenkinsConfigurationAsCode)
+	// if file exists -> try to replace files
+	if files.FileOrDirectoryExists(targetFile) {
+		// first check if there are templates which should be processed
+		if cap(cloudTemplateFiles) > 0 {
+			// prepare vars and directory
+			var cloudTemplateContent string
+			var cloudTemplatePath = files.AppendPath(models.GetProjectTemplateDirectory(), constants.DirProjectTemplateCloudTemplates)
 
-		// first read every template into a variable
-		for _, cloudTemplate := range cloudTemplateFiles {
-			cloudTemplateFileWithPath := files.AppendPath(cloudTemplatePath, cloudTemplate)
-			read, err := ioutil.ReadFile(cloudTemplateFileWithPath)
-			if err != nil {
-				log.Error("[ProcessCloudTemplates] Can not read cloud template [%v] \n%v", cloudTemplateFileWithPath, err)
+			// first read every template into a variable
+			for _, cloudTemplate := range cloudTemplateFiles {
+				cloudTemplateFileWithPath := files.AppendPath(cloudTemplatePath, cloudTemplate)
+				read, err := ioutil.ReadFile(cloudTemplateFileWithPath)
+				if err != nil {
+					log.Error("[ProcessCloudTemplates] Can not read cloud template [%v] \n%v", cloudTemplateFileWithPath, err)
+					return false, err
+				}
+				cloudTemplateContent = cloudTemplateContent + "\n" + string(read)
+			}
+
+			// Prefix the lines with spaces for correct yaml template
+			prefixReader := prefixer.New(strings.NewReader(cloudTemplateContent), "          ")
+			buffer, _ := ioutil.ReadAll(prefixReader)
+			cloudTemplateContent = string(buffer)
+
+			// replace target template
+			success, err = files.ReplaceStringInFile(targetFile, constants.TemplateJenkinsCloudTemplates, cloudTemplateContent)
+			if !success || err != nil {
 				return false, err
 			}
-			cloudTemplateContent = cloudTemplateContent + "\n" + string(read)
-		}
-
-		// Prefix the lines with spaces for correct yaml template
-		prefixReader := prefixer.New(strings.NewReader(cloudTemplateContent), "          ")
-		buffer, _ := ioutil.ReadAll(prefixReader)
-		cloudTemplateContent = string(buffer)
-
-		// replace target template
-		success, err = files.ReplaceStringInFile(files.AppendPath(projectDirectory, constants.FilenameJenkinsConfigurationAsCode), constants.TemplateJenkinsCloudTemplates, cloudTemplateContent)
-		if !success || err != nil {
-			return false, err
-		}
-	} else {
-		// replace placeholder
-		success, err = files.ReplaceStringInFile(files.AppendPath(projectDirectory, constants.FilenameJenkinsConfigurationAsCode), constants.TemplateJenkinsCloudTemplates, "")
-		if !success || err != nil {
-			return false, err
+		} else {
+			// replace placeholder
+			success, err = files.ReplaceStringInFile(targetFile, constants.TemplateJenkinsCloudTemplates, "")
+			if !success || err != nil {
+				return false, err
+			}
 		}
 	}
 	return true, err
