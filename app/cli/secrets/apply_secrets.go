@@ -98,7 +98,8 @@ func executingSecretsFile(secretsFilePath string, namespace string) (err error) 
 	log := logger.Log()
 
 	// execute decrypted file
-	cmd := exec.Command("sh", "-c", secretsFilePath)
+	_ = exec.Command("chmod", "755", secretsFilePath).Run()
+	cmd := exec.Command(secretsFilePath)
 	cmd.Env = append(os.Environ(),
 		"NAMESPACE="+namespace,
 	)

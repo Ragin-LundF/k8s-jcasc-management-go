@@ -91,14 +91,19 @@ func DoUpgradeOrInstall(helmCommand string) (err error) {
 		// ask for deployment name
 		deploymentName, err := dialogs.DialogAskForDeploymentName("Deployment name", nil)
 		if err != nil {
+			loggingstate.AddErrorEntryAndDetails("  -> Unable to get deployment name.", err.Error())
+			log.Error("[DoUpgradeOrInstall] Unable to get deployment name.\n%v", err)
 			return err
 		}
 
 		// install Jenkins
-		infoLog, err := HelmInstallJenkins(helmCommand, namespace, deploymentName)
+		err = HelmInstallJenkins(helmCommand, namespace, deploymentName)
 		if err != nil {
+			loggingstate.AddErrorEntryAndDetails("  -> Unable to install Jenkins.", err.Error())
+			log.Error("[DoUpgradeOrInstall] Unable to install Jenkins.\n%v", err)
 			return err
 		}
+
 		loggingstate.AddInfoEntry("-> Jenkins Helm values.yaml found. Installing Jenkins...done")
 		log.Info("[DoUpgradeOrInstall] Jenkins Helm values.yaml found. Installing Jenkins...done")
 	} else {
@@ -107,18 +112,23 @@ func DoUpgradeOrInstall(helmCommand string) (err error) {
 	}
 
 	// install Nginx ingress controller
-	infoLog, err = HelmInstallNginxIngressController(helmCommand, namespace, jenkinsHelmValuesExist)
+	loggingstate.AddInfoEntry("-> Installing nginx-ingress-controller on namespace [" + namespace + "]...")
+	err = HelmInstallNginxIngressController(helmCommand, namespace, jenkinsHelmValuesExist)
 	if err != nil {
+		loggingstate.AddErrorEntryAndDetails("  -> Unable to install nginx-ingress-controller.", err.Error())
+		log.Error("[DoUpgradeOrInstall] Unable to install nginx-ingress-controller.\n%v", err)
 		return err
 	}
+	loggingstate.AddInfoEntry("-> Installing nginx-ingress-controller on namespace [" + namespace + "]...done")
 
 	// install scripts only, if it is not dry-run only
 	if !models.GetConfiguration().K8sManagement.DryRunOnly {
 		// install scripts
-		infoLog, err = ShellScriptsInstall(namespace)
-		if err != nil {
-			return err
-		}
+		// try to install scripts
+		loggingstate.AddInfoEntry("-> Try to execute install scripts on [" + namespace + "]...")
+		// we ignore errors. They will be logged, but we keep on doing the install for the scripts
+		_ = ShellScriptsInstall(namespace)
+		loggingstate.AddInfoEntry("-> Try to execute install scripts on [" + namespace + "]...done")
 	}
 
 	loggingstate.AddInfoEntry("Starting Jenkins [" + helmCommand + "]...done")

@@ -68,7 +68,8 @@ func GpgDecryptSecrets(secretsFilePath string, password string) (err error) {
 
 // output masked gpg cmd args
 func maskedGpgCmdArgsAsString(gpgCmdArgs []string, passwordPos int8) string {
-	maskedGpgCmdArgs := gpgCmdArgs
-	maskedGpgCmdArgs[passwordPos] = "*****"
+	maskedGpgCmdArgs := make([]string, len(gpgCmdArgs))
+	copy(maskedGpgCmdArgs, gpgCmdArgs)
+	maskedGpgCmdArgs[passwordPos-1] = "*****"
 	return strings.Join(maskedGpgCmdArgs, " ")
 }

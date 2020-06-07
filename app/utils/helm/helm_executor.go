@@ -32,7 +32,8 @@ func ExecutorHelm(command string, args []string) (err error) {
 		log.Error("[ExecHelm] -> Helm command failed. Error: \n%v", err.Error())
 		return err
 	}
-	loggingstate.AddInfoEntry("   -> [ExecHelm] Executing Helm command...done")
+	loggingstate.AddInfoEntryAndDetails("   -> [ExecHelm] Executing Helm command...done", string(cmdOutput))
+	log.Info("   -> [ExecHelm] Executing Helm command...done. Output: \n%v", string(cmdOutput))
 
 	return err
 }

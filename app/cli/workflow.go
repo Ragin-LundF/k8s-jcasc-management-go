@@ -16,7 +16,7 @@ import (
 // Workflow entrypoint
 func Workflow(info string, err error) {
 	selectedCommand := menu.Menu(info, err)
-	info, err = startCommandAction(selectedCommand)
+	err = startCommandAction(selectedCommand)
 	// show output
 	dialogs.DialogShowLogging(loggingstate.GetLoggingStateEntries())
 	loggingstate.ClearLoggingState()
@@ -25,7 +25,7 @@ func Workflow(info string, err error) {
 }
 
 // process the selected command and start the action
-func startCommandAction(command string) (info string, err error) {
+func startCommandAction(command string) (err error) {
 	// evaluate the command
 	switch command {
 	case constants.CommandInstall:
@@ -47,11 +47,11 @@ func startCommandAction(command string) (info string, err error) {
 	case constants.CommandCreateDeploymentOnlyProject:
 		err = createproject.ProjectWizardWorkflow(true)
 	case constants.CommandCreateJenkinsUserPassword:
-		info, err = jenkinsuser.CreateJenkinsUserPassword()
+		err = jenkinsuser.CreateJenkinsUserPassword()
 	case constants.CommandQuit:
 		os.Exit(0)
 	case constants.ErrorPromptFailed:
 		os.Exit(0)
 	}
-	return info, err
+	return err
 }
