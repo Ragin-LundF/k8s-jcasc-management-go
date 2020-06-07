@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/utils/logger"
 	"os"
 	"strings"
@@ -144,6 +145,7 @@ func ReplaceStringInFile(filePath string, stringToReplace string, newString stri
 	// write changes
 	err = ioutil.WriteFile(filePath, []byte(newContents), 0)
 	if err != nil {
+		loggingstate.AddErrorEntryAndDetails("  -> Cannot write file ["+filePath+"]", err.Error())
 		log.Error("[ReplaceStringInFile] Cannot write file [%v] \n%v", filePath, err)
 		return false, err
 	}

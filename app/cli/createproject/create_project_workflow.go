@@ -1,28 +1,28 @@
 package createproject
 
 import (
-	"k8s-management-go/app/cli/logoutput"
+	"k8s-management-go/app/cli/loggingstate"
 )
 
 func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 	// Start project wizard
-	logoutput.AddInfoEntry("Starting Project Wizard: Dialogs...")
+	loggingstate.AddInfoEntry("Starting Project Wizard: Dialogs...")
 
 	// Ask for namespace
-	logoutput.AddInfoEntry("-> Ask for namespace...")
+	loggingstate.AddInfoEntry("-> Ask for namespace...")
 	namespace, err := ProjectWizardAskForNamespace()
 	if err != nil {
 		return err
 	}
-	logoutput.AddInfoEntry("-> Ask for namespace...done")
+	loggingstate.AddInfoEntry("-> Ask for namespace...done")
 
 	// Ask for IP address
-	logoutput.AddInfoEntry("-> Ask for IP address...")
+	loggingstate.AddInfoEntry("-> Ask for IP address...")
 	ipAddress, err := ProjectWizardAskForIpAddress()
 	if err != nil {
 		return err
 	}
-	logoutput.AddInfoEntry("-> Ask for IP address...done")
+	loggingstate.AddInfoEntry("-> Ask for IP address...done")
 
 	// declare vars for next if statement
 	var jenkinsSystemMsg string
@@ -33,46 +33,46 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 	// if it is not only a deployment project ask for other Jenkins related vars
 	if !deploymentOnly {
 		// Select cloud templates
-		logoutput.AddInfoEntry("-> Ask for cloud templates...")
+		loggingstate.AddInfoEntry("-> Ask for cloud templates...")
 		selectedCloudTemplates, err = ProjectWizardAskForCloudTemplates()
 		if err != nil {
 			return err
 		}
-		logoutput.AddInfoEntry("-> Ask for cloud templates...done")
+		loggingstate.AddInfoEntry("-> Ask for cloud templates...done")
 
 		// Ask for existing persistent volume claim (PVC)
-		logoutput.AddInfoEntry("-> Ask for persistent volume claim...")
+		loggingstate.AddInfoEntry("-> Ask for persistent volume claim...")
 		existingPvc, err = ProjectWizardAskForExistingPersistentVolumeClaim()
 		if err != nil {
 			return err
 		}
-		logoutput.AddInfoEntry("-> Ask for persistent volume claim...done")
+		loggingstate.AddInfoEntry("-> Ask for persistent volume claim...done")
 
 		// Ask for Jenkins system message
-		logoutput.AddInfoEntry("-> Ask for Jenkins system message...")
+		loggingstate.AddInfoEntry("-> Ask for Jenkins system message...")
 		jenkinsSystemMsg, err = ProjectWizardAskForJenkinsSystemMessage(namespace)
 		if err != nil {
 			return err
 		}
-		logoutput.AddInfoEntry("-> Ask for Jenkins system message...done")
+		loggingstate.AddInfoEntry("-> Ask for Jenkins system message...done")
 
 		// Ask for Jobs Configuration repository
-		logoutput.AddInfoEntry("-> Ask for jobs configuration repository...")
+		loggingstate.AddInfoEntry("-> Ask for jobs configuration repository...")
 		jobsCfgRepo, err = ProjectWizardAskForJobsConfigurationRepository()
 		if err != nil {
 			return err
 		}
-		logoutput.AddInfoEntry("-> Ask for jobs configuration repository...done")
+		loggingstate.AddInfoEntry("-> Ask for jobs configuration repository...done")
 	}
-	logoutput.AddInfoEntry("Starting Project Wizard: Dialogs...done")
+	loggingstate.AddInfoEntry("Starting Project Wizard: Dialogs...done")
 
 	// Process data and create project
-	logoutput.AddInfoEntry("Starting Project Wizard: Template processing...")
+	loggingstate.AddInfoEntry("Starting Project Wizard: Template processing...")
 	err = ProcessProjectCreate(namespace, ipAddress, jenkinsSystemMsg, jobsCfgRepo, existingPvc, selectedCloudTemplates, deploymentOnly)
 	if err != nil {
-		logoutput.AddInfoEntry("Starting Project Wizard: Template processing...failed")
+		loggingstate.AddInfoEntry("Starting Project Wizard: Template processing...failed")
 	}
-	logoutput.AddInfoEntry("Starting Project Wizard: Template processing...done")
+	loggingstate.AddInfoEntry("Starting Project Wizard: Template processing...done")
 
 	return err
 }

@@ -2,9 +2,10 @@ package cli
 
 import (
 	"k8s-management-go/app/cli/createproject"
+	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/cli/install"
 	"k8s-management-go/app/cli/jenkinsuser"
-	"k8s-management-go/app/cli/logoutput"
+	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/cli/menu"
 	"k8s-management-go/app/cli/secrets"
 	"k8s-management-go/app/cli/uninstall"
@@ -17,7 +18,8 @@ func Workflow(info string, err error) {
 	selectedCommand := menu.Menu(info, err)
 	info, err = startCommandAction(selectedCommand)
 	// show output
-	logoutput.DialogShowLogging()
+	dialogs.DialogShowLogging(loggingstate.GetLoggingStateEntries())
+	loggingstate.ClearLoggingState()
 	// recall Workflow to show menu after finished actions
 	Workflow(info, err)
 }

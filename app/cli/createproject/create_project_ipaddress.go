@@ -3,10 +3,8 @@ package createproject
 import (
 	"errors"
 	"k8s-management-go/app/cli/dialogs"
-	"k8s-management-go/app/cli/logoutput"
-	"k8s-management-go/app/constants"
+	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/models"
-	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/logger"
 	"regexp"
 	"strings"
@@ -35,32 +33,9 @@ func ProjectWizardAskForIpAddress() (ipAddress string, err error) {
 	ipAddress, err = dialogs.DialogPrompt("Enter the load balancer IP address", validate)
 	// check if everything was ok
 	if err != nil {
-		logoutput.AddErrorEntryAndDetails("  -> Unable to get the IP address.", err.Error())
+		loggingstate.AddErrorEntryAndDetails("  -> Unable to get the IP address.", err.Error())
 		log.Error("[ProjectWizardAskForIpAddress] Unable to get the IP address. %v\n", err)
 	}
 
 	return ipAddress, err
-}
-
-// Replace IP address in templates
-func ProcessTemplateIpAddress(projectDirectory string, namespace string) (success bool, err error) {
-	log := logger.Log()
-
-	templateFiles := []string{
-		files.AppendPath(projectDirectory, constants.FilenameJenkinsConfigurationAsCode),
-		files.AppendPath(projectDirectory, constants.FilenameNginxIngressControllerHelmValues),
-	}
-
-	for _, templateFile := range templateFiles {
-		if files.FileOrDirectoryExists(templateFile) {
-			successful, err := files.ReplaceStringInFile(templateFile, constants.TemplatePublicIpAddress, namespace)
-			if !successful || err != nil {
-				logoutput.AddErrorEntryAndDetails("  -> Unable to replace ip address in file ["+templateFile+"]", err.Error())
-				log.Error("[ProcessTemplateIpAddress] Unable to replace ip address in file [%v], \n%v", templateFile, err)
-				return false, err
-			}
-		}
-
-	}
-	return true, err
 }

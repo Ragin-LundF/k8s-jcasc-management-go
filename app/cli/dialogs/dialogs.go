@@ -3,6 +3,7 @@ package dialogs
 import (
 	"fmt"
 	"github.com/manifoldco/promptui"
+	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/arrays"
 	"k8s-management-go/app/utils/logger"
@@ -216,4 +217,49 @@ func DialogAskForCloudTemplates(cloudTemplateDialog *CloudTemplatesDialog) (err 
 	}
 
 	return err
+}
+
+// Show info and error output as select prompt with search
+func DialogShowLogging(loggingStateEntries []loggingstate.LoggingState) {
+	log := logger.Log()
+	// clear screen
+	ClearScreen()
+
+	// Template for displaying MenuitemModel
+	templates := &promptui.SelectTemplates{
+		Label:    "{{ . }}?",
+		Active:   "\U000027A4 [{{ .Type | green }}] {{ .Entry | white }}",
+		Inactive: "  [{{ .Type | cyan }}] {{ .Entry | red }}",
+		Selected: "\U000027A4 [{{ .Type | red | cyan }}] {{ .Entry | red }}",
+		Details: `
+--------- Log Entry ----------
+{{ "Type   :" | faint }}	{{ .Type }}
+{{ "Message:" | faint }}	{{ .Entry }}
+{{ "Details:" | faint }}
+{{.Details}}`,
+	}
+
+	// searcher (with "/")
+	searcher := func(input string, index int) bool {
+		logItem := loggingStateEntries[index]
+		logEntry := strings.Replace(strings.ToLower(logItem.Entry), " ", "", -1)
+		logType := strings.Replace(strings.ToLower(logItem.Type), " ", "", -1)
+		input = strings.Replace(strings.ToLower(input), " ", "", -1)
+
+		return strings.Contains(logEntry, input) || strings.Contains(logType, input)
+	}
+
+	prompt := promptui.Select{
+		Label:     "Log Output. Press Enter to leave this view",
+		Items:     loggingStateEntries,
+		Templates: templates,
+		Size:      20,
+		Searcher:  searcher,
+	}
+
+	_, _, err := prompt.Run()
+
+	if err != nil {
+		log.Error(err)
+	}
 }
