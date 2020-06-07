@@ -20,7 +20,7 @@ func FileOrDirectoryExists(fileNameWithPath string) bool {
 	log := logger.Log()
 	_, err := os.Stat(fileNameWithPath)
 	if os.IsNotExist(err) {
-		log.Errorf("[File Utils] Unable to find file [%s]", fileNameWithPath)
+		log.Infof("[File Utils] Unable to find file [%s]", fileNameWithPath)
 		return false
 	}
 	return true
