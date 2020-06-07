@@ -252,12 +252,12 @@ func DialogShowLogging(loggingStateEntries []loggingstate.LoggingState, err erro
 			return strings.Contains(logEntry, input) || strings.Contains(logType, input)
 		}
 
-		var errorHint = " Successful. Possible errors can be ignored. "
+		var errorHint = " \U00002705 Successful. Possible errors can be ignored. "
 		if err != nil {
-			errorHint = " Unsuccessful. Check errors. "
+			errorHint = " \U0000274C Unsuccessful. Please check errors! "
 		}
 		prompt := promptui.Select{
-			Label:     ".:===" + errorHint + "Press Enter to leave this view ===:.",
+			Label:     ".:===" + errorHint + "===:. -> Press <Return> to leave this view <-",
 			Items:     loggingStateEntries,
 			Templates: templates,
 			Size:      20,
@@ -276,6 +276,7 @@ func CreateProgressBar(description string, progressMax int) progressbar.Progress
 	bar := progressbar.NewOptions(progressMax,
 		progressbar.OptionEnableColorCodes(true),
 		progressbar.OptionShowBytes(false),
+		progressbar.OptionSetDescription(description),
 		progressbar.OptionSetTheme(progressbar.Theme{
 			Saucer:        "[green]=[reset]",
 			SaucerHead:    "[green]>[reset]",
