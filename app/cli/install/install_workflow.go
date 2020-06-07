@@ -24,7 +24,11 @@ func DoUpgradeOrInstall(helmCommand string) (err error) {
 	}
 	loggingstate.AddInfoEntry("-> Ask for namespace...done")
 
+	// Progress Bar
+	bar := dialogs.CreateProgressBar("Installing...", 10)
+
 	// first check if namespace directory exists
+	bar.Describe("Checking directories...")
 	loggingstate.AddInfoEntry("-> Checking existing directories...")
 	projectPath := files.AppendPath(
 		models.GetProjectBaseDirectory(),
@@ -37,15 +41,24 @@ func DoUpgradeOrInstall(helmCommand string) (err error) {
 	}
 	loggingstate.AddInfoEntry("-> Checking existing directories...done")
 
+	// progress
+	bar.Add(1)
+
 	// create namespace and pvc only, if it is not dry-run only
 	if !models.GetConfiguration().K8sManagement.DryRunOnly {
 		// check if namespace is available or create a new one if not
+		bar.Describe("Check and create namespace if necessary...")
+
 		loggingstate.AddInfoEntry("-> Check and create namespace if necessary...")
 		if err = CheckAndCreateNamespace(namespace); err != nil {
 			loggingstate.AddErrorEntryAndDetails("-> Check and create namespace if necessary...failed", err.Error())
 			return err
 		}
 		loggingstate.AddInfoEntry("-> Check and create namespace if necessary...done")
+
+		// progress
+		bar.Add(1)
+		bar.Describe("Check and create PVC if necessary...")
 
 		// check if PVC was specified and install it if needed
 		loggingstate.AddInfoEntry("-> Check and create pvc if necessary...")
@@ -54,16 +67,20 @@ func DoUpgradeOrInstall(helmCommand string) (err error) {
 			return err
 		}
 		loggingstate.AddInfoEntry("-> Check and create pvc if necessary...done")
+		bar.Add(1)
 	} else {
 		loggingstate.AddInfoEntry("-> Dry run. Skipping namespace creation and pvc install...")
+		bar.Add(3) // skipping steps above
 	}
 
 	// check if project configuration contains Jenkins Helm values file
+	bar.Describe("Checking Jenkins...")
 	jenkinsHelmValuesFile := files.AppendPath(
 		projectPath,
 		constants.FilenameJenkinsHelmValues,
 	)
 	jenkinsHelmValuesExist := files.FileOrDirectoryExists(jenkinsHelmValuesFile)
+	bar.Add(1)
 
 	// apply secrets only if Jenkins Helm values are existing
 	if jenkinsHelmValuesExist {
@@ -72,10 +89,12 @@ func DoUpgradeOrInstall(helmCommand string) (err error) {
 		// apply secrets only, if it is not dry-run only
 		if !models.GetConfiguration().K8sManagement.DryRunOnly {
 			// apply secrets
+			bar.Describe("Applying secrets...")
+			bar.Add(1)
 			log.Infof("[DoUpgradeOrInstall] Starting apply secrets to namespace [%s]...", namespace)
 			loggingstate.AddInfoEntry("  -> Starting apply secrets to namespace [" + namespace + "]...")
 
-			if err = secrets.ApplySecretsToNamespace(namespace); err != nil {
+			if err = secrets.ApplySecretsToNamespace(namespace, &bar); err != nil {
 				loggingstate.AddErrorEntryAndDetails("  -> Starting apply secrets to namespace ["+namespace+"]...failed", err.Error())
 				log.Errorf("[DoUpgradeOrInstall] Starting apply secrets to namespace [%s]...failed\n%s", err.Error())
 				return err
@@ -89,6 +108,8 @@ func DoUpgradeOrInstall(helmCommand string) (err error) {
 		}
 
 		// ask for deployment name
+		bar.Describe("Check for deployment name...") // if dialog came up
+		bar.Add(1)
 		deploymentName, err := dialogs.DialogAskForDeploymentName("Deployment name", nil)
 		if err != nil {
 			loggingstate.AddErrorEntryAndDetails("  -> Unable to get deployment name.", err.Error())
@@ -97,6 +118,7 @@ func DoUpgradeOrInstall(helmCommand string) (err error) {
 		}
 
 		// install Jenkins
+		bar.Describe("Installing Jenkins...")
 		err = HelmInstallJenkins(helmCommand, namespace, deploymentName)
 		if err != nil {
 			loggingstate.AddErrorEntryAndDetails("  -> Unable to install Jenkins.", err.Error())
@@ -104,14 +126,17 @@ func DoUpgradeOrInstall(helmCommand string) (err error) {
 			return err
 		}
 
+		bar.Add(1)
 		loggingstate.AddInfoEntry("-> Jenkins Helm values.yaml found. Installing Jenkins...done")
 		log.Infof("[DoUpgradeOrInstall] Jenkins Helm values.yaml found. Installing Jenkins...done")
 	} else {
+		bar.Add(2) // skipping steps above
 		loggingstate.AddInfoEntry("No Jenkins Helm chart found in path [" + jenkinsHelmValuesFile + "].")
 		log.Infof("No Jenkins Helm chart found in path [%s]. Skipping Jenkins installation.", jenkinsHelmValuesFile)
 	}
 
 	// install Nginx ingress controller
+	bar.Describe("Installing nginx-ingress-controller...")
 	loggingstate.AddInfoEntry("-> Installing nginx-ingress-controller on namespace [" + namespace + "]...")
 	err = HelmInstallNginxIngressController(helmCommand, namespace, jenkinsHelmValuesExist)
 	if err != nil {
@@ -119,10 +144,12 @@ func DoUpgradeOrInstall(helmCommand string) (err error) {
 		log.Errorf("[DoUpgradeOrInstall] Unable to install nginx-ingress-controller.\n%s", err.Error())
 		return err
 	}
+	bar.Add(1)
 	loggingstate.AddInfoEntry("-> Installing nginx-ingress-controller on namespace [" + namespace + "]...done")
 
 	// install scripts only, if it is not dry-run only
 	if !models.GetConfiguration().K8sManagement.DryRunOnly {
+		bar.Describe("Check and execute additional scripts...")
 		// install scripts
 		// try to install scripts
 		loggingstate.AddInfoEntry("-> Try to execute install scripts on [" + namespace + "]...")
@@ -130,6 +157,7 @@ func DoUpgradeOrInstall(helmCommand string) (err error) {
 		_ = ShellScriptsInstall(namespace)
 		loggingstate.AddInfoEntry("-> Try to execute install scripts on [" + namespace + "]...done")
 	}
+	bar.Add(1)
 
 	loggingstate.AddInfoEntry("Starting Jenkins [" + helmCommand + "]...done")
 	return err

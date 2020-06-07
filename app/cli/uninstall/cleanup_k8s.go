@@ -1,6 +1,7 @@
 package uninstall
 
 import (
+	"github.com/schollz/progressbar/v3"
 	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
@@ -11,19 +12,31 @@ import (
 
 // This delegate method tries to cleanup everything. It ignores possible errors!
 // They will be logged, but it has no impact to the workflow
-func CleanupK8sNginxIngressController(namespace string) {
+func CleanupK8sNginxIngressController(namespace string, bar progressbar.ProgressBar) {
 	// Nginx Ingress Ctrl Roles
+	bar.Describe("Cleanup configuration...Roles...")
 	CleanupNginxIngressCtrlRoles(namespace)
+	bar.Add(1)
 	// Nginx Ingress Ctrl RoleBindings
+	bar.Describe("Cleanup configuration...RoleBindings...")
 	CleanupNginxIngressCtrlRoleBindings(namespace)
+	bar.Add(1)
 	// Nginx Ingress Ctrl ServiceAccounts
+	bar.Describe("Cleanup configuration...Service accounts...")
 	CleanupNginxIngressCtrlServiceAccounts(namespace)
+	bar.Add(1)
 	// Nginx Ingress Ctrl ClusterRoles
+	bar.Describe("Cleanup configuration...ClusterRoles...")
 	CleanupNginxIngressCtrlClusterRoles(namespace)
+	bar.Add(1)
 	// Nginx Ingress Ctrl ClusterRoleBindings
+	bar.Describe("Cleanup configuration...ClusterRoleBindings...")
 	CleanupNginxIngressCtrlClusterRoleBinding(namespace)
+	bar.Add(1)
 	// Nginx Ingress Ctrl ingress routes
+	bar.Describe("Cleanup configuration...Ingress...")
 	CleanupNginxIngressCtrlIngress(namespace)
+	bar.Add(1)
 }
 
 // uninstall nginx-ingress roles

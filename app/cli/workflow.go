@@ -18,7 +18,7 @@ func Workflow(info string, err error) {
 	selectedCommand := menu.Menu(info, err)
 	err = startCommandAction(selectedCommand)
 	// show output
-	dialogs.DialogShowLogging(loggingstate.GetLoggingStateEntries())
+	dialogs.DialogShowLogging(loggingstate.GetLoggingStateEntries(), err)
 	loggingstate.ClearLoggingState()
 	// recall Workflow to show menu after finished actions
 	Workflow(info, err)

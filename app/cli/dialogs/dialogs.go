@@ -3,6 +3,7 @@ package dialogs
 import (
 	"fmt"
 	"github.com/manifoldco/promptui"
+	"github.com/schollz/progressbar/v3"
 	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/arrays"
@@ -99,12 +100,12 @@ func DialogPrompt(label string, validate promptui.ValidateFunc) (answer string, 
 // Ask for deployment name
 func DialogAskForDeploymentName(label string, validate promptui.ValidateFunc) (deploymentName string, err error) {
 	log := logger.Log()
-	ClearScreen()
 
 	// try to read deployment name from configuration
 	deploymentName = models.GetConfiguration().Jenkins.Helm.Master.DeploymentName
 	// check if something was set
 	if deploymentName == "" {
+		ClearScreen()
 		// No pre-configured deployment name found -> ask for a new one
 		// Prepare prompt
 		deploymentName, err = DialogPrompt(label, validate)
@@ -220,7 +221,7 @@ func DialogAskForCloudTemplates(cloudTemplateDialog *CloudTemplatesDialog) (err 
 }
 
 // Show info and error output as select prompt with search
-func DialogShowLogging(loggingStateEntries []loggingstate.LoggingState) {
+func DialogShowLogging(loggingStateEntries []loggingstate.LoggingState, err error) {
 	log := logger.Log()
 	// clear screen
 	ClearScreen()
@@ -251,8 +252,12 @@ func DialogShowLogging(loggingStateEntries []loggingstate.LoggingState) {
 			return strings.Contains(logEntry, input) || strings.Contains(logType, input)
 		}
 
+		var errorHint = " Successful. Possible errors can be ignored. "
+		if err != nil {
+			errorHint = " Unsuccessful. Check errors. "
+		}
 		prompt := promptui.Select{
-			Label:     "Log Output. Press Enter to leave this view",
+			Label:     ".:===" + errorHint + "Press Enter to leave this view ===:.",
 			Items:     loggingStateEntries,
 			Templates: templates,
 			Size:      20,
@@ -265,4 +270,19 @@ func DialogShowLogging(loggingStateEntries []loggingstate.LoggingState) {
 			log.Errorf(err.Error())
 		}
 	}
+}
+
+func CreateProgressBar(description string, progressMax int) progressbar.ProgressBar {
+	bar := progressbar.NewOptions(progressMax,
+		progressbar.OptionEnableColorCodes(true),
+		progressbar.OptionShowBytes(false),
+		progressbar.OptionSetTheme(progressbar.Theme{
+			Saucer:        "[green]=[reset]",
+			SaucerHead:    "[green]>[reset]",
+			SaucerPadding: " ",
+			BarStart:      "[",
+			BarEnd:        "]",
+		}))
+
+	return *bar
 }
