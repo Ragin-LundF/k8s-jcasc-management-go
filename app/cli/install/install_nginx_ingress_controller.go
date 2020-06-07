@@ -58,7 +58,7 @@ func HelmInstallNginxIngressController(command string, namespace string, jenkins
 
 			// execute command
 			log.Info("[Install NginxIngressCtrl] Start installing nginx-ingress-controller on namespace [" + namespace + "] with Helm...")
-			helmCmdOutput, infoLog, err := helm.ExecutorHelm(command, argsForCommand)
+			err := helm.ExecutorHelm(command, argsForCommand)
 			info = info + constants.NewLine + infoLog
 
 			// first write output of dry-run...

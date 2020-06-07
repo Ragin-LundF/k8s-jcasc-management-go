@@ -38,7 +38,7 @@ func HelmInstallJenkins(command string, namespace string, deploymentName string)
 		argsForCommand = append(argsForCommand, "-n", namespace, "-f", helmChartsJenkinsValuesFile)
 
 		log.Info("[Install Jenkins] Start installing Jenkins with Helm...")
-		helmCmdOutput, infoLog, err := helm.ExecutorHelm(command, argsForCommand)
+		err := helm.ExecutorHelm(command, argsForCommand)
 		info = info + constants.NewLine + infoLog
 
 		// first write output of dry-run...

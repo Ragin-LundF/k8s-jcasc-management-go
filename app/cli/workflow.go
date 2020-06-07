@@ -29,19 +29,19 @@ func startCommandAction(command string) (info string, err error) {
 	// evaluate the command
 	switch command {
 	case constants.CommandInstall:
-		info, err = install.DoUpgradeOrInstall(constants.HelmCommandInstall)
+		err = install.DoUpgradeOrInstall(constants.HelmCommandInstall)
 	case constants.CommandUninstall:
-		info, err = uninstall.DoUninstall()
+		err = uninstall.DoUninstall()
 	case constants.CommandUpgrade:
-		info, err = install.DoUpgradeOrInstall(constants.HelmCommandUpgrade)
+		err = install.DoUpgradeOrInstall(constants.HelmCommandUpgrade)
 	case constants.CommandEncryptSecrets:
-		info, err = secrets.EncryptSecretsFile()
+		err = secrets.EncryptSecretsFile()
 	case constants.CommandDecryptSecrets:
-		info, err = secrets.DecryptSecretsFile()
+		err = secrets.DecryptSecretsFile()
 	case constants.CommandApplySecrets:
-		info, err = secrets.ApplySecrets()
+		err = secrets.ApplySecrets()
 	case constants.CommandApplySecretsToAll:
-		info, err = secrets.ApplySecretsToAllNamespaces()
+		err = secrets.ApplySecretsToAllNamespaces()
 	case constants.CommandCreateProject:
 		err = createproject.ProjectWizardWorkflow(false)
 	case constants.CommandCreateDeploymentOnlyProject:

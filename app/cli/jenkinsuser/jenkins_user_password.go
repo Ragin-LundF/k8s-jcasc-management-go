@@ -54,6 +54,6 @@ func CreateJenkinsUserPassword() (info string, err error) {
 		return "Created password: " + hashedPassword, err
 	} else {
 		log.Error("[Encrypt JenkinsUser Password] Passwords did not match...")
-		return info, errors.New("Passwords did not match!")
+		return info, errors.New("Passwords did not match! ")
 	}
 }

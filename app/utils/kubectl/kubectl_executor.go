@@ -1,15 +1,14 @@
 package kubectl
 
 import (
-	"errors"
-	"k8s-management-go/app/constants"
+	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/utils/logger"
 	"os/exec"
 	"strings"
 )
 
 // Execute Kubectl commands
-func ExecutorKubectl(command string, args []string) (output string, info string, err error) {
+func ExecutorKubectl(command string, args []string) (output string, err error) {
 	log := logger.Log()
 
 	// create args
@@ -20,19 +19,23 @@ func ExecutorKubectl(command string, args []string) (output string, info string,
 	// append args from method
 	argsForCommand = append(argsForCommand, args...)
 
-	info = info + constants.NewLine + "[ExecKubectl] Executing K8S command:"
-	info = info + constants.NewLine + "[ExecKubectl] kubectl " + strings.Join(argsForCommand, " ")
-	log.Info(info)
+	loggingstate.AddInfoEntryAndDetails("  -> Executing K8S command...", "kubectl "+strings.Join(argsForCommand, " "))
+	log.Info("[ExecKubectl] Executing K8S command: \n   -> kubectl %v", strings.Join(argsForCommand, " "))
 
 	// execute
 	cmdOutput, err := exec.Command("kubectl", argsForCommand...).CombinedOutput()
 	if err != nil {
 		// log output error
-		log.Error("[ExecKubectl] -> K8S command failed. Output:")
-		log.Error(string(cmdOutput) + constants.NewLine + err.Error())
+		loggingstate.AddErrorEntryAndDetails("  -> Unable to execute kubectl command. See output.", string(cmdOutput))
+		loggingstate.AddErrorEntryAndDetails("  -> Unable to execute kubectl command. See error.", err.Error())
+		log.Error("[ExecKubectl] -> K8S command failed. Output: \n%v", cmdOutput)
+		log.Error("[ExecKubectl] -> K8S command failed. Error: \n%v", err)
 
-		err = errors.New(string(cmdOutput) + constants.NewLine + err.Error())
+		return string(cmdOutput), err
 	}
 
-	return string(cmdOutput), info, err
+	loggingstate.AddInfoEntryAndDetails("  -> Executing K8S command...done", string(cmdOutput))
+	log.Info("[ExecKubectl] Executing K8S command done: \n%v", string(cmdOutput))
+
+	return string(cmdOutput), err
 }

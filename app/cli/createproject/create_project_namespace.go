@@ -39,7 +39,8 @@ func ProjectWizardAskForNamespace() (namespace string, err error) {
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to get name of new namespace!", err.Error())
 		log.Error("[ProjectWizardAskForNamespace] Unable to get name of new namespace. %v\n", err)
+		return namespace, err
 	}
 
-	return namespace, err
+	return namespace, nil
 }

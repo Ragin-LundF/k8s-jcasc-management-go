@@ -9,7 +9,7 @@ import (
 	"regexp"
 )
 
-func ProjectWizardAskForJobsConfigurationRepository() (jenkinsSysMsg string, err error) {
+func ProjectWizardAskForJobsConfigurationRepository() (jenkinsJobsCfgRepo string, err error) {
 	log := logger.Log()
 	// Validator
 	validate := func(input string) error {
@@ -28,12 +28,13 @@ func ProjectWizardAskForJobsConfigurationRepository() (jenkinsSysMsg string, err
 
 	// Prepare prompt
 	dialogs.ClearScreen()
-	jenkinsSysMsg, err = dialogs.DialogPrompt("Enter jobs configuration repository", validate)
+	jenkinsJobsCfgRepo, err = dialogs.DialogPrompt("Enter jobs configuration repository", validate)
 	// check if everything was ok
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to get the jobs configuration repository.", err.Error())
-		log.Error("[ProjectWizardAskForJenkinsSystemMessage] Unable to get the jobs configuration repository. %v\n", err)
+		log.Error("[ProjectWizardAskForJobsConfigurationRepository] Unable to get the jobs configuration repository. %v\n", err)
+		return jenkinsJobsCfgRepo, err
 	}
 
-	return jenkinsSysMsg, err
+	return jenkinsJobsCfgRepo, nil
 }
