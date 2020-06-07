@@ -20,7 +20,7 @@ func ProjectWizardAskForCloudTemplates() (cloudTemplates []string, err error) {
 		loggingstate.AddInfoEntry("  -> No cloud template directory found. Skip this step.")
 		log.Info("[ProjectWizardAskForCloudTemplates] No cloud template directory found. Skip this step.")
 
-		return cloudTemplates, err
+		return cloudTemplates, nil
 	}
 
 	// The cloud-templates directory is existing -> read files
@@ -41,14 +41,15 @@ func ProjectWizardAskForCloudTemplates() (cloudTemplates []string, err error) {
 		if err != nil {
 			loggingstate.AddErrorEntryAndDetails("  -> Unable to get the cloud templates.", err.Error())
 			log.Error("[ProjectWizardAskForCloudTemplates] Unable to get the cloud templates. %v\n", err)
+			return cloudTemplates, err
 		}
 	} else {
 		// no files found -> skip
 		loggingstate.AddInfoEntry("  -> No cloud templates found. Skip this step")
 		log.Info("[ProjectWizardAskForCloudTemplates] No cloud templates found. Skip this step")
 
-		return cloudTemplates, err
+		return cloudTemplates, nil
 	}
 
-	return cloudTemplates, err
+	return cloudTemplates, nil
 }

@@ -14,6 +14,11 @@ type confirm struct {
 	Selection string
 }
 
+type CloudTemplatesDialog struct {
+	CloudTemplateFiles     []string
+	SelectedCloudTemplates []string
+}
+
 func ClearScreen() {
 	fmt.Println("\033[2J")
 }
@@ -155,11 +160,6 @@ func DialogAskForNamespace() (namespace string, err error) {
 	return namespace, err
 }
 
-type CloudTemplatesDialog struct {
-	CloudTemplateFiles     []string
-	SelectedCloudTemplates []string
-}
-
 // dialog to ask for cloud templates
 func DialogAskForCloudTemplates(cloudTemplateDialog *CloudTemplatesDialog) (err error) {
 	log := logger.Log()
@@ -225,41 +225,44 @@ func DialogShowLogging(loggingStateEntries []loggingstate.LoggingState) {
 	// clear screen
 	ClearScreen()
 
-	// Template for displaying MenuitemModel
-	templates := &promptui.SelectTemplates{
-		Label:    "{{ . }}?",
-		Active:   "\U000027A4 [{{ .Type | green }}] {{ .Entry | white }}",
-		Inactive: "  [{{ .Type | cyan }}] {{ .Entry | red }}",
-		Selected: "\U000027A4 [{{ .Type | red | cyan }}] {{ .Entry | red }}",
-		Details: `
+	// if there is something to show, create dialog and show the log
+	if cap(loggingStateEntries) > 0 {
+		// Template for displaying MenuitemModel
+		templates := &promptui.SelectTemplates{
+			Label:    "{{ . }}?",
+			Active:   "\U000027A4 [{{ .Type | green }}] {{ .Entry | white }}",
+			Inactive: "  [{{ .Type | cyan }}] {{ .Entry | red }}",
+			Selected: "\U000027A4 [{{ .Type | red | cyan }}] {{ .Entry | red }}",
+			Details: `
 --------- Log Entry ----------
 {{ "Type   :" | faint }}	{{ .Type }}
 {{ "Message:" | faint }}	{{ .Entry }}
 {{ "Details:" | faint }}
 {{.Details}}`,
-	}
+		}
 
-	// searcher (with "/")
-	searcher := func(input string, index int) bool {
-		logItem := loggingStateEntries[index]
-		logEntry := strings.Replace(strings.ToLower(logItem.Entry), " ", "", -1)
-		logType := strings.Replace(strings.ToLower(logItem.Type), " ", "", -1)
-		input = strings.Replace(strings.ToLower(input), " ", "", -1)
+		// searcher (with "/")
+		searcher := func(input string, index int) bool {
+			logItem := loggingStateEntries[index]
+			logEntry := strings.Replace(strings.ToLower(logItem.Entry), " ", "", -1)
+			logType := strings.Replace(strings.ToLower(logItem.Type), " ", "", -1)
+			input = strings.Replace(strings.ToLower(input), " ", "", -1)
 
-		return strings.Contains(logEntry, input) || strings.Contains(logType, input)
-	}
+			return strings.Contains(logEntry, input) || strings.Contains(logType, input)
+		}
 
-	prompt := promptui.Select{
-		Label:     "Log Output. Press Enter to leave this view",
-		Items:     loggingStateEntries,
-		Templates: templates,
-		Size:      20,
-		Searcher:  searcher,
-	}
+		prompt := promptui.Select{
+			Label:     "Log Output. Press Enter to leave this view",
+			Items:     loggingStateEntries,
+			Templates: templates,
+			Size:      20,
+			Searcher:  searcher,
+		}
 
-	_, _, err := prompt.Run()
+		_, _, err := prompt.Run()
 
-	if err != nil {
-		log.Error(err)
+		if err != nil {
+			log.Error(err)
+		}
 	}
 }

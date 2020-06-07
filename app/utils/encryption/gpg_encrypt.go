@@ -1,48 +1,75 @@
 package encryption
 
 import (
+	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/utils/logger"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 // encrypt secrets
-func GpgEncryptSecrets(secretsFilePath string, password string) (info string, err error) {
+func GpgEncryptSecrets(secretsFilePath string, password string) (err error) {
 	log := logger.Log()
-	log.Info("[GPG Encrypt] Try to encrypt secrets file [" + secretsFilePath + "]")
-	cmd := exec.Command("gpg", "--batch", "--yes", "--passphrase", password, "-c", secretsFilePath)
-	cmdOutput, err := cmd.CombinedOutput()
+	// first encrypt file
+	gpgCmdArgs := []string{
+		"--batch", "--yes", "--passphrase", password, "-c", secretsFilePath,
+	}
+	loggingstate.AddInfoEntryAndDetails("  -> Executing Gpg encrypt command...", "gpg "+maskedGpgCmdArgsAsString(gpgCmdArgs, 4))
+	log.Info("[GpgEncryptSecrets] Executing Gpg encrypt command: \n   -> gpg %v", maskedGpgCmdArgsAsString(gpgCmdArgs, 4))
+
+	cmdOutput, err := exec.Command("gpg", gpgCmdArgs...).CombinedOutput()
 	if err != nil {
-		log.Error("[GPG Encrypt] Unable to encrypt secrets file [" + secretsFilePath + "]...")
-		log.Error(cmdOutput)
-		log.Error(err)
-		return info, err
+		loggingstate.AddErrorEntryAndDetails("  -> Unable to encrypt secrets file...failed. See output", string(cmdOutput))
+		loggingstate.AddErrorEntryAndDetails("  -> Unable to encrypt secrets file...failed. See error", err.Error())
+		log.Error("[GpgEncryptSecrets] Unable to encrypt secrets file [%v]...Output: \n%v", secretsFilePath, string(cmdOutput))
+		log.Error("[GpgEncryptSecrets] Unable to encrypt secrets file [%v]...Error: \n%v", secretsFilePath, err)
+		return err
 	}
 
-	log.Info("[GPG Encrypt] Encrypt secrets file [" + secretsFilePath + "] done.")
-	info = "Secrets file [" + secretsFilePath + "] encrypted."
+	loggingstate.AddInfoEntry("  -> Encrypt secrets file [" + secretsFilePath + "] done.")
+	log.Info("[GpgEncryptSecrets] Encrypt secrets file [%v] done.", secretsFilePath)
+
 	// after everything was ok -> delete original file
 	err = os.Remove(secretsFilePath)
 	if err != nil {
-		log.Error("[GPG Encrypt] Unable to remove secrets file ["+secretsFilePath+"]... %v\n", err)
+		loggingstate.AddErrorEntryAndDetails("  -> Unable to delete decrypted secrets file ["+secretsFilePath+"].", err.Error())
+		log.Error("[GpgEncryptSecrets] Unable to delete decrypted secrets file [%v].\n%v", secretsFilePath, err)
+		return err
 	}
 
-	return info, err
+	return nil
 }
 
 // decrypt secrets
-func GpgDecryptSecrets(secretsFilePath string, password string) (info string, err error) {
+func GpgDecryptSecrets(secretsFilePath string, password string) (err error) {
 	log := logger.Log()
-	cmd := exec.Command("gpg", "--batch", "--yes", "--passphrase", password, secretsFilePath)
-	cmdOutput, err := cmd.CombinedOutput()
-	if err != nil {
-		log.Error("[GPG Dencrypt] Unable to decrypt secrets file [" + secretsFilePath + "]...")
-		log.Error(cmdOutput)
-		log.Error(err)
-		return info, err
+	gpgCmdArgs := []string{
+		"--batch", "--yes", "--passphrase", password, secretsFilePath,
 	}
-	log.Info("[GPG Decrypt] Decrypt secrets file [" + secretsFilePath + "] done.")
-	info = "Secrets file [" + secretsFilePath + "] decrypted."
+	loggingstate.AddInfoEntryAndDetails("  -> Executing Gpg decrypt command...", "gpg "+maskedGpgCmdArgsAsString(gpgCmdArgs, 4))
+	log.Info("[GpgDecryptSecrets] Executing Gpg decrypt command: \n   -> gpg %v", maskedGpgCmdArgsAsString(gpgCmdArgs, 4))
 
-	return info, err
+	cmdOutput, err := exec.Command("gpg", gpgCmdArgs...).CombinedOutput()
+	if err != nil {
+		loggingstate.AddErrorEntryAndDetails("  -> Unable to decrypt secrets file...failed. See output", string(cmdOutput))
+		loggingstate.AddErrorEntryAndDetails("  -> Unable to decrypt secrets file...failed. See error", err.Error())
+		log.Error("[GpgDecryptSecrets] Unable to decrypt secrets file [%v]...Output: \n%v", secretsFilePath, string(cmdOutput))
+		log.Error("[GpgDecryptSecrets] Unable to decrypt secrets file [%v]...Error: \n%v", secretsFilePath, err)
+
+		return err
+	}
+
+	loggingstate.AddInfoEntry("  -> Decrypt secrets file [" + secretsFilePath + "] done.")
+	log.Info("[GpgDecryptSecrets] Decrypt secrets file [%v] done.", secretsFilePath)
+
+	return nil
+}
+
+// output masked gpg cmd args
+func maskedGpgCmdArgsAsString(gpgCmdArgs []string, passwordPos int8) string {
+	maskedGpgCmdArgs := make([]string, len(gpgCmdArgs))
+	copy(maskedGpgCmdArgs, gpgCmdArgs)
+	maskedGpgCmdArgs[passwordPos-1] = "*****"
+	return strings.Join(maskedGpgCmdArgs, " ")
 }

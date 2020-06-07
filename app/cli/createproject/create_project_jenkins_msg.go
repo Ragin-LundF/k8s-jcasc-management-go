@@ -25,6 +25,7 @@ func ProjectWizardAskForJenkinsSystemMessage(namespace string) (jenkinsSysMsg st
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to get the Jenkins system message.", err.Error())
 		log.Error("[ProjectWizardAskForJenkinsSystemMessage] Unable to get the Jenkins system message. %v\n", err)
+		return jenkinsSysMsg, err
 	}
 
 	// check if system message is empty, set default
@@ -32,5 +33,5 @@ func ProjectWizardAskForJenkinsSystemMessage(namespace string) (jenkinsSysMsg st
 		jenkinsSysMsg = "Jenkins instance for namespace [" + namespace + "]"
 	}
 
-	return jenkinsSysMsg, err
+	return jenkinsSysMsg, nil
 }

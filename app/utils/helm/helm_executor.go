@@ -1,15 +1,14 @@
 package helm
 
 import (
-	"errors"
-	"k8s-management-go/app/constants"
+	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/utils/logger"
 	"os/exec"
 	"strings"
 )
 
 // Execute Helm commands
-func ExecutorHelm(command string, args []string) (output string, info string, err error) {
+func ExecutorHelm(command string, args []string) (err error) {
 	log := logger.Log()
 
 	// create args
@@ -20,19 +19,21 @@ func ExecutorHelm(command string, args []string) (output string, info string, er
 	// append args from method
 	argsForCommand = append(argsForCommand, args...)
 
-	info = info + constants.NewLine + "[ExecHelm] Executing Helm command:"
-	info = info + constants.NewLine + "[ExecHelm] helm " + strings.Join(argsForCommand, " ")
-	log.Info(info)
+	loggingstate.AddInfoEntryAndDetails("   -> [ExecHelm] Executing Helm command...", strings.Join(argsForCommand, " "))
+	log.Info("[ExecHelm] Executing Helm command: \n%v", strings.Join(argsForCommand, " "))
 
 	// execute
 	cmdOutput, err := exec.Command("helm", argsForCommand...).CombinedOutput()
 	if err != nil {
 		// log output error
-		log.Error("[ExecHelm] -> Helm command failed. Output:")
-		log.Error(string(cmdOutput) + constants.NewLine + err.Error())
-
-		err = errors.New(string(cmdOutput) + constants.NewLine + err.Error())
+		loggingstate.AddErrorEntryAndDetails("[ExecHelm] -> Helm command failed. See details.", string(cmdOutput))
+		loggingstate.AddErrorEntryAndDetails("[ExecHelm] -> Helm command failed. See errors.", err.Error())
+		log.Error("[ExecHelm] -> Helm command failed. Output: \n%v", string(cmdOutput))
+		log.Error("[ExecHelm] -> Helm command failed. Error: \n%v", err.Error())
+		return err
 	}
+	loggingstate.AddInfoEntryAndDetails("   -> [ExecHelm] Executing Helm command...done", string(cmdOutput))
+	log.Info("   -> [ExecHelm] Executing Helm command...done. Output: \n%v", string(cmdOutput))
 
-	return string(cmdOutput), info, err
+	return err
 }

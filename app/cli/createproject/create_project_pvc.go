@@ -7,7 +7,7 @@ import (
 	"k8s-management-go/app/utils/logger"
 )
 
-func ProjectWizardAskForExistingPersistentVolumeClaim() (namespace string, err error) {
+func ProjectWizardAskForExistingPersistentVolumeClaim() (pvcName string, err error) {
 	log := logger.Log()
 	// Validator for pvc
 	validate := func(input string) error {
@@ -20,12 +20,13 @@ func ProjectWizardAskForExistingPersistentVolumeClaim() (namespace string, err e
 
 	// Prepare prompt
 	dialogs.ClearScreen()
-	namespace, err = dialogs.DialogPrompt("Enter existing Persistent Volume Claim (PVC) or leave empty for emptyDir", validate)
+	pvcName, err = dialogs.DialogPrompt("Enter existing Persistent Volume Claim (PVC) or leave empty for emptyDir", validate)
 	// check if everything was ok
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to get persistent volume claim.", err.Error())
-		log.Error("[ProjectWizardAskForNamespace] Unable to get persistent volume claim. %v\n", err)
+		log.Error("[ProjectWizardAskForExistingPersistentVolumeClaim] Unable to get persistent volume claim. %v\n", err)
+		return pvcName, err
 	}
 
-	return namespace, err
+	return pvcName, nil
 }

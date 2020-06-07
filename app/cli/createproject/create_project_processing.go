@@ -144,7 +144,7 @@ func ProcessProjectCreate(namespace string, ipAddress string, jenkinsSystemMsg s
 	}
 	loggingstate.AddInfoEntry("-> Start template processing: Persistent volume claim...done")
 
-	return err
+	return nil
 }
 
 // create new project directory
@@ -159,7 +159,7 @@ func createNewProjectDirectory(newProjectDir string) (err error) {
 		return err
 	}
 
-	return err
+	return nil
 }
 
 // copy files to new directory
@@ -204,7 +204,7 @@ func copyTemplates(fileNames []string, projectDirectory string) (err error) {
 		}
 		loggingstate.AddInfoEntry("  -> Copy [" + constants.FilenameNginxIngressControllerHelmValues + "]...done")
 	}
-	return err
+	return nil
 }
 
 // add cloud templates to project template
@@ -251,10 +251,10 @@ func processTemplateCloudTemplates(projectDirectory string, cloudTemplateFiles [
 			}
 		}
 	}
-	return true, err
+	return true, nil
 }
 
-// delegetaion method for replacement of global configuration
+// delegation method for replacement of global configuration
 func replaceGlobalConfiguration(projectDirectory string) (success bool, err error) {
 	log := logger.Log()
 
@@ -282,7 +282,7 @@ func replaceGlobalConfiguration(projectDirectory string) (success bool, err erro
 		log.Error("Unable to replace global PVC values...abort \n%v", err.Error())
 		return false, err
 	}
-	return success, err
+	return success, nil
 }
 
 // Replace nginx ingress helm values.yaml
@@ -330,7 +330,7 @@ func replaceGlobalConfigurationNginxIngressControllerHelmValues(projectDirectory
 			return success, err
 		}
 	}
-	return true, err
+	return true, nil
 }
 
 // Replace Jenkins Helm default values
@@ -380,7 +380,7 @@ func replaceGlobalConfigurationJenkinsHelmValues(projectDirectory string) (succe
 			return success, err
 		}
 	}
-	return true, err
+	return true, nil
 }
 
 // Replace Jenkins Configuration as Code default values
@@ -424,7 +424,7 @@ func replaceGlobalConfigurationJCasCValues(projectDirectory string) (success boo
 			return success, err
 		}
 	}
-	return true, err
+	return true, nil
 }
 
 // Replace PVC default values
@@ -446,7 +446,7 @@ func replaceGlobalConfigurationPvcValues(projectDirectory string) (success bool,
 			return success, err
 		}
 	}
-	return true, err
+	return true, nil
 }
 
 // replace project directory with namespace name
@@ -463,5 +463,5 @@ func replacePlaceholderInTemplates(templateFiles []string, placeholder string, n
 			}
 		}
 	}
-	return true, err
+	return true, nil
 }

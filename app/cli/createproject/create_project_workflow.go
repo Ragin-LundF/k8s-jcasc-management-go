@@ -74,5 +74,5 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 	}
 	loggingstate.AddInfoEntry("Starting Project Wizard: Template processing...done")
 
-	return err
+	return nil
 }
