@@ -2,12 +2,6 @@
 
 This is a Go implementation of [k8s-jcasc-management](https://github.com/Ragin-LundF/k8s-jcasc-management).
 
-To test it, you have to clone [k8s-jcasc-management](https://github.com/Ragin-LundF/k8s-jcasc-management) and to set the path to this directory as first argument:
-
-```bash
-go run k8s-jcasc-mgmt.go
-```
-
 # Table of content #
 
 * [Kubernetes Jenkins as Code management](#kubernetes-jenkins-as-code-management)
