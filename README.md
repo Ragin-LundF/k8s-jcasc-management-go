@@ -2,25 +2,11 @@
 
 This is a Go implementation of [k8s-jcasc-management](https://github.com/Ragin-LundF/k8s-jcasc-management).
 
-Currently, it is not fully working!
-
 To test it, you have to clone [k8s-jcasc-management](https://github.com/Ragin-LundF/k8s-jcasc-management) and to set the path to this directory as first argument:
 
 ```bash
 go run k8s-jcasc-mgmt.go
 ```
-
-## Prerequisites
-- Go >= 1.14
-- Gpg installed
-
-## Status implementation
-
-Finished:
-- Functionality is equal to bash version
-
-Open Tasks:
-- Code optimizations
 
 # Table of content #
 
@@ -92,7 +78,7 @@ To use this tool, you need to have the following tools installed:
 
 * golang >= 1.14
 * shell (sh/bash for scripts support)
-* for encryption one of (can be configured):
+* for encryption:
     * gpg
 * [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 * [helm 3](https://helm.sh/)
