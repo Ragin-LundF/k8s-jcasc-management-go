@@ -9,7 +9,7 @@ import (
 // uninstall Jenkins with Helm
 func HelmUninstallNginxIngressController(namespace string) (err error) {
 	log := logger.Log()
-	log.Info("[Uninstall NginxIngressCtrl] Try to uninstall nginx-ingress-controller in namespace [" + namespace + "]...")
+	log.Infof("[Uninstall NginxIngressCtrl] Try to uninstall nginx-ingress-controller in namespace [" + namespace + "]...")
 
 	// prepare Helm command
 	helmCmdArgs := []string{
@@ -24,7 +24,7 @@ func HelmUninstallNginxIngressController(namespace string) (err error) {
 	if err = helm.ExecutorHelm("uninstall", helmCmdArgs); err != nil {
 		return err
 	}
-	log.Info("[Uninstall NginxIngressCtrl] Uninstall of nginx-ingress-controller in namespace [" + namespace + "] done...")
+	log.Infof("[Uninstall NginxIngressCtrl] Uninstall of nginx-ingress-controller in namespace [" + namespace + "] done...")
 
 	return nil
 }

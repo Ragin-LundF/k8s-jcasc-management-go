@@ -57,7 +57,7 @@ func DialogConfirm(templateLabel string, templateSelector string, templateDetail
 	// result processing
 	if err != nil || resultConfirm != "{yes}" {
 		if err != nil {
-			log.Error("[DialogConfirm] Prompt confirm dialog failed %v\n", err)
+			log.Errorf("[DialogConfirm] Prompt confirm dialog failed %s\n", err.Error())
 		}
 		return false
 	} else {
@@ -80,7 +80,7 @@ func DialogAskForPassword(label string, validate promptui.ValidateFunc) (passwor
 
 	// check if everything was ok
 	if err != nil {
-		log.Error("[DialogAskForPassword] Prompt ask for password failed %v\n", err)
+		log.Errorf("[DialogAskForPassword] Prompt ask for password failed %s\n", err.Error())
 	}
 	return password, err
 }
@@ -110,7 +110,7 @@ func DialogAskForDeploymentName(label string, validate promptui.ValidateFunc) (d
 		deploymentName, err = DialogPrompt(label, validate)
 		// check if everything was ok
 		if err != nil {
-			log.Error("[DialogAskForDeploymentName] Prompt ask for deployment name failed %v\n", err)
+			log.Errorf("[DialogAskForDeploymentName] Prompt ask for deployment name failed %s\n", err.Error())
 		}
 	}
 	return deploymentName, err
@@ -152,7 +152,7 @@ func DialogAskForNamespace() (namespace string, err error) {
 
 	i, _, err := prompt.Run()
 	if err != nil {
-		log.Error("[DialogAskForNamespace] Prompt ask for namespace failed %v\n", err)
+		log.Errorf("[DialogAskForNamespace] Prompt ask for namespace failed %s\n", err.Error())
 	} else {
 		namespace = models.GetIpConfiguration().Ips[i].Namespace
 	}
@@ -195,7 +195,7 @@ func DialogAskForCloudTemplates(cloudTemplateDialog *CloudTemplatesDialog) (err 
 
 	i, _, err := prompt.Run()
 	if err != nil {
-		log.Error("[DialogAskForCloudTemplates] Prompt ask for cloud templates failed %v\n", err)
+		log.Errorf("[DialogAskForCloudTemplates] Prompt ask for cloud templates failed %s\n", err.Error())
 	} else {
 		if i > 0 {
 			foundElement := -1
@@ -262,7 +262,7 @@ func DialogShowLogging(loggingStateEntries []loggingstate.LoggingState) {
 		_, _, err := prompt.Run()
 
 		if err != nil {
-			log.Error(err)
+			log.Errorf(err.Error())
 		}
 	}
 }

@@ -24,7 +24,7 @@ func ProjectWizardAskForExistingPersistentVolumeClaim() (pvcName string, err err
 	// check if everything was ok
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to get persistent volume claim.", err.Error())
-		log.Error("[ProjectWizardAskForExistingPersistentVolumeClaim] Unable to get persistent volume claim. %v\n", err)
+		log.Errorf("[ProjectWizardAskForExistingPersistentVolumeClaim] Unable to get persistent volume claim. %s\n", err.Error())
 		return pvcName, err
 	}
 

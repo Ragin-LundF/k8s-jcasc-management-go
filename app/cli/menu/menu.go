@@ -21,14 +21,14 @@ func Menu(info string, err error) string {
 
 	// If infos are available, show them
 	if info != "" {
-		fmt.Printf("%v[INFO]\n%v%v", constants.ColorInfo, info, constants.ColorNormal)
+		fmt.Printf("%s[INFO]\n%v%v", constants.ColorInfo, info, constants.ColorNormal)
 		fmt.Println()
 		fmt.Println()
 	}
 
 	// If errors not emtpy, show them
 	if err != nil {
-		fmt.Printf("%v[ERRORS]\n%v%v", constants.ColorError, err, constants.ColorNormal)
+		fmt.Printf("%s[ERRORS]\n%v%v", constants.ColorError, err, constants.ColorNormal)
 		fmt.Println()
 		fmt.Println()
 	}

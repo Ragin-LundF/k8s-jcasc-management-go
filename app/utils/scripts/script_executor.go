@@ -11,7 +11,7 @@ import (
 
 func ExecuteScriptsInstallScriptsForNamespace(namespace string, filePrefix string) (err error) {
 	log := logger.Log()
-	log.Info("[Execute Scripts] Try to execute scripts for namespace [%v]...", namespace)
+	log.Infof("[Execute Scripts] Try to execute scripts for namespace [%s]...", namespace)
 	// calculate path to script folder
 	var scriptFolder = files.AppendPath(
 		files.AppendPath(
@@ -24,7 +24,7 @@ func ExecuteScriptsInstallScriptsForNamespace(namespace string, filePrefix strin
 	// check if folder exists
 	var isScriptsDirectoryAvailable = files.FileOrDirectoryExists(scriptFolder)
 	if isScriptsDirectoryAvailable {
-		log.Info("[Execute Scripts] Script directory is available for namespace [%v]...", namespace)
+		log.Infof("[Execute Scripts] Script directory is available for namespace [%s]...", namespace)
 		// prepare file filter for install
 		scriptFileEnding := constants.ScriptsFileEnding
 		var fileFilter = files.FileFilter{
@@ -34,7 +34,7 @@ func ExecuteScriptsInstallScriptsForNamespace(namespace string, filePrefix strin
 		// list files which match to filter
 		fileArray, err := files.ListFilesOfDirectoryWithFilter(scriptFolder, &fileFilter)
 		if err != nil {
-			log.Error("[Execute Scripts] Error while filtering for files with prefix [%v] in directory [%v].", filePrefix, scriptFolder)
+			log.Errorf("[Execute Scripts] Error while filtering for files with prefix [%s] in directory [%s].", filePrefix, scriptFolder)
 			return err
 		}
 
@@ -43,7 +43,7 @@ func ExecuteScriptsInstallScriptsForNamespace(namespace string, filePrefix strin
 			// iterate over filtered file array and execute scripts
 			for _, file := range *fileArray {
 				scriptWithPath := files.AppendPath(scriptFolder, file)
-				log.Info("[Execute Scripts] Trying to execute script [%v]", scriptWithPath)
+				log.Infof("[Execute Scripts] Trying to execute script [%s]", scriptWithPath)
 				loggingstate.AddInfoEntryAndDetails("  -> Try to execute script ["+file+"]...", scriptWithPath)
 
 				// Execute scripts
@@ -52,13 +52,13 @@ func ExecuteScriptsInstallScriptsForNamespace(namespace string, filePrefix strin
 				if err != nil {
 					loggingstate.AddErrorEntryAndDetails("  -> Try to execute script ["+file+"]...failed. See output.", string(outputCmd))
 					loggingstate.AddErrorEntryAndDetails("  -> Try to execute script ["+file+"]...failed. See error.", err.Error())
-					log.Error("Unable to execute script [%v] Error: \n%v", scriptWithPath, err)
-					log.Error("Unable to execute script [%v] Output: \n%v", scriptWithPath, string(outputCmd))
+					log.Errorf("Unable to execute script [%s] Error: \n%s", scriptWithPath, err.Error())
+					log.Errorf("Unable to execute script [%s] Output: \n%s", scriptWithPath, string(outputCmd))
 
 					return err
 				}
 				loggingstate.AddInfoEntryAndDetails("  -> Try to execute script ["+file+"]...done. See output.", string(outputCmd))
-				log.Info("[Execute Scripts] Script output of [%v]: \n%v", scriptWithPath, outputCmd)
+				log.Infof("[Execute Scripts] Script output of [%s]: \n%s", scriptWithPath, outputCmd)
 			}
 		} else {
 			loggingstate.AddInfoEntry("  -> No scripts with prefix [" + filePrefix + "] found for [" + namespace + "]")
@@ -67,6 +67,6 @@ func ExecuteScriptsInstallScriptsForNamespace(namespace string, filePrefix strin
 		loggingstate.AddInfoEntry("  -> No scripts directory found for [" + namespace + "]")
 	}
 
-	log.Info("[Execute Scripts] Executing scripts for namespace [%v] done.", namespace)
+	log.Infof("[Execute Scripts] Executing scripts for namespace [%s] done.", namespace)
 	return nil
 }

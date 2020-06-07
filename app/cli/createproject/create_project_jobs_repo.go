@@ -32,7 +32,7 @@ func ProjectWizardAskForJobsConfigurationRepository() (jenkinsJobsCfgRepo string
 	// check if everything was ok
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to get the jobs configuration repository.", err.Error())
-		log.Error("[ProjectWizardAskForJobsConfigurationRepository] Unable to get the jobs configuration repository. %v\n", err)
+		log.Errorf("[ProjectWizardAskForJobsConfigurationRepository] Unable to get the jobs configuration repository. %s\n", err.Error())
 		return jenkinsJobsCfgRepo, err
 	}
 

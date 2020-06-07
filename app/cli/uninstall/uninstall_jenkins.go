@@ -10,7 +10,7 @@ import (
 // uninstall Jenkins with Helm
 func HelmUninstallJenkins(namespace string, deploymentName string) (err error) {
 	log := logger.Log()
-	log.Info("[Uninstall Jenkins] Try to uninstall Jenkins on namespace [" + namespace + "] with deployment name [" + deploymentName + "]...")
+	log.Infof("[Uninstall Jenkins] Try to uninstall Jenkins on namespace [" + namespace + "] with deployment name [" + deploymentName + "]...")
 
 	// prepare Helm command
 	helmCmdArgs := []string{
@@ -28,7 +28,7 @@ func HelmUninstallJenkins(namespace string, deploymentName string) (err error) {
 	}
 
 	loggingstate.AddInfoEntry("  -> Uninstall Jenkins on namespace [" + namespace + "] with deployment name [" + deploymentName + "] done.")
-	log.Info("[Uninstall Jenkins] Uninstall Jenkins on namespace [" + namespace + "] with deployment name [" + deploymentName + "] done.")
+	log.Infof("[Uninstall Jenkins] Uninstall Jenkins on namespace [" + namespace + "] with deployment name [" + deploymentName + "] done.")
 
 	return nil
 }

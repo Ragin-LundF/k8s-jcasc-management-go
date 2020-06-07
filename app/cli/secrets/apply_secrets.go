@@ -13,7 +13,7 @@ import (
 func ApplySecrets() (err error) {
 	log := logger.Log()
 	// ask for namespace
-	log.Info("  -> Ask for namespace to apply secrets...")
+	log.Infof("  -> Ask for namespace to apply secrets...")
 	loggingstate.AddInfoEntry("  -> Ask for namespace to apply secrets...")
 
 	namespace, err := dialogs.DialogAskForNamespace()
@@ -23,10 +23,10 @@ func ApplySecrets() (err error) {
 	}
 
 	loggingstate.AddInfoEntry("  -> Ask for namespace to apply secrets...done")
-	log.Info("  -> Ask for namespace to apply secrets...done")
+	log.Infof("  -> Ask for namespace to apply secrets...done")
 
 	// apply secrets to namespace
-	log.Info("  -> Apply secrets to  namespace [%v]...", namespace)
+	log.Infof("  -> Apply secrets to  namespace [%s]...", namespace)
 	loggingstate.AddInfoEntry("  -> Ask for namespace to apply secrets...")
 
 	if err = ApplySecretsToNamespace(namespace); err != nil {
@@ -35,7 +35,7 @@ func ApplySecrets() (err error) {
 	}
 
 	loggingstate.AddInfoEntry("  -> Ask for namespace to apply secrets...done")
-	log.Info("  -> Apply secrets to  namespace [%v]...done", namespace)
+	log.Infof("  -> Apply secrets to  namespace [%s]...done", namespace)
 
 	return nil
 }
@@ -58,7 +58,7 @@ func ApplySecretsToNamespace(namespace string) (err error) {
 	// delete decrypted file
 	if err := os.Remove(secretsFilePath); err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to remove decrypted secrets file.", err.Error())
-		log.Error("[ApplySecretsToAllNamespaces] Unable to remove decrypted secrets file.\n%v", err)
+		log.Errorf("[ApplySecretsToAllNamespaces] Unable to remove decrypted secrets file.\n%s", err.Error())
 		return err
 	}
 
@@ -83,7 +83,7 @@ func ApplySecretsToAllNamespaces() (err error) {
 	// delete decrypted file
 	if err := os.Remove(secretsFilePath); err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to remove decrypted secrets file.", err.Error())
-		log.Error("[ApplySecretsToAllNamespaces] Unable to remove decrypted secrets file.\n%v", err)
+		log.Errorf("[ApplySecretsToAllNamespaces] Unable to remove decrypted secrets file.\n%s", err.Error())
 		return err
 	}
 
@@ -105,13 +105,13 @@ func executingSecretsFile(secretsFilePath string, namespace string) (err error) 
 	)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Error("[executingSecretsFile] Executing secrets file failed. Output: \n%v", string(output))
-		log.Error("[executingSecretsFile] Executing secrets file failed. Errors: \n%v", err)
+		log.Errorf("[executingSecretsFile] Executing secrets file failed. Output: \n%s", string(output))
+		log.Errorf("[executingSecretsFile] Executing secrets file failed. Errors: \n%s", err.Error())
 		loggingstate.AddErrorEntryAndDetails("  -> Executing secrets file failed. See output", string(output))
 		loggingstate.AddErrorEntryAndDetails("  -> Executing secrets file failed. See errors", err.Error())
 		return err
 	} else {
-		log.Info("[executingSecretsFile] Executing secrets file done. Output: \n%v", string(output))
+		log.Infof("[executingSecretsFile] Executing secrets file done. Output: \n%s", string(output))
 		loggingstate.AddInfoEntryAndDetails("  -> Executing secrets file done. See output", string(output))
 	}
 

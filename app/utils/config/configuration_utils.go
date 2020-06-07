@@ -36,7 +36,7 @@ func readConfigurationFromFile(configFile string) {
 	data, err := os.Open(configFile)
 	// check for error
 	if err != nil {
-		log.Error(err)
+		log.Errorf(err.Error())
 		panic(err)
 	} else {
 		// everything seems to be ok. Read data with line scanner

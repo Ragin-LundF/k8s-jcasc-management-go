@@ -18,7 +18,7 @@ func ProjectWizardAskForCloudTemplates() (cloudTemplates []string, err error) {
 	var cloudTemplatePath = files.AppendPath(models.GetProjectTemplateDirectory(), constants.DirProjectTemplateCloudTemplates)
 	if !files.FileOrDirectoryExists(cloudTemplatePath) {
 		loggingstate.AddInfoEntry("  -> No cloud template directory found. Skip this step.")
-		log.Info("[ProjectWizardAskForCloudTemplates] No cloud template directory found. Skip this step.")
+		log.Infof("[ProjectWizardAskForCloudTemplates] No cloud template directory found. Skip this step.")
 
 		return cloudTemplates, nil
 	}
@@ -40,13 +40,13 @@ func ProjectWizardAskForCloudTemplates() (cloudTemplates []string, err error) {
 		// check if everything was ok
 		if err != nil {
 			loggingstate.AddErrorEntryAndDetails("  -> Unable to get the cloud templates.", err.Error())
-			log.Error("[ProjectWizardAskForCloudTemplates] Unable to get the cloud templates. %v\n", err)
+			log.Errorf("[ProjectWizardAskForCloudTemplates] Unable to get the cloud templates. %s\n", err.Error())
 			return cloudTemplates, err
 		}
 	} else {
 		// no files found -> skip
 		loggingstate.AddInfoEntry("  -> No cloud templates found. Skip this step")
-		log.Info("[ProjectWizardAskForCloudTemplates] No cloud templates found. Skip this step")
+		log.Infof("[ProjectWizardAskForCloudTemplates] No cloud templates found. Skip this step")
 
 		return cloudTemplates, nil
 	}

@@ -68,31 +68,31 @@ func DoUpgradeOrInstall(helmCommand string) (err error) {
 	// apply secrets only if Jenkins Helm values are existing
 	if jenkinsHelmValuesExist {
 		loggingstate.AddInfoEntry("-> Jenkins Helm values.yaml found. Installing Jenkins...")
-		log.Info("[DoUpgradeOrInstall] Jenkins Helm values.yaml found. Installing Jenkins...")
+		log.Infof("[DoUpgradeOrInstall] Jenkins Helm values.yaml found. Installing Jenkins...")
 		// apply secrets only, if it is not dry-run only
 		if !models.GetConfiguration().K8sManagement.DryRunOnly {
 			// apply secrets
-			log.Info("[DoUpgradeOrInstall] Starting apply secrets to namespace [%v]...", namespace)
+			log.Infof("[DoUpgradeOrInstall] Starting apply secrets to namespace [%s]...", namespace)
 			loggingstate.AddInfoEntry("  -> Starting apply secrets to namespace [" + namespace + "]...")
 
 			if err = secrets.ApplySecretsToNamespace(namespace); err != nil {
 				loggingstate.AddErrorEntryAndDetails("  -> Starting apply secrets to namespace ["+namespace+"]...failed", err.Error())
-				log.Error("[DoUpgradeOrInstall] Starting apply secrets to namespace [%v]...failed\n%v", err)
+				log.Errorf("[DoUpgradeOrInstall] Starting apply secrets to namespace [%s]...failed\n%s", err.Error())
 				return err
 			}
 
 			loggingstate.AddInfoEntry("  -> Starting apply secrets to namespace [" + namespace + "]...done")
-			log.Info("[DoUpgradeOrInstall] Starting apply secrets to namespace [%v]...done", namespace)
+			log.Infof("[DoUpgradeOrInstall] Starting apply secrets to namespace [%s]...done", namespace)
 		} else {
 			loggingstate.AddInfoEntry("  -> Dry run only, skipping apply secrets to namespace [" + namespace + "]...")
-			log.Info("[DoUpgradeOrInstall] Dry run only, skipping apply secrets to namespace [%v]...", namespace)
+			log.Infof("[DoUpgradeOrInstall] Dry run only, skipping apply secrets to namespace [%s]...", namespace)
 		}
 
 		// ask for deployment name
 		deploymentName, err := dialogs.DialogAskForDeploymentName("Deployment name", nil)
 		if err != nil {
 			loggingstate.AddErrorEntryAndDetails("  -> Unable to get deployment name.", err.Error())
-			log.Error("[DoUpgradeOrInstall] Unable to get deployment name.\n%v", err)
+			log.Errorf("[DoUpgradeOrInstall] Unable to get deployment name.\n%s", err.Error())
 			return err
 		}
 
@@ -100,15 +100,15 @@ func DoUpgradeOrInstall(helmCommand string) (err error) {
 		err = HelmInstallJenkins(helmCommand, namespace, deploymentName)
 		if err != nil {
 			loggingstate.AddErrorEntryAndDetails("  -> Unable to install Jenkins.", err.Error())
-			log.Error("[DoUpgradeOrInstall] Unable to install Jenkins.\n%v", err)
+			log.Errorf("[DoUpgradeOrInstall] Unable to install Jenkins.\n%s", err.Error())
 			return err
 		}
 
 		loggingstate.AddInfoEntry("-> Jenkins Helm values.yaml found. Installing Jenkins...done")
-		log.Info("[DoUpgradeOrInstall] Jenkins Helm values.yaml found. Installing Jenkins...done")
+		log.Infof("[DoUpgradeOrInstall] Jenkins Helm values.yaml found. Installing Jenkins...done")
 	} else {
 		loggingstate.AddInfoEntry("No Jenkins Helm chart found in path [" + jenkinsHelmValuesFile + "].")
-		log.Info("No Jenkins Helm chart found in path [%v]. Skipping Jenkins installation.", jenkinsHelmValuesFile)
+		log.Infof("No Jenkins Helm chart found in path [%s]. Skipping Jenkins installation.", jenkinsHelmValuesFile)
 	}
 
 	// install Nginx ingress controller
@@ -116,7 +116,7 @@ func DoUpgradeOrInstall(helmCommand string) (err error) {
 	err = HelmInstallNginxIngressController(helmCommand, namespace, jenkinsHelmValuesExist)
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to install nginx-ingress-controller.", err.Error())
-		log.Error("[DoUpgradeOrInstall] Unable to install nginx-ingress-controller.\n%v", err)
+		log.Errorf("[DoUpgradeOrInstall] Unable to install nginx-ingress-controller.\n%s", err.Error())
 		return err
 	}
 	loggingstate.AddInfoEntry("-> Installing nginx-ingress-controller on namespace [" + namespace + "]...done")

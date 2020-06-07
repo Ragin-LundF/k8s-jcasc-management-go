@@ -13,7 +13,7 @@ import (
 // install Jenkins with Helm
 func HelmInstallJenkins(command string, namespace string, deploymentName string) (err error) {
 	log := logger.Log()
-	log.Info("[Install Jenkins] Try to %v Jenkins on namespace [%v] with deployment name [%v]...", command, namespace, deploymentName)
+	log.Infof("[Install Jenkins] Try to %s Jenkins on namespace [%s] with deployment name [%s]...", command, namespace, deploymentName)
 	loggingstate.AddInfoEntry("-> Try to " + command + " Jenkins on namespace [" + namespace + "] with deployment name [" + deploymentName + "]...")
 
 	// check if command is ok
@@ -39,23 +39,23 @@ func HelmInstallJenkins(command string, namespace string, deploymentName string)
 		argsForCommand = append(argsForCommand, "-n", namespace, "-f", helmChartsJenkinsValuesFile)
 
 		// executing jenkins helm install
-		log.Info("[Install Jenkins] Start installing/upgrading Jenkins with Helm on namespace [%v]...", namespace)
+		log.Infof("[Install Jenkins] Start installing/upgrading Jenkins with Helm on namespace [%s]...", namespace)
 		loggingstate.AddInfoEntry("-> Start installing/upgrading Jenkins with Helm on namespace [" + namespace + "]...")
 		err := helm.ExecutorHelm(command, argsForCommand)
 		if err != nil {
 			loggingstate.AddErrorEntryAndDetails("-> Unable to install/upgrade Jenkins on namespace ["+namespace+"] with deployment name ["+deploymentName+"]", err.Error())
-			log.Error("[Install Jenkins] Unable to install/upgrade Jenkins on namespace [%v] with deployment name [%v]. Errors: \n%v", namespace, deploymentName, err)
+			log.Errorf("[Install Jenkins] Unable to install/upgrade Jenkins on namespace [%s] with deployment name [%s]. Errors: \n%s", namespace, deploymentName, err.Error())
 			return err
 		}
 		loggingstate.AddInfoEntry("-> Start installing/upgrading Jenkins with Helm on namespace [" + namespace + "]...done")
-		log.Info("[Install Jenkins] Start installing/upgrading Jenkins with Helm on namespace [%v]...done", namespace)
+		log.Infof("[Install Jenkins] Start installing/upgrading Jenkins with Helm on namespace [%s]...done", namespace)
 	} else {
 		// helm command was wrong -> abort
-		log.Error("[Install Jenkins] Try to install/upgrade Jenkins on namespace [%v] with deployment name [%v]...failed. Wrong command [%v]", namespace, deploymentName, command)
+		log.Errorf("[Install Jenkins] Try to install/upgrade Jenkins on namespace [%s] with deployment name [%s]...failed. Wrong command [%s]", namespace, deploymentName, command)
 		loggingstate.AddErrorEntry("-> Try to install/upgrade Jenkins on namespace [" + namespace + "] with deployment name [" + deploymentName + "]...Wrong command [" + command + "]")
 		return errors.New("Helm command [" + command + "] unknown.")
 	}
-	log.Info("[Install Jenkins] Try to %v Jenkins on namespace [%v] with deployment name [%v]...done", command, namespace, deploymentName)
+	log.Infof("[Install Jenkins] Try to %s Jenkins on namespace [%s] with deployment name [%s]...done", command, namespace, deploymentName)
 	loggingstate.AddInfoEntry("-> Try to " + command + " Jenkins on namespace [" + namespace + "] with deployment name [" + deploymentName + "]...done")
 
 	return err

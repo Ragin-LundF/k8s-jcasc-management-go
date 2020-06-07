@@ -64,13 +64,13 @@ func AddToIpConfigFile(namespace string, ip string) (success bool, err error) {
 	defer ipconfigFile.Close()
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to open IP config file ["+models.GetIpConfigurationFile()+"]", err.Error())
-		log.Error("[AddToIpConfigFile] Unable to open IP config file [%v]. \n%v", models.GetIpConfigurationFile(), err)
+		log.Errorf("[AddToIpConfigFile] Unable to open IP config file [%s]. \n%s", models.GetIpConfigurationFile(), err.Error())
 		return false, err
 	}
 
 	if _, err := ipconfigFile.WriteString(namespace + " " + ip + "\n"); err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to add new IP and namespace to file ["+models.GetIpConfigurationFile()+"]", err.Error())
-		log.Error("[AddToIpConfigFile] Unable to add new IP and namespace to file [%v]. \n%v", models.GetIpConfigurationFile(), err)
+		log.Errorf("[AddToIpConfigFile] Unable to add new IP and namespace to file [%s]. \n%s", models.GetIpConfigurationFile(), err.Error())
 		return false, err
 	}
 	return true, err

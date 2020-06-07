@@ -24,7 +24,7 @@ func ProjectWizardAskForJenkinsSystemMessage(namespace string) (jenkinsSysMsg st
 	// check if everything was ok
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to get the Jenkins system message.", err.Error())
-		log.Error("[ProjectWizardAskForJenkinsSystemMessage] Unable to get the Jenkins system message. %v\n", err)
+		log.Errorf("[ProjectWizardAskForJenkinsSystemMessage] Unable to get the Jenkins system message. %s\n", err.Error())
 		return jenkinsSysMsg, err
 	}
 

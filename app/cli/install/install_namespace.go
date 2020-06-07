@@ -11,7 +11,7 @@ import (
 func CheckAndCreateNamespace(namespace string) (err error) {
 	log := logger.Log()
 	// check if namespace is existing
-	log.Info("[Install Namespace] Check if namespace [%v] is existing...", namespace)
+	log.Infof("[Install Namespace] Check if namespace [%s] is existing...", namespace)
 	loggingstate.AddInfoEntry("  -> Check if namespace [" + namespace + "] is existing...")
 	nsIsAvailable, err := isNamespaceAvailable(namespace)
 	if err != nil {
@@ -24,7 +24,7 @@ func CheckAndCreateNamespace(namespace string) (err error) {
 	if !nsIsAvailable {
 		// namespace does not exist, so create one
 		loggingstate.AddInfoEntry("  -> Namespace [" + namespace + "] is not available. Trying to create...")
-		log.Info("[Install Namespace] Namespace [%v] not found. Trying to create it...", namespace)
+		log.Infof("[Install Namespace] Namespace [%s] not found. Trying to create it...", namespace)
 
 		kubectlCommandArgs := []string{
 			"namespace", namespace,
@@ -32,15 +32,15 @@ func CheckAndCreateNamespace(namespace string) (err error) {
 		_, err := kubectl.ExecutorKubectl("create", kubectlCommandArgs)
 		if err != nil {
 			loggingstate.AddErrorEntryAndDetails("  -> Cannot create namespace ["+namespace+"]", err.Error())
-			log.Error("[Install Namespace] Cannot create namespace [%v]", namespace)
+			log.Errorf("[Install Namespace] Cannot create namespace [%s]", namespace)
 			return err
 		}
 
 		loggingstate.AddInfoEntry("  -> Namespace [" + namespace + "] is not available. Trying to create...done")
-		log.Info("[Install Namespace] Finished creating namespace [%v]...", namespace)
+		log.Infof("[Install Namespace] Finished creating namespace [%s]...", namespace)
 	} else {
 		loggingstate.AddInfoEntry("  -> Namespace [" + namespace + "] found.")
-		log.Info("[Install Namespace] Namespace [%v] found.", namespace)
+		log.Infof("[Install Namespace] Namespace [%s] found.", namespace)
 	}
 	return nil
 }

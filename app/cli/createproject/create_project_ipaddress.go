@@ -34,7 +34,7 @@ func ProjectWizardAskForIpAddress() (ipAddress string, err error) {
 	// check if everything was ok
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to get the IP address.", err.Error())
-		log.Error("[ProjectWizardAskForIpAddress] Unable to get the IP address. %v\n", err)
+		log.Errorf("[ProjectWizardAskForIpAddress] Unable to get the IP address. %s\n", err.Error())
 		return ipAddress, err
 	}
 

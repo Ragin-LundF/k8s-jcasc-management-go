@@ -29,79 +29,79 @@ func CleanupK8sNginxIngressController(namespace string) {
 // uninstall nginx-ingress roles
 func CleanupNginxIngressCtrlRoles(namespace string) {
 	log := logger.Log()
-	log.Info("[CleanupNginxIngressCtrlRoles] Start to cleanup nginx-ingress Roles for namespace [%v]...", namespace)
+	log.Infof("[CleanupNginxIngressCtrlRoles] Start to cleanup nginx-ingress Roles for namespace [%s]...", namespace)
 	loggingstate.AddInfoEntry("  -> Start to cleanup nginx-ingress Roles for namespace [" + namespace + "]...")
 
 	searchValue := models.GetConfiguration().Nginx.Ingress.Controller.DeploymentName
 	_ = deleteFromKubernetes(namespace, "role", searchValue)
 
 	loggingstate.AddInfoEntry("  -> Start to cleanup nginx-ingress Roles for namespace [" + namespace + "]...done")
-	log.Info("[CleanupNginxIngressCtrlRoles] Cleanup nginx-ingress Roles for namespace [%v] done.", namespace)
+	log.Infof("[CleanupNginxIngressCtrlRoles] Cleanup nginx-ingress Roles for namespace [%s] done.", namespace)
 }
 
 // uninstall nginx-ingress role bindings
 func CleanupNginxIngressCtrlRoleBindings(namespace string) {
 	log := logger.Log()
-	log.Info("[CleanupNginxIngressCtrlRoleBindings] Start to cleanup nginx-ingress RoleBindings for namespace [%v]...", namespace)
+	log.Infof("[CleanupNginxIngressCtrlRoleBindings] Start to cleanup nginx-ingress RoleBindings for namespace [%s]...", namespace)
 	loggingstate.AddInfoEntry("  -> Start to cleanup nginx-ingress RoleBindings for namespace [" + namespace + "]...")
 
 	searchValue := models.GetConfiguration().Nginx.Ingress.Controller.DeploymentName
 	_ = deleteFromKubernetes(namespace, "rolebindings", searchValue)
 
 	loggingstate.AddInfoEntry("  -> Start to cleanup nginx-ingress RoleBindings for namespace [" + namespace + "]...done")
-	log.Info("[CleanupNginxIngressCtrlRoleBindings] Cleanup nginx-ingress RoleBindings for namespace [%v] done.", namespace)
+	log.Infof("[CleanupNginxIngressCtrlRoleBindings] Cleanup nginx-ingress RoleBindings for namespace [%s] done.", namespace)
 }
 
 // uninstall nginx-ingress service accounts
 func CleanupNginxIngressCtrlServiceAccounts(namespace string) {
 	log := logger.Log()
-	log.Info("[CleanupNginxIngressCtrlServiceAccounts] Start to cleanup nginx-ingress ServiceAccounts for namespace [%v]...", namespace)
+	log.Infof("[CleanupNginxIngressCtrlServiceAccounts] Start to cleanup nginx-ingress ServiceAccounts for namespace [%s]...", namespace)
 	loggingstate.AddInfoEntry("  -> Start to cleanup nginx-ingress ServiceAccounts for namespace [" + namespace + "]...")
 
 	searchValue := models.GetConfiguration().Nginx.Ingress.Controller.DeploymentName
 	_ = deleteFromKubernetes(namespace, "sa", searchValue)
 
 	loggingstate.AddInfoEntry("  -> Start to cleanup nginx-ingress ServiceAccounts for namespace [" + namespace + "]...done")
-	log.Info("[CleanupNginxIngressCtrlServiceAccounts] Cleanup nginx-ingress ServiceAccounts for namespace [%v] done.", namespace)
+	log.Infof("[CleanupNginxIngressCtrlServiceAccounts] Cleanup nginx-ingress ServiceAccounts for namespace [%s] done.", namespace)
 }
 
 // uninstall nginx-ingress clusterroles
 func CleanupNginxIngressCtrlClusterRoles(namespace string) {
 	log := logger.Log()
-	log.Info("[CleanupNginxIngressCtrlClusterRoles] Start to cleanup nginx-ingress ClusterRoles for namespace [%v]...", namespace)
+	log.Infof("[CleanupNginxIngressCtrlClusterRoles] Start to cleanup nginx-ingress ClusterRoles for namespace [%s]...", namespace)
 	loggingstate.AddInfoEntry("  -> Start to cleanup nginx-ingress ClusterRoles for namespace [" + namespace + "]...")
 
 	searchValue := models.GetConfiguration().Nginx.Ingress.Controller.DeploymentName + "-clusterrole-" + namespace
 	_ = deleteFromKubernetes(namespace, "clusterrole", searchValue)
 
 	loggingstate.AddInfoEntry("  -> Start to cleanup nginx-ingress ClusterRoles for namespace [" + namespace + "]...donen")
-	log.Info("[CleanupNginxIngressCtrlClusterRoles] Cleanup nginx-ingress ClusterRoles for namespace [%v] done.", namespace)
+	log.Infof("[CleanupNginxIngressCtrlClusterRoles] Cleanup nginx-ingress ClusterRoles for namespace [%s] done.", namespace)
 }
 
 // uninstall nginx-ingress clusterrole binding
 func CleanupNginxIngressCtrlClusterRoleBinding(namespace string) {
 	log := logger.Log()
-	log.Info("[CleanupNginxIngressCtrlClusterRoleBinding] Start to cleanup nginx-ingress ClusterRoleBinding for namespace [%v]...", namespace)
+	log.Infof("[CleanupNginxIngressCtrlClusterRoleBinding] Start to cleanup nginx-ingress ClusterRoleBinding for namespace [%s]...", namespace)
 	loggingstate.AddInfoEntry("  -> Start to cleanup nginx-ingress ClusterRoleBinding for namespace [" + namespace + "]...")
 
 	searchValue := models.GetConfiguration().Nginx.Ingress.Controller.DeploymentName + "-clusterrole-nisa-binding-" + namespace
 	_ = deleteFromKubernetes(namespace, "clusterrolebinding", searchValue)
 
 	loggingstate.AddInfoEntry("  -> Start to cleanup nginx-ingress ClusterRoleBinding for namespace [" + namespace + "]...done")
-	log.Info("[CleanupNginxIngressCtrlClusterRoleBinding] Cleanup nginx-ingress ClusterRoleBinding for namespace [%v] done.", namespace)
+	log.Infof("[CleanupNginxIngressCtrlClusterRoleBinding] Cleanup nginx-ingress ClusterRoleBinding for namespace [%s] done.", namespace)
 }
 
 // uninstall nginx-ingress ingress
 func CleanupNginxIngressCtrlIngress(namespace string) {
 	log := logger.Log()
-	log.Info("[CleanupNginxIngressCtrlClusterRoleBinding] Start to cleanup nginx-ingress ingress routes for namespace [%v]...", namespace)
+	log.Infof("[CleanupNginxIngressCtrlClusterRoleBinding] Start to cleanup nginx-ingress ingress routes for namespace [%s]...", namespace)
 	loggingstate.AddInfoEntry("  -> Start to cleanup nginx-ingress ingress routes for namespace [" + namespace + "]...")
 
 	searchValue := models.GetConfiguration().Nginx.Ingress.Controller.DeploymentName
 	_ = deleteFromKubernetes(namespace, "ingress", searchValue)
 
 	loggingstate.AddInfoEntry("  -> Start to cleanup nginx-ingress ingress routes for namespace [" + namespace + "]...done")
-	log.Info("[CleanupNginxIngressCtrlClusterRoleBinding] Cleanup nginx-ingress ingress routes for namespace [%v] done.", namespace)
+	log.Infof("[CleanupNginxIngressCtrlClusterRoleBinding] Cleanup nginx-ingress ingress routes for namespace [%s] done.", namespace)
 }
 
 // generic function to delete role, rolebinding, sa... from kubectl
@@ -116,7 +116,7 @@ func deleteFromKubernetes(namespace string, kubernetesType string, filterValue s
 	kubectlCmdOutput, err := kubectl.ExecutorKubectl("get", kubectlCmdArgs)
 	if err != nil {
 		loggingstate.AddErrorEntry("  -> Unable to get [" + kubernetesType + "] for namespace [" + namespace + "]")
-		log.Error("[deleteFromKubernetes] Unable to get [%v] for namespace [%v]", kubernetesType, namespace)
+		log.Errorf("[deleteFromKubernetes] Unable to get [%s] for namespace [%s]", kubernetesType, namespace)
 		return err
 	}
 
@@ -124,7 +124,7 @@ func deleteFromKubernetes(namespace string, kubernetesType string, filterValue s
 	fieldValues, err := kubectl.FindFieldValuesInKubectlOutput(kubectlCmdOutput, constants.KubectlFieldName)
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("Unable to find ["+kubernetesType+"] in namespace ["+namespace+"]...", err.Error())
-		log.Error("[deleteFromKubernetes] Unable to find ["+kubernetesType+"] in namespace ["+namespace+"]... %v\n", err)
+		log.Errorf("[deleteFromKubernetes] Unable to find ["+kubernetesType+"] in namespace ["+namespace+"]... %s\n", err.Error())
 		return err
 	}
 
@@ -152,7 +152,7 @@ func deleteFromKubernetes(namespace string, kubernetesType string, filterValue s
 			_, err := kubectl.ExecutorKubectl("delete", kubectlUninstallCmdArgs)
 			if err != nil {
 				loggingstate.AddErrorEntryAndDetails("  -> Unable to uninstall nginx-ingress-controller ["+kubernetesType+"] from namespace ["+namespace+"]", err.Error())
-				log.Error("[deleteFromKubernetes] Unable to uninstall nginx-ingress-controller [" + kubernetesType + "] from namespace [" + namespace + "]")
+				log.Errorf("[deleteFromKubernetes] Unable to uninstall nginx-ingress-controller [" + kubernetesType + "] from namespace [" + namespace + "]")
 				return err
 			}
 		}

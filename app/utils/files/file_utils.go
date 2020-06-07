@@ -20,7 +20,7 @@ func FileOrDirectoryExists(fileNameWithPath string) bool {
 	log := logger.Log()
 	_, err := os.Stat(fileNameWithPath)
 	if os.IsNotExist(err) {
-		log.Error("[File Utils] Unable to find file [%v]", fileNameWithPath)
+		log.Errorf("[File Utils] Unable to find file [%s]", fileNameWithPath)
 		return false
 	}
 	return true
@@ -40,7 +40,7 @@ func ListFilesOfDirectoryWithFilter(directory string, filter *FileFilter) (files
 	if directoryExists {
 		fileList, err := ioutil.ReadDir(directory)
 		if err != nil {
-			log.Error("[File Utils] Unable to read directory ["+directory+"] %v\n", err)
+			log.Errorf("[File Utils] Unable to read directory ["+directory+"] %s\n", err.Error())
 			return files, err
 		}
 
@@ -109,7 +109,7 @@ func CopyFile(src string, dst string) (bytesWritten int64, err error) {
 	}
 
 	if !srcFileStat.Mode().IsRegular() {
-		return 0, fmt.Errorf("%s is not a regular file", src)
+		return 0, fmt.Errorf("%v is not a regular file", src)
 	}
 
 	srcFile, err := os.Open(src)
@@ -135,7 +135,7 @@ func ReplaceStringInFile(filePath string, stringToReplace string, newString stri
 	// read file
 	read, err := ioutil.ReadFile(filePath)
 	if err != nil {
-		log.Error("[ReplaceStringInFile] Cannot read file [%v] \n%v", filePath, err)
+		log.Errorf("[ReplaceStringInFile] Cannot read file [%s] \n%s", filePath, err.Error())
 		return false, err
 	}
 
@@ -146,7 +146,7 @@ func ReplaceStringInFile(filePath string, stringToReplace string, newString stri
 	err = ioutil.WriteFile(filePath, []byte(newContents), 0)
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Cannot write file ["+filePath+"]", err.Error())
-		log.Error("[ReplaceStringInFile] Cannot write file [%v] \n%v", filePath, err)
+		log.Errorf("[ReplaceStringInFile] Cannot write file [%s] \n%s", filePath, err.Error())
 		return false, err
 	}
 	return true, err

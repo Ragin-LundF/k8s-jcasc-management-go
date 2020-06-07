@@ -12,7 +12,7 @@ import (
 
 func CreateJenkinsUserPassword() (err error) {
 	log := logger.Log()
-	log.Info("[CreateJenkinsUserPassword] Ask for plain passwords...")
+	log.Infof("[CreateJenkinsUserPassword] Ask for plain passwords...")
 	loggingstate.AddInfoEntry("-> Ask for plain passwords...")
 	// Validator for password (keep it simple for now)
 	validate := func(input string) error {
@@ -28,19 +28,19 @@ func CreateJenkinsUserPassword() (err error) {
 	// Get plain passwords
 	plainPassword, err := dialogs.DialogAskForPassword("Password", validate)
 	if err != nil {
-		log.Error("[CreateJenkinsUserPassword] Unable to get plain password. \n%v", err)
+		log.Errorf("[CreateJenkinsUserPassword] Unable to get plain password. \n%s", err.Error())
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to get plain password.", err.Error())
 		return err
 	}
 	plainPasswordConfirm, err := dialogs.DialogAskForPassword("Retype your password", validate)
 	if err != nil {
-		log.Error("[CreateJenkinsUserPassword] Unable to get plain confirmation password. \n%v", err)
+		log.Errorf("[CreateJenkinsUserPassword] Unable to get plain confirmation password. \n%s", err.Error())
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to get plain confirmation password.", err.Error())
 	}
 
 	// compare plain passwords
 	if plainPassword == plainPasswordConfirm {
-		log.Info("[CreateJenkinsUserPassword] Entered passwords did match...")
+		log.Infof("[CreateJenkinsUserPassword] Entered passwords did match...")
 		loggingstate.AddInfoEntry("  -> Entered passwords did match...Try to encrypt...")
 		// encrypt password with bcrypt
 		hashedPassword, err := encryption.EncryptJenkinsUserPassword(plainPassword)
@@ -48,7 +48,7 @@ func CreateJenkinsUserPassword() (err error) {
 			return err
 		}
 		loggingstate.AddInfoEntry("-> Password successfully encrypted")
-		log.Info("[CreateJenkinsUserPassword] Password successfully encrypted...")
+		log.Infof("[CreateJenkinsUserPassword] Password successfully encrypted...")
 
 		templateDetails := `
 --------- Encrypted Password ----------
@@ -66,14 +66,14 @@ func CreateJenkinsUserPassword() (err error) {
 			err = clipboard.WriteAll(hashedPassword)
 			if err != nil {
 				loggingstate.AddErrorEntryAndDetails("-> Unable to copy password to clipboard", err.Error())
-				log.Error("[CreateJenkinsUserPassword] Unable to copy password to clipboard... %v\n", err)
+				log.Errorf("[CreateJenkinsUserPassword] Unable to copy password to clipboard... %s\n", err.Error())
 			}
 		}
 		return err
 	} else {
 		err = errors.New("Passwords did not match! ")
 		loggingstate.AddErrorEntry("-> " + err.Error())
-		log.Error("[CreateJenkinsUserPassword] %v", err.Error())
+		log.Errorf("[CreateJenkinsUserPassword] %s", err.Error())
 		return err
 	}
 }

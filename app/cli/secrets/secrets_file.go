@@ -26,37 +26,37 @@ func EncryptSecretsFile() (err error) {
 	}
 
 	// read password
-	log.Info("[EncryptSecretsFile] Ask for the password for secret file...")
+	log.Infof("[EncryptSecretsFile] Ask for the password for secret file...")
 	loggingstate.AddInfoEntry("  -> Ask for the password for secret file...")
 
 	password, err := dialogs.DialogAskForPassword("Password for secrets file", validate)
 	if err != nil {
-		log.Error("[EncryptSecretsFile] Ask for the password for secret file...failed\n%v", err)
+		log.Errorf("[EncryptSecretsFile] Ask for the password for secret file...failed\n%s", err.Error())
 		loggingstate.AddErrorEntryAndDetails("  -> Ask for the password for secret file...failed", err.Error())
 		return err
 	}
 
 	loggingstate.AddInfoEntry("  -> Ask for the password for secret file...done")
-	log.Info("[EncryptSecretsFile] Ask for the password for secret file...done")
+	log.Infof("[EncryptSecretsFile] Ask for the password for secret file...done")
 
 	// let password confirm
-	log.Info("[EncryptSecretsFile] Ask for the confirmation password for secret file...")
+	log.Infof("[EncryptSecretsFile] Ask for the confirmation password for secret file...")
 	loggingstate.AddInfoEntry("  -> Ask for the confirmation password for secret file...")
 
 	passwordConfirm, err := dialogs.DialogAskForPassword("Confirm password for secrets file", validate)
 	if err != nil {
-		log.Error("[EncryptSecretsFile] Ask for the confirmation password for secret file...failed\n%v", err)
+		log.Errorf("[EncryptSecretsFile] Ask for the confirmation password for secret file...failed\n%s", err.Error())
 		loggingstate.AddErrorEntryAndDetails("  -> Ask for the confirmation password for secret file...failed", err.Error())
 		return err
 	}
 
 	loggingstate.AddInfoEntry("  -> Ask for the confirmation password for secret file...done")
-	log.Info("[EncryptSecretsFile] Ask for the confirmation password for secret file...done")
+	log.Infof("[EncryptSecretsFile] Ask for the confirmation password for secret file...done")
 
 	// check if passwords match
 	if password != passwordConfirm {
 		loggingstate.AddErrorEntry("  -> Passwords did not match! ")
-		log.Error("[EncryptSecretsFile] Passwords did not match! ")
+		log.Errorf("[EncryptSecretsFile] Passwords did not match! ")
 		return errors.New("Passwords did not match! ")
 	}
 
@@ -72,17 +72,17 @@ func DecryptSecretsFile() (err error) {
 	log := logger.Log()
 
 	// ask for password
-	log.Info("[DecryptSecretsFile] Ask for the password for secret file...")
+	log.Infof("[DecryptSecretsFile] Ask for the password for secret file...")
 	loggingstate.AddInfoEntry("  -> Ask for the password for secret file...")
 	password, err := dialogs.DialogAskForPassword("Password for secrets file", nil)
 	if err != nil {
-		log.Error("[DecryptSecretsFile] Ask for the password for secret files...failed, \n%v", err)
+		log.Errorf("[DecryptSecretsFile] Ask for the password for secret files...failed, \n%s", err.Error())
 		loggingstate.AddErrorEntryAndDetails("  -> Ask for the password for secret files...failed", err.Error())
 
 		return err
 	}
 	loggingstate.AddInfoEntry("  -> Ask for the password for secret file...done")
-	log.Info("[DecryptSecretsFile] Ask for the password for secret file...done")
+	log.Infof("[DecryptSecretsFile] Ask for the password for secret file...done")
 
 	secretsFilePath := models.GetGlobalSecretsFile() + constants.SecretsFileEncodedEnding
 	err = encryption.GpgDecryptSecrets(secretsFilePath, password)

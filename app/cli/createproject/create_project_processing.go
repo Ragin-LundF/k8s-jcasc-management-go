@@ -155,7 +155,7 @@ func createNewProjectDirectory(newProjectDir string) (err error) {
 	err = os.MkdirAll(newProjectDir, os.ModePerm)
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Failed to create a new project directory.", err.Error())
-		log.Error("[createNewProjectDirectory] Trying to create a new project directory [%v]...error. \n%v", newProjectDir, err)
+		log.Errorf("[createNewProjectDirectory] Trying to create a new project directory [%s]...error. \n%s", newProjectDir, err.Error())
 		return err
 	}
 
@@ -199,7 +199,7 @@ func copyTemplates(fileNames []string, projectDirectory string) (err error) {
 		)
 		if err != nil {
 			loggingstate.AddErrorEntryAndDetails("  -> Copy ["+fileName+"]...failed. See errors.", err.Error())
-			log.Error("Unable to copy [%v] to [%v] \n%v", fileName, projectDirectory, err)
+			log.Errorf("Unable to copy [%s] to [%s] \n%s", fileName, projectDirectory, err.Error())
 			return err
 		}
 		loggingstate.AddInfoEntry("  -> Copy [" + constants.FilenameNginxIngressControllerHelmValues + "]...done")
@@ -225,7 +225,7 @@ func processTemplateCloudTemplates(projectDirectory string, cloudTemplateFiles [
 				read, err := ioutil.ReadFile(cloudTemplateFileWithPath)
 				if err != nil {
 					loggingstate.AddErrorEntryAndDetails("  -> Unable to read cloud template ["+cloudTemplateFileWithPath+"]", err.Error())
-					log.Error("[processTemplateCloudTemplates] Unable to read cloud template [%v] \n%v", cloudTemplateFileWithPath, err)
+					log.Errorf("[processTemplateCloudTemplates] Unable to read cloud template [%s] \n%s", cloudTemplateFileWithPath, err.Error())
 					return false, err
 				}
 				cloudTemplateContent = cloudTemplateContent + constants.NewLine + string(read)
@@ -261,25 +261,25 @@ func replaceGlobalConfiguration(projectDirectory string) (success bool, err erro
 	success, err = replaceGlobalConfigurationNginxIngressControllerHelmValues(projectDirectory)
 	if !success || err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to replace global nginx-ingress-controller Helm values...abort", err.Error())
-		log.Error("Unable to replace global nginx-ingress-controller Helm values...abort \n%v", err.Error())
+		log.Errorf("Unable to replace global nginx-ingress-controller Helm values...abort \n%s", err.Error())
 		return false, err
 	}
 	success, err = replaceGlobalConfigurationJCasCValues(projectDirectory)
 	if !success || err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to replace global JCasc values...abort", err.Error())
-		log.Error("Unable to replace global JCasc values...abort \n%v", err.Error())
+		log.Errorf("Unable to replace global JCasc values...abort \n%s", err.Error())
 		return false, err
 	}
 	success, err = replaceGlobalConfigurationJenkinsHelmValues(projectDirectory)
 	if !success || err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to replace global Jenkins Helm values...abort", err.Error())
-		log.Error("Unable to replace global Jenkins Helm values...abort \n%v", err.Error())
+		log.Errorf("Unable to replace global Jenkins Helm values...abort \n%s", err.Error())
 		return false, err
 	}
 	success, err = replaceGlobalConfigurationPvcValues(projectDirectory)
 	if !success || err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to replace global PVC values...abort", err.Error())
-		log.Error("Unable to replace global PVC values...abort \n%v", err.Error())
+		log.Errorf("Unable to replace global PVC values...abort \n%s", err.Error())
 		return false, err
 	}
 	return success, nil
@@ -458,7 +458,7 @@ func replacePlaceholderInTemplates(templateFiles []string, placeholder string, n
 			successful, err := files.ReplaceStringInFile(templateFile, placeholder, newValue)
 			if !successful || err != nil {
 				loggingstate.AddErrorEntryAndDetails("  -> Unable to replace ["+placeholder+"] in file ["+templateFile+"]", err.Error())
-				log.Error("[replacePlaceholderInTemplates] Unable to replace [%v] in file [%v], \n%v", placeholder, templateFile, err)
+				log.Errorf("[replacePlaceholderInTemplates] Unable to replace [%s] in file [%s], \n%s", placeholder, templateFile, err.Error())
 				return false, err
 			}
 		}

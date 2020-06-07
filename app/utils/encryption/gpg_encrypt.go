@@ -16,25 +16,25 @@ func GpgEncryptSecrets(secretsFilePath string, password string) (err error) {
 		"--batch", "--yes", "--passphrase", password, "-c", secretsFilePath,
 	}
 	loggingstate.AddInfoEntryAndDetails("  -> Executing Gpg encrypt command...", "gpg "+maskedGpgCmdArgsAsString(gpgCmdArgs, 4))
-	log.Info("[GpgEncryptSecrets] Executing Gpg encrypt command: \n   -> gpg %v", maskedGpgCmdArgsAsString(gpgCmdArgs, 4))
+	log.Infof("[GpgEncryptSecrets] Executing Gpg encrypt command: \n   -> gpg %s", maskedGpgCmdArgsAsString(gpgCmdArgs, 4))
 
 	cmdOutput, err := exec.Command("gpg", gpgCmdArgs...).CombinedOutput()
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to encrypt secrets file...failed. See output", string(cmdOutput))
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to encrypt secrets file...failed. See error", err.Error())
-		log.Error("[GpgEncryptSecrets] Unable to encrypt secrets file [%v]...Output: \n%v", secretsFilePath, string(cmdOutput))
-		log.Error("[GpgEncryptSecrets] Unable to encrypt secrets file [%v]...Error: \n%v", secretsFilePath, err)
+		log.Errorf("[GpgEncryptSecrets] Unable to encrypt secrets file [%s]...Output: \n%s", secretsFilePath, string(cmdOutput))
+		log.Errorf("[GpgEncryptSecrets] Unable to encrypt secrets file [%s]...Error: \n%s", secretsFilePath, err.Error())
 		return err
 	}
 
 	loggingstate.AddInfoEntry("  -> Encrypt secrets file [" + secretsFilePath + "] done.")
-	log.Info("[GpgEncryptSecrets] Encrypt secrets file [%v] done.", secretsFilePath)
+	log.Infof("[GpgEncryptSecrets] Encrypt secrets file [%s] done.", secretsFilePath)
 
 	// after everything was ok -> delete original file
 	err = os.Remove(secretsFilePath)
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to delete decrypted secrets file ["+secretsFilePath+"].", err.Error())
-		log.Error("[GpgEncryptSecrets] Unable to delete decrypted secrets file [%v].\n%v", secretsFilePath, err)
+		log.Errorf("[GpgEncryptSecrets] Unable to delete decrypted secrets file [%s].\n%s", secretsFilePath, err.Error())
 		return err
 	}
 
@@ -48,20 +48,20 @@ func GpgDecryptSecrets(secretsFilePath string, password string) (err error) {
 		"--batch", "--yes", "--passphrase", password, secretsFilePath,
 	}
 	loggingstate.AddInfoEntryAndDetails("  -> Executing Gpg decrypt command...", "gpg "+maskedGpgCmdArgsAsString(gpgCmdArgs, 4))
-	log.Info("[GpgDecryptSecrets] Executing Gpg decrypt command: \n   -> gpg %v", maskedGpgCmdArgsAsString(gpgCmdArgs, 4))
+	log.Infof("[GpgDecryptSecrets] Executing Gpg decrypt command: \n   -> gpg %s", maskedGpgCmdArgsAsString(gpgCmdArgs, 4))
 
 	cmdOutput, err := exec.Command("gpg", gpgCmdArgs...).CombinedOutput()
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to decrypt secrets file...failed. See output", string(cmdOutput))
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to decrypt secrets file...failed. See error", err.Error())
-		log.Error("[GpgDecryptSecrets] Unable to decrypt secrets file [%v]...Output: \n%v", secretsFilePath, string(cmdOutput))
-		log.Error("[GpgDecryptSecrets] Unable to decrypt secrets file [%v]...Error: \n%v", secretsFilePath, err)
+		log.Errorf("[GpgDecryptSecrets] Unable to decrypt secrets file [%s]...Output: \n%s", secretsFilePath, string(cmdOutput))
+		log.Errorf("[GpgDecryptSecrets] Unable to decrypt secrets file [%s]...Error: \n%s", secretsFilePath, err.Error())
 
 		return err
 	}
 
 	loggingstate.AddInfoEntry("  -> Decrypt secrets file [" + secretsFilePath + "] done.")
-	log.Info("[GpgDecryptSecrets] Decrypt secrets file [%v] done.", secretsFilePath)
+	log.Infof("[GpgDecryptSecrets] Decrypt secrets file [%s] done.", secretsFilePath)
 
 	return nil
 }

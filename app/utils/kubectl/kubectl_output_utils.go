@@ -62,7 +62,7 @@ func FindFieldIndexInKubectlOutput(kubectlOutput string, fieldName string) (line
 	fieldIdx := -1
 
 	if !strings.Contains(kubectlOutput, fieldName) {
-		log.Error("[FindFieldIndexInKubectlOutput] Kubectl output does not contain field name [%v]", fieldName)
+		log.Errorf("[FindFieldIndexInKubectlOutput] Kubectl output does not contain field name [%s]", fieldName)
 	} else {
 		// split output in array with lines
 		kubectlOutputLineArr := strings.Split(kubectlOutput, "\n")
@@ -84,7 +84,7 @@ func FindFieldIndexInKubectlOutput(kubectlOutput string, fieldName string) (line
 
 	if fieldIdx == -1 {
 		err = errors.New(constants.NewLine + "[FindFieldIndexInKubectlOutput] Cannot find index for fieldName [" + fieldName + "]")
-		log.Error(err.Error())
+		log.Errorf(err.Error())
 	}
 
 	return lineIndex, fieldIdx, err

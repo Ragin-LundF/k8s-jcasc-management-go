@@ -20,7 +20,7 @@ func ExecutorKubectl(command string, args []string) (output string, err error) {
 	argsForCommand = append(argsForCommand, args...)
 
 	loggingstate.AddInfoEntryAndDetails("  -> Executing K8S command...", "kubectl "+strings.Join(argsForCommand, " "))
-	log.Info("[ExecKubectl] Executing K8S command: \n   -> kubectl %v", strings.Join(argsForCommand, " "))
+	log.Infof("[ExecKubectl] Executing K8S command: \n   -> kubectl %s", strings.Join(argsForCommand, " "))
 
 	// execute
 	cmdOutput, err := exec.Command("kubectl", argsForCommand...).CombinedOutput()
@@ -28,14 +28,14 @@ func ExecutorKubectl(command string, args []string) (output string, err error) {
 		// log output error
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to execute kubectl command. See output.", string(cmdOutput))
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to execute kubectl command. See error.", err.Error())
-		log.Error("[ExecKubectl] -> K8S command failed. Output: \n%v", cmdOutput)
-		log.Error("[ExecKubectl] -> K8S command failed. Error: \n%v", err)
+		log.Errorf("[ExecKubectl] -> K8S command failed. Output: \n%s", cmdOutput)
+		log.Errorf("[ExecKubectl] -> K8S command failed. Error: \n%s", err.Error())
 
 		return string(cmdOutput), err
 	}
 
 	loggingstate.AddInfoEntryAndDetails("  -> Executing K8S command...done", string(cmdOutput))
-	log.Info("[ExecKubectl] Executing K8S command done: \n%v", string(cmdOutput))
+	log.Infof("[ExecKubectl] Executing K8S command done: \n%s", string(cmdOutput))
 
 	return string(cmdOutput), err
 }
