@@ -3,6 +3,7 @@ package createproject
 import (
 	"errors"
 	"k8s-management-go/app/cli/dialogs"
+	"k8s-management-go/app/cli/logoutput"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
@@ -15,7 +16,7 @@ func ProjectWizardAskForNamespace() (namespace string, err error) {
 	log := logger.Log()
 	// Validator for namespace name
 	validate := func(input string) error {
-		// a namespace name can not be longer than 63 characters
+		// a namespace name cannot be longer than 63 characters
 		if len(input) > 63 {
 			return errors.New("Namespace name is too long! You can only use max. 63 characters. ")
 		}
@@ -38,6 +39,7 @@ func ProjectWizardAskForNamespace() (namespace string, err error) {
 	namespace, err = dialogs.DialogPrompt("Enter namespace name", validate)
 	// check if everything was ok
 	if err != nil {
+		logoutput.AddErrorEntryAndDetails("  -> Unable to get name of new namespace!", err.Error())
 		log.Error("[ProjectWizardAskForNamespace] Unable to get name of new namespace. %v\n", err)
 	}
 
@@ -58,7 +60,8 @@ func ProcessTemplateNamespace(projectDirectory string, namespace string) (succes
 		if files.FileOrDirectoryExists(templateFile) {
 			successful, err := files.ReplaceStringInFile(templateFile, constants.TemplateNamespace, namespace)
 			if !successful || err != nil {
-				log.Error("[ProcessTemplateNamespace] Can not replace namespace in file [%v], \n%v", templateFile, err)
+				logoutput.AddErrorEntryAndDetails("  -> Unable to replace namespace in file ["+templateFile+"]", err.Error())
+				log.Error("[ProcessTemplateNamespace] Unable to replace namespace in file [%v], \n%v", templateFile, err)
 				return false, err
 			}
 		}

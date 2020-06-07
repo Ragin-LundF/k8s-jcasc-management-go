@@ -3,6 +3,7 @@ package createproject
 import (
 	"errors"
 	"k8s-management-go/app/cli/dialogs"
+	"k8s-management-go/app/cli/logoutput"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/logger"
@@ -12,7 +13,7 @@ func ProjectWizardAskForJenkinsSystemMessage(namespace string) (jenkinsSysMsg st
 	log := logger.Log()
 	// Validator for jenkins system message
 	validate := func(input string) error {
-		// a namespace name can not be longer than 63 characters
+		// a namespace name cannot be longer than 63 characters
 		if len(input) > 255 {
 			return errors.New("Should not be longer than 255 characters. ")
 		}
@@ -24,6 +25,7 @@ func ProjectWizardAskForJenkinsSystemMessage(namespace string) (jenkinsSysMsg st
 	jenkinsSysMsg, err = dialogs.DialogPrompt("Enter the Jenkins system message or leave empty for default", validate)
 	// check if everything was ok
 	if err != nil {
+		logoutput.AddErrorEntryAndDetails("  -> Unable to get the Jenkins system message.", err.Error())
 		log.Error("[ProjectWizardAskForJenkinsSystemMessage] Unable to get the Jenkins system message. %v\n", err)
 	}
 
@@ -42,7 +44,8 @@ func ProcessTemplateJenkinsSystemMessage(projectDirectory string, jenkinsSysMsg 
 	if files.FileOrDirectoryExists(jenkinsHelmValuesFile) {
 		successful, err := files.ReplaceStringInFile(jenkinsHelmValuesFile, constants.TemplateJenkinsSystemMessage, jenkinsSysMsg)
 		if !successful || err != nil {
-			log.Error("[ProcessTemplateJenkinsSystemMessage] Can not replace Jenkins System msg in file [%v], \n%v", jenkinsHelmValuesFile, err)
+			logoutput.AddErrorEntryAndDetails("  -> Unable to replace Jenkins System message in file ["+jenkinsHelmValuesFile+"]", err.Error())
+			log.Error("[ProcessTemplateJenkinsSystemMessage] Unable to replace Jenkins System msg in file [%v], \n%v", jenkinsHelmValuesFile, err)
 			return false, err
 		}
 	}

@@ -15,7 +15,7 @@
 # Docker registry credentials
 # If you need to configure a private docker registry in Kubernetes, that the Jenkins is able to
 # download its own containers, you can add the credentials like here.
-# Please do not delete the delete command, because this kind of secret can not be updated easily.
+# Please do not delete the delete command, because this kind of secret cannot be updated easily.
 # If no credentials are stored in the secrets map, it will show you an error, which is absolute fine!
 #
 # Credentials ID for containers in this example: docker-registry-credentialsId

@@ -53,7 +53,7 @@ func Setup() {
 		if err != nil {
 			log.Error(err)
 			showHelp()
-			log.Info("Can not find the base path! Please add it with -basepath flag.")
+			log.Info("Cannot find the base path! Please add it with -basepath flag.")
 			os.Exit(1)
 		}
 		basePath = currentPath

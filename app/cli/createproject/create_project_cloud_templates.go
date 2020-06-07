@@ -5,6 +5,7 @@ import (
 	"github.com/goware/prefixer"
 	"io/ioutil"
 	"k8s-management-go/app/cli/dialogs"
+	"k8s-management-go/app/cli/logoutput"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
@@ -13,16 +14,16 @@ import (
 )
 
 // project wizard dialog for cloud templates
-func ProjectWizardAskForCloudTemplates() (cloudTemplates []string, info string, err error) {
+func ProjectWizardAskForCloudTemplates() (cloudTemplates []string, err error) {
 	log := logger.Log()
 
 	// look if cloud templates are available
 	var cloudTemplatePath = files.AppendPath(models.GetProjectTemplateDirectory(), constants.DirProjectTemplateCloudTemplates)
 	if !files.FileOrDirectoryExists(cloudTemplatePath) {
-		info = info + constants.NewLine + "No cloud template directory found. Skip this step "
-		log.Info("[ProjectWizardAskForCloudTemplates] %v", info)
+		logoutput.AddInfoEntry("  -> No cloud template directory found. Skip this step.")
+		log.Info("[ProjectWizardAskForCloudTemplates] No cloud template directory found. Skip this step.")
 
-		return cloudTemplates, info, err
+		return cloudTemplates, err
 	}
 
 	// The cloud-templates directory is existing -> read files
@@ -41,17 +42,18 @@ func ProjectWizardAskForCloudTemplates() (cloudTemplates []string, info string, 
 
 		// check if everything was ok
 		if err != nil {
+			logoutput.AddErrorEntryAndDetails("  -> Unable to get the cloud templates.", err.Error())
 			log.Error("[ProjectWizardAskForCloudTemplates] Unable to get the cloud templates. %v\n", err)
 		}
 	} else {
 		// no files found -> skip
-		info = info + constants.NewLine + "No cloud templates found. Skip this step "
+		logoutput.AddInfoEntry("  -> No cloud templates found. Skip this step")
 		log.Info("[ProjectWizardAskForCloudTemplates] No cloud templates found. Skip this step")
 
-		return cloudTemplates, info, err
+		return cloudTemplates, err
 	}
 
-	return cloudTemplates, info, err
+	return cloudTemplates, err
 }
 
 // add cloud templates to project template
@@ -71,10 +73,11 @@ func ProcessTemplateCloudTemplates(projectDirectory string, cloudTemplateFiles [
 				cloudTemplateFileWithPath := files.AppendPath(cloudTemplatePath, cloudTemplate)
 				read, err := ioutil.ReadFile(cloudTemplateFileWithPath)
 				if err != nil {
-					log.Error("[ProcessTemplateCloudTemplates] Can not read cloud template [%v] \n%v", cloudTemplateFileWithPath, err)
+					logoutput.AddErrorEntryAndDetails("  -> Unable to read cloud template ["+cloudTemplateFileWithPath+"]", err.Error())
+					log.Error("[ProcessTemplateCloudTemplates] Unable to read cloud template [%v] \n%v", cloudTemplateFileWithPath, err)
 					return false, err
 				}
-				cloudTemplateContent = cloudTemplateContent + "\n" + string(read)
+				cloudTemplateContent = cloudTemplateContent + constants.NewLine + string(read)
 			}
 
 			// Prefix the lines with spaces for correct yaml template
@@ -85,12 +88,14 @@ func ProcessTemplateCloudTemplates(projectDirectory string, cloudTemplateFiles [
 			// replace target template
 			success, err = files.ReplaceStringInFile(targetFile, constants.TemplateJenkinsCloudTemplates, cloudTemplateContent)
 			if !success || err != nil {
+				logoutput.AddErrorEntryAndDetails("  -> Unable to replace ["+constants.TemplateJenkinsCloudTemplates+"] in ["+constants.FilenameJenkinsConfigurationAsCode+"]", err.Error())
 				return false, err
 			}
 		} else {
 			// replace placeholder
 			success, err = files.ReplaceStringInFile(targetFile, constants.TemplateJenkinsCloudTemplates, "")
 			if !success || err != nil {
+				logoutput.AddErrorEntryAndDetails("  -> Unable to replace ["+constants.TemplateJenkinsCloudTemplates+"] in ["+constants.FilenameJenkinsConfigurationAsCode+"]", err.Error())
 				return false, err
 			}
 		}

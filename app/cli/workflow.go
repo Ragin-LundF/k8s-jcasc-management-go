@@ -12,17 +12,12 @@ import (
 	"os"
 )
 
-type state struct {
-	Command  string
-	Previous string
-}
-
 // Workflow entrypoint
 func Workflow(info string, err error) {
 	selectedCommand := menu.Menu(info, err)
 	info, err = startCommandAction(selectedCommand)
 	// show output
-	logoutput.DialogShowInfoAndError(info, err)
+	logoutput.DialogShowLogging()
 	// recall Workflow to show menu after finished actions
 	Workflow(info, err)
 }
@@ -46,9 +41,9 @@ func startCommandAction(command string) (info string, err error) {
 	case constants.CommandApplySecretsToAll:
 		info, err = secrets.ApplySecretsToAllNamespaces()
 	case constants.CommandCreateProject:
-		info, err = createproject.ProjectWizardWorkflow(false)
+		err = createproject.ProjectWizardWorkflow(false)
 	case constants.CommandCreateDeploymentOnlyProject:
-		info, err = createproject.ProjectWizardWorkflow(true)
+		err = createproject.ProjectWizardWorkflow(true)
 	case constants.CommandCreateJenkinsUserPassword:
 		info, err = jenkinsuser.CreateJenkinsUserPassword()
 	case constants.CommandQuit:

@@ -3,6 +3,7 @@ package createproject
 import (
 	"errors"
 	"k8s-management-go/app/cli/dialogs"
+	"k8s-management-go/app/cli/logoutput"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
@@ -32,6 +33,7 @@ func ProjectWizardAskForJobsConfigurationRepository() (jenkinsSysMsg string, err
 	jenkinsSysMsg, err = dialogs.DialogPrompt("Enter jobs configuration repository", validate)
 	// check if everything was ok
 	if err != nil {
+		logoutput.AddErrorEntryAndDetails("  -> Unable to get the jobs configuration repository.", err.Error())
 		log.Error("[ProjectWizardAskForJenkinsSystemMessage] Unable to get the jobs configuration repository. %v\n", err)
 	}
 
@@ -45,7 +47,8 @@ func ProcessTemplateJenkinsJobsRepo(projectDirectory string, jenkinsJobsRepo str
 	if files.FileOrDirectoryExists(jenkinsHelmValuesFile) {
 		successful, err := files.ReplaceStringInFile(jenkinsHelmValuesFile, constants.TemplateJobDefinitionRepository, jenkinsJobsRepo)
 		if !successful || err != nil {
-			log.Error("[ProcessTemplateJenkinsJobsRepo] Can not replace Jenkins seed job repository in file [%v], \n%v", jenkinsHelmValuesFile, err)
+			logoutput.AddErrorEntryAndDetails("  -> Unable to replace Jenkins seed job repository in file ["+jenkinsHelmValuesFile+"].", err.Error())
+			log.Error("[ProcessTemplateJenkinsJobsRepo] Unable to replace Jenkins seed job repository in file [%v], \n%v", jenkinsHelmValuesFile, err)
 			return false, err
 		}
 	}

@@ -3,6 +3,7 @@ package createproject
 import (
 	"errors"
 	"k8s-management-go/app/cli/dialogs"
+	"k8s-management-go/app/cli/logoutput"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
@@ -34,6 +35,7 @@ func ProjectWizardAskForIpAddress() (ipAddress string, err error) {
 	ipAddress, err = dialogs.DialogPrompt("Enter the load balancer IP address", validate)
 	// check if everything was ok
 	if err != nil {
+		logoutput.AddErrorEntryAndDetails("  -> Unable to get the IP address.", err.Error())
 		log.Error("[ProjectWizardAskForIpAddress] Unable to get the IP address. %v\n", err)
 	}
 
@@ -53,7 +55,8 @@ func ProcessTemplateIpAddress(projectDirectory string, namespace string) (succes
 		if files.FileOrDirectoryExists(templateFile) {
 			successful, err := files.ReplaceStringInFile(templateFile, constants.TemplatePublicIpAddress, namespace)
 			if !successful || err != nil {
-				log.Error("[ProcessTemplateIpAddress] Can not replace ip address in file [%v], \n%v", templateFile, err)
+				logoutput.AddErrorEntryAndDetails("  -> Unable to replace ip address in file ["+templateFile+"]", err.Error())
+				log.Error("[ProcessTemplateIpAddress] Unable to replace ip address in file [%v], \n%v", templateFile, err)
 				return false, err
 			}
 		}
