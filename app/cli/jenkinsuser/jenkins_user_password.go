@@ -64,8 +64,10 @@ func CreateJenkinsUserPassword() (err error) {
 		if resultConfirm {
 			// copy to clipboard
 			err = clipboard.WriteAll(hashedPassword)
-			loggingstate.AddErrorEntryAndDetails("-> Unable to copy password to clipboard", err.Error())
-			log.Error("[CreateJenkinsUserPassword] Unable to copy password to clipboard... %v\n", err)
+			if err != nil {
+				loggingstate.AddErrorEntryAndDetails("-> Unable to copy password to clipboard", err.Error())
+				log.Error("[CreateJenkinsUserPassword] Unable to copy password to clipboard... %v\n", err)
+			}
 		}
 		return err
 	} else {
