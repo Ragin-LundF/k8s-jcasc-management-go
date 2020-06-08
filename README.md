@@ -243,6 +243,8 @@ go run k8s-jcasc-mgmt.go -logfile=debug.log -logencoding=console -dry-run
 ```
 This logs the output in console format, which makes it much more readable. With the `-dry-run` option it renders only the Helm Charts and outputs them into the logfile.
 
+It is also a good idea to use the `-logfile=<file>` and `-logencoding=console` arguments if there are problems.
+
 ## Templates ##
 
 At the `templates` directory contains the following:

@@ -5,6 +5,7 @@ go 1.14
 require (
 	github.com/atotto/clipboard v0.1.2
 	github.com/goware/prefixer v0.0.0-20160118172347-395022866408
+	github.com/hashicorp/go-version v1.2.0
 	github.com/manifoldco/promptui v0.7.0
 	github.com/schollz/progressbar/v3 v3.3.3
 	go.uber.org/zap v1.15.0

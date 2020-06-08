@@ -5,6 +5,7 @@ import (
 	"github.com/manifoldco/promptui"
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/constants"
+	"k8s-management-go/app/utils/logger"
 	"strings"
 )
 
@@ -16,6 +17,7 @@ type MenuitemModel struct {
 }
 
 func Menu(info string, err error) string {
+	log := logger.Log()
 	// clear screen
 	dialogs.ClearScreen()
 
@@ -23,13 +25,11 @@ func Menu(info string, err error) string {
 	if info != "" {
 		fmt.Printf("%s[INFO]\n%v%v", constants.ColorInfo, info, constants.ColorNormal)
 		fmt.Println()
-		fmt.Println()
 	}
 
 	// If errors not emtpy, show them
 	if err != nil {
 		fmt.Printf("%s[ERRORS]\n%v%v", constants.ColorError, err, constants.ColorNormal)
-		fmt.Println()
 		fmt.Println()
 	}
 
@@ -69,6 +69,7 @@ func Menu(info string, err error) string {
 	i, _, err := prompt.Run()
 
 	if err != nil {
+		log.Error(err)
 		fmt.Printf("Prompt failed %v\n", err)
 		return constants.ErrorPromptFailed
 	}
