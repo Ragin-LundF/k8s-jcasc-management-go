@@ -12,6 +12,7 @@ This is a Go implementation of [k8s-jcasc-management](https://github.com/Ragin-L
 * [Configuration](#configuration)
   * [Configure alternative configuration with overlays](#configure-alternative-configuration-with-overlays)
 * [How to use](#how-to-use)
+  * [Dry-Run and Logging](#dry-run-and-logging)
   * [Debugging](#debugging)
   * [Templates](#templates)
     * [Deployment-only Namespaces](#deployment-only-namespaces)
@@ -234,9 +235,9 @@ You can also add one of the following flags:
 | -logencoding=<encoding> | Set log encoding of the logger (`zap`). Default is `json`. Possible values are: `json` or `console` | `-logencoding=console` |
 | -server=<true|false> | *Experimental*. Starts the system as a server. Currently it has not enough functions to talk about... | `-server=true` |
 
-## Debugging ##
+## Dry-Run and Logging ##
 
-For debugging it is highly recommended, to use the following option:
+For dry-run with logging it is highly recommended, to use the following option:
 
 ```bash
 go run k8s-jcasc-mgmt.go -logfile=debug.log -logencoding=console -dry-run
@@ -244,6 +245,15 @@ go run k8s-jcasc-mgmt.go -logfile=debug.log -logencoding=console -dry-run
 This logs the output in console format, which makes it much more readable. With the `-dry-run` option it renders only the Helm Charts and outputs them into the logfile.
 
 It is also a good idea to use the `-logfile=<file>` and `-logencoding=console` arguments if there are problems.
+
+## Debugging ##
+
+To debug this application in JetBrains GoLand (will maybe work also in IntelliJ, but was not tested), you have to open the `Actions` and to choose `Registry...`.
+There is a point called `go.run.processes.with.tty`, which should be activated. This is relevant because of the UI elements.
+
+`Actions` can be found with:
+- Mac: `Command` + `Shift` + `A`
+- Windows: `Ctrl` + `Shift` + `A`
 
 ## Templates ##
 
