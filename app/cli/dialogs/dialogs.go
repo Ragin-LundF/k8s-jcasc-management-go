@@ -50,6 +50,7 @@ func DialogConfirm(templateLabel string, templateSelector string, templateDetail
 		Items:     dialogConfim,
 		Templates: templates,
 		Size:      2,
+		Stdout:    &BellSkipper{},
 	}
 
 	// execute dialog
@@ -149,6 +150,7 @@ func DialogAskForNamespace() (namespace string, err error) {
 		Templates: templates,
 		Size:      12,
 		Searcher:  searcher,
+		Stdout:    &BellSkipper{},
 	}
 
 	i, _, err := prompt.Run()
@@ -192,6 +194,7 @@ func DialogAskForCloudTemplates(cloudTemplateDialog *CloudTemplatesDialog) (err 
 		Templates: templates,
 		Size:      12,
 		Searcher:  searcher,
+		Stdout:    &BellSkipper{},
 	}
 
 	i, _, err := prompt.Run()
@@ -262,6 +265,7 @@ func DialogShowLogging(loggingStateEntries []loggingstate.LoggingState, err erro
 			Templates: templates,
 			Size:      20,
 			Searcher:  searcher,
+			Stdout:    &BellSkipper{},
 		}
 
 		_, _, err := prompt.Run()

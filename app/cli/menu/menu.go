@@ -63,6 +63,7 @@ func Menu(info string, err error) string {
 		Templates: templates,
 		Size:      12,
 		Searcher:  searcher,
+		Stdout:    &dialogs.BellSkipper{},
 	}
 
 	i, _, err := prompt.Run()
