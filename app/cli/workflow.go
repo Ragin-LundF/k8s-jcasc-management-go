@@ -7,6 +7,7 @@ import (
 	"k8s-management-go/app/cli/jenkinsuser"
 	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/cli/menu"
+	"k8s-management-go/app/cli/namespace"
 	"k8s-management-go/app/cli/secrets"
 	"k8s-management-go/app/cli/uninstall"
 	"k8s-management-go/app/constants"
@@ -42,6 +43,8 @@ func startCommandAction(command string) (err error) {
 		err = secrets.ApplySecrets()
 	case constants.CommandApplySecretsToAll:
 		err = secrets.ApplySecretsToAllNamespaces()
+	case constants.CommandCreateNamespace:
+		err = namespace.WorkflowCreateNamespace()
 	case constants.CommandCreateProject:
 		err = createproject.ProjectWizardWorkflow(false)
 	case constants.CommandCreateDeploymentOnlyProject:
