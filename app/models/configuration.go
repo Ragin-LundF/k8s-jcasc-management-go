@@ -101,6 +101,11 @@ type Configuration struct {
 	K8sManagement struct {
 		VersionCheck bool
 		DryRunOnly   bool
+		Logging      struct {
+			LogFile             string
+			LogEncoding         string
+			LogOverwriteOnStart bool
+		}
 	}
 }
 
@@ -237,6 +242,12 @@ func AssignToConfiguration(key string, value string) {
 			configuration.BasePath = value
 		case "K8S_MGMT_DRY_RUN_DEBUG":
 			configuration.K8sManagement.DryRunOnly, _ = strconv.ParseBool(value)
+		case "K8S_MGMT_LOGGING_LOGFILE":
+			configuration.K8sManagement.Logging.LogFile = value
+		case "K8S_MGMT_LOGGING_ENCODING":
+			configuration.K8sManagement.Logging.LogEncoding = value
+		case "K8S_MGMT_LOGGING_OVERWRITE_ON_START":
+			configuration.K8sManagement.Logging.LogOverwriteOnStart, _ = strconv.ParseBool(value)
 		}
 	}
 }

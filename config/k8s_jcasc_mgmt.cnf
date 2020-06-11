@@ -105,3 +105,10 @@ JENKINS_JOBDSL_SEED_JOB_SCRIPT_URL=https://github.com/Ragin-LundF/jenkins-jobdsl
 
 # activate version check to get informed about new version
 K8S_MGMT_VERSION_CHECK=true
+
+# Logfile
+K8S_MGMT_LOGGING_LOGFILE=output.log
+# Logging encoding (json | console)
+K8S_MGMT_LOGGING_ENCODING=console
+# Overwrite logging file on start (true | false)
+K8S_MGMT_LOGGING_OVERWRITE_ON_START=true

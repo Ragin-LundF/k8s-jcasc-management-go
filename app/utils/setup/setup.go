@@ -3,8 +3,10 @@ package setup
 import (
 	"flag"
 	"fmt"
+	"k8s-management-go/app/models"
 	"k8s-management-go/app/server"
 	"k8s-management-go/app/utils/config"
+	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/logger"
 	"os"
 	"strings"
@@ -63,6 +65,19 @@ func Setup() {
 	config.ReadConfiguration(basePath, dryRunDebug)
 	config.ReadIpConfig()
 
+	// overwrite logging
+	if logger.LogEncoding == "" && models.GetConfiguration().K8sManagement.Logging.LogEncoding != "" {
+		logger.LogEncoding = models.GetConfiguration().K8sManagement.Logging.LogEncoding
+	}
+	if logger.LogFilePath == "" && models.GetConfiguration().K8sManagement.Logging.LogFile != "" {
+		logger.LogFilePath = models.GetConfiguration().K8sManagement.Logging.LogFile
+	}
+	if logger.LogFilePath != "" && models.GetConfiguration().K8sManagement.Logging.LogOverwriteOnStart {
+		if files.FileOrDirectoryExists(logger.LogFilePath) {
+			os.Rename(logger.LogFilePath, logger.LogFilePath+".1")
+		}
+	}
+
 	// start experimental server
 	if serverStart {
 		server.StartServer()
@@ -75,6 +90,9 @@ func showHelp() {
 	fmt.Println("  -logfile=<path/file.log>")
 	fmt.Println("      * Optional *")
 	fmt.Println("      File for logging output")
+	fmt.Println("  -logencoding=<console | json>")
+	fmt.Println("      * Optional *")
+	fmt.Println("      Defines logging output format (console or json)")
 	fmt.Println("  -basepath=<path>")
 	fmt.Println("      * Optional *")
 	fmt.Println("      Add a base path to the k8s-jcasc-management (directory which contains version/configuration/templates) directory")
