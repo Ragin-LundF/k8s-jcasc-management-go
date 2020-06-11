@@ -10,3 +10,4 @@ secrets.sh
 /config/k8s_jcasc_custom.cnf
 # exclude .log files
 **/*.log
+**/*.log.1
