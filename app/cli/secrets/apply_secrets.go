@@ -2,6 +2,7 @@ package secrets
 
 import (
 	"errors"
+	"fmt"
 	"github.com/schollz/progressbar/v3"
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/cli/loggingstate"
@@ -67,7 +68,7 @@ func ApplySecretsToNamespace(namespace string, bar *progressbar.ProgressBar) (er
 	}
 
 	if errorsWhileApply {
-		return errors.New("Unable to execute secret file for namespace [" + namespace + "]. See previous errors. ")
+		return errors.New(fmt.Sprintf("Unable to execute secret file for namespace [%s]. See previous errors. ", namespace))
 	}
 	return nil
 }

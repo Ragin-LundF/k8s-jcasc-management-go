@@ -2,7 +2,7 @@ package kubectl
 
 import (
 	"errors"
-	"k8s-management-go/app/constants"
+	"fmt"
 	"k8s-management-go/app/utils/arrays"
 	"k8s-management-go/app/utils/logger"
 	"strings"
@@ -83,7 +83,7 @@ func FindFieldIndexInKubectlOutput(kubectlOutput string, fieldName string) (line
 	}
 
 	if fieldIdx == -1 {
-		err = errors.New(constants.NewLine + "[FindFieldIndexInKubectlOutput] Cannot find index for fieldName [" + fieldName + "]")
+		err = errors.New(fmt.Sprintf("[FindFieldIndexInKubectlOutput] Cannot find index for fieldName [%s]", fieldName))
 		log.Errorf(err.Error())
 	}
 

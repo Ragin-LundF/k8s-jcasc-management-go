@@ -1,6 +1,7 @@
 package scripts
 
 import (
+	"fmt"
 	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
@@ -44,27 +45,27 @@ func ExecuteScriptsInstallScriptsForNamespace(namespace string, filePrefix strin
 			for _, file := range *fileArray {
 				scriptWithPath := files.AppendPath(scriptFolder, file)
 				log.Infof("[Execute Scripts] Trying to execute script [%s]", scriptWithPath)
-				loggingstate.AddInfoEntryAndDetails("  -> Try to execute script ["+file+"]...", scriptWithPath)
+				loggingstate.AddInfoEntryAndDetails(fmt.Sprintf("  -> Try to execute script [%s]...", file), scriptWithPath)
 
 				// Execute scripts
 				_ = exec.Command("chmod", "755", scriptWithPath).Run()
 				outputCmd, err := exec.Command(scriptWithPath).CombinedOutput()
 				if err != nil {
-					loggingstate.AddErrorEntryAndDetails("  -> Try to execute script ["+file+"]...failed. See output.", string(outputCmd))
-					loggingstate.AddErrorEntryAndDetails("  -> Try to execute script ["+file+"]...failed. See error.", err.Error())
+					loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Try to execute script [%s]...failed. See output.", file), string(outputCmd))
+					loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Try to execute script [%s]...failed. See error.", file), err.Error())
 					log.Errorf("Unable to execute script [%s] Error: \n%s", scriptWithPath, err.Error())
 					log.Errorf("Unable to execute script [%s] Output: \n%s", scriptWithPath, string(outputCmd))
 
 					return err
 				}
-				loggingstate.AddInfoEntryAndDetails("  -> Try to execute script ["+file+"]...done. See output.", string(outputCmd))
+				loggingstate.AddInfoEntryAndDetails(fmt.Sprintf("  -> Try to execute script [%s]...done. See output.", file), string(outputCmd))
 				log.Infof("[Execute Scripts] Script output of [%s]: \n%s", scriptWithPath, outputCmd)
 			}
 		} else {
-			loggingstate.AddInfoEntry("  -> No scripts with prefix [" + filePrefix + "] found for [" + namespace + "]")
+			loggingstate.AddInfoEntry(fmt.Sprintf("  -> No scripts with prefix [%s] found for [%s]", filePrefix, namespace))
 		}
 	} else {
-		loggingstate.AddInfoEntry("  -> No scripts directory found for [" + namespace + "]")
+		loggingstate.AddInfoEntry(fmt.Sprintf("  -> No scripts directory found for [%s]", namespace))
 	}
 
 	log.Infof("[Execute Scripts] Executing scripts for namespace [%s] done.", namespace)

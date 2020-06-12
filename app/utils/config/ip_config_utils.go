@@ -2,6 +2,7 @@ package config
 
 import (
 	"bufio"
+	"fmt"
 	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
@@ -61,15 +62,15 @@ func parseIpConfigurationLine(line string) (namespace string, ip string) {
 func AddToIpConfigFile(namespace string, ip string) (success bool, err error) {
 	log := logger.Log()
 	ipconfigFile, err := os.OpenFile(models.GetIpConfigurationFile(), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	defer ipconfigFile.Close()
 	if err != nil {
-		loggingstate.AddErrorEntryAndDetails("  -> Unable to open IP config file ["+models.GetIpConfigurationFile()+"]", err.Error())
+		loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Unable to open IP config file [%s]", models.GetIpConfigurationFile()), err.Error())
 		log.Errorf("[AddToIpConfigFile] Unable to open IP config file [%s]. \n%s", models.GetIpConfigurationFile(), err.Error())
 		return false, err
 	}
+	defer ipconfigFile.Close()
 
 	if _, err := ipconfigFile.WriteString(namespace + " " + ip + "\n"); err != nil {
-		loggingstate.AddErrorEntryAndDetails("  -> Unable to add new IP and namespace to file ["+models.GetIpConfigurationFile()+"]", err.Error())
+		loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Unable to add new IP and namespace to file [%s]", models.GetIpConfigurationFile()), err.Error())
 		log.Errorf("[AddToIpConfigFile] Unable to add new IP and namespace to file [%s]. \n%s", models.GetIpConfigurationFile(), err.Error())
 		return false, err
 	}

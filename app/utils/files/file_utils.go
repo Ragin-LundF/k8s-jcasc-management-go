@@ -40,7 +40,7 @@ func ListFilesOfDirectoryWithFilter(directory string, filter *FileFilter) (files
 	if directoryExists {
 		fileList, err := ioutil.ReadDir(directory)
 		if err != nil {
-			log.Errorf("[File Utils] Unable to read directory ["+directory+"] %s\n", err.Error())
+			log.Errorf("[File Utils] Unable to read directory [%s] %s\n", directory, err.Error())
 			return files, err
 		}
 
@@ -145,7 +145,7 @@ func ReplaceStringInFile(filePath string, stringToReplace string, newString stri
 	// write changes
 	err = ioutil.WriteFile(filePath, []byte(newContents), 0)
 	if err != nil {
-		loggingstate.AddErrorEntryAndDetails("  -> Cannot write file ["+filePath+"]", err.Error())
+		loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Cannot write file [%s]", filePath), err.Error())
 		log.Errorf("[ReplaceStringInFile] Cannot write file [%s] \n%s", filePath, err.Error())
 		return false, err
 	}

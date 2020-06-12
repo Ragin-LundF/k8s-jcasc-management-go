@@ -37,7 +37,8 @@ func Setup() {
 		basePath = *basePathFlag
 	}
 
-	if bool(*helpFlag) {
+	// show help?
+	if *helpFlag {
 		showHelp()
 		os.Exit(0)
 	}
@@ -56,11 +57,22 @@ func Setup() {
 			log.Errorf(err.Error())
 			showHelp()
 			log.Infof("Cannot find the base path! Please add it with -basepath flag.")
+			fmt.Print("Cannot find the base path! Please add it with -basepath flag.")
 			os.Exit(1)
 		}
 		basePath = currentPath
 	}
 
+	// configure (read configuration and do additional configuration)
+	configure(basePath, dryRunDebug)
+
+	// start experimental server
+	if serverStart {
+		server.StartServer()
+	}
+}
+
+func configure(basePath string, dryRunDebug bool) {
 	// read configuration
 	config.ReadConfiguration(basePath, dryRunDebug)
 	config.ReadIpConfig()
@@ -76,11 +88,6 @@ func Setup() {
 		if files.FileOrDirectoryExists(logger.LogFilePath) {
 			os.Rename(logger.LogFilePath, logger.LogFilePath+".1")
 		}
-	}
-
-	// start experimental server
-	if serverStart {
-		server.StartServer()
 	}
 }
 

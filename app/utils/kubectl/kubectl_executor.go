@@ -1,6 +1,7 @@
 package kubectl
 
 import (
+	"fmt"
 	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/utils/logger"
 	"os/exec"
@@ -19,7 +20,7 @@ func ExecutorKubectl(command string, args []string) (output string, err error) {
 	// append args from method
 	argsForCommand = append(argsForCommand, args...)
 
-	loggingstate.AddInfoEntryAndDetails("  -> Executing K8S command...", "kubectl "+strings.Join(argsForCommand, " "))
+	loggingstate.AddInfoEntryAndDetails("  -> Executing K8S command...", fmt.Sprintf("kubectl %s", strings.Join(argsForCommand, " ")))
 	log.Infof("[ExecKubectl] Executing K8S command: \n   -> kubectl %s", strings.Join(argsForCommand, " "))
 
 	// execute

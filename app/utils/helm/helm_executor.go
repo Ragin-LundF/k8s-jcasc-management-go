@@ -1,6 +1,7 @@
 package helm
 
 import (
+	"fmt"
 	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/utils/logger"
 	"os/exec"
@@ -19,8 +20,8 @@ func ExecutorHelm(command string, args []string) (err error) {
 	// append args from method
 	argsForCommand = append(argsForCommand, args...)
 
-	loggingstate.AddInfoEntryAndDetails("   -> [ExecHelm] Executing Helm command...", strings.Join(argsForCommand, " "))
-	log.Infof("[ExecHelm] Executing Helm command: \n%s", strings.Join(argsForCommand, " "))
+	loggingstate.AddInfoEntryAndDetails("   -> [ExecHelm] Executing Helm command...", fmt.Sprintf("helm %s", strings.Join(argsForCommand, " ")))
+	log.Infof("[ExecHelm] Executing Helm command: \n    -> helm %s", strings.Join(argsForCommand, " "))
 
 	// execute
 	cmdOutput, err := exec.Command("helm", argsForCommand...).CombinedOutput()

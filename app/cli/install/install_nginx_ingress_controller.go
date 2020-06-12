@@ -2,6 +2,7 @@ package install
 
 import (
 	"errors"
+	"fmt"
 	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
@@ -15,7 +16,7 @@ import (
 func HelmInstallNginxIngressController(command string, namespace string, jenkinsIngressEnabled bool) (err error) {
 	log := logger.Log()
 	log.Infof("[Install NginxIngressCtrl] Trying to %s nginx-ingress-controller on namespace [%s] while Jenkins exists [%s]...", command, namespace, strconv.FormatBool(jenkinsIngressEnabled))
-	loggingstate.AddInfoEntry("[Install NginxIngressCtrl] Trying to " + command + " nginx-ingress-controller on namespace [" + namespace + "] while Jenkins exists [" + strconv.FormatBool(jenkinsIngressEnabled) + "]...")
+	loggingstate.AddInfoEntry(fmt.Sprintf("[Install NginxIngressCtrl] Trying to %s nginx-ingress-controller on namespace [%s] while Jenkins exists [%s]...", command, namespace, strconv.FormatBool(jenkinsIngressEnabled)))
 
 	// create var with path to ingress controller helm values
 	helmChartsNginxIngressCtrlValuesFile := files.AppendPath(
@@ -30,7 +31,7 @@ func HelmInstallNginxIngressController(command string, namespace string, jenkins
 	// if this is the case -> install it
 	if files.FileOrDirectoryExists(helmChartsNginxIngressCtrlValuesFile) {
 		log.Infof("[Install NginxIngressCtrl] nginx-ingress-controller values.yaml file found for namespace [%s].", namespace)
-		loggingstate.AddInfoEntry("[Install NginxIngressCtrl] nginx-ingress-controller values.yaml file found for namespace [" + namespace + "].")
+		loggingstate.AddInfoEntry(fmt.Sprintf("[Install NginxIngressCtrl] nginx-ingress-controller values.yaml file found for namespace [%s].", namespace))
 		// check if command is ok
 		if command == constants.HelmCommandInstall || command == constants.HelmCommandUpgrade {
 			// prepare files and directories
@@ -49,7 +50,7 @@ func HelmInstallNginxIngressController(command string, namespace string, jenkins
 			// if Jenkins is not active for this namespace, then disable Jenkins ingress routing
 			if jenkinsIngressEnabled == false {
 				log.Infof("[Install NginxIngressCtrl] Jenkins is not available for the namespace [%s]. Disabling Jenkins ingress routing.", namespace)
-				loggingstate.AddInfoEntry("[Install NginxIngressCtrl] Jenkins is not available for the namespace [" + namespace + "]. Disabling Jenkins ingress routing.")
+				loggingstate.AddInfoEntry(fmt.Sprintf("[Install NginxIngressCtrl] Jenkins is not available for the namespace [%s]. Disabling Jenkins ingress routing.", namespace))
 				argsForCommand = append(argsForCommand, "--set", "k8sJenkinsMgmt.ingress.enabled=false")
 			}
 
@@ -60,27 +61,27 @@ func HelmInstallNginxIngressController(command string, namespace string, jenkins
 
 			// execute command
 			log.Infof("[Install NginxIngressCtrl] Start installing/upgrading nginx-ingress-controller with Helm on namespace [%s]...", namespace)
-			loggingstate.AddInfoEntry("-> Start installing/upgrading nginx-ingress-controller with Helm on namespace [" + namespace + "]...")
+			loggingstate.AddInfoEntry(fmt.Sprintf("-> Start installing/upgrading nginx-ingress-controller with Helm on namespace [%s]...", namespace))
 			err := helm.ExecutorHelm(command, argsForCommand)
 			if err != nil {
-				loggingstate.AddErrorEntryAndDetails("-> Unable to install/upgrade nginx-ingress-controller on namespace ["+namespace+"]", err.Error())
+				loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("-> Unable to install/upgrade nginx-ingress-controller on namespace [%s]", namespace), err.Error())
 				log.Errorf("[Install NginxIngressCtrl] Unable to install/upgrade nginx-ingress-controller on namespace [%s]. Errors: \n%s", namespace, err.Error())
 				return err
 			}
-			loggingstate.AddInfoEntry("-> Start installing/upgrading nginx-ingress-controller with Helm on namespace [" + namespace + "]...done")
+			loggingstate.AddInfoEntry(fmt.Sprintf("-> Start installing/upgrading nginx-ingress-controller with Helm on namespace [%s]...done", namespace))
 			log.Infof("[Install NginxIngressCtrl] Start installing/upgrading nginx-ingress-controller with Helm on namespace [%s]...done", namespace)
 		} else {
 			// helm command was wrong -> abort
 			log.Errorf("[Install NginxIngressCtrl] Try to install/upgrade nginx-ingress-controller on namespace [%s]...failed. Wrong command [%s]", namespace, command)
-			loggingstate.AddErrorEntry("-> Try to install/upgrade nginx-ingress-controller on namespace [" + namespace + "]...Wrong command [" + command + "]")
-			return errors.New("Helm command [" + command + "] unknown.")
+			loggingstate.AddErrorEntry(fmt.Sprintf("-> Try to install/upgrade nginx-ingress-controller on namespace [%s]...Wrong command [%s]", namespace, command))
+			return errors.New(fmt.Sprintf("Helm command [%s] unknown.", command))
 		}
 	} else {
-		loggingstate.AddInfoEntry("[Install NginxIngressCtrl] No nginx-ingress-controller values.yaml file found for namespace [" + namespace + "]. Skip installing.")
+		loggingstate.AddInfoEntry(fmt.Sprintf("[Install NginxIngressCtrl] No nginx-ingress-controller values.yaml file found for namespace [%s]. Skip installing.", namespace))
 		log.Infof("[Install NginxIngressCtrl] No nginx-ingress-controller values.yaml file found for namespace [%s]. Skip installing.", namespace)
 	}
 
-	loggingstate.AddInfoEntry("[Install NginxIngressCtrl] Trying to " + command + " nginx-ingress-controller on namespace [" + namespace + "] while Jenkins exists [" + strconv.FormatBool(jenkinsIngressEnabled) + "]...done")
+	loggingstate.AddInfoEntry(fmt.Sprintf("[Install NginxIngressCtrl] Trying to %s nginx-ingress-controller on namespace [%s] while Jenkins exists [%s]...done", command, namespace, strconv.FormatBool(jenkinsIngressEnabled)))
 	log.Infof("[Install NginxIngressCtrl] Trying to %s nginx-ingress-controller on namespace [%s] while Jenkins exists [%s]...done", command, namespace, strconv.FormatBool(jenkinsIngressEnabled))
 
 	return err

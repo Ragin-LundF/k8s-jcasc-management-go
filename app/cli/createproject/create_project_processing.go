@@ -1,6 +1,7 @@
 package createproject
 
 import (
+	"fmt"
 	"github.com/goware/prefixer"
 	"io/ioutil"
 	"k8s-management-go/app/cli/loggingstate"
@@ -192,17 +193,17 @@ func copyTemplatesToNewDirectory(projectDirectory string, copyPersistentVolume b
 func copyTemplates(fileNames []string, projectDirectory string) (err error) {
 	log := logger.Log()
 	for _, fileName := range fileNames {
-		loggingstate.AddInfoEntry("  -> Copy [" + fileName + "]...")
+		loggingstate.AddInfoEntry(fmt.Sprintf("  -> Copy [%s]...", fileName))
 		_, err = files.CopyFile(
 			files.AppendPath(models.GetProjectTemplateDirectory(), fileName),
 			files.AppendPath(projectDirectory, fileName),
 		)
 		if err != nil {
-			loggingstate.AddErrorEntryAndDetails("  -> Copy ["+fileName+"]...failed. See errors.", err.Error())
+			loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Copy [%s]...failed. See errors.", fileName), err.Error())
 			log.Errorf("Unable to copy [%s] to [%s] \n%s", fileName, projectDirectory, err.Error())
 			return err
 		}
-		loggingstate.AddInfoEntry("  -> Copy [" + constants.FilenameNginxIngressControllerHelmValues + "]...done")
+		loggingstate.AddInfoEntry(fmt.Sprintf("  -> Copy [%s]...done", fileName))
 	}
 	return nil
 }
@@ -224,7 +225,7 @@ func processTemplateCloudTemplates(projectDirectory string, cloudTemplateFiles [
 				cloudTemplateFileWithPath := files.AppendPath(cloudTemplatePath, cloudTemplate)
 				read, err := ioutil.ReadFile(cloudTemplateFileWithPath)
 				if err != nil {
-					loggingstate.AddErrorEntryAndDetails("  -> Unable to read cloud template ["+cloudTemplateFileWithPath+"]", err.Error())
+					loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Unable to read cloud template [%s]", cloudTemplateFileWithPath), err.Error())
 					log.Errorf("[processTemplateCloudTemplates] Unable to read cloud template [%s] \n%s", cloudTemplateFileWithPath, err.Error())
 					return false, err
 				}
@@ -239,14 +240,14 @@ func processTemplateCloudTemplates(projectDirectory string, cloudTemplateFiles [
 			// replace target template
 			success, err = files.ReplaceStringInFile(targetFile, constants.TemplateJenkinsCloudTemplates, cloudTemplateContent)
 			if !success || err != nil {
-				loggingstate.AddErrorEntryAndDetails("  -> Unable to replace ["+constants.TemplateJenkinsCloudTemplates+"] in ["+constants.FilenameJenkinsConfigurationAsCode+"]", err.Error())
+				loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Unable to replace [%s] in [%s]", constants.TemplateJenkinsCloudTemplates, constants.FilenameJenkinsConfigurationAsCode), err.Error())
 				return false, err
 			}
 		} else {
 			// replace placeholder
 			success, err = files.ReplaceStringInFile(targetFile, constants.TemplateJenkinsCloudTemplates, "")
 			if !success || err != nil {
-				loggingstate.AddErrorEntryAndDetails("  -> Unable to replace ["+constants.TemplateJenkinsCloudTemplates+"] in ["+constants.FilenameJenkinsConfigurationAsCode+"]", err.Error())
+				loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Unable to replace [%s] in [%s]", constants.TemplateJenkinsCloudTemplates, constants.FilenameJenkinsConfigurationAsCode), err.Error())
 				return false, err
 			}
 		}
@@ -457,7 +458,7 @@ func replacePlaceholderInTemplates(templateFiles []string, placeholder string, n
 		if files.FileOrDirectoryExists(templateFile) {
 			successful, err := files.ReplaceStringInFile(templateFile, placeholder, newValue)
 			if !successful || err != nil {
-				loggingstate.AddErrorEntryAndDetails("  -> Unable to replace ["+placeholder+"] in file ["+templateFile+"]", err.Error())
+				loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Unable to replace [%s] in file [%s]", placeholder, templateFile), err.Error())
 				log.Errorf("[replacePlaceholderInTemplates] Unable to replace [%s] in file [%s], \n%s", placeholder, templateFile, err.Error())
 				return false, err
 			}

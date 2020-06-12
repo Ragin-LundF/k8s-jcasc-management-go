@@ -2,6 +2,7 @@ package createproject
 
 import (
 	"errors"
+	"fmt"
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/utils/logger"
@@ -30,7 +31,7 @@ func ProjectWizardAskForJenkinsSystemMessage(namespace string) (jenkinsSysMsg st
 
 	// check if system message is empty, set default
 	if jenkinsSysMsg == "" {
-		jenkinsSysMsg = "Jenkins instance for namespace [" + namespace + "]"
+		jenkinsSysMsg = fmt.Sprintf("Jenkins instance for namespace [%s]", namespace)
 	}
 
 	return jenkinsSysMsg, nil

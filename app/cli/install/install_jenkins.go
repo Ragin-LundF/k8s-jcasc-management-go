@@ -2,6 +2,7 @@ package install
 
 import (
 	"errors"
+	"fmt"
 	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
@@ -14,7 +15,7 @@ import (
 func HelmInstallJenkins(command string, namespace string, deploymentName string) (err error) {
 	log := logger.Log()
 	log.Infof("[Install Jenkins] Try to %s Jenkins on namespace [%s] with deployment name [%s]...", command, namespace, deploymentName)
-	loggingstate.AddInfoEntry("-> Try to " + command + " Jenkins on namespace [" + namespace + "] with deployment name [" + deploymentName + "]...")
+	loggingstate.AddInfoEntry(fmt.Sprintf("-> Try to %s Jenkins on namespace [%s] with deployment name [%s]...", command, namespace, deploymentName))
 
 	// check if command is ok
 	if command == constants.HelmCommandInstall || command == constants.HelmCommandUpgrade {
@@ -40,23 +41,23 @@ func HelmInstallJenkins(command string, namespace string, deploymentName string)
 
 		// executing jenkins helm install
 		log.Infof("[Install Jenkins] Start installing/upgrading Jenkins with Helm on namespace [%s]...", namespace)
-		loggingstate.AddInfoEntry("-> Start installing/upgrading Jenkins with Helm on namespace [" + namespace + "]...")
+		loggingstate.AddInfoEntry(fmt.Sprintf("-> Start installing/upgrading Jenkins with Helm on namespace [%s]...", namespace))
 		err := helm.ExecutorHelm(command, argsForCommand)
 		if err != nil {
-			loggingstate.AddErrorEntryAndDetails("-> Unable to install/upgrade Jenkins on namespace ["+namespace+"] with deployment name ["+deploymentName+"]", err.Error())
+			loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("-> Unable to install/upgrade Jenkins on namespace [%s] with deployment name [%s]", namespace, deploymentName), err.Error())
 			log.Errorf("[Install Jenkins] Unable to install/upgrade Jenkins on namespace [%s] with deployment name [%s]. Errors: \n%s", namespace, deploymentName, err.Error())
 			return err
 		}
-		loggingstate.AddInfoEntry("-> Start installing/upgrading Jenkins with Helm on namespace [" + namespace + "]...done")
+		loggingstate.AddInfoEntry(fmt.Sprintf("-> Start installing/upgrading Jenkins with Helm on namespace [%s]...done", namespace))
 		log.Infof("[Install Jenkins] Start installing/upgrading Jenkins with Helm on namespace [%s]...done", namespace)
 	} else {
 		// helm command was wrong -> abort
 		log.Errorf("[Install Jenkins] Try to install/upgrade Jenkins on namespace [%s] with deployment name [%s]...failed. Wrong command [%s]", namespace, deploymentName, command)
-		loggingstate.AddErrorEntry("-> Try to install/upgrade Jenkins on namespace [" + namespace + "] with deployment name [" + deploymentName + "]...Wrong command [" + command + "]")
+		loggingstate.AddErrorEntry(fmt.Sprintf("-> Try to install/upgrade Jenkins on namespace [%s] with deployment name [%s]...Wrong command [%s]", namespace, deploymentName, command))
 		return errors.New("Helm command [" + command + "] unknown.")
 	}
 	log.Infof("[Install Jenkins] Try to %s Jenkins on namespace [%s] with deployment name [%s]...done", command, namespace, deploymentName)
-	loggingstate.AddInfoEntry("-> Try to " + command + " Jenkins on namespace [" + namespace + "] with deployment name [" + deploymentName + "]...done")
+	loggingstate.AddInfoEntry(fmt.Sprintf("-> Try to %s Jenkins on namespace [%s] with deployment name [%s]...done", command, namespace, deploymentName))
 
 	return err
 }

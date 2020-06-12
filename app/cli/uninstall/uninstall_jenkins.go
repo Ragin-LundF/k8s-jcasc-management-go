@@ -1,6 +1,7 @@
 package uninstall
 
 import (
+	"fmt"
 	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/helm"
@@ -10,7 +11,7 @@ import (
 // uninstall Jenkins with Helm
 func HelmUninstallJenkins(namespace string, deploymentName string) (err error) {
 	log := logger.Log()
-	log.Infof("[Uninstall Jenkins] Try to uninstall Jenkins on namespace [" + namespace + "] with deployment name [" + deploymentName + "]...")
+	log.Infof("[Uninstall Jenkins] Try to uninstall Jenkins on namespace [%s] with deployment name [%s]...", namespace, deploymentName)
 
 	// prepare Helm command
 	helmCmdArgs := []string{
@@ -23,12 +24,12 @@ func HelmUninstallJenkins(namespace string, deploymentName string) (err error) {
 	}
 	// execute Helm command
 	if err = helm.ExecutorHelm("uninstall", helmCmdArgs); err != nil {
-		loggingstate.AddErrorEntryAndDetails("  -> Uninstall Jenkins on namespace ["+namespace+"] with deployment name ["+deploymentName+"] done.", err.Error())
+		loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Uninstall Jenkins on namespace [%s] with deployment name [%s] done.", namespace, deploymentName), err.Error())
 		return err
 	}
 
-	loggingstate.AddInfoEntry("  -> Uninstall Jenkins on namespace [" + namespace + "] with deployment name [" + deploymentName + "] done.")
-	log.Infof("[Uninstall Jenkins] Uninstall Jenkins on namespace [" + namespace + "] with deployment name [" + deploymentName + "] done.")
+	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Uninstall Jenkins on namespace [%s] with deployment name [%s] done.", namespace, deploymentName))
+	log.Infof("[Uninstall Jenkins] Uninstall Jenkins on namespace [%s] with deployment name [%s] done.", namespace, deploymentName)
 
 	return nil
 }

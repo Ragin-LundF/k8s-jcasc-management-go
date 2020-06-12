@@ -2,6 +2,7 @@ package install
 
 import (
 	"errors"
+	"fmt"
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/cli/secrets"
@@ -15,7 +16,7 @@ import (
 func DoUpgradeOrInstall(helmCommand string) (err error) {
 	log := logger.Log()
 	// ask for namespace
-	loggingstate.AddInfoEntry("Starting Jenkins [" + helmCommand + "]...")
+	loggingstate.AddInfoEntry(fmt.Sprintf("Starting Jenkins [%s]...", helmCommand))
 	loggingstate.AddInfoEntry("-> Ask for namespace...")
 	namespace, err := dialogs.DialogAskForNamespace()
 	if err != nil {
@@ -35,7 +36,7 @@ func DoUpgradeOrInstall(helmCommand string) (err error) {
 		namespace,
 	)
 	if !files.FileOrDirectoryExists(projectPath) {
-		err = errors.New("Project directory not found: [" + projectPath + "]")
+		err = errors.New(fmt.Sprintf("Project directory not found: [%s]", projectPath))
 		loggingstate.AddErrorEntryAndDetails("-> Checking existing directories...failed", err.Error())
 		return err
 	}
@@ -92,18 +93,18 @@ func DoUpgradeOrInstall(helmCommand string) (err error) {
 			bar.Describe("Applying secrets...")
 			bar.Add(1)
 			log.Infof("[DoUpgradeOrInstall] Starting apply secrets to namespace [%s]...", namespace)
-			loggingstate.AddInfoEntry("  -> Starting apply secrets to namespace [" + namespace + "]...")
+			loggingstate.AddInfoEntry(fmt.Sprintf("  -> Starting apply secrets to namespace [%s]...", namespace))
 
 			if err = secrets.ApplySecretsToNamespace(namespace, &bar); err != nil {
-				loggingstate.AddErrorEntryAndDetails("  -> Starting apply secrets to namespace ["+namespace+"]...failed", err.Error())
+				loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Starting apply secrets to namespace [%s]...failed", namespace), err.Error())
 				log.Errorf("[DoUpgradeOrInstall] Starting apply secrets to namespace [%s]...failed\n%s", err.Error())
 				return err
 			}
 
-			loggingstate.AddInfoEntry("  -> Starting apply secrets to namespace [" + namespace + "]...done")
+			loggingstate.AddInfoEntry(fmt.Sprintf("  -> Starting apply secrets to namespace [%s]...done", namespace))
 			log.Infof("[DoUpgradeOrInstall] Starting apply secrets to namespace [%s]...done", namespace)
 		} else {
-			loggingstate.AddInfoEntry("  -> Dry run only, skipping apply secrets to namespace [" + namespace + "]...")
+			loggingstate.AddInfoEntry(fmt.Sprintf("  -> Dry run only, skipping apply secrets to namespace [%s]...", namespace))
 			log.Infof("[DoUpgradeOrInstall] Dry run only, skipping apply secrets to namespace [%s]...", namespace)
 		}
 
@@ -131,13 +132,13 @@ func DoUpgradeOrInstall(helmCommand string) (err error) {
 		log.Infof("[DoUpgradeOrInstall] Jenkins Helm values.yaml found. Installing Jenkins...done")
 	} else {
 		bar.Add(2) // skipping steps above
-		loggingstate.AddInfoEntry("No Jenkins Helm chart found in path [" + jenkinsHelmValuesFile + "].")
+		loggingstate.AddInfoEntry(fmt.Sprintf("No Jenkins Helm chart found in path [%s].", jenkinsHelmValuesFile))
 		log.Infof("No Jenkins Helm chart found in path [%s]. Skipping Jenkins installation.", jenkinsHelmValuesFile)
 	}
 
 	// install Nginx ingress controller
 	bar.Describe("Installing nginx-ingress-controller...")
-	loggingstate.AddInfoEntry("-> Installing nginx-ingress-controller on namespace [" + namespace + "]...")
+	loggingstate.AddInfoEntry(fmt.Sprintf("-> Installing nginx-ingress-controller on namespace [%s]...", namespace))
 	err = HelmInstallNginxIngressController(helmCommand, namespace, jenkinsHelmValuesExist)
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to install nginx-ingress-controller.", err.Error())
@@ -145,20 +146,20 @@ func DoUpgradeOrInstall(helmCommand string) (err error) {
 		return err
 	}
 	bar.Add(1)
-	loggingstate.AddInfoEntry("-> Installing nginx-ingress-controller on namespace [" + namespace + "]...done")
+	loggingstate.AddInfoEntry(fmt.Sprintf("-> Installing nginx-ingress-controller on namespace [%s]...done", namespace))
 
 	// install scripts only, if it is not dry-run only
 	if !models.GetConfiguration().K8sManagement.DryRunOnly {
 		bar.Describe("Check and execute additional scripts...")
 		// install scripts
 		// try to install scripts
-		loggingstate.AddInfoEntry("-> Try to execute install scripts on [" + namespace + "]...")
+		loggingstate.AddInfoEntry(fmt.Sprintf("-> Try to execute install scripts on [%s]...", namespace))
 		// we ignore errors. They will be logged, but we keep on doing the install for the scripts
 		_ = ShellScriptsInstall(namespace)
-		loggingstate.AddInfoEntry("-> Try to execute install scripts on [" + namespace + "]...done")
+		loggingstate.AddInfoEntry(fmt.Sprintf("-> Try to execute install scripts on [%s]...done", namespace))
 	}
 	bar.Add(1)
 
-	loggingstate.AddInfoEntry("Starting Jenkins [" + helmCommand + "]...done")
+	loggingstate.AddInfoEntry(fmt.Sprintf("Starting Jenkins [%s]...done", helmCommand))
 	return err
 }

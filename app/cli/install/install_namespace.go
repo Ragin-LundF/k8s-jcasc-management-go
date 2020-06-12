@@ -1,6 +1,7 @@
 package install
 
 import (
+	"fmt"
 	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/utils/kubectl"
@@ -12,18 +13,18 @@ func CheckAndCreateNamespace(namespace string) (err error) {
 	log := logger.Log()
 	// check if namespace is existing
 	log.Infof("[Install Namespace] Check if namespace [%s] is existing...", namespace)
-	loggingstate.AddInfoEntry("  -> Check if namespace [" + namespace + "] is existing...")
+	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Check if namespace [%s] is existing...", namespace))
 	nsIsAvailable, err := isNamespaceAvailable(namespace)
 	if err != nil {
 		// it is ok, that the namespace is not available
-		loggingstate.AddErrorEntryAndDetails("  -> Check if namespace ["+namespace+"] is existing...namespace not found with error.", err.Error())
+		loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Check if namespace [%s] is existing...namespace not found with error.", namespace), err.Error())
 	}
-	loggingstate.AddInfoEntry("  -> Check if namespace [" + namespace + "] is existing...done")
+	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Check if namespace [%s] is existing...done", namespace))
 
 	// namespace is not available
 	if !nsIsAvailable {
 		// namespace does not exist, so create one
-		loggingstate.AddInfoEntry("  -> Namespace [" + namespace + "] is not available. Trying to create...")
+		loggingstate.AddInfoEntry(fmt.Sprintf("  -> Namespace [%s] is not available. Trying to create...", namespace))
 		log.Infof("[Install Namespace] Namespace [%s] not found. Trying to create it...", namespace)
 
 		kubectlCommandArgs := []string{
@@ -31,15 +32,15 @@ func CheckAndCreateNamespace(namespace string) (err error) {
 		}
 		_, err := kubectl.ExecutorKubectl("create", kubectlCommandArgs)
 		if err != nil {
-			loggingstate.AddErrorEntryAndDetails("  -> Cannot create namespace ["+namespace+"]", err.Error())
+			loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Cannot create namespace [%s]", namespace), err.Error())
 			log.Errorf("[Install Namespace] Cannot create namespace [%s]", namespace)
 			return err
 		}
 
-		loggingstate.AddInfoEntry("  -> Namespace [" + namespace + "] is not available. Trying to create...done")
+		loggingstate.AddInfoEntry(fmt.Sprintf("  -> Namespace [%s] is not available. Trying to create...done", namespace))
 		log.Infof("[Install Namespace] Finished creating namespace [%s]...", namespace)
 	} else {
-		loggingstate.AddInfoEntry("  -> Namespace [" + namespace + "] found.")
+		loggingstate.AddInfoEntry(fmt.Sprintf("  -> Namespace [%s] found.", namespace))
 		log.Infof("[Install Namespace] Namespace [%s] found.", namespace)
 	}
 	return nil
