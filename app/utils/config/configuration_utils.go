@@ -18,12 +18,15 @@ func ReadConfiguration(basePath string, dryRunDebug bool) {
 	// check if there is an custom configuration
 	if files.FileOrDirectoryExists(files.AppendPath(files.AppendPath(basePath, constants.DirConfig), constants.FilenameConfigurationCustom)) {
 		readConfigurationFromFile(files.AppendPath(files.AppendPath(basePath, constants.DirConfig), constants.FilenameConfigurationCustom))
+		if models.GetConfiguration().BasePath != "" {
+			basePath = models.GetConfiguration().BasePath
+		}
 	}
 	// check if there is an alternative configuration path and try to read config from there
-	configuration := models.GetConfiguration()
 	models.AssignToConfiguration("K8S_MGMT_BASE_PATH", basePath)
 	models.AssignToConfiguration("K8S_MGMT_DRY_RUN_DEBUG", strconv.FormatBool(dryRunDebug))
 
+	configuration := models.GetConfiguration()
 	if configuration.AlternativeConfigFile != "" && files.FileOrDirectoryExists(files.AppendPath(basePath, configuration.AlternativeConfigFile)) {
 		readConfigurationFromFile(files.AppendPath(basePath, configuration.AlternativeConfigFile))
 	}
@@ -39,6 +42,9 @@ func readConfigurationFromFile(configFile string) {
 		log.Errorf(err.Error())
 		panic(err)
 	} else {
+		// close file after this method was finished
+		defer data.Close()
+
 		// everything seems to be ok. Read data with line scanner
 		scanner := bufio.NewScanner(data)
 		scanner.Split(bufio.ScanLines)
@@ -54,8 +60,6 @@ func readConfigurationFromFile(configFile string) {
 			}
 		}
 	}
-	// close file
-	_ = data.Close()
 }
 
 // parse line of configuration and split it into key/value

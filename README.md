@@ -202,9 +202,9 @@ This file can contain the following configuration:
 # Define path to alternative configuration file
 K8S_MGMT_ALTERNATIVE_CONFIG_FILE=/my/path/to/my.config
 
-# Is the alternative configuration only a overlay or a full configuration?
-# (true = both config files will be used, false = only the alternative config will be used)
-K8S_MGMT_WORK_AS_OVERLAY=true
+# Defines the basepath of the project to use relative pathes
+# inside of the configuration of the project
+K8S_MGMT_BASE_PATH=/my/path/to
 ```
 
 The script checks, if this file exists.
@@ -213,8 +213,12 @@ If this is the case, it loads this configuration and checks the argument for the
 This means, that the `K8S_MGMT_ALTERNATIVE_CONFIG_FILE` key can define, where the alternative of the `k8s_jcasc_mgmt.cnf` is located.
 In the `.gitignore` file, this file is set to ignore, to prevent a commit.
 
-With the `K8S_MGMT_WORK_AS_OVERLAY` key it is possible to tell the system to first load the original configuration (`k8s_jcasc_mgmt.cnf`) and then the alternative config, which was defined with the `K8S_MGMT_ALTERNATIVE_CONFIG_FILE` key.
-In the new configuration, it is only required to overwrite the options, that has to be changed instead of writing a new file with the complete configuration, which can result in update problems.
+It is also possible to use any other variable from the `k8s_jcasc_mgmt.cnf` file here. In most cases this file should only link to the target configuration and configure the base path.
+Any other configuration should be versioned inside of the project directory.
+
+For base paths like templates, the system searches first for the configured base path and if the directory does not exist, it tries to find the directory in the local (`./`) directory.
+With this mechanism it is not required to copy for example also the templates into the project directory if they are ok.
+
 
 # How to use #
 
