@@ -81,8 +81,8 @@ func Menu(info string, err error) string {
 func CreateMenuItems() []MenuitemModel {
 	// Menu structure
 	menuStructure := []MenuitemModel{
-		{Name: constants.CommandInstall, Spacer: "                      .-|-:. ", Description: "Install Jenkins of a project"},
-		{Name: constants.CommandUninstall, Spacer: "                    .-|-:. ", Description: "Uninstall Jenkins of a project"},
+		{Name: constants.CommandInstall, Spacer: "                      .-|-:. ", Description: "Install Jenkins/PVC/Ingress Controller of a project"},
+		{Name: constants.CommandUninstall, Spacer: "                    .-|-:. ", Description: "Uninstall Jenkins/PVC/Ingress Controller of a project"},
 		{Name: constants.CommandUpgrade, Spacer: "                      .-|-:. ", Description: "Upgrade Jenkins in a project"},
 		{Name: constants.CommandApplySecrets, Spacer: "                 .-|-:. ", Description: "Apply secrets of a project to Kubernetes"},
 		{Name: constants.CommandApplySecretsToAll, Spacer: "            .-|-:. ", Description: "Apply secrets to all projects in Kubernetes"},

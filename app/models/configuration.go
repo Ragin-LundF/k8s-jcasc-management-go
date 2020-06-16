@@ -2,6 +2,7 @@ package models
 
 import (
 	"k8s-management-go/app/utils/files"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -149,10 +150,22 @@ func calculateFullDirectoryPath(targetDir string) string {
 
 // helper method to calculate the correct filepath
 func FilePathWithBasePath(configurationFilePath string) string {
+	var resultConfigurationFilePath = configurationFilePath
 	if configuration.BasePath != "" {
-		configurationFilePath = files.AppendPath(configuration.BasePath, configurationFilePath)
+		resultConfigurationFilePath = files.AppendPath(configuration.BasePath, configurationFilePath)
 	}
-	return configurationFilePath
+
+	// check if path exists. else try to check if the path was related to current path.
+	// this helps to support to read configuration from other paths and templates from
+	// this project path
+	if !files.FileOrDirectoryExists(resultConfigurationFilePath) {
+		currentDirectory, _ := os.Getwd()
+		currentDirFilePath := files.AppendPath(currentDirectory, configurationFilePath)
+		if files.FileOrDirectoryExists(currentDirFilePath) {
+			resultConfigurationFilePath = currentDirFilePath
+		}
+	}
+	return resultConfigurationFilePath
 }
 
 func AssignToConfiguration(key string, value string) {
