@@ -1,7 +1,7 @@
 package main
 
 import (
-	"k8s-management-go/app/cli"
+	"k8s-management-go/app"
 	"k8s-management-go/app/utils/setup"
 	"k8s-management-go/app/utils/version"
 )
@@ -16,5 +16,5 @@ func main() {
 		info = "A new version is available!"
 	}
 	// start UI workflow
-	cli.Workflow(info, nil)
+	app.StartApp(info)
 }
