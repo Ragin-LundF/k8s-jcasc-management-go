@@ -3,7 +3,6 @@ package secrets
 import (
 	"errors"
 	"fmt"
-	"github.com/schollz/progressbar/v3"
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/models"
@@ -43,17 +42,20 @@ func ApplySecrets() (err error) {
 }
 
 // apply secrets to one namespace
-func ApplySecretsToNamespace(namespace string, bar *progressbar.ProgressBar) (err error) {
+func ApplySecretsToNamespace(namespace string, password *string) (err error) {
 	log := logger.Log()
 	// Decrypt secrets file
-	if err = DecryptSecretsFile(); err != nil {
-		return err
+	if password != nil {
+		if err = DecryptSecretsFileWithPass(*password); err != nil {
+			return err
+		}
+	} else {
+		if err = DecryptSecretsFile(); err != nil {
+			return err
+		}
 	}
 
 	// apply secret to namespace
-	if bar != nil {
-		bar.Describe("Execute secrets.sh file...")
-	}
 	secretsFilePath := models.GetGlobalSecretsFile()
 	errorsWhileApply := false
 	if err = executingSecretsFile(secretsFilePath, namespace); err != nil {

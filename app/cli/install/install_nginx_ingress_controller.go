@@ -35,7 +35,7 @@ func HelmInstallNginxIngressController(command string, namespace string, jenkins
 		// check if command is ok
 		if command == constants.HelmCommandInstall || command == constants.HelmCommandUpgrade {
 			// prepare files and directories
-			helmChartsNginxIngressCtrlDirectory := files.AppendPath(models.GetConfiguration().BasePath, constants.DirHelmNginxIngressCtrl)
+			helmChartsNginxIngressCtrlDirectory := models.FilePathWithBasePath(constants.DirHelmNginxIngressCtrl)
 			// execute Helm command
 			nginxIngressCtrlDeploymentName := models.GetConfiguration().Nginx.Ingress.Controller.DeploymentName
 
