@@ -95,7 +95,7 @@ func openSecretsPasswordDialog(window fyne.Window, secretsPassword *widget.Entry
 func findNamespacesForSelect(filter *string) (namespaces []string) {
 	ipList := models.GetIpConfiguration().Ips
 	for _, ip := range ipList {
-		if filter != nil {
+		if filter != nil && *filter != "" {
 			if strings.Contains(ip.Namespace, *filter) {
 				namespaces = append(namespaces, ip.Namespace)
 			}
