@@ -20,7 +20,7 @@ func HelmInstallJenkins(command string, namespace string, deploymentName string)
 	// check if command is ok
 	if command == constants.HelmCommandInstall || command == constants.HelmCommandUpgrade {
 		// prepare files and directories
-		helmChartsJenkinsDirectory := files.AppendPath(models.GetConfiguration().BasePath, constants.DirHelmJenkinsMaster)
+		helmChartsJenkinsDirectory := models.FilePathWithBasePath(constants.DirHelmJenkinsMaster)
 		helmChartsJenkinsValuesFile := files.AppendPath(
 			files.AppendPath(
 				models.GetProjectBaseDirectory(),

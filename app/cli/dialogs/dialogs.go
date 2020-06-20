@@ -1,7 +1,7 @@
 package dialogs
 
 import (
-	"fmt"
+	"github.com/inancgumus/screen"
 	"github.com/manifoldco/promptui"
 	"github.com/schollz/progressbar/v3"
 	"k8s-management-go/app/cli/loggingstate"
@@ -21,7 +21,8 @@ type CloudTemplatesDialog struct {
 }
 
 func ClearScreen() {
-	fmt.Println("\033[2J")
+	screen.Clear()
+	screen.MoveTopLeft()
 }
 
 // Configurable confirm dialog
@@ -281,6 +282,7 @@ func CreateProgressBar(description string, progressMax int) progressbar.Progress
 		progressbar.OptionEnableColorCodes(true),
 		progressbar.OptionShowBytes(false),
 		progressbar.OptionSetDescription(description),
+		progressbar.OptionSpinnerType(50),
 		progressbar.OptionSetTheme(progressbar.Theme{
 			Saucer:        "[green]=[reset]",
 			SaucerHead:    "[green]>[reset]",
