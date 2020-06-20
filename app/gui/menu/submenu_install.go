@@ -8,15 +8,15 @@ import (
 	"k8s-management-go/app/gui/install"
 )
 
-func InstallScreen(preferences fyne.Preferences) fyne.CanvasObject {
+func InstallScreen(window fyne.Window, preferences fyne.Preferences) fyne.CanvasObject {
 	return widget.NewVBox(
-		installSubMenu(preferences),
+		installSubMenu(window, preferences),
 	)
 }
 
-func installSubMenu(preferences fyne.Preferences) (tabs *widget.TabContainer) {
+func installSubMenu(window fyne.Window, preferences fyne.Preferences) (tabs *widget.TabContainer) {
 	tabs = widget.NewTabContainer(
-		widget.NewTabItemWithIcon("Install", theme.ConfirmIcon(), install.ScreenInstall()),
+		widget.NewTabItemWithIcon("Install", theme.ConfirmIcon(), install.ScreenInstall(window)),
 		widget.NewTabItemWithIcon("Uninstall", theme.CancelIcon(), screens.WidgetScreen()),
 		widget.NewTabItemWithIcon("Upgrade", theme.ViewRestoreIcon(), screens.ContainerScreen()))
 
