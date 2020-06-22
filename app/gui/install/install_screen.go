@@ -1,42 +1,63 @@
 package install
 
 import (
-	"fmt"
 	"fyne.io/fyne"
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
+	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
 	"sort"
 	"strings"
 )
 
 func ScreenInstall(window fyne.Window) fyne.CanvasObject {
+	var namespace string
+	var deploymentName string
+	var installTypeOption string
+	var dryRunOption string
+	var secretsPasswords string
+
 	// Namespace
-	selectNamespaceEntry := createNamespace()
+	namespaceErrorLabel := widget.NewLabel("")
+	namespaceSelectEntry := createNamespaceSelectEntry(namespaceErrorLabel)
 
 	// Deployment name
-	deploymentNameEntry := createDeploymentName()
+	deploymentNameEntry := createDeploymentNameEntry()
 
 	// Install or update
-	radioInstallType := createRadioInstallType()
+	installTypeRadio := createInstallTypeRadio()
+
+	// Dry-run or execute
+	dryRunRadio := createDryRunRadio()
 
 	// secrets password
-	secretsPassword := widget.NewPasswordEntry()
+	secretsPasswordEntry := widget.NewPasswordEntry()
 
 	form := &widget.Form{
 		Items: []*widget.FormItem{
-			{Text: "Namespace", Widget: selectNamespaceEntry},
+			{Text: "Namespace", Widget: namespaceSelectEntry},
+			{Text: "", Widget: namespaceErrorLabel},
 			{Text: "Deployment Name", Widget: deploymentNameEntry},
-			{Text: "Installation type", Widget: radioInstallType},
+			{Text: "Installation type", Widget: installTypeRadio},
+			{Text: "Execute or dry run", Widget: dryRunRadio},
 		},
 		OnSubmit: func() {
-			openSecretsPasswordDialog(window, secretsPassword)
+			// get variables
+			namespace = namespaceSelectEntry.Text
+			deploymentName = deploymentNameEntry.Text
+			installTypeOption = installTypeRadio.Selected
+			dryRunOption = dryRunRadio.Selected
+			if !validateNamespace(namespace) {
+				namespaceErrorLabel.SetText("Error: namespace is unknown!")
+				namespaceErrorLabel.Show()
+				return
+			}
 
-			fyne.CurrentApp().SendNotification(&fyne.Notification{
-				Title:   fmt.Sprintf("%s of %s started", radioInstallType.Selected, deploymentNameEntry.Text),
-				Content: fmt.Sprintf("Starting on namespace [%s]...", selectNamespaceEntry.Text),
-			})
+			// ask for password
+			if dryRunOption == constants.InstallDryRunInactive {
+				openSecretsPasswordDialog(window, secretsPasswordEntry, secretsPasswords)
+			}
 		},
 	}
 
@@ -49,19 +70,25 @@ func ScreenInstall(window fyne.Window) fyne.CanvasObject {
 }
 
 // create namespace select entry
-func createNamespace() (namespaceSelectEntry *widget.SelectEntry) {
+func createNamespaceSelectEntry(namespaceErrorLabel *widget.Label) (namespaceSelectEntry *widget.SelectEntry) {
 	// Namespace
 	namespaceSelectEntry = widget.NewSelectEntry(findNamespacesForSelect(nil))
 	namespaceSelectEntry.PlaceHolder = "Type or select namespace"
 	namespaceSelectEntry.OnChanged = func(input string) {
 		namespaces := findNamespacesForSelect(&input)
 		namespaceSelectEntry.SetOptions(namespaces)
+		if strings.TrimSpace(strings.Join(namespaces, "")) == "" {
+			namespaceErrorLabel.SetText("No namespace found with these characters.")
+		} else {
+			namespaceErrorLabel.SetText("")
+		}
 	}
+
 	return namespaceSelectEntry
 }
 
 // create deployment name entry
-func createDeploymentName() (deploymentNameEntry *widget.Entry) {
+func createDeploymentNameEntry() (deploymentNameEntry *widget.Entry) {
 	// Deployment name
 	deploymentNameEntry = widget.NewEntry()
 	deploymentNameEntry.SetPlaceHolder("Deployment name")
@@ -73,25 +100,38 @@ func createDeploymentName() (deploymentNameEntry *widget.Entry) {
 }
 
 // create radio install type radio
-func createRadioInstallType() (radioInstallType *widget.Radio) {
+func createInstallTypeRadio() (radioInstallType *widget.Radio) {
 	// Install or update
-	radioInstallType = widget.NewRadio([]string{"install", "upgrade"}, func(s string) { fmt.Println("selected", s) })
-	radioInstallType.SetSelected("install")
+	radioInstallType = widget.NewRadio([]string{constants.InstallTypeInstall, constants.InstallTypeUpgrade}, nil)
+	radioInstallType.SetSelected(constants.InstallTypeInstall)
+
+	return radioInstallType
+}
+
+// create radio install type radio
+func createDryRunRadio() (radioInstallType *widget.Radio) {
+	// Execute or dry-run
+	radioInstallType = widget.NewRadio([]string{constants.InstallDryRunInactive, constants.InstallDryRunActive}, nil)
+	radioInstallType.SetSelected(constants.InstallDryRunInactive)
 
 	return radioInstallType
 }
 
 // Secrets password dialog
-func openSecretsPasswordDialog(window fyne.Window, secretsPassword *widget.Entry) {
-	secretsPasswordWindow := widget.NewForm(widget.NewFormItem("Password", secretsPassword))
+func openSecretsPasswordDialog(window fyne.Window, secretsPasswordEntry *widget.Entry, secretsPassword string) {
+	secretsPasswordWindow := widget.NewForm(widget.NewFormItem("Password", secretsPasswordEntry))
+	secretsPasswordWindow.Resize(fyne.Size{Width: 300, Height: 90})
 
-	dialog.ShowCustomConfirm("Password for Secrets...", "Ok", "Cancel", secretsPasswordWindow, func(b bool) {
-		if !b {
+	dialog.ShowCustomConfirm("Password for Secrets...", "Ok", "Cancel", secretsPasswordWindow, func(confirmed bool) {
+		if !confirmed {
+			secretsPassword = secretsPasswordEntry.Text
+		} else {
 			return
 		}
 	}, window)
 }
 
+// namespaces loader and filter
 func findNamespacesForSelect(filter *string) (namespaces []string) {
 	ipList := models.GetIpConfiguration().Ips
 	for _, ip := range ipList {
@@ -105,4 +145,14 @@ func findNamespacesForSelect(filter *string) (namespaces []string) {
 	}
 	sort.Strings(namespaces)
 	return namespaces
+}
+
+// check selected namespace against namespace list
+func validateNamespace(namespaceToValidate string) bool {
+	for _, ip := range models.GetIpConfiguration().Ips {
+		if ip.Namespace == namespaceToValidate {
+			return true
+		}
+	}
+	return false
 }

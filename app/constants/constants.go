@@ -94,3 +94,9 @@ const TemplatePvcAccessMode = "##JENKINS_MASTER_PERSISTENCE_ACCESS_MODE##"
 const TemplatePvcStorageClass = "##JENKINS_MASTER_PERSISTENCE_STORAGE_CLASS##"
 const TemplatePvcExistingVolumeClaim = "##JENKINS_MASTER_PERSISTENCE_EXISTING_CLAIM##"
 const TemplatePvcName = "##K8S_MGMT_PERSISTENCE_VOLUME_CLAIM_NAME##"
+
+// GUI Constants
+const InstallTypeInstall = "install"
+const InstallTypeUpgrade = "upgrade"
+const InstallDryRunActive = "dry-run"
+const InstallDryRunInactive = "execute"
