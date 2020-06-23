@@ -8,3 +8,8 @@ import "k8s-management-go/app/cli"
 func StartApp(info string) {
 	cli.Workflow(info, nil)
 }
+
+// start App with CLI
+func StartCli(info string) {
+	cli.Workflow(info, nil)
+}

@@ -13,6 +13,8 @@ type Configuration struct {
 	BasePath string
 	// Log Level
 	LogLevel string
+	// Use CLI only
+	CliOnly bool
 	// secrets file
 	GlobalSecretsFile string
 	// Alternative ConfigFile
@@ -261,6 +263,8 @@ func AssignToConfiguration(key string, value string) {
 			configuration.K8sManagement.Logging.LogEncoding = value
 		case "K8S_MGMT_LOGGING_OVERWRITE_ON_START":
 			configuration.K8sManagement.Logging.LogOverwriteOnStart, _ = strconv.ParseBool(value)
+		case "K8S_MGMT_CLI_ONLY":
+			configuration.CliOnly, _ = strconv.ParseBool(value)
 		}
 	}
 }

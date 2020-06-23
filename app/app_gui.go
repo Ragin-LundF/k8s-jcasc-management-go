@@ -5,6 +5,7 @@ package app
 import (
 	"fyne.io/fyne/app"
 	"fyne.io/fyne/theme"
+	"k8s-management-go/app/cli"
 	"k8s-management-go/app/gui/menu"
 )
 
@@ -24,4 +25,9 @@ func StartApp(info string) {
 	k8sJcascWindow.SetContent(tabs)
 	k8sJcascWindow.ShowAndRun()
 	k8sJcascApp.Preferences().SetInt(menu.PreferencesMenuMainTab, tabs.CurrentTabIndex())
+}
+
+// Start App with CLI
+func StartCli(info string) {
+	cli.Workflow(info, nil)
 }
