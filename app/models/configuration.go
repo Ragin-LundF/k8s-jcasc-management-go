@@ -194,9 +194,9 @@ func AssignToConfiguration(key string, value string) {
 		case "JENKINS_MASTER_ADMIN_PASSWORD":
 			configuration.Jenkins.Helm.Master.AdminPassword = value
 		case "JENKINS_MASTER_ADMIN_PASSWORD_ENCRYPTED":
-			configuration.Jenkins.Helm.Master.AdminPasswordEncrypted = value
+			configuration.Jenkins.Helm.Master.AdminPasswordEncrypted = replaceUnneededChars(value)
 		case "JENKINS_MASTER_PROJECT_USER_PASSWORD_ENCRYPTED":
-			configuration.Jenkins.Helm.Master.DefaultProjectUserPasswordEncrypted = value
+			configuration.Jenkins.Helm.Master.DefaultProjectUserPasswordEncrypted = replaceUnneededChars(value)
 		case "JENKINS_MASTER_DEFAULT_LABEL":
 			configuration.Jenkins.Helm.Master.Label = value
 		case "JENKINS_MASTER_DENY_ANONYMOUS_READ_ACCESS":
@@ -263,4 +263,15 @@ func AssignToConfiguration(key string, value string) {
 			configuration.K8sManagement.Logging.LogOverwriteOnStart, _ = strconv.ParseBool(value)
 		}
 	}
+}
+
+func replaceUnneededChars(value string) string {
+	if strings.Contains(value, "'") {
+		value = strings.Replace(value, "'", "", -1)
+	}
+	if strings.Contains(value, "\"") {
+		value = strings.Replace(value, "\"", "", -1)
+	}
+
+	return value
 }
