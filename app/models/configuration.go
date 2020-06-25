@@ -170,6 +170,14 @@ func FilePathWithBasePath(configurationFilePath string) string {
 	return resultConfigurationFilePath
 }
 
+func AssignDryRun(dryRun bool) {
+	configuration.K8sManagement.DryRunOnly = dryRun
+}
+
+func AssignCliOnlyMode(cliOnly bool) {
+	configuration.CliOnly = cliOnly
+}
+
 func AssignToConfiguration(key string, value string) {
 	if key != "" && value != "" {
 		switch key {
@@ -255,16 +263,12 @@ func AssignToConfiguration(key string, value string) {
 			configuration.AlternativeConfigFile = value
 		case "K8S_MGMT_BASE_PATH":
 			configuration.BasePath = value
-		case "K8S_MGMT_DRY_RUN_DEBUG":
-			configuration.K8sManagement.DryRunOnly, _ = strconv.ParseBool(value)
 		case "K8S_MGMT_LOGGING_LOGFILE":
 			configuration.K8sManagement.Logging.LogFile = value
 		case "K8S_MGMT_LOGGING_ENCODING":
 			configuration.K8sManagement.Logging.LogEncoding = value
 		case "K8S_MGMT_LOGGING_OVERWRITE_ON_START":
 			configuration.K8sManagement.Logging.LogOverwriteOnStart, _ = strconv.ParseBool(value)
-		case "K8S_MGMT_CLI_ONLY":
-			configuration.CliOnly, _ = strconv.ParseBool(value)
 		}
 	}
 }

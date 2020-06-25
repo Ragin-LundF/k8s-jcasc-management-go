@@ -96,7 +96,5 @@ const TemplatePvcExistingVolumeClaim = "##JENKINS_MASTER_PERSISTENCE_EXISTING_CL
 const TemplatePvcName = "##K8S_MGMT_PERSISTENCE_VOLUME_CLAIM_NAME##"
 
 // GUI Constants
-const InstallTypeInstall = "install"
-const InstallTypeUpgrade = "upgrade"
 const InstallDryRunActive = "dry-run"
 const InstallDryRunInactive = "execute"

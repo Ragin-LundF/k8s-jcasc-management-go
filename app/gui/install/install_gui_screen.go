@@ -5,6 +5,7 @@ import (
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
+	"k8s-management-go/app/actions/install"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
 	"sort"
@@ -48,15 +49,39 @@ func ScreenInstall(window fyne.Window) fyne.CanvasObject {
 			deploymentName = deploymentNameEntry.Text
 			installTypeOption = installTypeRadio.Selected
 			dryRunOption = dryRunRadio.Selected
+			if dryRunOption == constants.InstallDryRunActive {
+				models.AssignDryRun(true)
+			} else {
+				models.AssignDryRun(false)
+			}
 			if !validateNamespace(namespace) {
 				namespaceErrorLabel.SetText("Error: namespace is unknown!")
 				namespaceErrorLabel.Show()
 				return
 			}
 
+			// map state
+			state := install.StateData{
+				Namespace:       namespace,
+				DeploymentName:  deploymentName,
+				HelmCommand:     installTypeOption,
+				SecretsPassword: &secretsPasswords,
+			}
+
+			// Directories
+			err, state := install.CalculateDirectoriesForInstall(state, state.Namespace)
+			if err != nil {
+				dialog.NewError(err, window)
+			}
+
+			// Check Jenkins directories
+			state = install.CheckJenkinsDirectories(state)
+
 			// ask for password
 			if dryRunOption == constants.InstallDryRunInactive {
-				openSecretsPasswordDialog(window, secretsPasswordEntry, secretsPasswords)
+				openSecretsPasswordDialog(window, secretsPasswordEntry, state)
+			} else {
+				_ = ExecuteInstallWorkflow(window, state)
 			}
 		},
 	}
@@ -102,8 +127,8 @@ func createDeploymentNameEntry() (deploymentNameEntry *widget.Entry) {
 // create radio install type radio
 func createInstallTypeRadio() (radioInstallType *widget.Radio) {
 	// Install or update
-	radioInstallType = widget.NewRadio([]string{constants.InstallTypeInstall, constants.InstallTypeUpgrade}, nil)
-	radioInstallType.SetSelected(constants.InstallTypeInstall)
+	radioInstallType = widget.NewRadio([]string{constants.HelmCommandInstall, constants.HelmCommandUpgrade}, nil)
+	radioInstallType.SetSelected(constants.HelmCommandInstall)
 
 	return radioInstallType
 }
@@ -118,13 +143,14 @@ func createDryRunRadio() (radioInstallType *widget.Radio) {
 }
 
 // Secrets password dialog
-func openSecretsPasswordDialog(window fyne.Window, secretsPasswordEntry *widget.Entry, secretsPassword string) {
+func openSecretsPasswordDialog(window fyne.Window, secretsPasswordEntry *widget.Entry, state install.StateData) {
 	secretsPasswordWindow := widget.NewForm(widget.NewFormItem("Password", secretsPasswordEntry))
 	secretsPasswordWindow.Resize(fyne.Size{Width: 300, Height: 90})
 
 	dialog.ShowCustomConfirm("Password for Secrets...", "Ok", "Cancel", secretsPasswordWindow, func(confirmed bool) {
-		if !confirmed {
-			secretsPassword = secretsPasswordEntry.Text
+		if confirmed {
+			state.SecretsPassword = &secretsPasswordEntry.Text
+			_ = ExecuteInstallWorkflow(window, state)
 		} else {
 			return
 		}

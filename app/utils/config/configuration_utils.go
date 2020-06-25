@@ -7,7 +7,6 @@ import (
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/logger"
 	"os"
-	"strconv"
 	"strings"
 )
 
@@ -24,8 +23,8 @@ func ReadConfiguration(basePath string, dryRunDebug bool, cliOnly bool) {
 	}
 	// check if there is an alternative configuration path and try to read config from there
 	models.AssignToConfiguration("K8S_MGMT_BASE_PATH", basePath)
-	models.AssignToConfiguration("K8S_MGMT_DRY_RUN_DEBUG", strconv.FormatBool(dryRunDebug))
-	models.AssignToConfiguration("K8S_MGMT_CLI_ONLY", strconv.FormatBool(cliOnly))
+	models.AssignDryRun(dryRunDebug)
+	models.AssignCliOnlyMode(cliOnly)
 
 	configuration := models.GetConfiguration()
 	if configuration.AlternativeConfigFile != "" && files.FileOrDirectoryExists(files.AppendPath(basePath, configuration.AlternativeConfigFile)) {

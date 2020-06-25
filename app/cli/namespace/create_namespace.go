@@ -1,8 +1,8 @@
 package namespace
 
 import (
+	install2 "k8s-management-go/app/actions/install"
 	"k8s-management-go/app/cli/createproject"
-	"k8s-management-go/app/cli/install"
 	"k8s-management-go/app/cli/loggingstate"
 )
 
@@ -14,7 +14,7 @@ func WorkflowCreateNamespace() (err error) {
 	}
 
 	loggingstate.AddInfoEntry("-> Check and create namespace if necessary...")
-	if err = install.CheckAndCreateNamespace(namespace); err != nil {
+	if err = install2.CheckAndCreateNamespace(namespace); err != nil {
 		loggingstate.AddErrorEntryAndDetails("-> Check and create namespace if necessary...failed", err.Error())
 		return err
 	}
