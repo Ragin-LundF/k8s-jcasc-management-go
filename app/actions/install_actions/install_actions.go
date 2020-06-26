@@ -11,17 +11,7 @@ import (
 	"k8s-management-go/app/utils/logger"
 )
 
-type StateData struct {
-	ProjectPath            string
-	Namespace              string
-	DeploymentName         string
-	JenkinsHelmValuesFile  string
-	JenkinsHelmValuesExist bool
-	SecretsPassword        *string
-	HelmCommand            string
-}
-
-func ProgressNamespace(state StateData) (err error) {
+func ProgressNamespace(state models.StateData) (err error) {
 	loggingstate.AddInfoEntry("-> Check and create namespace if necessary...")
 	if err = CheckAndCreateNamespace(state.Namespace); err != nil {
 		loggingstate.AddErrorEntryAndDetails("-> Check and create namespace if necessary...failed", err.Error())
@@ -32,7 +22,7 @@ func ProgressNamespace(state StateData) (err error) {
 	return nil
 }
 
-func ProgressPvc(state StateData) (err error) {
+func ProgressPvc(state models.StateData) (err error) {
 	loggingstate.AddInfoEntry("-> Check and create pvc if necessary...")
 	if err = PersistenceVolumeClaimInstall(state.Namespace); err != nil {
 		loggingstate.AddErrorEntryAndDetails("-> Check and create pvc if necessary...failed", err.Error())
@@ -43,7 +33,7 @@ func ProgressPvc(state StateData) (err error) {
 	return nil
 }
 
-func ProgressSecrets(state StateData) (err error) {
+func ProgressSecrets(state models.StateData) (err error) {
 	log := logger.Log()
 	// apply secrets
 	log.Infof("[DoUpgradeOrInstall] Starting apply secrets to namespace [%s]...", state.Namespace)
@@ -61,7 +51,7 @@ func ProgressSecrets(state StateData) (err error) {
 	return nil
 }
 
-func ProgressJenkins(helmCommand string, state StateData) (err error) {
+func ProgressJenkins(helmCommand string, state models.StateData) (err error) {
 	log := logger.Log()
 	// install_actions Jenkins
 	if state.JenkinsHelmValuesExist {
@@ -85,7 +75,7 @@ func ProgressJenkins(helmCommand string, state StateData) (err error) {
 	return nil
 }
 
-func ProgressNginxController(helmCommand string, state StateData) (err error) {
+func ProgressNginxController(helmCommand string, state models.StateData) (err error) {
 	// install_actions Nginx ingress controller
 	loggingstate.AddInfoEntry(fmt.Sprintf("-> Installing nginx-ingress-controller on namespace [%s]...", state.Namespace))
 	err = HelmInstallNginxIngressController(helmCommand, state.Namespace, state.JenkinsHelmValuesExist)
@@ -98,7 +88,7 @@ func ProgressNginxController(helmCommand string, state StateData) (err error) {
 	return nil
 }
 
-func ProgressScripts(state StateData) (err error) {
+func ProgressScripts(state models.StateData) (err error) {
 	if !models.GetConfiguration().K8sManagement.DryRunOnly {
 		// install_actions scripts
 		// try to install_actions scripts
@@ -112,7 +102,7 @@ func ProgressScripts(state StateData) (err error) {
 }
 
 // calculate bar counter
-func CalculateBarCounter(state StateData) int {
+func CalculateBarCounter(state models.StateData) int {
 	var dryRunOnly = 0
 	var notDryRunOnly = 0
 	var jenkinsInstallation = 0
@@ -128,7 +118,7 @@ func CalculateBarCounter(state StateData) int {
 	return dryRunOnly + notDryRunOnly + jenkinsInstallation
 }
 
-func CalculateDirectoriesForInstall(state StateData, namespace string) (err error, stateResult StateData) {
+func CalculateDirectoriesForInstall(state models.StateData, namespace string) (err error, stateResult models.StateData) {
 	// first check if namespace directory exists
 	loggingstate.AddInfoEntry("-> Checking existing directories...")
 	state.Namespace = namespace
@@ -146,7 +136,7 @@ func CalculateDirectoriesForInstall(state StateData, namespace string) (err erro
 	return err, state
 }
 
-func CheckJenkinsDirectories(state StateData) StateData {
+func CheckJenkinsDirectories(state models.StateData) models.StateData {
 	// check if project configuration contains Jenkins Helm values file
 	state.JenkinsHelmValuesFile = files.AppendPath(
 		state.ProjectPath,

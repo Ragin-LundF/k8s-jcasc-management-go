@@ -49,7 +49,7 @@ func DoUpgradeOrInstall(helmCommand string) (err error) {
 }
 
 // execute the workflow
-func executeWorkflow(state install_actions.StateData) (err error) {
+func executeWorkflow(state models.StateData) (err error) {
 	log := logger.Log()
 
 	// Progress Bar

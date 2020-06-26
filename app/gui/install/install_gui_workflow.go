@@ -12,7 +12,7 @@ import (
 )
 
 // execute the workflow
-func ExecuteInstallWorkflow(window fyne.Window, state install_actions.StateData) (err error) {
+func ExecuteInstallWorkflow(window fyne.Window, state models.StateData) (err error) {
 	log := logger.Log()
 
 	// Progress Bar

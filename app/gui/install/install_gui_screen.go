@@ -61,7 +61,7 @@ func ScreenInstall(window fyne.Window) fyne.CanvasObject {
 			}
 
 			// map state
-			state := install_actions.StateData{
+			state := models.StateData{
 				Namespace:       namespace,
 				DeploymentName:  deploymentName,
 				HelmCommand:     installTypeOption,
@@ -143,7 +143,7 @@ func createDryRunRadio() (radioInstallType *widget.Radio) {
 }
 
 // Secrets password dialog
-func openSecretsPasswordDialog(window fyne.Window, secretsPasswordEntry *widget.Entry, state install_actions.StateData) {
+func openSecretsPasswordDialog(window fyne.Window, secretsPasswordEntry *widget.Entry, state models.StateData) {
 	secretsPasswordWindow := widget.NewForm(widget.NewFormItem("Password", secretsPasswordEntry))
 	secretsPasswordWindow.Resize(fyne.Size{Width: 300, Height: 90})
 
