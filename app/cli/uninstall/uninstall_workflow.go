@@ -2,6 +2,7 @@ package uninstall
 
 import (
 	"fmt"
+	"k8s-management-go/app/actions/uninstall_actions"
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/constants"
@@ -45,7 +46,7 @@ func DoUninstall() (err error) {
 	if jenkinsHelmValuesExist {
 		bar.Describe("Uninstalling Jenkins deployment...")
 		loggingstate.AddInfoEntry(fmt.Sprintf("-> Uninstalling deployment [%s] on namespace [%s]...", deploymentName, namespace))
-		if err = HelmUninstallJenkins(namespace, deploymentName); err != nil {
+		if err = uninstall_actions.HelmUninstallJenkins(namespace, deploymentName); err != nil {
 			loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Unable to uninstall deployment [%s] on namespace [%s]...failed", deploymentName, namespace), err.Error())
 			return err
 		}
@@ -66,7 +67,7 @@ func DoUninstall() (err error) {
 	if nginxHelmValuesExist {
 		bar.Describe("Nginx-ingress-controller found...Uninstalling...")
 		loggingstate.AddInfoEntry(fmt.Sprintf("-> Uninstalling nginx-ingress-controller on namespace [%s]...", namespace))
-		if err = HelmUninstallNginxIngressController(namespace); err != nil {
+		if err = uninstall_actions.HelmUninstallNginxIngressController(namespace); err != nil {
 			return err
 		}
 		loggingstate.AddInfoEntry(fmt.Sprintf("-> Uninstalling nginx-ingress-controller on namespace [%s]...done", namespace))
@@ -79,14 +80,14 @@ func DoUninstall() (err error) {
 		// try to uninstall scripts
 		loggingstate.AddInfoEntry(fmt.Sprintf("-> Try to execute uninstall scripts on [%s]...", namespace))
 		// we ignore errors. They will be logged, but we keep on doing the uninstall for the scripts
-		_ = ShellScriptsUninstall(namespace)
+		_ = uninstall_actions.ShellScriptsUninstall(namespace)
 		loggingstate.AddInfoEntry(fmt.Sprintf("-> Try to execute uninstall scripts on [%s]...done", namespace))
 		bar.Add(1)
 
 		// nginx-ingress-controller cleanup
 		bar.Describe("Cleanup configuration...")
 		loggingstate.AddInfoEntry(fmt.Sprintf("-> Try to cleanup configuration of [%s]...", namespace))
-		CleanupK8sNginxIngressController(namespace, bar)
+		uninstall_actions.CleanupK8sNginxIngressController(namespace, bar)
 		loggingstate.AddInfoEntry(fmt.Sprintf("-> Try to cleanup configuration of [%s]...done", namespace))
 	} else {
 		bar.Add(7) // skipping previous steps

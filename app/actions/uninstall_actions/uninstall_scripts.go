@@ -1,4 +1,4 @@
-package uninstall
+package uninstall_actions
 
 import (
 	"k8s-management-go/app/constants"
