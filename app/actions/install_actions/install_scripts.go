@@ -1,4 +1,4 @@
-package install
+package install_actions
 
 import (
 	"k8s-management-go/app/constants"

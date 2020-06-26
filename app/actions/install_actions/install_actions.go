@@ -1,4 +1,4 @@
-package install
+package install_actions
 
 import (
 	"errors"
@@ -63,7 +63,7 @@ func ProgressSecrets(state StateData) (err error) {
 
 func ProgressJenkins(helmCommand string, state StateData) (err error) {
 	log := logger.Log()
-	// install Jenkins
+	// install_actions Jenkins
 	if state.JenkinsHelmValuesExist {
 		loggingstate.AddInfoEntry("-> Jenkins Helm values.yaml found. Installing Jenkins...")
 		log.Infof("[DoUpgradeOrInstall] Jenkins Helm values.yaml found. Installing Jenkins...")
@@ -86,11 +86,11 @@ func ProgressJenkins(helmCommand string, state StateData) (err error) {
 }
 
 func ProgressNginxController(helmCommand string, state StateData) (err error) {
-	// install Nginx ingress controller
+	// install_actions Nginx ingress controller
 	loggingstate.AddInfoEntry(fmt.Sprintf("-> Installing nginx-ingress-controller on namespace [%s]...", state.Namespace))
 	err = HelmInstallNginxIngressController(helmCommand, state.Namespace, state.JenkinsHelmValuesExist)
 	if err != nil {
-		loggingstate.AddErrorEntryAndDetails("  -> Unable to install nginx-ingress-controller.", err.Error())
+		loggingstate.AddErrorEntryAndDetails("  -> Unable to install_actions nginx-ingress-controller.", err.Error())
 		return err
 	}
 	loggingstate.AddInfoEntry(fmt.Sprintf("-> Installing nginx-ingress-controller on namespace [%s]...done", state.Namespace))
@@ -100,12 +100,12 @@ func ProgressNginxController(helmCommand string, state StateData) (err error) {
 
 func ProgressScripts(state StateData) (err error) {
 	if !models.GetConfiguration().K8sManagement.DryRunOnly {
-		// install scripts
-		// try to install scripts
-		loggingstate.AddInfoEntry(fmt.Sprintf("-> Try to execute install scripts on [%s]...", state.Namespace))
-		// we ignore errors. They will be logged, but we keep on doing the install for the scripts
+		// install_actions scripts
+		// try to install_actions scripts
+		loggingstate.AddInfoEntry(fmt.Sprintf("-> Try to execute install_actions scripts on [%s]...", state.Namespace))
+		// we ignore errors. They will be logged, but we keep on doing the install_actions for the scripts
 		_ = ShellScriptsInstall(state.Namespace)
-		loggingstate.AddInfoEntry(fmt.Sprintf("-> Try to execute install scripts on [%s]...done", state.Namespace))
+		loggingstate.AddInfoEntry(fmt.Sprintf("-> Try to execute install_actions scripts on [%s]...done", state.Namespace))
 	}
 
 	return nil

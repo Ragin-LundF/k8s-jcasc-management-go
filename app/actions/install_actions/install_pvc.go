@@ -1,4 +1,4 @@
-package install
+package install_actions
 
 import (
 	"errors"
@@ -32,7 +32,7 @@ type PvcClaimValuesYaml struct {
 	}
 }
 
-// install PVC is needed
+// install_actions PVC is needed
 func PersistenceVolumeClaimInstall(namespace string) (err error) {
 	log := logger.Log()
 	loggingstate.AddInfoEntry(fmt.Sprintf(" -> Check if PVC should be installed on namespace [%s]", namespace))
@@ -65,10 +65,10 @@ func PersistenceVolumeClaimInstall(namespace string) (err error) {
 		log.Infof("[PVC Install] Checking if PVC [%s] is already available for namespace [%s].", pvcName, namespace)
 		pvcExists, err := isPvcAvailableInNamespace(namespace, pvcName)
 
-		// no PVC found, so install it
+		// no PVC found, so install_actions it
 		if !pvcExists {
-			loggingstate.AddInfoEntry(fmt.Sprintf("  -> PVC [%s] does not exist in namespace [%s]. Trying to install it...", pvcName, namespace))
-			log.Infof("[PVC Install] PVC [%s] does not exist in namespace [%s]. Trying to install it...", pvcName, namespace)
+			loggingstate.AddInfoEntry(fmt.Sprintf("  -> PVC [%s] does not exist in namespace [%s]. Trying to install_actions it...", pvcName, namespace))
+			log.Infof("[PVC Install] PVC [%s] does not exist in namespace [%s]. Trying to install_actions it...", pvcName, namespace)
 
 			// executing command
 			kubectlCmdArgs := []string{
@@ -81,11 +81,11 @@ func PersistenceVolumeClaimInstall(namespace string) (err error) {
 				return err
 			}
 
-			loggingstate.AddInfoEntry(fmt.Sprintf("  -> PVC [%s] does not exist in namespace [%s]. Trying to install it...done", pvcName, namespace))
-			log.Infof("[PVC Install] PVC [%s] does not exist in namespace [%s]. Trying to install it...done", pvcName, namespace)
+			loggingstate.AddInfoEntry(fmt.Sprintf("  -> PVC [%s] does not exist in namespace [%s]. Trying to install_actions it...done", pvcName, namespace))
+			log.Infof("[PVC Install] PVC [%s] does not exist in namespace [%s]. Trying to install_actions it...done", pvcName, namespace)
 		} else {
-			loggingstate.AddInfoEntry(fmt.Sprintf("  -> PVC [%s] in namespace [%s] found. No need to install it...", pvcName, namespace))
-			log.Infof("[PVC Install] PVC [%s] in namespace [%s] found. No need to install it...", pvcName, namespace)
+			loggingstate.AddInfoEntry(fmt.Sprintf("  -> PVC [%s] in namespace [%s] found. No need to install_actions it...", pvcName, namespace))
+			log.Infof("[PVC Install] PVC [%s] in namespace [%s] found. No need to install_actions it...", pvcName, namespace)
 		}
 	}
 

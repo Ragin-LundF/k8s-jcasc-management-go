@@ -23,7 +23,7 @@ const ScriptsFileEnding = ".sh"
 
 // commands
 const CommandMenu = "menu"
-const CommandInstall = "install"
+const CommandInstall = "install_actions"
 const CommandUninstall = "uninstall"
 const CommandUpgrade = "upgrade"
 const CommandEncryptSecrets = "encryptSecrets"
@@ -37,7 +37,7 @@ const CommandCreateJenkinsUserPassword = "createJenkinsUserPassword"
 const CommandQuit = "quit"
 
 // helm commands
-const HelmCommandInstall = "install"
+const HelmCommandInstall = "install_actions"
 const HelmCommandUpgrade = "upgrade"
 
 // error

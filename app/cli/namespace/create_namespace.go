@@ -1,7 +1,7 @@
 package namespace
 
 import (
-	install2 "k8s-management-go/app/actions/install"
+	install2 "k8s-management-go/app/actions/install_actions"
 	"k8s-management-go/app/cli/createproject"
 	"k8s-management-go/app/cli/loggingstate"
 )

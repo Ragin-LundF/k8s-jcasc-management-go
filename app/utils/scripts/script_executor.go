@@ -26,7 +26,7 @@ func ExecuteScriptsInstallScriptsForNamespace(namespace string, filePrefix strin
 	var isScriptsDirectoryAvailable = files.FileOrDirectoryExists(scriptFolder)
 	if isScriptsDirectoryAvailable {
 		log.Infof("[Execute Scripts] Script directory is available for namespace [%s]...", namespace)
-		// prepare file filter for install
+		// prepare file filter for install_actions
 		scriptFileEnding := constants.ScriptsFileEnding
 		var fileFilter = files.FileFilter{
 			Prefix: &filePrefix,

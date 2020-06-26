@@ -2,7 +2,7 @@ package install
 
 import (
 	"fmt"
-	"k8s-management-go/app/actions/install"
+	"k8s-management-go/app/actions/install_actions"
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/models"
@@ -49,35 +49,35 @@ func DoUpgradeOrInstall(helmCommand string) (err error) {
 }
 
 // execute the workflow
-func executeWorkflow(state install.StateData) (err error) {
+func executeWorkflow(state install_actions.StateData) (err error) {
 	log := logger.Log()
 
 	// Progress Bar
-	bar := dialogs.CreateProgressBar("Installing...", install.CalculateBarCounter(state))
+	bar := dialogs.CreateProgressBar("Installing...", install_actions.CalculateBarCounter(state))
 
-	// it is not a dry-run -> install required stuff
+	// it is not a dry-run -> install_actions required stuff
 	if !models.GetConfiguration().K8sManagement.DryRunOnly {
 		// check if namespace is available or create a new one if not
 		bar.Describe("Check and create namespace if necessary...")
-		err = install.ProgressNamespace(state)
+		err = install_actions.ProgressNamespace(state)
 		_ = bar.Add(1)
 		if err != nil {
 			return err
 		}
 
-		// check if PVC was specified and install it if needed
+		// check if PVC was specified and install_actions it if needed
 		bar.Describe("Check and create PVC if necessary...")
-		err = install.ProgressPvc(state)
+		err = install_actions.ProgressPvc(state)
 		_ = bar.Add(1)
 		if err != nil {
 			return err
 		}
 
-		// Jenkins exists and it is not a dry-run install secrets
+		// Jenkins exists and it is not a dry-run install_actions secrets
 		if state.JenkinsHelmValuesExist {
 			// apply secrets
 			bar.Describe("Applying secrets...")
-			err = install.ProgressSecrets(state)
+			err = install_actions.ProgressSecrets(state)
 			_ = bar.Add(1)
 			if err != nil {
 				return err
@@ -88,26 +88,26 @@ func executeWorkflow(state install.StateData) (err error) {
 		log.Infof("[DoUpgradeOrInstall] Dry run only, skipping namespace [%s] creation, pvc installation and secrets apply...", state.Namespace)
 	}
 
-	// install Jenkins
+	// install_actions Jenkins
 	bar.Describe("Installing Jenkins...")
-	err = install.ProgressJenkins(state.HelmCommand, state)
+	err = install_actions.ProgressJenkins(state.HelmCommand, state)
 	_ = bar.Add(1)
 	if err != nil {
 		return err
 	}
 
-	// install Nginx ingress controller
+	// install_actions Nginx ingress controller
 	bar.Describe("Installing nginx-ingress-controller...")
-	err = install.ProgressNginxController(state.HelmCommand, state)
+	err = install_actions.ProgressNginxController(state.HelmCommand, state)
 	_ = bar.Add(1)
 	if err != nil {
-		log.Errorf("[DoUpgradeOrInstall] Unable to install nginx-ingress-controller.\n%s", err.Error())
+		log.Errorf("[DoUpgradeOrInstall] Unable to install_actions nginx-ingress-controller.\n%s", err.Error())
 		return err
 	}
 
-	// last but not least execute install scripts if it is not dry-run only
+	// last but not least execute install_actions scripts if it is not dry-run only
 	bar.Describe("Check and execute additional scripts...")
-	err = install.ProgressScripts(state)
+	err = install_actions.ProgressScripts(state)
 	_ = bar.Add(1)
 
 	return err

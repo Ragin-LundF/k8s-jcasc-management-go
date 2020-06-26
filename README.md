@@ -126,7 +126,7 @@ ENV GLIBC_VERSION=2.28-r0
 ENV LANG=${GLIBC_LANG}.UTF-8
 ENV LANGUAGE=${GLIBC_LANG}.UTF-8
 
-# install base packages, that will be used in most containers
+# install_actions base packages, that will be used in most containers
 RUN apk update && apk -U upgrade -a && \
     apk add --no-cache xz tar zip unzip sudo curl wget bash git git-lfs procps ca-certificates
 

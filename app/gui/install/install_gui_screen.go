@@ -5,7 +5,7 @@ import (
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
-	"k8s-management-go/app/actions/install"
+	"k8s-management-go/app/actions/install_actions"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
 	"sort"
@@ -61,7 +61,7 @@ func ScreenInstall(window fyne.Window) fyne.CanvasObject {
 			}
 
 			// map state
-			state := install.StateData{
+			state := install_actions.StateData{
 				Namespace:       namespace,
 				DeploymentName:  deploymentName,
 				HelmCommand:     installTypeOption,
@@ -69,13 +69,13 @@ func ScreenInstall(window fyne.Window) fyne.CanvasObject {
 			}
 
 			// Directories
-			err, state := install.CalculateDirectoriesForInstall(state, state.Namespace)
+			err, state := install_actions.CalculateDirectoriesForInstall(state, state.Namespace)
 			if err != nil {
 				dialog.NewError(err, window)
 			}
 
 			// Check Jenkins directories
-			state = install.CheckJenkinsDirectories(state)
+			state = install_actions.CheckJenkinsDirectories(state)
 
 			// ask for password
 			if dryRunOption == constants.InstallDryRunInactive {
@@ -124,7 +124,7 @@ func createDeploymentNameEntry() (deploymentNameEntry *widget.Entry) {
 	return deploymentNameEntry
 }
 
-// create radio install type radio
+// create radio install_actions type radio
 func createInstallTypeRadio() (radioInstallType *widget.Radio) {
 	// Install or update
 	radioInstallType = widget.NewRadio([]string{constants.HelmCommandInstall, constants.HelmCommandUpgrade}, nil)
@@ -133,7 +133,7 @@ func createInstallTypeRadio() (radioInstallType *widget.Radio) {
 	return radioInstallType
 }
 
-// create radio install type radio
+// create radio install_actions type radio
 func createDryRunRadio() (radioInstallType *widget.Radio) {
 	// Execute or dry-run
 	radioInstallType = widget.NewRadio([]string{constants.InstallDryRunInactive, constants.InstallDryRunActive}, nil)
@@ -143,7 +143,7 @@ func createDryRunRadio() (radioInstallType *widget.Radio) {
 }
 
 // Secrets password dialog
-func openSecretsPasswordDialog(window fyne.Window, secretsPasswordEntry *widget.Entry, state install.StateData) {
+func openSecretsPasswordDialog(window fyne.Window, secretsPasswordEntry *widget.Entry, state install_actions.StateData) {
 	secretsPasswordWindow := widget.NewForm(widget.NewFormItem("Password", secretsPasswordEntry))
 	secretsPasswordWindow.Resize(fyne.Size{Width: 300, Height: 90})
 
