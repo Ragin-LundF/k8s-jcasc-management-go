@@ -9,7 +9,7 @@ import (
 	"k8s-management-go/app/utils/logger"
 )
 
-// show CLI dialogs
+// show CLI ui_elements
 func ShowDialogs() (state models.StateData, err error) {
 	// ask for namespace
 	loggingstate.AddInfoEntry("-> Ask for namespace...")

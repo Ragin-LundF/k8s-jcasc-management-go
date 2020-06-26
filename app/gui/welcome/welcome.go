@@ -1,4 +1,4 @@
-package k8s_screens
+package welcome
 
 import (
 	"fyne.io/fyne"
@@ -7,7 +7,7 @@ import (
 	"fyne.io/fyne/widget"
 )
 
-func WelcomeScreen() fyne.CanvasObject {
+func ScreenWelcome() fyne.CanvasObject {
 	logo := canvas.NewImageFromFile("docs/images/k8s-mgmt-workflow.png")
 	if fyne.CurrentDevice().IsMobile() {
 		logo.SetMinSize(fyne.NewSize(1064/4, 1145/4))

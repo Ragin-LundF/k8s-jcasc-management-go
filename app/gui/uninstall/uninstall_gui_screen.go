@@ -1,4 +1,4 @@
-package install
+package uninstall
 
 import (
 	"fyne.io/fyne"
@@ -11,7 +11,7 @@ import (
 	"k8s-management-go/app/models"
 )
 
-func ScreenInstall(window fyne.Window) fyne.CanvasObject {
+func ScreenUninstall(window fyne.Window) fyne.CanvasObject {
 	var namespace string
 	var deploymentName string
 	var installTypeOption string
@@ -25,28 +25,20 @@ func ScreenInstall(window fyne.Window) fyne.CanvasObject {
 	// Deployment name
 	deploymentNameEntry := ui_elements.CreateDeploymentNameEntry()
 
-	// Install or update
-	installTypeRadio := ui_elements.CreateInstallTypeRadio()
-
 	// Dry-run or execute
 	dryRunRadio := ui_elements.CreateDryRunRadio()
-
-	// secrets password
-	secretsPasswordEntry := widget.NewPasswordEntry()
 
 	form := &widget.Form{
 		Items: []*widget.FormItem{
 			{Text: "Namespace", Widget: namespaceSelectEntry},
 			{Text: "", Widget: namespaceErrorLabel},
 			{Text: "Deployment Name", Widget: deploymentNameEntry},
-			{Text: "Installation type", Widget: installTypeRadio},
 			{Text: "Execute or dry run", Widget: dryRunRadio},
 		},
 		OnSubmit: func() {
 			// get variables
 			namespace = namespaceSelectEntry.Text
 			deploymentName = deploymentNameEntry.Text
-			installTypeOption = installTypeRadio.Selected
 			dryRunOption = dryRunRadio.Selected
 			if dryRunOption == constants.InstallDryRunActive {
 				models.AssignDryRun(true)
@@ -76,12 +68,7 @@ func ScreenInstall(window fyne.Window) fyne.CanvasObject {
 			// Check Jenkins directories
 			state = install_actions.CheckJenkinsDirectories(state)
 
-			// ask for password
-			if dryRunOption == constants.InstallDryRunInactive {
-				openSecretsPasswordDialog(window, secretsPasswordEntry, state)
-			} else {
-				_ = ExecuteInstallWorkflow(window, state)
-			}
+			_ = ExecuteUninstallWorkflow(window, state)
 		},
 	}
 
@@ -91,19 +78,4 @@ func ScreenInstall(window fyne.Window) fyne.CanvasObject {
 	)
 
 	return box
-}
-
-// Secrets password dialog
-func openSecretsPasswordDialog(window fyne.Window, secretsPasswordEntry *widget.Entry, state models.StateData) {
-	secretsPasswordWindow := widget.NewForm(widget.NewFormItem("Password", secretsPasswordEntry))
-	secretsPasswordWindow.Resize(fyne.Size{Width: 300, Height: 90})
-
-	dialog.ShowCustomConfirm("Password for Secrets...", "Ok", "Cancel", secretsPasswordWindow, func(confirmed bool) {
-		if confirmed {
-			state.SecretsPassword = &secretsPasswordEntry.Text
-			_ = ExecuteInstallWorkflow(window, state)
-		} else {
-			return
-		}
-	}, window)
 }
