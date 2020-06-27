@@ -5,6 +5,7 @@ import (
 	"fyne.io/fyne/cmd/fyne_demo/screens"
 	"fyne.io/fyne/theme"
 	"fyne.io/fyne/widget"
+	"k8s-management-go/app/gui/namespace"
 	"k8s-management-go/app/gui/welcome"
 )
 
@@ -15,7 +16,7 @@ func CreateTabMenu(k8sJcascApp fyne.App, k8sJcascWindow fyne.Window) (tabs *widg
 		widget.NewTabItemWithIcon("Secrets", theme.ContentAddIcon(), SecretsScreen(k8sJcascApp.Preferences())),
 		widget.NewTabItemWithIcon("Create Project", theme.ViewRestoreIcon(), screens.ContainerScreen()),
 		widget.NewTabItemWithIcon("Create Deployment-Only Project", theme.ViewRestoreIcon(), screens.ContainerScreen()),
-		widget.NewTabItemWithIcon("Create Namespace", theme.ViewRestoreIcon(), screens.ContainerScreen()),
+		widget.NewTabItemWithIcon("Create Namespace", theme.ViewRestoreIcon(), namespace.ScreenNamespaceCreate(k8sJcascWindow)),
 		widget.NewTabItemWithIcon("Create Jenkins User Password", theme.ViewFullScreenIcon(), screens.DialogScreen(k8sJcascWindow)))
 
 	tabs.SetTabLocation(widget.TabLocationTop)
