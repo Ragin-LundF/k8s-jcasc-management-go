@@ -34,7 +34,7 @@ if ! dry-run only && jenkins installation
 func DoUpgradeOrInstall(helmCommand string) (err error) {
 	loggingstate.AddInfoEntry(fmt.Sprintf("Starting Jenkins [%s]...", helmCommand))
 	// show all needed ui_elements and collect data
-	state, err := ShowDialogs()
+	state, err := ShowInstallDialogs()
 	if err != nil {
 		return err
 	}

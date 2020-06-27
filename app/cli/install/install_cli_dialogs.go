@@ -10,7 +10,7 @@ import (
 )
 
 // show CLI ui_elements
-func ShowDialogs() (state models.StateData, err error) {
+func ShowInstallDialogs() (state models.StateData, err error) {
 	// ask for namespace
 	loggingstate.AddInfoEntry("-> Ask for namespace...")
 	state.Namespace, err = dialogs.DialogAskForNamespace()
