@@ -1,11 +1,9 @@
 package ui_elements
 
 import (
-	"fmt"
 	"fyne.io/fyne"
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/widget"
-	"image/color"
 	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
@@ -83,48 +81,43 @@ func ShowLogOutput(window fyne.Window) {
 	// clear the log
 	loggingstate.ClearLoggingState()
 
-	// create text grid
-	grid := widget.NewTextGrid()
-	red := &widget.CustomTextGridStyle{BGColor: &color.NRGBA{R: 128, G: 0, B: 0, A: 255}}
+	// prepare accordion
+	logAccordion := widget.NewAccordionContainer()
+	var accItem *widget.AccordionItem
+	var accLabel *widget.Label
 
-	var currentLine = 0
-	var linesWithError []int
-	var textContent string
 	for _, logState := range loggingStates {
-		lineContent := fmt.Sprintf("[%s] %s", logState.Type, logState.Entry)
-		textContent = fmt.Sprintf("%s%s\n", textContent, lineContent)
-		if logState.Type == "ERROR" {
-			linesWithError = append(linesWithError, currentLine)
-		}
-		currentLine++
-
 		if logState.Details != "" {
-			textContent = fmt.Sprintf("%s--- Details start----\n", textContent)
-			textContent = fmt.Sprintf("%s%s\n", textContent, logState.Details)
-			textContent = fmt.Sprintf("%s--- Details end----\n", textContent)
-			if logState.Type == "ERROR" {
-				linesWithError = append(linesWithError, currentLine, currentLine+1, currentLine+2, currentLine+3)
+			accLabel = widget.NewLabel(processTextForBestLength(logState.Details))
+			if logState.Type != "ERROR" {
+				accItem = widget.NewAccordionItem(processTextForBestLength("["+logState.Type+"] "+logState.Entry), accLabel)
+			} else {
+				accItem = widget.NewAccordionItem(processTextForBestLength("["+logState.Type+"] "+logState.Entry), accLabel)
 			}
-
-			currentLine = currentLine + 3
+			logAccordion.Append(accItem)
+		} else {
+			widget.NewButton(processTextForBestLength("["+logState.Type+"] "+logState.Entry), nil)
 		}
-
-		textContent = fmt.Sprintf("%s\n", textContent)
-		currentLine++
-	}
-	grid.SetText(textContent)
-
-	for _, errRow := range linesWithError {
-		grid.Rows[errRow].Style = red
 	}
 
-	grid.ShowLineNumbers = true
-	grid.ShowWhitespace = true
+	dialog.ShowCustom("", "Ok", logAccordion, window)
+}
 
-	scrollContainer := widget.NewScrollContainer(grid)
-	scrollContainer.SetMinSize(fyne.NewSize(700, 400))
+func processTextForBestLength(label string) string {
+	var resultText string
+	var characterCount = 0
 
-	dialog.ShowCustom("", "Ok", scrollContainer, window)
+	// split
+	wordArr := strings.Split(label, " ")
+	for _, word := range wordArr {
+		characterCount += len(word)
+		if characterCount > 100 {
+			resultText += "\n"
+			characterCount = 0
+		}
+		resultText += word + " "
+	}
+	return resultText
 }
 
 // check selected namespace against namespace list

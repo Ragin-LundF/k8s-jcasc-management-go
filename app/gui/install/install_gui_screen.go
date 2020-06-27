@@ -83,7 +83,6 @@ func ScreenInstall(window fyne.Window) fyne.CanvasObject {
 				_ = ExecuteInstallWorkflow(window, state)
 				// show output
 				ui_elements.ShowLogOutput(window)
-
 			}
 		},
 	}
