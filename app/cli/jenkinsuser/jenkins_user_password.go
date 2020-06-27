@@ -4,9 +4,9 @@ import (
 	"errors"
 	"github.com/atotto/clipboard"
 	"k8s-management-go/app/cli/dialogs"
-	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/utils/encryption"
 	"k8s-management-go/app/utils/logger"
+	"k8s-management-go/app/utils/loggingstate"
 	"strings"
 )
 

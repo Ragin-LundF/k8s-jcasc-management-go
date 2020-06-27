@@ -2,10 +2,10 @@ package install_actions
 
 import (
 	"fmt"
-	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/utils/kubectl"
 	"k8s-management-go/app/utils/logger"
+	"k8s-management-go/app/utils/loggingstate"
 )
 
 // check if namespace is available and create a new one if it does not exist

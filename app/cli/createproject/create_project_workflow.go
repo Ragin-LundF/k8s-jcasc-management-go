@@ -1,7 +1,7 @@
 package createproject
 
 import (
-	"k8s-management-go/app/cli/loggingstate"
+	"k8s-management-go/app/utils/loggingstate"
 )
 
 func ProjectWizardWorkflow(deploymentOnly bool) (err error) {

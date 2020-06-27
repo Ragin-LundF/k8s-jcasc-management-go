@@ -3,10 +3,10 @@ package install
 import (
 	"k8s-management-go/app/actions/install_actions"
 	"k8s-management-go/app/cli/dialogs"
-	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/cli/secrets"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/logger"
+	"k8s-management-go/app/utils/loggingstate"
 )
 
 // show CLI ui_elements

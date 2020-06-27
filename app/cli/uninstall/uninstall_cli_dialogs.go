@@ -2,10 +2,10 @@ package uninstall
 
 import (
 	"k8s-management-go/app/cli/dialogs"
-	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
+	"k8s-management-go/app/utils/loggingstate"
 )
 
 func ShowUninstallDialogs() (state models.StateData, err error) {

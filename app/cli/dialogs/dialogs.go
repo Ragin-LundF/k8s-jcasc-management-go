@@ -4,10 +4,10 @@ import (
 	"github.com/inancgumus/screen"
 	"github.com/manifoldco/promptui"
 	"github.com/schollz/progressbar/v3"
-	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/arrays"
 	"k8s-management-go/app/utils/logger"
+	"k8s-management-go/app/utils/loggingstate"
 	"strings"
 )
 

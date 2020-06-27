@@ -2,10 +2,10 @@ package uninstall_actions
 
 import (
 	"fmt"
-	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
+	"k8s-management-go/app/utils/loggingstate"
 )
 
 func JenkinsUninstallIfExists(state models.StateData) (err error) {

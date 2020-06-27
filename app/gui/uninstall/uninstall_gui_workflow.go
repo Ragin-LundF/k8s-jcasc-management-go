@@ -4,9 +4,9 @@ import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/dialog"
 	"k8s-management-go/app/actions/uninstall_actions"
-	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/gui/ui_elements"
 	"k8s-management-go/app/models"
+	"k8s-management-go/app/utils/loggingstate"
 )
 
 // execute the workflow

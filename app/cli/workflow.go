@@ -5,12 +5,12 @@ import (
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/cli/install"
 	"k8s-management-go/app/cli/jenkinsuser"
-	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/cli/menu"
 	"k8s-management-go/app/cli/namespace"
 	"k8s-management-go/app/cli/secrets"
 	"k8s-management-go/app/cli/uninstall"
 	"k8s-management-go/app/constants"
+	"k8s-management-go/app/utils/loggingstate"
 	"os"
 )
 

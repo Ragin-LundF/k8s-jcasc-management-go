@@ -3,7 +3,7 @@ package namespace
 import (
 	install2 "k8s-management-go/app/actions/install_actions"
 	"k8s-management-go/app/cli/createproject"
-	"k8s-management-go/app/cli/loggingstate"
+	"k8s-management-go/app/utils/loggingstate"
 )
 
 func WorkflowCreateNamespace() (err error) {

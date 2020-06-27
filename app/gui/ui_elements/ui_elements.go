@@ -4,9 +4,9 @@ import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/widget"
-	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
+	"k8s-management-go/app/utils/loggingstate"
 	"sort"
 	"strings"
 )
