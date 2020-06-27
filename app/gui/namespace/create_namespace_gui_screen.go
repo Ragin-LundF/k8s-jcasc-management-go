@@ -23,11 +23,6 @@ func ScreenNamespaceCreate(window fyne.Window) fyne.CanvasObject {
 		OnSubmit: func() {
 			// get variables
 			namespace = namespaceSelectEntry.Text
-			if !ui_elements.ValidateNamespace(namespace) {
-				namespaceErrorLabel.SetText("Error: namespace is unknown!")
-				namespaceErrorLabel.Show()
-				return
-			}
 
 			// map state
 			state := models.StateData{

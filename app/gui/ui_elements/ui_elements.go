@@ -96,7 +96,9 @@ func ShowLogOutput(window fyne.Window) {
 			}
 			logAccordion.Append(accItem)
 		} else {
-			widget.NewButton(processTextForBestLength("["+logState.Type+"] "+logState.Entry), nil)
+			accLabel = widget.NewLabel("No content...")
+			accItem = widget.NewAccordionItem(processTextForBestLength("["+logState.Type+"] "+logState.Entry), accLabel)
+			logAccordion.Append(widget.NewAccordionItem(processTextForBestLength("["+logState.Type+"] "+logState.Entry), accLabel))
 		}
 	}
 
