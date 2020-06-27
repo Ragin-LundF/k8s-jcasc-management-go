@@ -69,6 +69,8 @@ func ScreenUninstall(window fyne.Window) fyne.CanvasObject {
 			state = install_actions.CheckJenkinsDirectories(state)
 
 			_ = ExecuteUninstallWorkflow(window, state)
+			// show output
+			ui_elements.ShowLogOutput(window)
 		},
 	}
 

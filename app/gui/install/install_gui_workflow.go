@@ -3,7 +3,6 @@ package install
 import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/dialog"
-	"fyne.io/fyne/widget"
 	"k8s-management-go/app/actions/install_actions"
 	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/models"
@@ -20,8 +19,6 @@ func ExecuteInstallWorkflow(window fyne.Window, state models.StateData) (err err
 	progressMaxCnt := install_actions.CalculateBarCounter(state)
 	bar := dialog.NewProgress(state.HelmCommand, "Installing on namespace "+state.Namespace, window)
 	bar.Show()
-	//	bar.Max = float64(install_actions.CalculateBarCounter(state))
-	// createProgressBar(window, bar, &*textDialogProgress)
 
 	// it is not a dry-run -> install_actions required stuff
 	if !models.GetConfiguration().K8sManagement.DryRunOnly {
@@ -85,17 +82,4 @@ func ExecuteInstallWorkflow(window fyne.Window, state models.StateData) (err err
 	bar.Hide()
 
 	return err
-}
-
-type progressDescription struct {
-	Text string
-}
-
-func createProgressBar(window fyne.Window, bar *widget.ProgressBar, text *string) {
-	widget.NewVBox(
-		widget.NewLabel(*text),
-		bar,
-	)
-	info := dialog.NewCustom("Progress", "Ok", bar, window)
-	info.Show()
 }

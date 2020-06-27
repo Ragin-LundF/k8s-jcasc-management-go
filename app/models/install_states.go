@@ -6,6 +6,7 @@ type StateData struct {
 	DeploymentName         string
 	JenkinsHelmValuesFile  string
 	JenkinsHelmValuesExist bool
+	NginxHelmValuesExist   bool
 	SecretsPassword        *string
 	HelmCommand            string
 }

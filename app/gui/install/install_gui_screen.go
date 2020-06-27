@@ -81,6 +81,9 @@ func ScreenInstall(window fyne.Window) fyne.CanvasObject {
 				openSecretsPasswordDialog(window, secretsPasswordEntry, state)
 			} else {
 				_ = ExecuteInstallWorkflow(window, state)
+				// show output
+				ui_elements.ShowLogOutput(window)
+
 			}
 		},
 	}
