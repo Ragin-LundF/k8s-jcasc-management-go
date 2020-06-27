@@ -22,8 +22,7 @@ const SecretsFileEncodedEnding = ".gpg"
 const ScriptsFileEnding = ".sh"
 
 // commands
-const CommandMenu = "menu"
-const CommandInstall = "install_actions"
+const CommandInstall = "install"
 const CommandUninstall = "uninstall"
 const CommandUpgrade = "upgrade"
 const CommandEncryptSecrets = "encryptSecrets"
@@ -37,8 +36,9 @@ const CommandCreateJenkinsUserPassword = "createJenkinsUserPassword"
 const CommandQuit = "quit"
 
 // helm commands
-const HelmCommandInstall = "install_actions"
+const HelmCommandInstall = "install"
 const HelmCommandUpgrade = "upgrade"
+const HelmCommandUninstall = "uninstall"
 
 // error
 const ErrorPromptFailed = "prompt failed"

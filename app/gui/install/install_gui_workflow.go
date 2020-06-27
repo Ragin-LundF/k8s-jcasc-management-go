@@ -5,6 +5,7 @@ import (
 	"fyne.io/fyne/dialog"
 	"k8s-management-go/app/actions/install_actions"
 	"k8s-management-go/app/cli/loggingstate"
+	"k8s-management-go/app/gui/ui_elements"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/logger"
 	"time"
@@ -28,6 +29,7 @@ func ExecuteInstallWorkflow(window fyne.Window, state models.StateData) (err err
 		progressCnt++
 		if err != nil {
 			bar.Hide()
+			ui_elements.ShowLogOutput(window)
 			return err
 		}
 
@@ -37,6 +39,7 @@ func ExecuteInstallWorkflow(window fyne.Window, state models.StateData) (err err
 		progressCnt++
 		if err != nil {
 			bar.Hide()
+			ui_elements.ShowLogOutput(window)
 			return err
 		}
 
@@ -48,6 +51,7 @@ func ExecuteInstallWorkflow(window fyne.Window, state models.StateData) (err err
 			progressCnt++
 			if err != nil {
 				bar.Hide()
+				ui_elements.ShowLogOutput(window)
 				return err
 			}
 		}
@@ -62,6 +66,7 @@ func ExecuteInstallWorkflow(window fyne.Window, state models.StateData) (err err
 	progressCnt++
 	if err != nil {
 		bar.Hide()
+		ui_elements.ShowLogOutput(window)
 		return err
 	}
 
@@ -72,6 +77,7 @@ func ExecuteInstallWorkflow(window fyne.Window, state models.StateData) (err err
 	if err != nil {
 		bar.Hide()
 		log.Errorf("[DoUpgradeOrInstall] Unable to install_actions nginx-ingress-controller.\n%s", err.Error())
+		ui_elements.ShowLogOutput(window)
 		return err
 	}
 
@@ -80,6 +86,8 @@ func ExecuteInstallWorkflow(window fyne.Window, state models.StateData) (err err
 	bar.SetValue(float64(1) / float64(progressMaxCnt) * float64(progressCnt))
 	time.Sleep(1000)
 	bar.Hide()
+
+	ui_elements.ShowLogOutput(window)
 
 	return err
 }

@@ -3,6 +3,7 @@ package uninstall_actions
 import (
 	"fmt"
 	"k8s-management-go/app/cli/loggingstate"
+	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/helm"
 	"k8s-management-go/app/utils/logger"
@@ -23,7 +24,7 @@ func HelmUninstallJenkins(namespace string, deploymentName string) (err error) {
 		helmCmdArgs = append(helmCmdArgs, "--dry-run", "--debug")
 	}
 	// execute Helm command
-	if err = helm.ExecutorHelm("uninstall", helmCmdArgs); err != nil {
+	if err = helm.ExecutorHelm(constants.HelmCommandUninstall, helmCmdArgs); err != nil {
 		loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Uninstall Jenkins on namespace [%s] with deployment name [%s] done.", namespace, deploymentName), err.Error())
 		return err
 	}

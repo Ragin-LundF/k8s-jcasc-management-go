@@ -100,7 +100,12 @@ func ShowLogOutput(window fyne.Window) {
 		}
 	}
 
-	dialog.ShowCustom("", "Ok", logAccordion, window)
+	scrollContainer := widget.NewVScrollContainer(logAccordion)
+	scrollContainer.SetMinSize(fyne.Size{
+		Width:  700,
+		Height: 400,
+	})
+	dialog.ShowCustom("", "Ok", scrollContainer, window)
 }
 
 func processTextForBestLength(label string) string {
