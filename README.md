@@ -1,7 +1,5 @@
 # K8S-JCasC-Management (Go version)
 
-This is a Go implementation of [k8s-jcasc-management](https://github.com/Ragin-LundF/k8s-jcasc-management).
-
 # Table of content #
 
 * [Kubernetes Jenkins as Code management](#kubernetes-jenkins-as-code-management)
