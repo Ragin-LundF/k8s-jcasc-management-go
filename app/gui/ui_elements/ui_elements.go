@@ -4,20 +4,20 @@ import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/widget"
+	"k8s-management-go/app/actions/namespace_actions"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/loggingstate"
-	"sort"
 	"strings"
 )
 
 // create namespace select entry
 func CreateNamespaceSelectEntry(namespaceErrorLabel *widget.Label) (namespaceSelectEntry *widget.SelectEntry) {
 	// Namespace
-	namespaceSelectEntry = widget.NewSelectEntry(FindNamespacesForSelect(nil))
+	namespaceSelectEntry = widget.NewSelectEntry(namespace_actions.ActionReadNamespaceWithFilter(nil))
 	namespaceSelectEntry.PlaceHolder = "Type or select namespace"
 	namespaceSelectEntry.OnChanged = func(input string) {
-		namespaces := FindNamespacesForSelect(&input)
+		namespaces := namespace_actions.ActionReadNamespaceWithFilter(&input)
 		namespaceSelectEntry.SetOptions(namespaces)
 		if strings.TrimSpace(strings.Join(namespaces, "")) == "" {
 			namespaceErrorLabel.SetText("No namespace found with these characters.")
@@ -59,22 +59,7 @@ func CreateDryRunRadio() (radioInstallType *widget.Radio) {
 	return radioInstallType
 }
 
-// namespaces loader and filter
-func FindNamespacesForSelect(filter *string) (namespaces []string) {
-	ipList := models.GetIpConfiguration().Ips
-	for _, ip := range ipList {
-		if filter != nil && *filter != "" {
-			if strings.Contains(ip.Namespace, *filter) {
-				namespaces = append(namespaces, ip.Namespace)
-			}
-		} else {
-			namespaces = append(namespaces, ip.Namespace)
-		}
-	}
-	sort.Strings(namespaces)
-	return namespaces
-}
-
+// show output of internal logging
 func ShowLogOutput(window fyne.Window) {
 	// read the log
 	loggingStates := loggingstate.GetLoggingStateEntries()
@@ -88,17 +73,17 @@ func ShowLogOutput(window fyne.Window) {
 
 	for _, logState := range loggingStates {
 		if logState.Details != "" {
-			accLabel = widget.NewLabel(processTextForBestLength(logState.Details))
+			accLabel = widget.NewLabel(processLogTextForBestView(logState.Details))
 			if logState.Type != "ERROR" {
-				accItem = widget.NewAccordionItem(processTextForBestLength("["+logState.Type+"] "+logState.Entry), accLabel)
+				accItem = widget.NewAccordionItem(processLogTextForBestView("["+logState.Type+"] "+logState.Entry), accLabel)
 			} else {
-				accItem = widget.NewAccordionItem(processTextForBestLength("["+logState.Type+"] "+logState.Entry), accLabel)
+				accItem = widget.NewAccordionItem(processLogTextForBestView("["+logState.Type+"] "+logState.Entry), accLabel)
 			}
 			logAccordion.Append(accItem)
 		} else {
 			accLabel = widget.NewLabel("No content...")
-			accItem = widget.NewAccordionItem(processTextForBestLength("["+logState.Type+"] "+logState.Entry), accLabel)
-			logAccordion.Append(widget.NewAccordionItem(processTextForBestLength("["+logState.Type+"] "+logState.Entry), accLabel))
+			accItem = widget.NewAccordionItem(processLogTextForBestView("["+logState.Type+"] "+logState.Entry), accLabel)
+			logAccordion.Append(widget.NewAccordionItem(processLogTextForBestView("["+logState.Type+"] "+logState.Entry), accLabel))
 		}
 	}
 
@@ -111,7 +96,7 @@ func ShowLogOutput(window fyne.Window) {
 	dialog.ShowCustom("", "Ok", scrollContainer, window)
 }
 
-func processTextForBestLength(label string) string {
+func processLogTextForBestView(label string) string {
 	var resultText string
 	var characterCount = 0
 
@@ -126,14 +111,4 @@ func processTextForBestLength(label string) string {
 		resultText += word + " "
 	}
 	return resultText
-}
-
-// check selected namespace against namespace list
-func ValidateNamespace(namespaceToValidate string) bool {
-	for _, ip := range models.GetIpConfiguration().Ips {
-		if ip.Namespace == namespaceToValidate {
-			return true
-		}
-	}
-	return false
 }

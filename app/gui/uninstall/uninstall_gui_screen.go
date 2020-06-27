@@ -9,6 +9,7 @@ import (
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/gui/ui_elements"
 	"k8s-management-go/app/models"
+	"k8s-management-go/app/utils/validator"
 )
 
 func ScreenUninstall(window fyne.Window) fyne.CanvasObject {
@@ -45,7 +46,7 @@ func ScreenUninstall(window fyne.Window) fyne.CanvasObject {
 			} else {
 				models.AssignDryRun(false)
 			}
-			if !ui_elements.ValidateNamespace(namespace) {
+			if !validator.ValidateNamespace(namespace) {
 				namespaceErrorLabel.SetText("Error: namespace is unknown!")
 				namespaceErrorLabel.Show()
 				return
@@ -62,7 +63,7 @@ func ScreenUninstall(window fyne.Window) fyne.CanvasObject {
 			// Directories
 			err, state := install_actions.CalculateDirectoriesForInstall(state, state.Namespace)
 			if err != nil {
-				dialog.NewError(err, window)
+				dialog.ShowError(err, window)
 			}
 
 			// Check Jenkins directories

@@ -2,24 +2,24 @@ package menu
 
 import (
 	"fyne.io/fyne"
-	"fyne.io/fyne/cmd/fyne_demo/screens"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/theme"
 	"fyne.io/fyne/widget"
+	"k8s-management-go/app/gui/secrets"
 )
 
 func SecretsScreen(window fyne.Window, preferences fyne.Preferences) fyne.CanvasObject {
 	return widget.NewVBox(
-		secretsSubMenu(preferences),
+		secretsSubMenu(window, preferences),
 		layout.NewSpacer())
 }
 
-func secretsSubMenu(preferences fyne.Preferences) (tabs *widget.TabContainer) {
+func secretsSubMenu(window fyne.Window, preferences fyne.Preferences) (tabs *widget.TabContainer) {
 	tabs = widget.NewTabContainer(
-		widget.NewTabItemWithIcon("Apply Secrets", theme.MailReplyIcon(), screens.ContainerScreen()),
-		widget.NewTabItemWithIcon("Apply Secrets to all Namespaces", theme.MailReplyAllIcon(), screens.ContainerScreen()),
-		widget.NewTabItemWithIcon("Encrypt Secrets", theme.VisibilityOffIcon(), screens.ContainerScreen()),
-		widget.NewTabItemWithIcon("Decrypt Secrets", theme.VisibilityIcon(), screens.ContainerScreen()))
+		widget.NewTabItemWithIcon("Apply Secrets", theme.MailReplyIcon(), secrets.ScreenApplySecretsToNamespace(window)),
+		widget.NewTabItemWithIcon("Apply Secrets to all Namespaces", theme.MailReplyAllIcon(), secrets.ScreenApplySecretsToAllNamespace(window)),
+		widget.NewTabItemWithIcon("Encrypt Secrets", theme.VisibilityOffIcon(), secrets.ScreenEncryptSecrets(window)),
+		widget.NewTabItemWithIcon("Decrypt Secrets", theme.VisibilityIcon(), secrets.ScreenDecryptSecrets(window)))
 
 	tabs.SetTabLocation(widget.TabLocationTop)
 	tabs.SelectTabIndex(preferences.Int(PreferencesSubMenuSecretsTab))
