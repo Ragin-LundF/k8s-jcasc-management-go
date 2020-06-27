@@ -20,7 +20,7 @@ func Workflow(info string, err error) {
 	err = startCommandAction(selectedCommand)
 	// show output
 	dialogs.DialogShowLogging(loggingstate.GetLoggingStateEntries(), err)
-	loggingstate.ClearLoggingState()
+	loggingstate.LogLoggingStateEntries()
 	// recall Workflow to show menu after finished actions
 	Workflow(info, err)
 }

@@ -12,11 +12,9 @@ func WorkflowCreateNamespace() (err error) {
 	state.Namespace, err = createproject.ProjectWizardAskForNamespace()
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("-> AskForNamespace dialog aborted...", err.Error())
-		loggingstate.LogLoggingStateEntries()
 	}
 
 	err = namespace_actions.ProcessNamespaceCreation(state)
-	loggingstate.LogLoggingStateEntries()
 
 	return nil
 }
