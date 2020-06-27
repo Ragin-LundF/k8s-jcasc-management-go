@@ -36,6 +36,7 @@ func DoUpgradeOrInstall(helmCommand string) (err error) {
 	// show all needed ui_elements and collect data
 	state, err := ShowDialogs()
 	if err != nil {
+		loggingstate.LogLoggingStateEntries()
 		return err
 	}
 
@@ -46,6 +47,7 @@ func DoUpgradeOrInstall(helmCommand string) (err error) {
 	err = executeWorkflow(state)
 
 	loggingstate.AddInfoEntry(fmt.Sprintf("Starting Jenkins [%s]...done", helmCommand))
+	loggingstate.LogLoggingStateEntries()
 	return err
 }
 

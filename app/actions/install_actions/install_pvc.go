@@ -9,7 +9,6 @@ import (
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/kubectl"
-	"k8s-management-go/app/utils/logger"
 	"k8s-management-go/app/utils/loggingstate"
 )
 
@@ -34,9 +33,7 @@ type PvcClaimValuesYaml struct {
 
 // install_actions PVC is needed
 func ActionPersistenceVolumeClaimInstall(namespace string) (err error) {
-	log := logger.Log()
 	loggingstate.AddInfoEntry(fmt.Sprintf(" -> Check if PVC should be installed on namespace [%s]", namespace))
-	log.Infof("[PVC Install] Check if PVC should be installed on namespace [%s]", namespace)
 
 	// prepare file directories
 	projectDir := files.AppendPath(models.GetProjectBaseDirectory(), namespace)
@@ -45,7 +42,6 @@ func ActionPersistenceVolumeClaimInstall(namespace string) (err error) {
 	// open file
 	if files.FileOrDirectoryExists(pvcClaimValuesFilePath) {
 		loggingstate.AddInfoEntry(fmt.Sprintf("  -> Kubernetes PVC specification found for namespace [%s]...", namespace))
-		log.Infof("[PVC Install] Kubernetes PVC specification found for namespace [%s]...", namespace)
 		// variable to check, if pvc already exists
 		pvcName, err := readPvcNameFromFile(pvcClaimValuesFilePath)
 		if err != nil {
@@ -56,19 +52,16 @@ func ActionPersistenceVolumeClaimInstall(namespace string) (err error) {
 		if pvcName == "" {
 			loggingstate.AddErrorEntry(fmt.Sprintf("  -> PVC specification was found for namespace [%s], but no name was specified.", namespace))
 			err = errors.New(fmt.Sprintf("[PVC Install] PVC specification was found for namespace [%s], but no name was specified.", namespace))
-			log.Errorf("%s", err.Error())
 			return err
 		}
 
 		// check if pvc is already available in namespace
 		loggingstate.AddInfoEntry(fmt.Sprintf("  -> Checking if PVC [%s] is already available for namespace [%s].", pvcName, namespace))
-		log.Infof("[PVC Install] Checking if PVC [%s] is already available for namespace [%s].", pvcName, namespace)
 		pvcExists, err := isPvcAvailableInNamespace(namespace, pvcName)
 
 		// no PVC found, so install_actions it
 		if !pvcExists {
 			loggingstate.AddInfoEntry(fmt.Sprintf("  -> PVC [%s] does not exist in namespace [%s]. Trying to install_actions it...", pvcName, namespace))
-			log.Infof("[PVC Install] PVC [%s] does not exist in namespace [%s]. Trying to install_actions it...", pvcName, namespace)
 
 			// executing command
 			kubectlCmdArgs := []string{
@@ -77,15 +70,12 @@ func ActionPersistenceVolumeClaimInstall(namespace string) (err error) {
 			}
 			if _, err := kubectl.ExecutorKubectl("apply", kubectlCmdArgs); err != nil {
 				loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Cannot create PVC [%s] for namespace [%s]", pvcName, namespace), err.Error())
-				log.Errorf("[PVC Install] Cannot create PVC [%s] for namespace [%s]", pvcName, namespace)
 				return err
 			}
 
 			loggingstate.AddInfoEntry(fmt.Sprintf("  -> PVC [%s] does not exist in namespace [%s]. Trying to install_actions it...done", pvcName, namespace))
-			log.Infof("[PVC Install] PVC [%s] does not exist in namespace [%s]. Trying to install_actions it...done", pvcName, namespace)
 		} else {
 			loggingstate.AddInfoEntry(fmt.Sprintf("  -> PVC [%s] in namespace [%s] found. No need to install_actions it...", pvcName, namespace))
-			log.Infof("[PVC Install] PVC [%s] in namespace [%s] found. No need to install_actions it...", pvcName, namespace)
 		}
 	}
 
@@ -94,12 +84,10 @@ func ActionPersistenceVolumeClaimInstall(namespace string) (err error) {
 
 // read PVC specification and find name
 func readPvcNameFromFile(pvcClaimValuesFilePath string) (pvcName string, err error) {
-	log := logger.Log()
 	// read PVC claim values.yaml file
 	yamlFile, err := ioutil.ReadFile(pvcClaimValuesFilePath)
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Unable to read pvc file [%s]...", pvcClaimValuesFilePath), err.Error())
-		log.Errorf("Unable to read pvc file [%s]...\n%s", pvcClaimValuesFilePath, err.Error())
 		return pvcName, err
 	}
 
@@ -108,7 +96,6 @@ func readPvcNameFromFile(pvcClaimValuesFilePath string) (pvcName string, err err
 	err = yaml.Unmarshal(yamlFile, &pvcClaimValues)
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Unable to unmarshal pvc yaml file [%s]...", pvcClaimValuesFilePath), err.Error())
-		log.Errorf("Unable to unmarshal pvc file [%s]...\n%s", pvcClaimValuesFilePath, err.Error())
 		return pvcName, err
 	}
 	pvcMetaName := pvcClaimValues.Metadata.Name

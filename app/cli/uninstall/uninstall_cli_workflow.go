@@ -14,12 +14,14 @@ func DoUninstall() (err error) {
 	loggingstate.AddInfoEntry("Starting Uninstall...")
 	state, err := ShowUninstallDialogs()
 	if err != nil {
+		loggingstate.LogLoggingStateEntries()
 		return err
 	}
 
 	bar.Describe("Uninstalling Jenkins deployment...")
 	err = uninstall_actions.ProcessJenkinsUninstallIfExists(state)
 	if err != nil {
+		loggingstate.LogLoggingStateEntries()
 		return err
 	}
 	_ = bar.Add(1)
@@ -32,6 +34,7 @@ func DoUninstall() (err error) {
 	bar.Describe("Nginx-ingress-controller found...Uninstalling...")
 	err = uninstall_actions.ProcessNginxIngressControllerUninstall(state)
 	if err != nil {
+		loggingstate.LogLoggingStateEntries()
 		return err
 	}
 	_ = bar.Add(1)
@@ -51,5 +54,6 @@ func DoUninstall() (err error) {
 	}
 
 	loggingstate.AddInfoEntry("Starting Uninstall...done")
+	loggingstate.LogLoggingStateEntries()
 	return nil
 }

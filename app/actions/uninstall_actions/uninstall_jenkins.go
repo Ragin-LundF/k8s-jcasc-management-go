@@ -5,15 +5,12 @@ import (
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/helm"
-	"k8s-management-go/app/utils/logger"
 	"k8s-management-go/app/utils/loggingstate"
 )
 
 // uninstall Jenkins with Helm
 func ActionHelmUninstallJenkins(namespace string, deploymentName string) (err error) {
-	log := logger.Log()
-	log.Infof("[Uninstall Jenkins] Try to uninstall Jenkins on namespace [%s] with deployment name [%s]...", namespace, deploymentName)
-
+	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Uninstall Jenkins on namespace [%s] with deployment name [%s] start....", namespace, deploymentName))
 	// prepare Helm command
 	helmCmdArgs := []string{
 		deploymentName,
@@ -30,7 +27,6 @@ func ActionHelmUninstallJenkins(namespace string, deploymentName string) (err er
 	}
 
 	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Uninstall Jenkins on namespace [%s] with deployment name [%s] done.", namespace, deploymentName))
-	log.Infof("[Uninstall Jenkins] Uninstall Jenkins on namespace [%s] with deployment name [%s] done.", namespace, deploymentName)
 
 	return nil
 }

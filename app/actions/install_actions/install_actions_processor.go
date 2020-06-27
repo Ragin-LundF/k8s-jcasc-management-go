@@ -7,7 +7,6 @@ import (
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
-	"k8s-management-go/app/utils/logger"
 	"k8s-management-go/app/utils/loggingstate"
 )
 
@@ -23,42 +22,33 @@ func ProcessCheckAndCreatePvc(state models.StateData) (err error) {
 }
 
 func ProcessCreateSecrets(state models.StateData) (err error) {
-	log := logger.Log()
 	// apply secrets
-	log.Infof("[DoUpgradeOrInstall] Starting apply secrets to namespace [%s]...", state.Namespace)
 	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Starting apply secrets to namespace [%s]...", state.Namespace))
 
 	if err = secrets.ApplySecretsToNamespace(state.Namespace, state.SecretsPassword); err != nil {
 		loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Starting apply secrets to namespace [%s]...failed", state.Namespace), err.Error())
-		log.Errorf("[DoUpgradeOrInstall] Starting apply secrets to namespace [%s]...failed\n%s", err.Error())
 		return err
 	}
 
 	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Starting apply secrets to namespace [%s]...done", state.Namespace))
-	log.Infof("[DoUpgradeOrInstall] Starting apply secrets to namespace [%s]...done", state.Namespace)
 
 	return nil
 }
 
 func ProcessInstallJenkins(helmCommand string, state models.StateData) (err error) {
-	log := logger.Log()
 	// install_actions Jenkins
 	if state.JenkinsHelmValuesExist {
 		loggingstate.AddInfoEntry("-> Jenkins Helm values.yaml found. Installing Jenkins...")
-		log.Infof("[DoUpgradeOrInstall] Jenkins Helm values.yaml found. Installing Jenkins...")
 
 		err = ActionHelmInstallJenkins(helmCommand, state.Namespace, state.DeploymentName)
 		if err != nil {
 			loggingstate.AddErrorEntryAndDetails("  -> Jenkins Helm values.yaml found. Installing Jenkins...failed", err.Error())
-			log.Errorf("[DoUpgradeOrInstall] Jenkins Helm values.yaml found. Installing Jenkins...failed\n%s", err.Error())
 			return err
 		}
 
 		loggingstate.AddInfoEntry("-> Jenkins Helm values.yaml found. Installing Jenkins...done")
-		log.Infof("[DoUpgradeOrInstall] Jenkins Helm values.yaml found. Installing Jenkins...done")
 	} else {
 		loggingstate.AddInfoEntry(fmt.Sprintf("-> No Jenkins Helm chart found in path [%s]. Skipping installation...", state.JenkinsHelmValuesFile))
-		log.Infof("No Jenkins Helm chart found in path [%s]. Skipping Jenkins installation.", state.JenkinsHelmValuesFile)
 	}
 
 	return nil

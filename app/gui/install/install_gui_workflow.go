@@ -4,6 +4,7 @@ import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/dialog"
 	"k8s-management-go/app/actions/install_actions"
+	"k8s-management-go/app/actions/namespace_actions"
 	"k8s-management-go/app/gui/ui_elements"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/logger"
@@ -24,7 +25,7 @@ func ExecuteInstallWorkflow(window fyne.Window, state models.StateData) (err err
 	// it is not a dry-run -> install_actions required stuff
 	if !models.GetConfiguration().K8sManagement.DryRunOnly {
 		// check if namespace is available or create a new one if not
-		err = install_actions.ProcessNamespace(state)
+		err = namespace_actions.ProcessNamespaceCreation(state)
 		bar.SetValue(float64(1) / float64(progressMaxCnt) * float64(progressCnt))
 		progressCnt++
 		if err != nil {

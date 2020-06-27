@@ -107,6 +107,7 @@ func ShowLogOutput(window fyne.Window) {
 		Width:  700,
 		Height: 400,
 	})
+	loggingstate.LogLoggingStateEntries()
 	dialog.ShowCustom("", "Ok", scrollContainer, window)
 }
 
