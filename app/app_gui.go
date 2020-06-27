@@ -3,6 +3,7 @@
 package app
 
 import (
+	"fyne.io/fyne"
 	"fyne.io/fyne/app"
 	"fyne.io/fyne/theme"
 	"k8s-management-go/app/cli"
@@ -23,6 +24,10 @@ func StartApp(info string) {
 	tabs := menu.CreateTabMenu(k8sJcascApp, k8sJcascWindow)
 
 	k8sJcascWindow.SetContent(tabs)
+	k8sJcascWindow.Resize(fyne.Size{
+		Width:  900,
+		Height: 400,
+	})
 	k8sJcascWindow.ShowAndRun()
 	k8sJcascApp.Preferences().SetInt(menu.PreferencesMenuMainTab, tabs.CurrentTabIndex())
 }

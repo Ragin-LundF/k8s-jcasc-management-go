@@ -1,5 +1,7 @@
 package menu
 
 const PreferencesMenuMainTab = "menuMainTab"
-const PreferencesSubMenuInstallTab = "subMenuInstallTab"
+const PreferencesSubMenuDeploymentsTab = "subMenuDeploymentTab"
 const PreferencesSubMenuSecretsTab = "subMenuSecretsTab"
+const PreferencesSubMenuProjectsTab = "subMenuProjectsTab"
+const PreferencesSubMenuToolsTab = "subMenuToolsTab"
