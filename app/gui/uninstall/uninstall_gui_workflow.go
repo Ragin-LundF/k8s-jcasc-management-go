@@ -18,7 +18,7 @@ func ExecuteUninstallWorkflow(window fyne.Window, state models.StateData) (err e
 	bar.Show()
 
 	// uninstall Jenkins if exists
-	err = uninstall_actions.JenkinsUninstallIfExists(state)
+	err = uninstall_actions.ProcessJenkinsUninstallIfExists(state)
 	bar.SetValue(float64(1) / float64(progressMaxCnt) * float64(progressCnt))
 	progressCnt++
 	if err != nil {
@@ -27,10 +27,10 @@ func ExecuteUninstallWorkflow(window fyne.Window, state models.StateData) (err e
 	}
 
 	// uninstall nginx ingress controller
-	state = uninstall_actions.CheckNginxDirectoryExists(state)
+	state = uninstall_actions.ProcessCheckNginxDirectoryExists(state)
 
 	// uninstall Nginx ingress controller is exists
-	err = uninstall_actions.NginxIngressControllerUninstall(state)
+	err = uninstall_actions.ProcessNginxIngressControllerUninstall(state)
 	bar.SetValue(float64(1) / float64(progressMaxCnt) * float64(progressCnt))
 	progressCnt++
 	if err != nil {
@@ -40,12 +40,12 @@ func ExecuteUninstallWorkflow(window fyne.Window, state models.StateData) (err e
 
 	// in dry-run we do not want to uninstall the scripts
 	if !models.GetConfiguration().K8sManagement.DryRunOnly {
-		uninstall_actions.ScriptsUninstallIfExists(state)
+		uninstall_actions.ProcessScriptsUninstallIfExists(state)
 		bar.SetValue(float64(1) / float64(progressMaxCnt) * float64(progressCnt))
 		progressCnt++
 
 		// nginx-ingress-controller cleanup
-		uninstall_actions.K8sCleanup(state)
+		uninstall_actions.ProcessK8sCleanup(state)
 		bar.SetValue(float64(1) / float64(progressMaxCnt) * float64(progressCnt))
 		progressCnt++
 	} else {

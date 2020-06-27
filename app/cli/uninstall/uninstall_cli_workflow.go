@@ -18,7 +18,7 @@ func DoUninstall() (err error) {
 	}
 
 	bar.Describe("Uninstalling Jenkins deployment...")
-	err = uninstall_actions.JenkinsUninstallIfExists(state)
+	err = uninstall_actions.ProcessJenkinsUninstallIfExists(state)
 	if err != nil {
 		return err
 	}
@@ -26,11 +26,11 @@ func DoUninstall() (err error) {
 
 	// uninstall nginx ingress controller
 	bar.Describe("Check for Nginx installation...")
-	state = uninstall_actions.CheckNginxDirectoryExists(state)
+	state = uninstall_actions.ProcessCheckNginxDirectoryExists(state)
 	_ = bar.Add(1)
 
 	bar.Describe("Nginx-ingress-controller found...Uninstalling...")
-	err = uninstall_actions.NginxIngressControllerUninstall(state)
+	err = uninstall_actions.ProcessNginxIngressControllerUninstall(state)
 	if err != nil {
 		return err
 	}
@@ -39,12 +39,12 @@ func DoUninstall() (err error) {
 	// in dry-run we do not want to uninstall the scripts
 	if !models.GetConfiguration().K8sManagement.DryRunOnly {
 		bar.Describe("Try to execute uninstall scripts...")
-		uninstall_actions.ScriptsUninstallIfExists(state)
+		uninstall_actions.ProcessScriptsUninstallIfExists(state)
 		_ = bar.Add(1)
 
 		// nginx-ingress-controller cleanup
 		bar.Describe("Cleanup configuration...")
-		uninstall_actions.K8sCleanup(state)
+		uninstall_actions.ProcessK8sCleanup(state)
 		_ = bar.Add(1)
 	} else {
 		_ = bar.Add(2) // skipping previous steps

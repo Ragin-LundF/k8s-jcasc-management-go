@@ -7,7 +7,7 @@ import (
 )
 
 // uninstall Jenkins with Helm
-func HelmUninstallNginxIngressController(namespace string) (err error) {
+func ActionHelmUninstallNginxIngressController(namespace string) (err error) {
 	log := logger.Log()
 	log.Infof("[Uninstall NginxIngressCtrl] Try to uninstall nginx-ingress-controller in namespace [%s]...", namespace)
 

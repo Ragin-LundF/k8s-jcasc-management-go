@@ -10,7 +10,7 @@ import (
 )
 
 // uninstall Jenkins with Helm
-func HelmUninstallJenkins(namespace string, deploymentName string) (err error) {
+func ActionHelmUninstallJenkins(namespace string, deploymentName string) (err error) {
 	log := logger.Log()
 	log.Infof("[Uninstall Jenkins] Try to uninstall Jenkins on namespace [%s] with deployment name [%s]...", namespace, deploymentName)
 

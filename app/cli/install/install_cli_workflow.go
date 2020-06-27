@@ -3,6 +3,7 @@ package install
 import (
 	"fmt"
 	"k8s-management-go/app/actions/install_actions"
+	"k8s-management-go/app/actions/namespace_actions"
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/logger"
@@ -59,7 +60,7 @@ func executeWorkflow(state models.StateData) (err error) {
 	if !models.GetConfiguration().K8sManagement.DryRunOnly {
 		// check if namespace is available or create a new one if not
 		bar.Describe("Check and create namespace if necessary...")
-		err = install_actions.ProgressNamespace(state)
+		err = namespace_actions.ProcessNamespaceCreation(state)
 		_ = bar.Add(1)
 		if err != nil {
 			return err
@@ -67,7 +68,7 @@ func executeWorkflow(state models.StateData) (err error) {
 
 		// check if PVC was specified and install_actions it if needed
 		bar.Describe("Check and create PVC if necessary...")
-		err = install_actions.ProgressPvc(state)
+		err = install_actions.ProcessCheckAndCreatePvc(state)
 		_ = bar.Add(1)
 		if err != nil {
 			return err
@@ -77,7 +78,7 @@ func executeWorkflow(state models.StateData) (err error) {
 		if state.JenkinsHelmValuesExist {
 			// apply secrets
 			bar.Describe("Applying secrets...")
-			err = install_actions.ProgressSecrets(state)
+			err = install_actions.ProcessCreateSecrets(state)
 			_ = bar.Add(1)
 			if err != nil {
 				return err
@@ -90,7 +91,7 @@ func executeWorkflow(state models.StateData) (err error) {
 
 	// install_actions Jenkins
 	bar.Describe("Installing Jenkins...")
-	err = install_actions.ProgressJenkins(state.HelmCommand, state)
+	err = install_actions.ProcessInstallJenkins(state.HelmCommand, state)
 	_ = bar.Add(1)
 	if err != nil {
 		return err
@@ -98,7 +99,7 @@ func executeWorkflow(state models.StateData) (err error) {
 
 	// install_actions Nginx ingress controller
 	bar.Describe("Installing nginx-ingress-controller...")
-	err = install_actions.ProgressNginxController(state.HelmCommand, state)
+	err = install_actions.ProcessNginxController(state.HelmCommand, state)
 	_ = bar.Add(1)
 	if err != nil {
 		log.Errorf("[DoUpgradeOrInstall] Unable to install_actions nginx-ingress-controller.\n%s", err.Error())
@@ -107,7 +108,7 @@ func executeWorkflow(state models.StateData) (err error) {
 
 	// last but not least execute install_actions scripts if it is not dry-run only
 	bar.Describe("Check and execute additional scripts...")
-	err = install_actions.ProgressScripts(state)
+	err = install_actions.ProcessScripts(state)
 	_ = bar.Add(1)
 
 	return err

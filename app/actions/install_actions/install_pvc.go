@@ -33,7 +33,7 @@ type PvcClaimValuesYaml struct {
 }
 
 // install_actions PVC is needed
-func PersistenceVolumeClaimInstall(namespace string) (err error) {
+func ActionPersistenceVolumeClaimInstall(namespace string) (err error) {
 	log := logger.Log()
 	loggingstate.AddInfoEntry(fmt.Sprintf(" -> Check if PVC should be installed on namespace [%s]", namespace))
 	log.Infof("[PVC Install] Check if PVC should be installed on namespace [%s]", namespace)

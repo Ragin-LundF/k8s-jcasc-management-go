@@ -11,20 +11,9 @@ import (
 	"k8s-management-go/app/utils/loggingstate"
 )
 
-func ProgressNamespace(state models.StateData) (err error) {
-	loggingstate.AddInfoEntry("-> Check and create namespace if necessary...")
-	if err = CheckAndCreateNamespace(state.Namespace); err != nil {
-		loggingstate.AddErrorEntryAndDetails("-> Check and create namespace if necessary...failed", err.Error())
-		return err
-	}
-	loggingstate.AddInfoEntry("-> Check and create namespace if necessary...done")
-
-	return nil
-}
-
-func ProgressPvc(state models.StateData) (err error) {
+func ProcessCheckAndCreatePvc(state models.StateData) (err error) {
 	loggingstate.AddInfoEntry("-> Check and create pvc if necessary...")
-	if err = PersistenceVolumeClaimInstall(state.Namespace); err != nil {
+	if err = ActionPersistenceVolumeClaimInstall(state.Namespace); err != nil {
 		loggingstate.AddErrorEntryAndDetails("-> Check and create pvc if necessary...failed", err.Error())
 		return err
 	}
@@ -33,7 +22,7 @@ func ProgressPvc(state models.StateData) (err error) {
 	return nil
 }
 
-func ProgressSecrets(state models.StateData) (err error) {
+func ProcessCreateSecrets(state models.StateData) (err error) {
 	log := logger.Log()
 	// apply secrets
 	log.Infof("[DoUpgradeOrInstall] Starting apply secrets to namespace [%s]...", state.Namespace)
@@ -51,14 +40,14 @@ func ProgressSecrets(state models.StateData) (err error) {
 	return nil
 }
 
-func ProgressJenkins(helmCommand string, state models.StateData) (err error) {
+func ProcessInstallJenkins(helmCommand string, state models.StateData) (err error) {
 	log := logger.Log()
 	// install_actions Jenkins
 	if state.JenkinsHelmValuesExist {
 		loggingstate.AddInfoEntry("-> Jenkins Helm values.yaml found. Installing Jenkins...")
 		log.Infof("[DoUpgradeOrInstall] Jenkins Helm values.yaml found. Installing Jenkins...")
 
-		err = HelmInstallJenkins(helmCommand, state.Namespace, state.DeploymentName)
+		err = ActionHelmInstallJenkins(helmCommand, state.Namespace, state.DeploymentName)
 		if err != nil {
 			loggingstate.AddErrorEntryAndDetails("  -> Jenkins Helm values.yaml found. Installing Jenkins...failed", err.Error())
 			log.Errorf("[DoUpgradeOrInstall] Jenkins Helm values.yaml found. Installing Jenkins...failed\n%s", err.Error())
@@ -75,10 +64,10 @@ func ProgressJenkins(helmCommand string, state models.StateData) (err error) {
 	return nil
 }
 
-func ProgressNginxController(helmCommand string, state models.StateData) (err error) {
+func ProcessNginxController(helmCommand string, state models.StateData) (err error) {
 	// install_actions Nginx ingress controller
 	loggingstate.AddInfoEntry(fmt.Sprintf("-> Installing nginx-ingress-controller on namespace [%s]...", state.Namespace))
-	err = HelmInstallNginxIngressController(helmCommand, state.Namespace, state.JenkinsHelmValuesExist)
+	err = ActionHelmInstallNginxIngressController(helmCommand, state.Namespace, state.JenkinsHelmValuesExist)
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to install_actions nginx-ingress-controller.", err.Error())
 		return err
@@ -88,13 +77,13 @@ func ProgressNginxController(helmCommand string, state models.StateData) (err er
 	return nil
 }
 
-func ProgressScripts(state models.StateData) (err error) {
+func ProcessScripts(state models.StateData) (err error) {
 	if !models.GetConfiguration().K8sManagement.DryRunOnly {
 		// install_actions scripts
 		// try to install_actions scripts
 		loggingstate.AddInfoEntry(fmt.Sprintf("-> Try to execute install_actions scripts on [%s]...", state.Namespace))
 		// we ignore errors. They will be logged, but we keep on doing the install_actions for the scripts
-		_ = ShellScriptsInstall(state.Namespace)
+		_ = ActionShellScriptsInstall(state.Namespace)
 		loggingstate.AddInfoEntry(fmt.Sprintf("-> Try to execute install_actions scripts on [%s]...done", state.Namespace))
 	}
 

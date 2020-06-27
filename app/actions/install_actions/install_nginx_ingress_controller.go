@@ -13,7 +13,7 @@ import (
 )
 
 // install_actions Jenkins with Helm
-func HelmInstallNginxIngressController(command string, namespace string, jenkinsIngressEnabled bool) (err error) {
+func ActionHelmInstallNginxIngressController(command string, namespace string, jenkinsIngressEnabled bool) (err error) {
 	log := logger.Log()
 	log.Infof("[Install NginxIngressCtrl] Trying to %s nginx-ingress-controller on namespace [%s] while Jenkins exists [%s]...", command, namespace, strconv.FormatBool(jenkinsIngressEnabled))
 	loggingstate.AddInfoEntry(fmt.Sprintf("[Install NginxIngressCtrl] Trying to %s nginx-ingress-controller on namespace [%s] while Jenkins exists [%s]...", command, namespace, strconv.FormatBool(jenkinsIngressEnabled)))

@@ -12,7 +12,7 @@ import (
 )
 
 // install_actions Jenkins with Helm
-func HelmInstallJenkins(command string, namespace string, deploymentName string) (err error) {
+func ActionHelmInstallJenkins(command string, namespace string, deploymentName string) (err error) {
 	log := logger.Log()
 	log.Infof("[Install Jenkins] Try to %s Jenkins on namespace [%s] with deployment name [%s]...", command, namespace, deploymentName)
 	loggingstate.AddInfoEntry(fmt.Sprintf("-> Try to %s Jenkins on namespace [%s] with deployment name [%s]...", command, namespace, deploymentName))

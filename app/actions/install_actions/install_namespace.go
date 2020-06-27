@@ -9,7 +9,7 @@ import (
 )
 
 // check if namespace is available and create a new one if it does not exist
-func CheckAndCreateNamespace(namespace string) (err error) {
+func ActionCheckAndCreateNamespace(namespace string) (err error) {
 	log := logger.Log()
 	// check if namespace is existing
 	log.Infof("[Install Namespace] Check if namespace [%s] is existing...", namespace)

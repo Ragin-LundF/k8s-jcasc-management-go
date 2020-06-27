@@ -5,6 +5,6 @@ import (
 	"k8s-management-go/app/utils/scripts"
 )
 
-func ShellScriptsInstall(namespace string) (err error) {
+func ActionShellScriptsInstall(namespace string) (err error) {
 	return scripts.ExecuteScriptsInstallScriptsForNamespace(namespace, constants.DirProjectScriptsInstallPrefix)
 }
