@@ -10,7 +10,7 @@ import (
 	"os"
 )
 
-// Processing project creation
+// Processing project creation. This method controls all required actions
 func ActionProcessProjectCreate(projectConfig models.ProjectConfig) (err error) {
 	// calculate the target directory
 	newProjectDir := files.AppendPath(models.GetProjectBaseDirectory(), projectConfig.Namespace)
