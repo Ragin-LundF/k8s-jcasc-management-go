@@ -40,6 +40,9 @@ const HelmCommandInstall = "install"
 const HelmCommandUpgrade = "upgrade"
 const HelmCommandUninstall = "uninstall"
 
+// common messages
+const CommonJenkinsSystemMessage = "Welcome to Jenkins"
+
 // error
 const ErrorPromptFailed = "prompt failed"
 

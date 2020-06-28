@@ -2,6 +2,7 @@ package createproject
 
 import (
 	"k8s-management-go/app/actions/createproject"
+	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/loggingstate"
 )
@@ -67,7 +68,16 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 
 	// Process data and create project
 	loggingstate.AddInfoEntry("Starting Project Wizard: Template processing...")
-	err = createproject.ActionProcessProjectCreate(projectConfig)
+
+	// prepare progressbar
+	var maxProgressCnt = createproject.CountCreateProjectWorkflow
+	bar := dialogs.CreateProgressBar("Create project...", maxProgressCnt)
+	progress := dialogs.ProgressBar{
+		Bar: &bar,
+	}
+
+	// Create project
+	err = createproject.ActionProcessProjectCreate(projectConfig, progress.AddCallback)
 	if err != nil {
 		loggingstate.AddInfoEntry("Starting Project Wizard: Template processing...failed")
 	}

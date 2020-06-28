@@ -10,18 +10,6 @@ import (
 	"k8s-management-go/app/models"
 )
 
-type progressBar struct {
-	Bar        *dialog.ProgressDialog
-	MaxCount   float64
-	CurrentCnt float64
-}
-
-// function to add progress. Will be used as callback
-func (progress *progressBar) AddCallback() {
-	progress.Bar.SetValue(float64(1) / progress.MaxCount * progress.CurrentCnt)
-	progress.CurrentCnt = progress.CurrentCnt + 1
-}
-
 // apply to all namespaces
 func ScreenApplySecretsToAllNamespace(window fyne.Window) fyne.CanvasObject {
 	// secrets password
@@ -35,7 +23,7 @@ func ScreenApplySecretsToAllNamespace(window fyne.Window) fyne.CanvasObject {
 			// first try to decrypt the file
 			if err := secrets_actions.ActionDecryptSecretsFile(passwordEntry.Text); err == nil {
 				// execute the file and apply to all namespaces
-				bar := progressBar{
+				bar := ui_elements.ProgressBar{
 					Bar:        dialog.NewProgress("Apply secrets to all namespaces", "Progress", window),
 					CurrentCnt: 0,
 					MaxCount:   float64(len(models.GetIpConfiguration().Ips)),

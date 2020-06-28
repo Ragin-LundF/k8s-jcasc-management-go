@@ -10,10 +10,13 @@ import (
 	"os"
 )
 
+const CountCreateProjectWorkflow = 13
+
 // Processing project creation. This method controls all required actions
-func ActionProcessProjectCreate(projectConfig models.ProjectConfig) (err error) {
+func ActionProcessProjectCreate(projectConfig models.ProjectConfig, callback func()) (err error) {
 	// calculate the target directory
 	newProjectDir := files.AppendPath(models.GetProjectBaseDirectory(), projectConfig.Namespace)
+	callback()
 
 	// create new project directory
 	loggingstate.AddInfoEntryAndDetails("-> Create new project directory...", "Directory: ["+newProjectDir+"]")
@@ -22,6 +25,7 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig) (err error) 
 		return err
 	}
 	loggingstate.AddInfoEntry("-> Create new project directory...done")
+	callback()
 
 	// copy necessary files
 	loggingstate.AddInfoEntryAndDetails("-> Start to copy templates to new project directory...", "Directory: ["+newProjectDir+"]")
@@ -31,6 +35,7 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig) (err error) 
 		return err
 	}
 	loggingstate.AddInfoEntry("-> Start to copy templates to new project directory...done")
+	callback()
 
 	// add IP and namespace to IP configuration
 	loggingstate.AddInfoEntry("-> Start adding IP address to ipconfig file...")
@@ -40,6 +45,7 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig) (err error) 
 		return err
 	}
 	loggingstate.AddInfoEntry("-> Start adding IP address to ipconfig file...done")
+	callback()
 
 	// processing cloud templates
 	loggingstate.AddInfoEntry("-> Start template processing: Jenkins cloud templates...")
@@ -49,6 +55,7 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig) (err error) 
 		return err
 	}
 	loggingstate.AddInfoEntry("-> Start template processing: Jenkins cloud templates...done")
+	callback()
 
 	// Replace Jenkins system message
 	loggingstate.AddInfoEntry("-> Start template processing: Jenkins system message...")
@@ -59,6 +66,7 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig) (err error) 
 		return err
 	}
 	loggingstate.AddInfoEntry("-> Start template processing: Jenkins system message...done")
+	callback()
 
 	// Replace Jenkins seed job repository
 	loggingstate.AddInfoEntry("-> Start template processing: Jenkins Jobs repository...")
@@ -69,6 +77,7 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig) (err error) 
 		return err
 	}
 	loggingstate.AddInfoEntry("-> Start template processing: Jenkins Jobs repository...done")
+	callback()
 
 	// Replace global configuration
 	loggingstate.AddInfoEntry("-> Start template processing: Global configuration...")
@@ -78,6 +87,7 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig) (err error) 
 		return err
 	}
 	loggingstate.AddInfoEntry("-> Start template processing: Global configuration...done")
+	callback()
 
 	// Replace namespace
 	loggingstate.AddInfoEntry("-> Start template processing: Namespaces...")
@@ -92,6 +102,7 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig) (err error) 
 		return err
 	}
 	loggingstate.AddInfoEntry("-> Start template processing: Namespaces...done")
+	callback()
 
 	// Replace ip address
 	loggingstate.AddInfoEntry("-> Start template processing: IP address...")
@@ -105,10 +116,10 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig) (err error) 
 		return err
 	}
 	loggingstate.AddInfoEntry("-> Start template processing: IP address...done")
+	callback()
 
 	// Replace project directory with namespace name
 	loggingstate.AddInfoEntry("-> Start template processing: Project directory for JCasC...")
-
 	templateFiles = []string{
 		files.AppendPath(newProjectDir, constants.FilenameJenkinsConfigurationAsCode),
 		files.AppendPath(newProjectDir, constants.FilenameJenkinsHelmValues),
@@ -119,6 +130,7 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig) (err error) 
 		return err
 	}
 	loggingstate.AddInfoEntry("-> Start template processing: Project directory for JCasC...done")
+	callback()
 
 	// Replace existing pvc in Jenkins
 	loggingstate.AddInfoEntry("-> Start template processing: Jenkins existing persistent volume claim...")
@@ -129,6 +141,7 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig) (err error) 
 		return err
 	}
 	loggingstate.AddInfoEntry("-> Start template processing: Jenkins existing persistent volume claim...done")
+	callback()
 
 	// Replace existing pvc in Jenkins
 	loggingstate.AddInfoEntry("-> Start template processing: Persistent volume claim...")
@@ -139,6 +152,7 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig) (err error) 
 		return err
 	}
 	loggingstate.AddInfoEntry("-> Start template processing: Persistent volume claim...done")
+	callback()
 
 	return nil
 }

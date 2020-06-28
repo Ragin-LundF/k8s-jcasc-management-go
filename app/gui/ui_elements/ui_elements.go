@@ -11,6 +11,18 @@ import (
 	"strings"
 )
 
+type ProgressBar struct {
+	Bar        *dialog.ProgressDialog
+	MaxCount   float64
+	CurrentCnt float64
+}
+
+// function to add progress. Will be used as callback
+func (progress *ProgressBar) AddCallback() {
+	progress.Bar.SetValue(float64(1) / progress.MaxCount * progress.CurrentCnt)
+	progress.CurrentCnt = progress.CurrentCnt + 1
+}
+
 // create namespace select entry
 func CreateNamespaceSelectEntry(namespaceErrorLabel *widget.Label) (namespaceSelectEntry *widget.SelectEntry) {
 	// Namespace

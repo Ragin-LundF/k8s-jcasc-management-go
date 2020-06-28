@@ -7,15 +7,12 @@ import (
 	"k8s-management-go/app/actions/namespace_actions"
 	"k8s-management-go/app/gui/ui_elements"
 	"k8s-management-go/app/models"
-	"k8s-management-go/app/utils/logger"
 	"k8s-management-go/app/utils/loggingstate"
 	"time"
 )
 
 // execute the workflow
 func ExecuteInstallWorkflow(window fyne.Window, state models.StateData) (err error) {
-	log := logger.Log()
-
 	// Progress Bar
 	progressCnt := 1
 	progressMaxCnt := install_actions.CalculateBarCounter(state)
@@ -58,7 +55,6 @@ func ExecuteInstallWorkflow(window fyne.Window, state models.StateData) (err err
 		}
 	} else {
 		loggingstate.AddInfoEntry("-> Dry run. Skipping namespace creation, pvc installation and secrets apply...")
-		log.Infof("[DoUpgradeOrInstall] Dry run only, skipping namespace [%s] creation, pvc installation and secrets apply...", state.Namespace)
 	}
 
 	// install_actions Jenkins
@@ -77,7 +73,6 @@ func ExecuteInstallWorkflow(window fyne.Window, state models.StateData) (err err
 	progressCnt++
 	if err != nil {
 		bar.Hide()
-		log.Errorf("[DoUpgradeOrInstall] Unable to install_actions nginx-ingress-controller.\n%s", err.Error())
 		ui_elements.ShowLogOutput(window)
 		return err
 	}

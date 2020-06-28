@@ -293,3 +293,12 @@ func CreateProgressBar(description string, progressMax int) progressbar.Progress
 
 	return *bar
 }
+
+type ProgressBar struct {
+	Bar *progressbar.ProgressBar
+}
+
+// function to add progress. Will be used as callback
+func (progress *ProgressBar) AddCallback() {
+	_ = progress.Bar.Add(1)
+}

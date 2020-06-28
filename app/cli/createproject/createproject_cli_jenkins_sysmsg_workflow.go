@@ -1,15 +1,15 @@
 package createproject
 
 import (
-	"fmt"
 	"k8s-management-go/app/cli/dialogs"
+	"k8s-management-go/app/constants"
 	"k8s-management-go/app/utils/loggingstate"
 	"k8s-management-go/app/utils/validator"
 )
 
 func JenkinsSystemMessageWorkflow(namespace string) (jenkinsSysMsg string, err error) {
 	// Validator for jenkins system message
-	validate := validator.JenkinsSystemMessageValidator
+	validate := validator.ValidateJenkinsSystemMessage
 
 	// Prepare prompt
 	dialogs.ClearScreen()
@@ -22,7 +22,7 @@ func JenkinsSystemMessageWorkflow(namespace string) (jenkinsSysMsg string, err e
 
 	// check if system message is empty, set default
 	if jenkinsSysMsg == "" {
-		jenkinsSysMsg = fmt.Sprintf("Jenkins instance for namespace [%s]", namespace)
+		jenkinsSysMsg = constants.CommonJenkinsSystemMessage
 	}
 
 	return jenkinsSysMsg, nil

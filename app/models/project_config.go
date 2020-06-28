@@ -5,7 +5,7 @@ type ProjectConfig struct {
 	IpAddress                   string
 	JenkinsSystemMsg            string
 	JobsCfgRepo                 string
-	ExistingPvc                 string
 	SelectedCloudTemplates      []string
+	ExistingPvc                 string
 	CreateDeploymentOnlyProject bool
 }
