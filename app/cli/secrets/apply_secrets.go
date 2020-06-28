@@ -1,6 +1,7 @@
 package secrets
 
 import (
+	"github.com/schollz/progressbar/v3"
 	"k8s-management-go/app/actions/secrets_actions"
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/models"
@@ -50,13 +51,29 @@ func ApplySecretsToNamespace(namespace string, password *string) (err error) {
 	return err
 }
 
+type progressBar struct {
+	Bar *progressbar.ProgressBar
+}
+
+// function to add progress. Will be used as callback
+func (progress *progressBar) AddCallback() {
+	_ = progress.Bar.Add(1)
+}
+
 // apply secrets to all namespaces
 func ApplySecretsToAllNamespaces() (err error) {
-	// apply secret to namespaces
-	for _, ip := range models.GetIpConfiguration().Ips {
-		if err := secrets_actions.ActionApplySecretsToNamespace(ip.Namespace); err != nil {
-			return err
-		}
+	err = DecryptSecretsFile()
+	if err != nil {
+		return err
 	}
-	return nil
+
+	// prepare progressbar
+	bar := dialogs.CreateProgressBar("Installing...", len(models.GetIpConfiguration().Ips))
+	progress := progressBar{
+		Bar: &bar,
+	}
+	// apply secret to namespaces
+	err = secrets_actions.ActionApplySecretsToAllNamespaces(progress.AddCallback)
+
+	return err
 }

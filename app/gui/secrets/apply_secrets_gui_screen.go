@@ -2,11 +2,25 @@ package secrets
 
 import (
 	"fyne.io/fyne"
+	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
 	"k8s-management-go/app/actions/secrets_actions"
 	"k8s-management-go/app/gui/ui_elements"
+	"k8s-management-go/app/models"
 )
+
+type progressBar struct {
+	Bar        *dialog.ProgressDialog
+	MaxCount   float64
+	CurrentCnt float64
+}
+
+// function to add progress. Will be used as callback
+func (progress *progressBar) AddCallback() {
+	progress.Bar.SetValue(float64(1) / progress.MaxCount * progress.CurrentCnt)
+	progress.CurrentCnt = progress.CurrentCnt + 1
+}
 
 // apply to all namespaces
 func ScreenApplySecretsToAllNamespace(window fyne.Window) fyne.CanvasObject {
@@ -21,7 +35,14 @@ func ScreenApplySecretsToAllNamespace(window fyne.Window) fyne.CanvasObject {
 			// first try to decrypt the file
 			if err := secrets_actions.ActionDecryptSecretsFile(passwordEntry.Text); err == nil {
 				// execute the file and apply to all namespaces
-				_ = secrets_actions.ActionApplySecretsToAllNamespaces()
+				bar := progressBar{
+					Bar:        dialog.NewProgress("Apply secrets to all namespaces", "Progress", window),
+					CurrentCnt: 0,
+					MaxCount:   float64(len(models.GetIpConfiguration().Ips)),
+				}
+				bar.Bar.Show()
+				_ = secrets_actions.ActionApplySecretsToAllNamespaces(bar.AddCallback)
+				bar.Bar.Hide()
 			}
 
 			ui_elements.ShowLogOutput(window)

@@ -85,7 +85,7 @@ func ExecuteInstallWorkflow(window fyne.Window, state models.StateData) (err err
 	// last but not least execute install_actions scripts if it is not dry-run only
 	err = install_actions.ProcessScripts(state)
 	bar.SetValue(float64(1) / float64(progressMaxCnt) * float64(progressCnt))
-	time.Sleep(1000)
+	time.Sleep(time.Duration(1) * time.Second)
 	bar.Hide()
 
 	ui_elements.ShowLogOutput(window)

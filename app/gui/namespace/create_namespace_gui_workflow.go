@@ -16,7 +16,7 @@ func ExecuteCreateNamespaceWorkflow(window fyne.Window, state models.StateData) 
 	bar.SetValue(1)
 
 	// wait 1 second to show user the dialog
-	time.Sleep(1000)
+	time.Sleep(time.Duration(1) * time.Second)
 	bar.Hide()
 	return err
 }
