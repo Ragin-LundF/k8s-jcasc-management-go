@@ -1,3 +1,32 @@
+# 2.0.0
+
+**Introducing new UI**
+* K8S-Jcasc-Management supports now native UIs for the following platforms:
+  * Windows
+  * Linux and BSD
+  * MacOS X
+
+To use K8S-JcasC-Management on a CLI, you can start it with the `-cli` flag.
+
+**Build hints**
+
+This was realized with the [fyne](https://fyne.io/) framework.
+If you have trouble to compile the project, please visit the [fyne developer](https://developer.fyne.io/started/) site first to check the prerequisites.
+On Windows, it is recommended to install [TDM-GCC - tdm-gcc.tdragon.net](https://tdm-gcc.tdragon.net).
+
+If you have trouble, you can also exchange the `!ignore` and `ignore` in first line comment at the `/app/app_cli.go` and `/app/app_gui.go` file.
+Golang will then use the `app_cli.go` file to compile and ignores the GUI implementation completely.
+
+**Screenshots**
+
+_Deployment_
+![alt text](docs/images/screenshot_gui_deployment.png "K8S GUI Deployment")
+
+
+_Create Project_
+![alt text](docs/images/screenshot_gui_createprj.png "K8S GUI Deployment")
+
+
 # 1.13.0
 * Support for create namespace from k8s-jcasc-mgmt
 * Default logging enabled.

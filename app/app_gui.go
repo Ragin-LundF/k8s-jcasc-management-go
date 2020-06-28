@@ -1,4 +1,4 @@
-// +build darwin
+// +build !ignore
 
 package app
 
@@ -21,7 +21,7 @@ func StartApp(info string) {
 	k8sJcascWindow.SetMainMenu(mainMenu)
 	k8sJcascWindow.SetMaster()
 
-	tabs := menu.CreateTabMenu(k8sJcascApp, k8sJcascWindow)
+	tabs := menu.CreateTabMenu(k8sJcascApp, k8sJcascWindow, info)
 
 	k8sJcascWindow.SetContent(tabs)
 	k8sJcascWindow.Resize(fyne.Size{
@@ -29,7 +29,6 @@ func StartApp(info string) {
 		Height: 400,
 	})
 	k8sJcascWindow.ShowAndRun()
-	k8sJcascApp.Preferences().SetInt(menu.PreferencesMenuMainTab, tabs.CurrentTabIndex())
 }
 
 // Start App with CLI

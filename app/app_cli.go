@@ -1,4 +1,4 @@
-// +build !darwin
+// +build ignore
 
 package app
 
