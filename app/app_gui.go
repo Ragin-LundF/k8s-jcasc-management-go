@@ -16,7 +16,7 @@ func StartApp(info string) {
 	k8sJcascApp.SetIcon(theme.FyneLogo())
 
 	k8sJcascWindow := k8sJcascApp.NewWindow("K8S JCasC Management")
-	mainMenu := menu.CreateMainMenu(k8sJcascApp)
+	mainMenu := menu.CreateMainMenu(k8sJcascApp, k8sJcascWindow)
 
 	k8sJcascWindow.SetMainMenu(mainMenu)
 	k8sJcascWindow.SetMaster()
