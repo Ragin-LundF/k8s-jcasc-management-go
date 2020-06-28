@@ -9,6 +9,8 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
+      - name: Install required tools
+        run: sudo apt-get install gcc libgl1-mesa-dev xorg-dev
       - name: Set up Go 1.4
         uses: actions/setup-go@v2
         with:
