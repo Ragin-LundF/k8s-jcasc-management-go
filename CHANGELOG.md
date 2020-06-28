@@ -26,6 +26,9 @@ Golang will then use the `app_cli.go` file to compile and ignores the GUI implem
 ###Create Project
 ![alt text](docs/images/screenshot_gui_createprj.png "K8S GUI Deployment")
 
+# 1.13.1
+* Hotfix for configuration of encrypted users.
+  * Fixes the issue, that `JENKINS_MASTER_ADMIN_PASSWORD_ENCRYPTED` and `JENKINS_MASTER_PROJECT_USER_PASSWORD_ENCRYPTED` need encrypted password surrounded with `'` characters, that the `bash` version will not interpret this configuration as arguments.
 
 # 1.13.0
 * Support for create namespace from k8s-jcasc-mgmt
