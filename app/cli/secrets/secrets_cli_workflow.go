@@ -27,7 +27,7 @@ func EncryptSecretsFile() (err error) {
 		loggingstate.AddErrorEntry("  -> Passwords did not match! ")
 		return errors.New("Passwords did not match! ")
 	} else {
-		loggingstate.AddErrorEntry("  -> Passwords did match! Starting encryption....")
+		loggingstate.AddInfoEntry("  -> Passwords did match! Starting encryption....")
 	}
 
 	// encrypt secrets file
