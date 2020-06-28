@@ -18,7 +18,12 @@ func ScreenApplySecretsToAllNamespace(window fyne.Window) fyne.CanvasObject {
 			{Text: "Password", Widget: passwordEntry},
 		},
 		OnSubmit: func() {
-			//_ = secrets_actions.ActionDecryptSecretsFile(passwordEntry.Text)
+			// first try to decrypt the file
+			if err := secrets_actions.ActionDecryptSecretsFile(passwordEntry.Text); err == nil {
+				// execute the file and apply to all namespaces
+				_ = secrets_actions.ActionApplySecretsToAllNamespaces()
+			}
+
 			ui_elements.ShowLogOutput(window)
 		},
 	}
@@ -46,7 +51,12 @@ func ScreenApplySecretsToNamespace(window fyne.Window) fyne.CanvasObject {
 			{Text: "Password", Widget: passwordEntry},
 		},
 		OnSubmit: func() {
-			_ = secrets_actions.ActionApplySecretsToNamespace(namespaceSelectEntry.Text)
+			// first try to decrypt the file
+			err := secrets_actions.ActionDecryptSecretsFile(passwordEntry.Text)
+			if err == nil {
+				// execute the file
+				_ = secrets_actions.ActionApplySecretsToNamespace(namespaceSelectEntry.Text)
+			}
 			// show output
 			ui_elements.ShowLogOutput(window)
 		},

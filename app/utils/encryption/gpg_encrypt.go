@@ -1,7 +1,9 @@
 package encryption
 
 import (
+	"errors"
 	"fmt"
+	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/loggingstate"
 	"os"
 	"os/exec"
@@ -48,6 +50,13 @@ func GpgDecryptSecrets(secretsFilePath string, password string) (err error) {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to decrypt secrets file...failed. See error", err.Error())
 
 		return err
+	}
+
+	// check if result is ok
+	newSecretsFile := strings.Replace(secretsFilePath, ".gpg", "", -1)
+	if !files.FileOrDirectoryExists(newSecretsFile) {
+		loggingstate.AddErrorEntry(fmt.Sprintf("  -> Decrypting was not successful. Script file [%s] does not exist.", newSecretsFile))
+		return errors.New("No decrypted secrets file found! ")
 	}
 
 	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Decrypt secrets file [%s] done.", secretsFilePath))
