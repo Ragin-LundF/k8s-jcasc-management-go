@@ -3,10 +3,10 @@ package config
 import (
 	"bufio"
 	"fmt"
-	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/logger"
+	"k8s-management-go/app/utils/loggingstate"
 	"os"
 	"strings"
 )

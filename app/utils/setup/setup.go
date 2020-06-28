@@ -21,6 +21,7 @@ func Setup() {
 	basePathFlag := flag.String("basepath", "", "base path to k8s-jcasc-management")
 	serverStartFlag := flag.Bool("server", false, "start k8s-jcasc-management-go as a server")
 	dryRunFlag := flag.Bool("dry-run", false, "execute helm charts with --dry-run --debug flags")
+	cliOnly := flag.Bool("cli", false, "Start in CLI mode")
 	helpFlag := flag.Bool("help", false, "show help")
 	flag.Parse()
 
@@ -64,7 +65,7 @@ func Setup() {
 	}
 
 	// configure (read configuration and do additional configuration)
-	configure(basePath, dryRunDebug)
+	configure(basePath, dryRunDebug, *cliOnly)
 
 	// start experimental server
 	if serverStart {
@@ -72,9 +73,9 @@ func Setup() {
 	}
 }
 
-func configure(basePath string, dryRunDebug bool) {
+func configure(basePath string, dryRunDebug bool, cliOnly bool) {
 	// read configuration
-	config.ReadConfiguration(basePath, dryRunDebug)
+	config.ReadConfiguration(basePath, dryRunDebug, cliOnly)
 	config.ReadIpConfig()
 
 	// overwrite logging

@@ -1,9 +1,10 @@
 package encryption
 
 import (
+	"errors"
 	"fmt"
-	"k8s-management-go/app/cli/loggingstate"
-	"k8s-management-go/app/utils/logger"
+	"k8s-management-go/app/utils/files"
+	"k8s-management-go/app/utils/loggingstate"
 	"os"
 	"os/exec"
 	"strings"
@@ -11,31 +12,25 @@ import (
 
 // encrypt secrets
 func GpgEncryptSecrets(secretsFilePath string, password string) (err error) {
-	log := logger.Log()
 	// first encrypt file
 	gpgCmdArgs := []string{
 		"--batch", "--yes", "--passphrase", password, "-c", secretsFilePath,
 	}
 	loggingstate.AddInfoEntryAndDetails("  -> Executing Gpg encrypt command...", fmt.Sprintf("gpg %s", maskedGpgCmdArgsAsString(gpgCmdArgs, 4)))
-	log.Infof("[GpgEncryptSecrets] Executing Gpg encrypt command: \n   -> gpg %s", maskedGpgCmdArgsAsString(gpgCmdArgs, 4))
 
 	cmdOutput, err := exec.Command("gpg", gpgCmdArgs...).CombinedOutput()
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to encrypt secrets file...failed. See output", string(cmdOutput))
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to encrypt secrets file...failed. See error", err.Error())
-		log.Errorf("[GpgEncryptSecrets] Unable to encrypt secrets file [%s]...Output: \n%s", secretsFilePath, string(cmdOutput))
-		log.Errorf("[GpgEncryptSecrets] Unable to encrypt secrets file [%s]...Error: \n%s", secretsFilePath, err.Error())
 		return err
 	}
 
 	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Encrypt secrets file [%s] done.", secretsFilePath))
-	log.Infof("[GpgEncryptSecrets] Encrypt secrets file [%s] done.", secretsFilePath)
 
 	// after everything was ok -> delete original file
 	err = os.Remove(secretsFilePath)
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Unable to delete decrypted secrets file [%s].", secretsFilePath), err.Error())
-		log.Errorf("[GpgEncryptSecrets] Unable to delete decrypted secrets file [%s].\n%s", secretsFilePath, err.Error())
 		return err
 	}
 
@@ -44,25 +39,27 @@ func GpgEncryptSecrets(secretsFilePath string, password string) (err error) {
 
 // decrypt secrets
 func GpgDecryptSecrets(secretsFilePath string, password string) (err error) {
-	log := logger.Log()
 	gpgCmdArgs := []string{
 		"--batch", "--yes", "--passphrase", password, secretsFilePath,
 	}
 	loggingstate.AddInfoEntryAndDetails("  -> Executing Gpg decrypt command...", fmt.Sprintf("gpg %s", maskedGpgCmdArgsAsString(gpgCmdArgs, 4)))
-	log.Infof("[GpgDecryptSecrets] Executing Gpg decrypt command: \n   -> gpg %s", maskedGpgCmdArgsAsString(gpgCmdArgs, 4))
 
 	cmdOutput, err := exec.Command("gpg", gpgCmdArgs...).CombinedOutput()
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to decrypt secrets file...failed. See output", string(cmdOutput))
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to decrypt secrets file...failed. See error", err.Error())
-		log.Errorf("[GpgDecryptSecrets] Unable to decrypt secrets file [%s]...Output: \n%s", secretsFilePath, string(cmdOutput))
-		log.Errorf("[GpgDecryptSecrets] Unable to decrypt secrets file [%s]...Error: \n%s", secretsFilePath, err.Error())
 
 		return err
 	}
 
+	// check if result is ok
+	newSecretsFile := strings.Replace(secretsFilePath, ".gpg", "", -1)
+	if !files.FileOrDirectoryExists(newSecretsFile) {
+		loggingstate.AddErrorEntry(fmt.Sprintf("  -> Decrypting was not successful. Script file [%s] does not exist.", newSecretsFile))
+		return errors.New("No decrypted secrets file found! ")
+	}
+
 	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Decrypt secrets file [%s] done.", secretsFilePath))
-	log.Infof("[GpgDecryptSecrets] Decrypt secrets file [%s] done.", secretsFilePath)
 
 	return nil
 }

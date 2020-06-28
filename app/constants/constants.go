@@ -22,7 +22,6 @@ const SecretsFileEncodedEnding = ".gpg"
 const ScriptsFileEnding = ".sh"
 
 // commands
-const CommandMenu = "menu"
 const CommandInstall = "install"
 const CommandUninstall = "uninstall"
 const CommandUpgrade = "upgrade"
@@ -39,6 +38,10 @@ const CommandQuit = "quit"
 // helm commands
 const HelmCommandInstall = "install"
 const HelmCommandUpgrade = "upgrade"
+const HelmCommandUninstall = "uninstall"
+
+// common messages
+const CommonJenkinsSystemMessage = "Welcome to Jenkins"
 
 // error
 const ErrorPromptFailed = "prompt failed"
@@ -94,3 +97,7 @@ const TemplatePvcAccessMode = "##JENKINS_MASTER_PERSISTENCE_ACCESS_MODE##"
 const TemplatePvcStorageClass = "##JENKINS_MASTER_PERSISTENCE_STORAGE_CLASS##"
 const TemplatePvcExistingVolumeClaim = "##JENKINS_MASTER_PERSISTENCE_EXISTING_CLAIM##"
 const TemplatePvcName = "##K8S_MGMT_PERSISTENCE_VOLUME_CLAIM_NAME##"
+
+// GUI Constants
+const InstallDryRunActive = "dry-run"
+const InstallDryRunInactive = "execute"

@@ -2,11 +2,11 @@ package scripts
 
 import (
 	"fmt"
-	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/logger"
+	"k8s-management-go/app/utils/loggingstate"
 	"os/exec"
 )
 
@@ -26,7 +26,7 @@ func ExecuteScriptsInstallScriptsForNamespace(namespace string, filePrefix strin
 	var isScriptsDirectoryAvailable = files.FileOrDirectoryExists(scriptFolder)
 	if isScriptsDirectoryAvailable {
 		log.Infof("[Execute Scripts] Script directory is available for namespace [%s]...", namespace)
-		// prepare file filter for install
+		// prepare file filter for install_actions
 		scriptFileEnding := constants.ScriptsFileEnding
 		var fileFilter = files.FileFilter{
 			Prefix: &filePrefix,
