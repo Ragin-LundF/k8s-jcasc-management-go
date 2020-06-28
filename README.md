@@ -10,6 +10,7 @@
 * [Configuration](#configuration)
   * [Configure alternative configuration with overlays](#configure-alternative-configuration-with-overlays)
 * [How to use](#how-to-use)
+  * [Build hints](#build-hints)
   * [Dry-Run and Logging](#dry-run-and-logging)
   * [Debugging](#debugging)
   * [Templates](#templates)
@@ -17,6 +18,9 @@
     * [Sub-Templates (cloud-templates)](#sub-templates-cloud-templates)
 * [Execution of Scripts](#execution-of-scripts)
 * [IP Management](#ip-management)
+* [Screenshots](#screenshots)
+  * [Deployment](#deployment)
+  * [Create Project](#create-project)
 * [Additional tools](#additional-tools)
   * [k8sfullconfigexport](#k8sfullconfigexport)
 * [Helpful links](#helpful-links)
@@ -237,6 +241,16 @@ You can also add one of the following flags:
 | -logencoding=<encoding> | Set log encoding of the logger (`zap`). Default is `json`. Possible values are: `json` or `console` | `-logencoding=console` |
 | -server=<true|false> | *Experimental*. Starts the system as a server. Currently it has not enough functions to talk about... | `-server=true` |
 
+## Build hints ##
+
+This was realized with the [fyne](https://fyne.io/) framework.
+If you have trouble to compile the project, please visit the [fyne developer](https://developer.fyne.io/started/) site first to check the prerequisites.
+On Windows, it is recommended to install [TDM-GCC - tdm-gcc.tdragon.net](https://tdm-gcc.tdragon.net).
+
+If you have trouble, you can also exchange the `!ignore` and `ignore` in first line comment at the `/app/app_cli.go` and `/app/app_gui.go` file.
+Golang will then use the `app_cli.go` file to compile and ignores the GUI implementation completely.
+
+
 ## Dry-Run and Logging ##
 
 For dry-run with logging it is highly recommended, to use the following option:
@@ -356,6 +370,16 @@ To provide a simple solution, the system stores this information (namespace and 
 For every deployment of Jenkins, the system looks into this file and configures the loadbalancer with the IP. This also allows static DNS records.
 
 If you create a new project via the wizard, the system also checks, if a IP address already exists to avoid IP conflicts.
+
+# Screenshots #
+## Deployment ##
+![alt text](docs/images/screenshot_gui_deployment.png "K8S GUI Deployment")
+
+
+## Create Project ##
+![alt text](docs/images/screenshot_gui_createprj.png "K8S GUI Deployment")
+
+
 
 # Additional tools #
 ## k8sfullconfigexport ##
