@@ -54,7 +54,7 @@ func ScreenInstall(window fyne.Window) fyne.CanvasObject {
 			} else {
 				models.AssignDryRun(false)
 			}
-			if !validator.ValidateNamespace(namespace) {
+			if !validator.ValidateNamespaceAvailableInConfig(namespace) {
 				namespaceErrorLabel.SetText("Error: namespace is unknown!")
 				namespaceErrorLabel.Show()
 				return

@@ -1,23 +1,15 @@
 package createproject
 
 import (
-	"errors"
 	"fmt"
 	"k8s-management-go/app/cli/dialogs"
-	"k8s-management-go/app/utils/logger"
 	"k8s-management-go/app/utils/loggingstate"
+	"k8s-management-go/app/utils/validator"
 )
 
-func ProjectWizardAskForJenkinsSystemMessage(namespace string) (jenkinsSysMsg string, err error) {
-	log := logger.Log()
+func JenkinsSystemMessageWorkflow(namespace string) (jenkinsSysMsg string, err error) {
 	// Validator for jenkins system message
-	validate := func(input string) error {
-		// a namespace name cannot be longer than 63 characters
-		if len(input) > 255 {
-			return errors.New("Should not be longer than 255 characters. ")
-		}
-		return nil
-	}
+	validate := validator.JenkinsSystemMessageValidator
 
 	// Prepare prompt
 	dialogs.ClearScreen()
@@ -25,7 +17,6 @@ func ProjectWizardAskForJenkinsSystemMessage(namespace string) (jenkinsSysMsg st
 	// check if everything was ok
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to get the Jenkins system message.", err.Error())
-		log.Errorf("[ProjectWizardAskForJenkinsSystemMessage] Unable to get the Jenkins system message. %s\n", err.Error())
 		return jenkinsSysMsg, err
 	}
 

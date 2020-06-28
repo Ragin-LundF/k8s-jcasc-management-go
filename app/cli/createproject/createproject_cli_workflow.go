@@ -10,7 +10,7 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 
 	// Ask for namespace
 	loggingstate.AddInfoEntry("-> Ask for namespace...")
-	namespace, err := ProjectWizardAskForNamespace()
+	namespace, err := NamespaceWorkflow()
 	if err != nil {
 		return err
 	}
@@ -18,7 +18,7 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 
 	// Ask for IP address
 	loggingstate.AddInfoEntry("-> Ask for IP address...")
-	ipAddress, err := ProjectWizardAskForIpAddress()
+	ipAddress, err := IpAddressWorkflow()
 	if err != nil {
 		return err
 	}
@@ -34,7 +34,7 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 	if !deploymentOnly {
 		// Select cloud templates
 		loggingstate.AddInfoEntry("-> Ask for cloud templates...")
-		selectedCloudTemplates, err = ProjectWizardAskForCloudTemplates()
+		selectedCloudTemplates, err = CloudTemplatesWorkflow()
 		if err != nil {
 			return err
 		}
@@ -42,7 +42,7 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 
 		// Ask for existing persistent volume claim (PVC)
 		loggingstate.AddInfoEntry("-> Ask for persistent volume claim...")
-		existingPvc, err = ProjectWizardAskForExistingPersistentVolumeClaim()
+		existingPvc, err = PersistentVolumeClaimWorkflow()
 		if err != nil {
 			return err
 		}
@@ -50,7 +50,7 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 
 		// Ask for Jenkins system message
 		loggingstate.AddInfoEntry("-> Ask for Jenkins system message...")
-		jenkinsSystemMsg, err = ProjectWizardAskForJenkinsSystemMessage(namespace)
+		jenkinsSystemMsg, err = JenkinsSystemMessageWorkflow(namespace)
 		if err != nil {
 			return err
 		}
@@ -58,7 +58,7 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 
 		// Ask for Jobs Configuration repository
 		loggingstate.AddInfoEntry("-> Ask for jobs configuration repository...")
-		jobsCfgRepo, err = ProjectWizardAskForJobsConfigurationRepository()
+		jobsCfgRepo, err = JenkinsJobsConfigRepositoryWorkflow()
 		if err != nil {
 			return err
 		}

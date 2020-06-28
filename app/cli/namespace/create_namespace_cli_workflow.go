@@ -9,7 +9,7 @@ import (
 
 func WorkflowCreateNamespace() (err error) {
 	var state models.StateData
-	state.Namespace, err = createproject.ProjectWizardAskForNamespace()
+	state.Namespace, err = createproject.NamespaceWorkflow()
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("-> AskForNamespace dialog aborted...", err.Error())
 	}
