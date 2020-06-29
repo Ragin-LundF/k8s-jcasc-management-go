@@ -27,6 +27,10 @@ func StartApp(info string) {
 
 	box := widget.NewVBox(
 		layout.NewSpacer(),
+		widget.NewLabelWithStyle(info, fyne.TextAlignCenter, fyne.TextStyle{
+			Bold: true,
+		}),
+		layout.NewSpacer(),
 		tabs)
 
 	k8sJcascWindow.SetContent(box)
