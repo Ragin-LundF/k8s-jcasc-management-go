@@ -5,9 +5,7 @@ package app
 import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/app"
-	"fyne.io/fyne/layout"
 	"fyne.io/fyne/theme"
-	"fyne.io/fyne/widget"
 	"k8s-management-go/app/cli"
 	"k8s-management-go/app/gui/menu"
 )
@@ -25,15 +23,7 @@ func StartApp(info string) {
 
 	tabs := menu.CreateTabMenu(k8sJcascApp, k8sJcascWindow, info)
 
-	box := widget.NewVBox(
-		layout.NewSpacer(),
-		widget.NewLabelWithStyle(info, fyne.TextAlignCenter, fyne.TextStyle{
-			Bold: true,
-		}),
-		layout.NewSpacer(),
-		tabs)
-
-	k8sJcascWindow.SetContent(box)
+	k8sJcascWindow.SetContent(tabs)
 	k8sJcascWindow.Resize(fyne.Size{
 		Width:  900,
 		Height: 400,
