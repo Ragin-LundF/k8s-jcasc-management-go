@@ -372,13 +372,18 @@ For every deployment of Jenkins, the system looks into this file and configures 
 If you create a new project via the wizard, the system also checks, if a IP address already exists to avoid IP conflicts.
 
 # Screenshots #
+
+## Welcome ##
+![alt text](docs/images/screenshot_gui_welcome_win.png "K8S GUI Welcome Windows")
+_Windows screenshot_
+
 ## Deployment ##
 ![alt text](docs/images/screenshot_gui_deployment.png "K8S GUI Deployment")
-
+_MacOS screenshot_
 
 ## Create Project ##
 ![alt text](docs/images/screenshot_gui_createprj.png "K8S GUI Deployment")
-
+_MacOS screenshot_
 
 
 # Additional tools #
