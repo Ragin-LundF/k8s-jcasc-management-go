@@ -15,7 +15,7 @@ func TestEncryptJenkinsUserPassword(t *testing.T) {
 	result, err := EncryptJenkinsUserPassword(password)
 
 	// validating the result
-	if err != nil && result == "" {
+	if err != nil || result == "" {
 		t.Errorf("Encryption exists with error: %s", err.Error())
 	} else {
 		encryptedPass := strings.TrimPrefix(result, constants.UtilsJenkinsUserPassBcryptPrefix)

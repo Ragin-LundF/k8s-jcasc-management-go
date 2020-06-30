@@ -53,12 +53,18 @@ func readConfigurationFromFile(configFile string) {
 		for scanner.Scan() {
 			// trim the line to avoid problems
 			line := strings.TrimSpace(scanner.Text())
-			// if line is not a comment (marker: "#") parse the configuration and assign it to the config
-			if line != "" && !strings.HasPrefix(line, "#") {
-				key, value := parseConfigurationLine(line)
-				models.AssignToConfiguration(key, value)
-			}
+			processLine(line)
 		}
+	}
+}
+
+// function to check if line is empty / a comment or a valid configuration.
+// if line looks valid, try to append it to internal configuration structure
+func processLine(line string) {
+	// if line is not a comment (marker: "#") parse the configuration and assign it to the config
+	if line != "" && !strings.HasPrefix(line, "#") {
+		key, value := parseConfigurationLine(line)
+		models.AssignToConfiguration(key, value)
 	}
 }
 
@@ -72,6 +78,9 @@ func parseConfigurationLine(line string) (key string, value string) {
 	// if value contains double quotes, replace them with empty string
 	if strings.Contains(value, "\"") {
 		value = strings.Replace(value, "\"", "", -1)
+	}
+	if strings.HasPrefix(value, "'") && strings.HasSuffix(value, "'") {
+		value = strings.Replace(value, "'", "", -1)
 	}
 	return key, value
 }
