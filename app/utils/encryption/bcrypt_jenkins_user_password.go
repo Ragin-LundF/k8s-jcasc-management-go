@@ -2,6 +2,7 @@ package encryption
 
 import (
 	"golang.org/x/crypto/bcrypt"
+	"k8s-management-go/app/constants"
 	"k8s-management-go/app/utils/loggingstate"
 )
 
@@ -12,5 +13,5 @@ func EncryptJenkinsUserPassword(plainPassword string) (hashedPassword string, er
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to encrypt password.", err.Error())
 		return "", err
 	}
-	return "#jbcrypt:" + string(hashByte), err
+	return constants.UtilsJenkinsUserPassBcryptPrefix + string(hashByte), err
 }

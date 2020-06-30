@@ -101,3 +101,6 @@ const TemplatePvcName = "##K8S_MGMT_PERSISTENCE_VOLUME_CLAIM_NAME##"
 // GUI Constants
 const InstallDryRunActive = "dry-run"
 const InstallDryRunInactive = "execute"
+
+// Utils constants
+const UtilsJenkinsUserPassBcryptPrefix = "#jbcrypt:"
