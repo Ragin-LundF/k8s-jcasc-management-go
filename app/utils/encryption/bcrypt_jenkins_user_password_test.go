@@ -1,9 +1,8 @@
-package utils
+package encryption
 
 import (
 	"golang.org/x/crypto/bcrypt"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/utils/encryption"
 	"strings"
 	"testing"
 )
@@ -13,7 +12,7 @@ func TestEncryptJenkinsUserPassword(t *testing.T) {
 	var password = "mypass"
 
 	// executing the method
-	result, err := encryption.EncryptJenkinsUserPassword(password)
+	result, err := EncryptJenkinsUserPassword(password)
 
 	// validating the result
 	if err != nil && result == "" {
