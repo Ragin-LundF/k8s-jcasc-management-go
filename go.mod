@@ -3,7 +3,7 @@ module k8s-management-go
 go 1.14
 
 require (
-	fyne.io/fyne v1.3.1-0.20200629094954-51c5d787e0e6
+	fyne.io/fyne v1.3.1-0.20200630182836-102ff9e4a866
 	github.com/atotto/clipboard v0.1.2
 	github.com/goware/prefixer v0.0.0-20160118172347-395022866408
 	github.com/hashicorp/go-version v1.2.0
