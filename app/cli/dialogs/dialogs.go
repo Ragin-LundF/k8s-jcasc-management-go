@@ -4,10 +4,10 @@ import (
 	"github.com/inancgumus/screen"
 	"github.com/manifoldco/promptui"
 	"github.com/schollz/progressbar/v3"
-	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/arrays"
 	"k8s-management-go/app/utils/logger"
+	"k8s-management-go/app/utils/loggingstate"
 	"strings"
 )
 
@@ -15,17 +15,19 @@ type confirm struct {
 	Selection string
 }
 
+// CloudTemplatesDialog represents cloud template files and their selections
 type CloudTemplatesDialog struct {
 	CloudTemplateFiles     []string
 	SelectedCloudTemplates []string
 }
 
+// ClearScreen clears the screen
 func ClearScreen() {
 	screen.Clear()
 	screen.MoveTopLeft()
 }
 
-// Configurable confirm dialog
+// DialogConfirm is a configurable confirm dialog
 func DialogConfirm(templateLabel string, templateSelector string, templateDetails string, dialogLabel string) bool {
 	log := logger.Log()
 	ClearScreen()
@@ -63,12 +65,11 @@ func DialogConfirm(templateLabel string, templateSelector string, templateDetail
 			log.Errorf("[DialogConfirm] Prompt confirm dialog failed %s\n", err.Error())
 		}
 		return false
-	} else {
-		return true
 	}
+	return true
 }
 
-// Common password dialog
+// DialogAskForPassword is a common password dialog
 func DialogAskForPassword(label string, validate promptui.ValidateFunc) (password string, err error) {
 	log := logger.Log()
 	ClearScreen()
@@ -88,7 +89,7 @@ func DialogAskForPassword(label string, validate promptui.ValidateFunc) (passwor
 	return password, err
 }
 
-// prompt to enter something
+// DialogPrompt prompts to enter something
 func DialogPrompt(label string, validate promptui.ValidateFunc) (answer string, err error) {
 	promptEntry := promptui.Prompt{
 		Label:    label,
@@ -99,7 +100,7 @@ func DialogPrompt(label string, validate promptui.ValidateFunc) (answer string, 
 	return answer, err
 }
 
-// Ask for deployment name
+// DialogAskForDeploymentName asks for deployment name
 func DialogAskForDeploymentName(label string, validate promptui.ValidateFunc) (deploymentName string, err error) {
 	log := logger.Log()
 
@@ -119,7 +120,7 @@ func DialogAskForDeploymentName(label string, validate promptui.ValidateFunc) (d
 	return deploymentName, err
 }
 
-// dialog to ask for the namespace
+// DialogAskForNamespace shows dialog to ask for the namespace
 func DialogAskForNamespace() (namespace string, err error) {
 	log := logger.Log()
 	ClearScreen()
@@ -133,12 +134,12 @@ func DialogAskForNamespace() (namespace string, err error) {
 		Details: `
 --------- Namespace selection ----------
 {{ "Namespace: " | faint }}	{{ .Namespace }}
-{{ "IP       : " | faint }}	{{ .Ip }}`,
+{{ "IP       : " | faint }}	{{ .IP }}`,
 	}
 
 	// searcher (with "/")
 	searcher := func(input string, index int) bool {
-		namespaceItem := models.GetIpConfiguration().Ips[index]
+		namespaceItem := models.GetIPConfiguration().Ips[index]
 		name := strings.Replace(strings.ToLower(namespaceItem.Namespace), " ", "", -1)
 		input = strings.Replace(strings.ToLower(input), " ", "", -1)
 
@@ -147,7 +148,7 @@ func DialogAskForNamespace() (namespace string, err error) {
 
 	prompt := promptui.Select{
 		Label:     "Please select the namespace to which the secrets should be applied",
-		Items:     models.GetIpConfiguration().Ips,
+		Items:     models.GetIPConfiguration().Ips,
 		Templates: templates,
 		Size:      12,
 		Searcher:  searcher,
@@ -158,13 +159,13 @@ func DialogAskForNamespace() (namespace string, err error) {
 	if err != nil {
 		log.Errorf("[DialogAskForNamespace] Prompt ask for namespace failed %s\n", err.Error())
 	} else {
-		namespace = models.GetIpConfiguration().Ips[i].Namespace
+		namespace = models.GetIPConfiguration().Ips[i].Namespace
 	}
 
 	return namespace, err
 }
 
-// dialog to ask for cloud templates
+// DialogAskForCloudTemplates shows dialog to ask for cloud templates
 func DialogAskForCloudTemplates(cloudTemplateDialog *CloudTemplatesDialog) (err error) {
 	log := logger.Log()
 	ClearScreen()
@@ -224,7 +225,7 @@ func DialogAskForCloudTemplates(cloudTemplateDialog *CloudTemplatesDialog) (err 
 	return err
 }
 
-// Show info and error output as select prompt with search
+// DialogShowLogging shows info and error output as select prompt with search
 func DialogShowLogging(loggingStateEntries []loggingstate.LoggingState, err error) {
 	log := logger.Log()
 	// clear screen
@@ -277,6 +278,7 @@ func DialogShowLogging(loggingStateEntries []loggingstate.LoggingState, err erro
 	}
 }
 
+// CreateProgressBar creates a preconfigured progress bar
 func CreateProgressBar(description string, progressMax int) progressbar.ProgressBar {
 	bar := progressbar.NewOptions(progressMax,
 		progressbar.OptionEnableColorCodes(true),
@@ -292,4 +294,14 @@ func CreateProgressBar(description string, progressMax int) progressbar.Progress
 		}))
 
 	return *bar
+}
+
+// ProgressBar is a structure which contains the progress bar
+type ProgressBar struct {
+	Bar *progressbar.ProgressBar
+}
+
+// AddCallback is a function to add progress. Will be used as callback
+func (progress *ProgressBar) AddCallback() {
+	_ = progress.Bar.Add(1)
 }

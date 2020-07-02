@@ -2,13 +2,13 @@ package kubectl
 
 import (
 	"fmt"
-	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/utils/logger"
+	"k8s-management-go/app/utils/loggingstate"
 	"os/exec"
 	"strings"
 )
 
-// Execute Kubectl commands
+// ExecutorKubectl executes kubectl commands
 func ExecutorKubectl(command string, args []string) (output string, err error) {
 	log := logger.Log()
 

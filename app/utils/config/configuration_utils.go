@@ -7,12 +7,11 @@ import (
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/logger"
 	"os"
-	"strconv"
 	"strings"
 )
 
-// Read configuration from k8s-management
-func ReadConfiguration(basePath string, dryRunDebug bool) {
+// ReadConfiguration reads the configuration of k8s-management
+func ReadConfiguration(basePath string, dryRunDebug bool, cliOnly bool) {
 	// read plain configuration
 	readConfigurationFromFile(files.AppendPath(files.AppendPath(basePath, constants.DirConfig), constants.FilenameConfiguration))
 	// check if there is an custom configuration
@@ -24,7 +23,8 @@ func ReadConfiguration(basePath string, dryRunDebug bool) {
 	}
 	// check if there is an alternative configuration path and try to read config from there
 	models.AssignToConfiguration("K8S_MGMT_BASE_PATH", basePath)
-	models.AssignToConfiguration("K8S_MGMT_DRY_RUN_DEBUG", strconv.FormatBool(dryRunDebug))
+	models.AssignDryRun(dryRunDebug)
+	models.AssignCliOnlyMode(cliOnly)
 
 	configuration := models.GetConfiguration()
 	if configuration.AlternativeConfigFile != "" && files.FileOrDirectoryExists(files.AppendPath(basePath, configuration.AlternativeConfigFile)) {
@@ -53,12 +53,18 @@ func readConfigurationFromFile(configFile string) {
 		for scanner.Scan() {
 			// trim the line to avoid problems
 			line := strings.TrimSpace(scanner.Text())
-			// if line is not a comment (marker: "#") parse the configuration and assign it to the config
-			if line != "" && !strings.HasPrefix(line, "#") {
-				key, value := parseConfigurationLine(line)
-				models.AssignToConfiguration(key, value)
-			}
+			processLine(line)
 		}
+	}
+}
+
+// function to check if line is empty / a comment or a valid configuration.
+// if line looks valid, try to append it to internal configuration structure
+func processLine(line string) {
+	// if line is not a comment (marker: "#") parse the configuration and assign it to the config
+	if line != "" && !strings.HasPrefix(line, "#") {
+		key, value := parseConfigurationLine(line)
+		models.AssignToConfiguration(key, value)
 	}
 }
 
@@ -66,12 +72,18 @@ func readConfigurationFromFile(configFile string) {
 func parseConfigurationLine(line string) (key string, value string) {
 	// split line on "="
 	lineArray := strings.Split(line, "=")
-	// assign to variables
-	key = lineArray[0]
-	value = lineArray[1]
-	// if value contains double quotes, replace them with empty string
-	if strings.Contains(value, "\"") {
-		value = strings.Replace(value, "\"", "", -1)
+	if cap(lineArray) == 2 {
+		// assign to variables
+		key = lineArray[0]
+		value = lineArray[1]
+		// if value contains double quotes, replace them with empty string
+		if strings.Contains(value, "\"") {
+			value = strings.Replace(value, "\"", "", -1)
+		}
+		if strings.HasPrefix(value, "'") && strings.HasSuffix(value, "'") {
+			value = strings.Replace(value, "'", "", -1)
+		}
+		return strings.TrimSpace(key), strings.TrimSpace(value)
 	}
-	return key, value
+	return "", ""
 }

@@ -7,11 +7,13 @@ import (
 	"net/http"
 )
 
+// JenkinsUserPassword defines the JSON for the password
 type JenkinsUserPassword struct {
 	Password string `json:"password"`
 }
 
-func JenkinsUserPasswordApi(w http.ResponseWriter, r *http.Request) {
+// JenkinsUserPasswordAPI is an API for encrypting the Jenkins user password
+func JenkinsUserPasswordAPI(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	switch r.Method {
 	case "POST":
@@ -40,7 +42,7 @@ func JenkinsUserPasswordApi(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// marshall object to JSON
-		encryptedJenkinsUserPasswordAsJson, err := json.Marshal(encryptedJenkinsUserPassword)
+		encryptedJenkinsUserPasswordAsJSON, err := json.Marshal(encryptedJenkinsUserPassword)
 		if err != nil {
 			log.Println(err)
 			http.Error(w, `{"message": "error marhsalling the response"}`, http.StatusBadRequest)
@@ -49,7 +51,7 @@ func JenkinsUserPasswordApi(w http.ResponseWriter, r *http.Request) {
 
 		// write response if everything was ok
 		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write(encryptedJenkinsUserPasswordAsJson)
+		_, _ = w.Write(encryptedJenkinsUserPasswordAsJSON)
 	default:
 		w.WriteHeader(http.StatusNotFound)
 		_, _ = w.Write([]byte(`{"message": "not found"}`))

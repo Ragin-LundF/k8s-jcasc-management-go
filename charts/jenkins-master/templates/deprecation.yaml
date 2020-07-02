@@ -270,7 +270,7 @@
 
 
     {{- if .Values.rbac.install }}
-       {{ fail "`rbac.install` does no longer exist. It has been renamed to `rbac.create` and is enabled by default!" }}
+       {{ fail "`rbac.install_actions` does no longer exist. It has been renamed to `rbac.create` and is enabled by default!" }}
     {{- end }}
 
     {{- if .Values.rbac.serviceAccountName }}

@@ -1,6 +1,12 @@
 # K8S-JCasC-Management (Go version)
 
-This is a Go implementation of [k8s-jcasc-management](https://github.com/Ragin-LundF/k8s-jcasc-management).
+# Build status #
+
+| | Develop | Master |
+| --- | --- | --- |
+| Build | ![Go](https://github.com/Ragin-LundF/k8s-jcasc-management-go/workflows/Go/badge.svg?branch=develop) | ![Go](https://github.com/Ragin-LundF/k8s-jcasc-management-go/workflows/Go/badge.svg?branch=master) |
+| GoReportCard | | ![Report](https://goreportcard.com/badge/github.com/Ragin-LundF/k8s-jcasc-management-go) |
+
 
 # Table of content #
 
@@ -12,6 +18,7 @@ This is a Go implementation of [k8s-jcasc-management](https://github.com/Ragin-L
 * [Configuration](#configuration)
   * [Configure alternative configuration with overlays](#configure-alternative-configuration-with-overlays)
 * [How to use](#how-to-use)
+  * [Build hints](#build-hints)
   * [Dry-Run and Logging](#dry-run-and-logging)
   * [Debugging](#debugging)
   * [Templates](#templates)
@@ -19,6 +26,9 @@ This is a Go implementation of [k8s-jcasc-management](https://github.com/Ragin-L
     * [Sub-Templates (cloud-templates)](#sub-templates-cloud-templates)
 * [Execution of Scripts](#execution-of-scripts)
 * [IP Management](#ip-management)
+* [Screenshots](#screenshots)
+  * [Deployment](#deployment)
+  * [Create Project](#create-project)
 * [Additional tools](#additional-tools)
   * [k8sfullconfigexport](#k8sfullconfigexport)
 * [Helpful links](#helpful-links)
@@ -126,7 +136,7 @@ ENV GLIBC_VERSION=2.28-r0
 ENV LANG=${GLIBC_LANG}.UTF-8
 ENV LANGUAGE=${GLIBC_LANG}.UTF-8
 
-# install base packages, that will be used in most containers
+# install_actions base packages, that will be used in most containers
 RUN apk update && apk -U upgrade -a && \
     apk add --no-cache xz tar zip unzip sudo curl wget bash git git-lfs procps ca-certificates
 
@@ -238,6 +248,16 @@ You can also add one of the following flags:
 | -logfile=<path/to/logfile> | Set the path/name to a logfile. If this flag was set, the system logs into this file. | `-logfile="/var/log/k8smgmt.log"` |
 | -logencoding=<encoding> | Set log encoding of the logger (`zap`). Default is `json`. Possible values are: `json` or `console` | `-logencoding=console` |
 | -server=<true|false> | *Experimental*. Starts the system as a server. Currently it has not enough functions to talk about... | `-server=true` |
+
+## Build hints ##
+
+This was realized with the [fyne](https://fyne.io/) framework.
+If you have trouble to compile the project, please visit the [fyne developer](https://developer.fyne.io/started/) site first to check the prerequisites.
+On Windows, it is recommended to install [TDM-GCC - tdm-gcc.tdragon.net](https://tdm-gcc.tdragon.net).
+
+If you have trouble, you can also exchange the `!ignore` and `ignore` in first line comment at the `/app/app_cli.go` and `/app/app_gui.go` file.
+Golang will then use the `app_cli.go` file to compile and ignores the GUI implementation completely.
+
 
 ## Dry-Run and Logging ##
 
@@ -358,6 +378,21 @@ To provide a simple solution, the system stores this information (namespace and 
 For every deployment of Jenkins, the system looks into this file and configures the loadbalancer with the IP. This also allows static DNS records.
 
 If you create a new project via the wizard, the system also checks, if a IP address already exists to avoid IP conflicts.
+
+# Screenshots #
+
+## Welcome ##
+![alt text](docs/images/screenshot_gui_welcome_win.png "K8S GUI Welcome Windows")
+_Windows screenshot_
+
+## Deployment ##
+![alt text](docs/images/screenshot_gui_deployment.png "K8S GUI Deployment")
+_MacOS screenshot_
+
+## Create Project ##
+![alt text](docs/images/screenshot_gui_createprj.png "K8S GUI Deployment")
+_MacOS screenshot_
+
 
 # Additional tools #
 ## k8sfullconfigexport ##

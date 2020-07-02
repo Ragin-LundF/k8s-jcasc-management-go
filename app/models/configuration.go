@@ -9,18 +9,21 @@ import (
 
 var configuration Configuration
 
+// Configuration represents the configuration files
 type Configuration struct {
 	BasePath string
 	// Log Level
 	LogLevel string
+	// Use CLI only
+	CliOnly bool
 	// secrets file
 	GlobalSecretsFile string
 	// Alternative ConfigFile
 	AlternativeConfigFile string
 	// IP config
-	IpConfig struct {
-		IpConfigFile            string
-		IpConfigFileDummyPrefix string
+	IPConfig struct {
+		IPConfigFile            string
+		IPConfigFileDummyPrefix string
 	}
 	// Directory configuration
 	Directories struct {
@@ -31,13 +34,13 @@ type Configuration struct {
 	Jenkins struct {
 		// JCasC relevant data
 		JCasC struct {
-			ConfigurationUrl string
+			ConfigurationURL string
 		}
 		// JobDSL relevant data
 		JobDSL struct {
-			BaseUrl             string
+			BaseURL             string
 			RepoValidatePattern string
-			SeedJobScriptUrl    string
+			SeedJobScriptURL    string
 		}
 		// Jenkins Helm Chart relevant data
 		Helm struct {
@@ -47,7 +50,7 @@ type Configuration struct {
 				DefaultProjectUserPasswordEncrypted string
 				Label                               string
 				DenyAnonymousReadAccess             string
-				DefaultUriPrefix                    string
+				DefaultURIPrefix                    string
 				DeploymentName                      string
 				Persistence                         struct {
 					StorageClass string
@@ -81,10 +84,10 @@ type Configuration struct {
 	LoadBalancer struct {
 		Enabled bool
 		Port    struct {
-			Http        uint64
-			HttpTarget  uint64
-			Https       uint64
-			HttpsTarget uint64
+			HTTP        uint64
+			HTTPTarget  uint64
+			HTTPS       uint64
+			HTTPSTarget uint64
 		}
 	}
 	// Kubernetes relevant data
@@ -110,26 +113,27 @@ type Configuration struct {
 	}
 }
 
+// GetConfiguration returns the current configuration
 func GetConfiguration() Configuration {
 	return configuration
 }
 
-// helper method for IP configuration file
-func GetIpConfigurationFile() string {
-	return FilePathWithBasePath(configuration.IpConfig.IpConfigFile)
+// GetIPConfigurationFile is a helper method for IP configuration file
+func GetIPConfigurationFile() string {
+	return FilePathWithBasePath(configuration.IPConfig.IPConfigFile)
 }
 
-// helper method for secrets file
+// GetGlobalSecretsFile is a helper method for secrets file
 func GetGlobalSecretsFile() string {
 	return FilePathWithBasePath(configuration.GlobalSecretsFile)
 }
 
-// Get project base directory with full path
+// GetProjectBaseDirectory : Get project base directory with full path
 func GetProjectBaseDirectory() string {
 	return calculateFullDirectoryPath(configuration.Directories.ProjectsBaseDirectory)
 }
 
-// Get project template directory with full path
+// GetProjectTemplateDirectory : Get project template directory with full path
 func GetProjectTemplateDirectory() string {
 	return calculateFullDirectoryPath(configuration.Directories.TemplatesBaseDirectory)
 }
@@ -148,7 +152,7 @@ func calculateFullDirectoryPath(targetDir string) string {
 	}
 }
 
-// helper method to calculate the correct filepath
+// FilePathWithBasePath is a helper method to calculate the correct filepath
 func FilePathWithBasePath(configurationFilePath string) string {
 	var resultConfigurationFilePath = configurationFilePath
 	if configuration.BasePath != "" {
@@ -168,6 +172,17 @@ func FilePathWithBasePath(configurationFilePath string) string {
 	return resultConfigurationFilePath
 }
 
+// AssignDryRun is a helper method for the dry-run flag
+func AssignDryRun(dryRun bool) {
+	configuration.K8sManagement.DryRunOnly = dryRun
+}
+
+// AssignCliOnlyMode is a helper method to assign the CLI only (cli flag) mode to the configuration
+func AssignCliOnlyMode(cliOnly bool) {
+	configuration.CliOnly = cliOnly
+}
+
+// AssignToConfiguration assigns a key / value pair to the configuration object
 func AssignToConfiguration(key string, value string) {
 	if key != "" && value != "" {
 		switch key {
@@ -176,21 +191,21 @@ func AssignToConfiguration(key string, value string) {
 		case "GLOBAL_SECRETS_FILE":
 			configuration.GlobalSecretsFile = value
 		case "IP_CONFIG_FILE":
-			configuration.IpConfig.IpConfigFile = value
+			configuration.IPConfig.IPConfigFile = value
 		case "IP_CONFIG_FILE_DUMMY_PREFIX":
-			configuration.IpConfig.IpConfigFileDummyPrefix = value
+			configuration.IPConfig.IPConfigFileDummyPrefix = value
 		case "PROJECTS_BASE_DIRECTORY":
 			configuration.Directories.ProjectsBaseDirectory = value
 		case "TEMPLATES_BASE_DIRECTORY":
 			configuration.Directories.TemplatesBaseDirectory = value
 		case "JENKINS_JCASC_CONFIGURATION_URL":
-			configuration.Jenkins.JCasC.ConfigurationUrl = value
+			configuration.Jenkins.JCasC.ConfigurationURL = value
 		case "JENKINS_JOBDSL_BASE_URL":
-			configuration.Jenkins.JobDSL.BaseUrl = value
+			configuration.Jenkins.JobDSL.BaseURL = value
 		case "JENKINS_JOBDSL_REPO_VALIDATE_PATTERN":
 			configuration.Jenkins.JobDSL.RepoValidatePattern = value
 		case "JENKINS_JOBDSL_SEED_JOB_SCRIPT_URL":
-			configuration.Jenkins.JobDSL.SeedJobScriptUrl = value
+			configuration.Jenkins.JobDSL.SeedJobScriptURL = value
 		case "JENKINS_MASTER_ADMIN_PASSWORD":
 			configuration.Jenkins.Helm.Master.AdminPassword = value
 		case "JENKINS_MASTER_ADMIN_PASSWORD_ENCRYPTED":
@@ -202,7 +217,7 @@ func AssignToConfiguration(key string, value string) {
 		case "JENKINS_MASTER_DENY_ANONYMOUS_READ_ACCESS":
 			configuration.Jenkins.Helm.Master.DenyAnonymousReadAccess = value
 		case "JENKINS_MASTER_DEFAULT_URI_PREFIX":
-			configuration.Jenkins.Helm.Master.DefaultUriPrefix = value
+			configuration.Jenkins.Helm.Master.DefaultURIPrefix = value
 		case "JENKINS_MASTER_DEPLOYMENT_NAME":
 			configuration.Jenkins.Helm.Master.DeploymentName = value
 		case "JENKINS_MASTER_PERSISTENCE_STORAGE_CLASS":
@@ -232,13 +247,13 @@ func AssignToConfiguration(key string, value string) {
 		case "NGINX_LOADBALANCER_ENABLED":
 			configuration.LoadBalancer.Enabled, _ = strconv.ParseBool(value)
 		case "NGINX_LOADBALANCER_HTTP_PORT":
-			configuration.LoadBalancer.Port.Http, _ = strconv.ParseUint(value, 10, 16)
+			configuration.LoadBalancer.Port.HTTP, _ = strconv.ParseUint(value, 10, 16)
 		case "NGINX_LOADBALANCER_HTTP_TARGETPORT":
-			configuration.LoadBalancer.Port.HttpTarget, _ = strconv.ParseUint(value, 10, 16)
+			configuration.LoadBalancer.Port.HTTPTarget, _ = strconv.ParseUint(value, 10, 16)
 		case "NGINX_LOADBALANCER_HTTPS_PORT":
-			configuration.LoadBalancer.Port.Https, _ = strconv.ParseUint(value, 10, 16)
+			configuration.LoadBalancer.Port.HTTPS, _ = strconv.ParseUint(value, 10, 16)
 		case "NGINX_LOADBALANCER_HTTPS_TARGETPORT":
-			configuration.LoadBalancer.Port.HttpsTarget, _ = strconv.ParseUint(value, 10, 16)
+			configuration.LoadBalancer.Port.HTTPSTarget, _ = strconv.ParseUint(value, 10, 16)
 		case "KUBERNETES_DOCKER_REGISTRY_CREDENTIALS_ID":
 			configuration.CredentialIds.DefaultDockerRegistry = value
 		case "MAVEN_REPOSITORY_SECRETS_CREDENTIALS_ID":
@@ -253,8 +268,6 @@ func AssignToConfiguration(key string, value string) {
 			configuration.AlternativeConfigFile = value
 		case "K8S_MGMT_BASE_PATH":
 			configuration.BasePath = value
-		case "K8S_MGMT_DRY_RUN_DEBUG":
-			configuration.K8sManagement.DryRunOnly, _ = strconv.ParseBool(value)
 		case "K8S_MGMT_LOGGING_LOGFILE":
 			configuration.K8sManagement.Logging.LogFile = value
 		case "K8S_MGMT_LOGGING_ENCODING":

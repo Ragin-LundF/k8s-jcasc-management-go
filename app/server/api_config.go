@@ -6,14 +6,15 @@ import (
 	"net/http"
 )
 
-func ConfigurationApi(w http.ResponseWriter, r *http.Request) {
+// ConfigurationAPI implements the API endpoint for the configuration
+func ConfigurationAPI(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	switch r.Method {
 	case "GET":
 		configuration := models.GetConfiguration()
-		configurationAsJson, _ := json.MarshalIndent(configuration, "", "\t")
+		configurationAsJSON, _ := json.MarshalIndent(configuration, "", "\t")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(configurationAsJson))
+		w.Write([]byte(configurationAsJSON))
 	default:
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte(`{"message": "not found"}`))

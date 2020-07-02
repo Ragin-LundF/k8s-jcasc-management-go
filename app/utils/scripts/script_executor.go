@@ -2,14 +2,15 @@ package scripts
 
 import (
 	"fmt"
-	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/logger"
+	"k8s-management-go/app/utils/loggingstate"
 	"os/exec"
 )
 
+// ExecuteScriptsInstallScriptsForNamespace executes install scripts, which have the prefix for the given namespace
 func ExecuteScriptsInstallScriptsForNamespace(namespace string, filePrefix string) (err error) {
 	log := logger.Log()
 	log.Infof("[Execute Scripts] Try to execute scripts for namespace [%s]...", namespace)

@@ -4,18 +4,19 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"k8s-management-go/app/cli/loggingstate"
 	"k8s-management-go/app/utils/logger"
+	"k8s-management-go/app/utils/loggingstate"
 	"os"
 	"strings"
 )
 
+// FileFilter defines possible filter values for a file in the form of prefix and suffix
 type FileFilter struct {
 	Prefix *string
 	Suffix *string
 }
 
-// check if file exists
+// FileOrDirectoryExists checks if file exists
 func FileOrDirectoryExists(fileNameWithPath string) bool {
 	log := logger.Log()
 	_, err := os.Stat(fileNameWithPath)
@@ -26,13 +27,13 @@ func FileOrDirectoryExists(fileNameWithPath string) bool {
 	return true
 }
 
-// list files of a directory if it exists
+// ListFilesOfDirectory lists files of a directory if it exists
 func ListFilesOfDirectory(directory string) (files *[]string, err error) {
 	files, err = ListFilesOfDirectoryWithFilter(directory, nil)
 	return files, err
 }
 
-// list files of a directory if it exists with a filter
+// ListFilesOfDirectoryWithFilter lists files of a directory if it exists with a filter
 func ListFilesOfDirectoryWithFilter(directory string, filter *FileFilter) (files *[]string, err error) {
 	log := logger.Log()
 	// check if the directory exists before reading from directory
@@ -66,16 +67,19 @@ func filterFilename(filename string, filter *FileFilter) bool {
 			if !strings.HasPrefix(filename, *filter.Prefix) {
 				fileIsOk = false
 			}
+		}
+		if filter.Suffix != nil {
 			// filter suffix if exists and file is still ok
 			if fileIsOk && !strings.HasSuffix(filename, *filter.Suffix) {
 				fileIsOk = false
 			}
 		}
+
 	}
 	return fileIsOk
 }
 
-// helper for adding new pathes
+// AppendPath is a helper for adding new paths
 func AppendPath(originalPath string, pathExtension string) (extendedPath string) {
 	// path extension starts with "./" remove it
 	if strings.HasPrefix(pathExtension, "./") {
@@ -101,7 +105,7 @@ func AppendPath(originalPath string, pathExtension string) (extendedPath string)
 	return extendedPath
 }
 
-// copy file from src to destination
+// CopyFile copies file from src to destination
 func CopyFile(src string, dst string) (bytesWritten int64, err error) {
 	srcFileStat, err := os.Stat(src)
 	if err != nil {
@@ -128,7 +132,7 @@ func CopyFile(src string, dst string) (bytesWritten int64, err error) {
 	return nBytes, err
 }
 
-// replace content in file
+// ReplaceStringInFile replaces content in file
 func ReplaceStringInFile(filePath string, stringToReplace string, newString string) (success bool, err error) {
 	log := logger.Log()
 

@@ -1,22 +1,24 @@
 package models
 
-// basic IP struct
-type Ip struct {
+// IP is the basic IP structure
+type IP struct {
 	Namespace string
-	Ip        string
+	IP        string
 }
 
-// list of IPs
-type IpConfiguration struct {
-	Ips []Ip
+// IPConfiguration contains a list of IPs
+type IPConfiguration struct {
+	Ips []IP
 }
 
-var ipConfig IpConfiguration
+var ipConfig IPConfiguration
 
-func GetIpConfiguration() IpConfiguration {
+// GetIPConfiguration returns the current IP configuration
+func GetIPConfiguration() IPConfiguration {
 	return ipConfig
 }
 
-func AddIpAndNamespaceToConfiguration(namespace string, ip string) {
-	ipConfig.Ips = append(ipConfig.Ips, Ip{namespace, ip})
+// AddIPAndNamespaceToConfiguration adds IP and namespace to the IP configuration
+func AddIPAndNamespaceToConfiguration(namespace string, ip string) {
+	ipConfig.Ips = append(ipConfig.Ips, IP{namespace, ip})
 }

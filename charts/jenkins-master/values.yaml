@@ -212,7 +212,7 @@ master:
   # - name: BuildInfoProxy
   #   port: 9000
 
-  # List of plugins to be install during Jenkins master start
+  # List of plugins to be install_actions during Jenkins master start
   installPlugins:
     - kubernetes:1.25.3
     - workflow-job:2.38
@@ -396,7 +396,7 @@ master:
 
   # Expose Prometheus metrics
   prometheus:
-    # If enabled, add the prometheus plugin to the list of plugins to install
+    # If enabled, add the prometheus plugin to the list of plugins to install_actions
     # https://plugins.jenkins.io/prometheus
     enabled: false
     # Additional labels to add to the ServiceMonitor object
