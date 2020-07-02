@@ -6,14 +6,15 @@ import (
 	"net/http"
 )
 
-func IpConfigurationApi(w http.ResponseWriter, r *http.Request) {
+// IPConfigurationAPI implements the API endpoint for getting the IP configuration
+func IPConfigurationAPI(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	switch r.Method {
 	case "GET":
-		ipConfiguration := models.GetIpConfiguration()
-		ipConfigurationAsJson, _ := json.MarshalIndent(ipConfiguration, "", "\t")
+		ipConfiguration := models.GetIPConfiguration()
+		ipConfigurationAsJSON, _ := json.MarshalIndent(ipConfiguration, "", "\t")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(ipConfigurationAsJson))
+		w.Write([]byte(ipConfigurationAsJSON))
 	default:
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte(`{"message": "not found"}`))

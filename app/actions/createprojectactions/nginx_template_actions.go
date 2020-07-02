@@ -1,4 +1,4 @@
-package createproject
+package createprojectactions
 
 import (
 	"k8s-management-go/app/constants"
@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-// Replace nginx ingress helm values.yaml
+// ActionReplaceGlobalConfigNginxIngressCtrlHelmValues replaces nginx ingress helm values.yaml
 func ActionReplaceGlobalConfigNginxIngressCtrlHelmValues(projectDirectory string) (success bool, err error) {
 	var nginxHelmValuesFile = files.AppendPath(projectDirectory, constants.FilenameNginxIngressControllerHelmValues)
 	if files.FileOrDirectoryExists(nginxHelmValuesFile) {
@@ -16,7 +16,7 @@ func ActionReplaceGlobalConfigNginxIngressCtrlHelmValues(projectDirectory string
 		if success, err = files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateJenkinsMasterDeploymentName, models.GetConfiguration().Jenkins.Helm.Master.DeploymentName); !success {
 			return success, err
 		}
-		if success, err = files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateJenkinsMasterDefaultUriPrefix, models.GetConfiguration().Jenkins.Helm.Master.DefaultUriPrefix); !success {
+		if success, err = files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateJenkinsMasterDefaultURIPrefix, models.GetConfiguration().Jenkins.Helm.Master.DefaultURIPrefix); !success {
 			return success, err
 		}
 		// Nginx ingress controller placeholder
@@ -39,16 +39,16 @@ func ActionReplaceGlobalConfigNginxIngressCtrlHelmValues(projectDirectory string
 		if success, err = files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxLoadbalancerEnabled, strconv.FormatBool(models.GetConfiguration().LoadBalancer.Enabled)); !success {
 			return success, err
 		}
-		if success, err = files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxLoadbalancerHttpPort, strconv.FormatUint(models.GetConfiguration().LoadBalancer.Port.Http, 10)); !success {
+		if success, err = files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxLoadbalancerHTTPPort, strconv.FormatUint(models.GetConfiguration().LoadBalancer.Port.HTTP, 10)); !success {
 			return success, err
 		}
-		if success, err = files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxLoadbalancerHttpTargetPort, strconv.FormatUint(models.GetConfiguration().LoadBalancer.Port.HttpTarget, 10)); !success {
+		if success, err = files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxLoadbalancerHTTPTargetPort, strconv.FormatUint(models.GetConfiguration().LoadBalancer.Port.HTTPTarget, 10)); !success {
 			return success, err
 		}
-		if success, err = files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxLoadbalancerHttpsPort, strconv.FormatUint(models.GetConfiguration().LoadBalancer.Port.Https, 10)); !success {
+		if success, err = files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxLoadbalancerHTTPSPort, strconv.FormatUint(models.GetConfiguration().LoadBalancer.Port.HTTPS, 10)); !success {
 			return success, err
 		}
-		if success, err = files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxLoadbalancerHttpsTargetPort, strconv.FormatUint(models.GetConfiguration().LoadBalancer.Port.HttpsTarget, 10)); !success {
+		if success, err = files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxLoadbalancerHTTPSTargetPort, strconv.FormatUint(models.GetConfiguration().LoadBalancer.Port.HTTPSTarget, 10)); !success {
 			return success, err
 		}
 	}

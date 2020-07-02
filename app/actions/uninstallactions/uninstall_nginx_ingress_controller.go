@@ -1,4 +1,4 @@
-package uninstall_actions
+package uninstallactions
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"k8s-management-go/app/utils/loggingstate"
 )
 
-// uninstall Jenkins with Helm
+// ActionHelmUninstallNginxIngressController will uninstall Jenkins with Helm
 func ActionHelmUninstallNginxIngressController(namespace string) (err error) {
 	loggingstate.AddInfoEntry(fmt.Sprintf("[ActionHelmUninstallNginxIngressController] Try to uninstall nginx-ingress-controller in namespace [%s]...", namespace))
 

@@ -2,11 +2,11 @@ package secrets
 
 import (
 	"errors"
-	"k8s-management-go/app/actions/secrets_actions"
+	"k8s-management-go/app/actions/secretsactions"
 	"k8s-management-go/app/utils/loggingstate"
 )
 
-// encrypt the secrets file with given password
+// EncryptSecretsFile encrypts the secrets file with given password
 func EncryptSecretsFile() (err error) {
 	// read password
 	loggingstate.AddInfoEntry("  -> Ask for the password for secret file...")
@@ -26,22 +26,21 @@ func EncryptSecretsFile() (err error) {
 	if password != passwordConfirm {
 		loggingstate.AddErrorEntry("  -> Passwords did not match! ")
 		return errors.New("Passwords did not match! ")
-	} else {
-		loggingstate.AddInfoEntry("  -> Passwords did match! Starting encryption....")
 	}
 
+	loggingstate.AddInfoEntry("  -> Passwords did match! Starting encryption....")
 	// encrypt secrets file
-	err = secrets_actions.ActionEncryptSecretsFile(password)
+	err = secretsactions.ActionEncryptSecretsFile(password)
 
 	return err
 }
 
-// Decrypt secrets file
+// DecryptSecretsFile decrypts the secrets file
 func DecryptSecretsFile() (err error) {
 	password, err := AskForSecretsPassword("Password for secrets file")
 	if err != nil {
 		return err
 	}
-	err = secrets_actions.ActionDecryptSecretsFile(password)
+	err = secretsactions.ActionDecryptSecretsFile(password)
 	return err
 }

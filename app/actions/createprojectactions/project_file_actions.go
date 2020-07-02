@@ -1,4 +1,4 @@
-package createproject
+package createprojectactions
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-// create new project directory
+// ActionCreateNewProjectDirectory creates new project directory
 func ActionCreateNewProjectDirectory(newProjectDir string) (err error) {
 	// create directory
 	err = os.MkdirAll(newProjectDir, os.ModePerm)
@@ -21,7 +21,7 @@ func ActionCreateNewProjectDirectory(newProjectDir string) (err error) {
 	return nil
 }
 
-// copy files to new directory
+// ActionCopyTemplatesToNewDirectory copies files to new directory
 func ActionCopyTemplatesToNewDirectory(projectDirectory string, copyPersistentVolume bool, createDeploymentOnlyProject bool) (err error) {
 	var fileNamesToCopy []string
 

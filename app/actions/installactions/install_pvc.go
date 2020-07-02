@@ -1,7 +1,6 @@
-package install_actions
+package installactions
 
 import (
-	"errors"
 	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
@@ -12,9 +11,10 @@ import (
 	"k8s-management-go/app/utils/loggingstate"
 )
 
+// PvcClaimValuesYaml is a structure that represents the PVC Claim values yaml file
 type PvcClaimValuesYaml struct {
 	Kind       string
-	ApiVersion string
+	APIVersion string
 	Metadata   struct {
 		Name      string
 		Namespace string
@@ -31,7 +31,7 @@ type PvcClaimValuesYaml struct {
 	}
 }
 
-// install_actions PVC is needed
+// ActionPersistenceVolumeClaimInstall installs PVC if it is needed
 func ActionPersistenceVolumeClaimInstall(namespace string) (err error) {
 	loggingstate.AddInfoEntry(fmt.Sprintf(" -> Check if PVC should be installed on namespace [%s]", namespace))
 
@@ -51,7 +51,7 @@ func ActionPersistenceVolumeClaimInstall(namespace string) (err error) {
 		// if no name was found, something was wrong here...
 		if pvcName == "" {
 			loggingstate.AddErrorEntry(fmt.Sprintf("  -> PVC specification was found for namespace [%s], but no name was specified.", namespace))
-			err = errors.New(fmt.Sprintf("[PVC Install] PVC specification was found for namespace [%s], but no name was specified.", namespace))
+			err = fmt.Errorf("[PVC Install] PVC specification was found for namespace [%s], but no name was specified. ", namespace)
 			return err
 		}
 
@@ -59,9 +59,9 @@ func ActionPersistenceVolumeClaimInstall(namespace string) (err error) {
 		loggingstate.AddInfoEntry(fmt.Sprintf("  -> Checking if PVC [%s] is already available for namespace [%s].", pvcName, namespace))
 		pvcExists, err := isPvcAvailableInNamespace(namespace, pvcName)
 
-		// no PVC found, so install_actions it
+		// no PVC found, so install it
 		if !pvcExists {
-			loggingstate.AddInfoEntry(fmt.Sprintf("  -> PVC [%s] does not exist in namespace [%s]. Trying to install_actions it...", pvcName, namespace))
+			loggingstate.AddInfoEntry(fmt.Sprintf("  -> PVC [%s] does not exist in namespace [%s]. Trying to install it...", pvcName, namespace))
 
 			// executing command
 			kubectlCmdArgs := []string{
@@ -73,9 +73,9 @@ func ActionPersistenceVolumeClaimInstall(namespace string) (err error) {
 				return err
 			}
 
-			loggingstate.AddInfoEntry(fmt.Sprintf("  -> PVC [%s] does not exist in namespace [%s]. Trying to install_actions it...done", pvcName, namespace))
+			loggingstate.AddInfoEntry(fmt.Sprintf("  -> PVC [%s] does not exist in namespace [%s]. Trying to install it...done", pvcName, namespace))
 		} else {
-			loggingstate.AddInfoEntry(fmt.Sprintf("  -> PVC [%s] in namespace [%s] found. No need to install_actions it...", pvcName, namespace))
+			loggingstate.AddInfoEntry(fmt.Sprintf("  -> PVC [%s] in namespace [%s] found. No need to install it...", pvcName, namespace))
 		}
 	}
 

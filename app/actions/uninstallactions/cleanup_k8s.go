@@ -1,4 +1,4 @@
-package uninstall_actions
+package uninstallactions
 
 import (
 	"fmt"
@@ -9,7 +9,8 @@ import (
 	"strings"
 )
 
-// This delegate method tries to cleanup everything. It ignores possible errors!
+// ActionCleanupK8sNginxIngressController is a delegate method, that tries to cleanup everything.
+// It ignores possible errors!
 // They will be logged, but it has no impact to the workflow
 func ActionCleanupK8sNginxIngressController(namespace string) {
 	// Nginx Ingress Ctrl Roles
@@ -26,7 +27,7 @@ func ActionCleanupK8sNginxIngressController(namespace string) {
 	ActionCleanupNginxIngressCtrlIngress(namespace)
 }
 
-// uninstall nginx-ingress roles
+// ActionCleanupNginxIngressCtrlRoles will uninstall nginx-ingress roles
 func ActionCleanupNginxIngressCtrlRoles(namespace string) {
 	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Start to cleanup nginx-ingress Roles for namespace [%s]...", namespace))
 
@@ -36,7 +37,7 @@ func ActionCleanupNginxIngressCtrlRoles(namespace string) {
 	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Start to cleanup nginx-ingress Roles for namespace [%s]...done", namespace))
 }
 
-// uninstall nginx-ingress role bindings
+// ActionCleanupNginxIngressCtrlRoleBindings will uninstall nginx-ingress role bindings
 func ActionCleanupNginxIngressCtrlRoleBindings(namespace string) {
 	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Start to cleanup nginx-ingress RoleBindings for namespace [%s]...", namespace))
 
@@ -46,7 +47,7 @@ func ActionCleanupNginxIngressCtrlRoleBindings(namespace string) {
 	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Start to cleanup nginx-ingress RoleBindings for namespace [%s]...done", namespace))
 }
 
-// uninstall nginx-ingress service accounts
+// ActionCleanupNginxIngressCtrlServiceAccounts will uninstall nginx-ingress service accounts
 func ActionCleanupNginxIngressCtrlServiceAccounts(namespace string) {
 	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Start to cleanup nginx-ingress ServiceAccounts for namespace [%s]...", namespace))
 
@@ -56,7 +57,7 @@ func ActionCleanupNginxIngressCtrlServiceAccounts(namespace string) {
 	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Start to cleanup nginx-ingress ServiceAccounts for namespace [%s]...done", namespace))
 }
 
-// uninstall nginx-ingress clusterroles
+// ActionCleanupNginxIngressCtrlClusterRoles will uninstall nginx-ingress clusterroles
 func ActionCleanupNginxIngressCtrlClusterRoles(namespace string) {
 	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Start to cleanup nginx-ingress ClusterRoles for namespace [%s]...", namespace))
 
@@ -66,7 +67,7 @@ func ActionCleanupNginxIngressCtrlClusterRoles(namespace string) {
 	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Start to cleanup nginx-ingress ClusterRoles for namespace [%s]...donen", namespace))
 }
 
-// uninstall nginx-ingress clusterrole binding
+// ActionCleanupNginxIngressCtrlClusterRoleBinding will uninstall nginx-ingress clusterrole binding
 func ActionCleanupNginxIngressCtrlClusterRoleBinding(namespace string) {
 	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Start to cleanup nginx-ingress ClusterRoleBinding for namespace [%s]...", namespace))
 
@@ -76,7 +77,7 @@ func ActionCleanupNginxIngressCtrlClusterRoleBinding(namespace string) {
 	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Start to cleanup nginx-ingress ClusterRoleBinding for namespace [%s]...done", namespace))
 }
 
-// uninstall nginx-ingress ingress
+// ActionCleanupNginxIngressCtrlIngress will uninstall nginx-ingress ingress
 func ActionCleanupNginxIngressCtrlIngress(namespace string) {
 	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Start to cleanup nginx-ingress ingress routes for namespace [%s]...", namespace))
 

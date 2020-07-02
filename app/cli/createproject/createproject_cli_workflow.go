@@ -1,12 +1,13 @@
 package createproject
 
 import (
-	"k8s-management-go/app/actions/createproject"
+	"k8s-management-go/app/actions/createprojectactions"
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/loggingstate"
 )
 
+// ProjectWizardWorkflow represents the project wizard workflow
 func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 	var projectConfig models.ProjectConfig
 	projectConfig.CreateDeploymentOnlyProject = deploymentOnly
@@ -24,7 +25,7 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 
 	// Ask for IP address
 	loggingstate.AddInfoEntry("-> Ask for IP address...")
-	projectConfig.IpAddress, err = IpAddressWorkflow()
+	projectConfig.IPAddress, err = IPAddressWorkflow()
 	if err != nil {
 		return err
 	}
@@ -50,7 +51,7 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 
 		// Ask for Jenkins system message
 		loggingstate.AddInfoEntry("-> Ask for Jenkins system message...")
-		projectConfig.JenkinsSystemMsg, err = JenkinsSystemMessageWorkflow(projectConfig.Namespace)
+		projectConfig.JenkinsSystemMsg, err = JenkinsSystemMessageWorkflow()
 		if err != nil {
 			return err
 		}
@@ -70,14 +71,14 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 	loggingstate.AddInfoEntry("Starting Project Wizard: Template processing...")
 
 	// prepare progressbar
-	var maxProgressCnt = createproject.CountCreateProjectWorkflow
+	var maxProgressCnt = createprojectactions.CountCreateProjectWorkflow
 	bar := dialogs.CreateProgressBar("Create project...", maxProgressCnt)
 	progress := dialogs.ProgressBar{
 		Bar: &bar,
 	}
 
 	// Create project
-	err = createproject.ActionProcessProjectCreate(projectConfig, progress.AddCallback)
+	err = createprojectactions.ActionProcessProjectCreate(projectConfig, progress.AddCallback)
 	if err != nil {
 		loggingstate.AddInfoEntry("Starting Project Wizard: Template processing...failed")
 	}

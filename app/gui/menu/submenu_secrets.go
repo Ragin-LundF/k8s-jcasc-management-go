@@ -8,6 +8,7 @@ import (
 	"k8s-management-go/app/gui/secrets"
 )
 
+// SecretsScreen shows the secrets screen
 func SecretsScreen(window fyne.Window, preferences fyne.Preferences) fyne.CanvasObject {
 	return widget.NewVBox(
 		secretsSubMenu(window, preferences),

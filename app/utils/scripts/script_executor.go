@@ -10,6 +10,7 @@ import (
 	"os/exec"
 )
 
+// ExecuteScriptsInstallScriptsForNamespace executes install scripts, which have the prefix for the given namespace
 func ExecuteScriptsInstallScriptsForNamespace(namespace string, filePrefix string) (err error) {
 	log := logger.Log()
 	log.Infof("[Execute Scripts] Try to execute scripts for namespace [%s]...", namespace)
@@ -26,7 +27,7 @@ func ExecuteScriptsInstallScriptsForNamespace(namespace string, filePrefix strin
 	var isScriptsDirectoryAvailable = files.FileOrDirectoryExists(scriptFolder)
 	if isScriptsDirectoryAvailable {
 		log.Infof("[Execute Scripts] Script directory is available for namespace [%s]...", namespace)
-		// prepare file filter for install_actions
+		// prepare file filter for install
 		scriptFileEnding := constants.ScriptsFileEnding
 		var fileFilter = files.FileFilter{
 			Prefix: &filePrefix,

@@ -5,13 +5,14 @@ import (
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
-	"k8s-management-go/app/actions/install_actions"
+	"k8s-management-go/app/actions/installactions"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/gui/ui_elements"
+	"k8s-management-go/app/gui/uielements"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/validator"
 )
 
+// ScreenUninstall shows the uninstall screen
 func ScreenUninstall(window fyne.Window) fyne.CanvasObject {
 	var namespace string
 	var deploymentName string
@@ -21,13 +22,13 @@ func ScreenUninstall(window fyne.Window) fyne.CanvasObject {
 
 	// Namespace
 	namespaceErrorLabel := widget.NewLabel("")
-	namespaceSelectEntry := ui_elements.CreateNamespaceSelectEntry(namespaceErrorLabel)
+	namespaceSelectEntry := uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
 
 	// Deployment name
-	deploymentNameEntry := ui_elements.CreateDeploymentNameEntry()
+	deploymentNameEntry := uielements.CreateDeploymentNameEntry()
 
 	// Dry-run or execute
-	dryRunRadio := ui_elements.CreateDryRunRadio()
+	dryRunRadio := uielements.CreateDryRunRadio()
 
 	form := &widget.Form{
 		Items: []*widget.FormItem{
@@ -61,17 +62,17 @@ func ScreenUninstall(window fyne.Window) fyne.CanvasObject {
 			}
 
 			// Directories
-			err, state := install_actions.CalculateDirectoriesForInstall(state, state.Namespace)
+			state, err := installactions.CalculateDirectoriesForInstall(state, state.Namespace)
 			if err != nil {
 				dialog.ShowError(err, window)
 			}
 
 			// Check Jenkins directories
-			state = install_actions.CheckJenkinsDirectories(state)
+			state = installactions.CheckJenkinsDirectories(state)
 
 			_ = ExecuteUninstallWorkflow(window, state)
 			// show output
-			ui_elements.ShowLogOutput(window)
+			uielements.ShowLogOutput(window)
 		},
 	}
 

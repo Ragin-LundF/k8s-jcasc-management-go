@@ -7,6 +7,7 @@ import (
 	"k8s-management-go/app/gui/welcome"
 )
 
+// CreateTabMenu creates the main tab menu
 func CreateTabMenu(k8sJcascApp fyne.App, k8sJcascWindow fyne.Window, info string) (tabs *widget.TabContainer) {
 	tabs = widget.NewTabContainer(
 		widget.NewTabItemWithIcon("Welcome", theme.HomeIcon(), welcome.ScreenWelcome(info)),

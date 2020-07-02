@@ -6,6 +6,7 @@ import (
 	"k8s-management-go/app/utils/loggingstate"
 )
 
+// EncryptJenkinsUserPassword encrypts a plain password with bcrypt
 func EncryptJenkinsUserPassword(plainPassword string) (hashedPassword string, err error) {
 	// create bcrypt hash from password
 	hashByte, err := bcrypt.GenerateFromPassword([]byte(plainPassword), bcrypt.MinCost)

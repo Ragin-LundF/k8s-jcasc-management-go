@@ -1,4 +1,4 @@
-package createproject
+package createprojectactions
 
 import (
 	"fmt"
@@ -10,9 +10,10 @@ import (
 	"os"
 )
 
+// CountCreateProjectWorkflow represents the max count for the progress bar
 const CountCreateProjectWorkflow = 13
 
-// Processing project creation. This method controls all required actions
+// ActionProcessProjectCreate is processing the project creation. This method controls all required actions
 func ActionProcessProjectCreate(projectConfig models.ProjectConfig, callback func()) (err error) {
 	// calculate the target directory
 	newProjectDir := files.AppendPath(models.GetProjectBaseDirectory(), projectConfig.Namespace)
@@ -39,7 +40,7 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig, callback fun
 
 	// add IP and namespace to IP configuration
 	loggingstate.AddInfoEntry("-> Start adding IP address to ipconfig file...")
-	success, err := config.AddToIpConfigFile(projectConfig.Namespace, projectConfig.IpAddress)
+	success, err := config.AddToIPConfigFile(projectConfig.Namespace, projectConfig.IPAddress)
 	if !success || err != nil {
 		_ = os.RemoveAll(newProjectDir)
 		return err
@@ -110,7 +111,7 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig, callback fun
 		files.AppendPath(newProjectDir, constants.FilenameJenkinsConfigurationAsCode),
 		files.AppendPath(newProjectDir, constants.FilenameNginxIngressControllerHelmValues),
 	}
-	success, err = replacePlaceholderInTemplates(templateFiles, constants.TemplatePublicIpAddress, projectConfig.IpAddress)
+	success, err = replacePlaceholderInTemplates(templateFiles, constants.TemplatePublicIPAddress, projectConfig.IPAddress)
 	if !success || err != nil {
 		_ = os.RemoveAll(newProjectDir)
 		return err

@@ -1,4 +1,4 @@
-package install_actions
+package installactions
 
 import (
 	"errors"
@@ -10,7 +10,7 @@ import (
 	"k8s-management-go/app/utils/loggingstate"
 )
 
-// install_actions Jenkins with Helm
+// ActionHelmInstallJenkins installs Jenkins with Helm
 func ActionHelmInstallJenkins(command string, namespace string, deploymentName string) (err error) {
 	loggingstate.AddInfoEntry(fmt.Sprintf("-> Try to %s Jenkins on namespace [%s] with deployment name [%s]...", command, namespace, deploymentName))
 
@@ -36,17 +36,17 @@ func ActionHelmInstallJenkins(command string, namespace string, deploymentName s
 		}
 		argsForCommand = append(argsForCommand, "-n", namespace, "-f", helmChartsJenkinsValuesFile)
 
-		// executing jenkins helm install_actions
+		// executing jenkins helm install
 		loggingstate.AddInfoEntry(fmt.Sprintf("-> Start installing/upgrading Jenkins with Helm on namespace [%s]...", namespace))
 		err := helm.ExecutorHelm(command, argsForCommand)
 		if err != nil {
-			loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("-> Unable to install_actions/upgrade Jenkins on namespace [%s] with deployment name [%s]", namespace, deploymentName), err.Error())
+			loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("-> Unable to install/upgrade Jenkins on namespace [%s] with deployment name [%s]", namespace, deploymentName), err.Error())
 			return err
 		}
 		loggingstate.AddInfoEntry(fmt.Sprintf("-> Start installing/upgrading Jenkins with Helm on namespace [%s]...done", namespace))
 	} else {
 		// helm command was wrong -> abort
-		loggingstate.AddErrorEntry(fmt.Sprintf("-> Try to install_actions/upgrade Jenkins on namespace [%s] with deployment name [%s]...Wrong command [%s]", namespace, deploymentName, command))
+		loggingstate.AddErrorEntry(fmt.Sprintf("-> Try to install/upgrade Jenkins on namespace [%s] with deployment name [%s]...Wrong command [%s]", namespace, deploymentName, command))
 		return errors.New("Helm command [" + command + "] unknown.")
 	}
 	loggingstate.AddInfoEntry(fmt.Sprintf("-> Try to %s Jenkins on namespace [%s] with deployment name [%s]...done", command, namespace, deploymentName))

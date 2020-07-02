@@ -7,10 +7,11 @@ import (
 	"k8s-management-go/app/utils/validator"
 )
 
-func IpAddressWorkflow() (ipAddress string, err error) {
+// IPAddressWorkflow represents the ip address workflow
+func IPAddressWorkflow() (ipAddress string, err error) {
 	log := logger.Log()
 	// Validator for IP address
-	validate := validator.ValidateIp
+	validate := validator.ValidateIP
 
 	// Prepare prompt
 	dialogs.ClearScreen()
@@ -18,7 +19,7 @@ func IpAddressWorkflow() (ipAddress string, err error) {
 	// check if everything was ok
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to get the IP address.", err.Error())
-		log.Errorf("[IpAddressWorkflow] Unable to get the IP address. %s\n", err.Error())
+		log.Errorf("[IPAddressWorkflow] Unable to get the IP address. %s\n", err.Error())
 		return ipAddress, err
 	}
 

@@ -7,6 +7,7 @@ import (
 	"k8s-management-go/app/utils/validator"
 )
 
+// PersistentVolumeClaimWorkflow represents the PVC workflow
 func PersistentVolumeClaimWorkflow() (pvcName string, err error) {
 	log := logger.Log()
 	// Validator for pvc

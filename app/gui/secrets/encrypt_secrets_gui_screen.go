@@ -4,11 +4,12 @@ import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
-	"k8s-management-go/app/actions/secrets_actions"
-	"k8s-management-go/app/gui/ui_elements"
+	"k8s-management-go/app/actions/secretsactions"
+	"k8s-management-go/app/gui/uielements"
 	"k8s-management-go/app/utils/validator"
 )
 
+// ScreenEncryptSecrets shows the encrypt secrets screen
 func ScreenEncryptSecrets(window fyne.Window) fyne.CanvasObject {
 	// UI elements
 	passwordErrorLabel := widget.NewLabel("")
@@ -26,8 +27,8 @@ func ScreenEncryptSecrets(window fyne.Window) fyne.CanvasObject {
 			isValid, errMessage := validator.ValidateConfirmPasswords(passwordEntry.Text, confirmPasswordEntry.Text)
 			passwordErrorLabel.SetText(errMessage)
 			if isValid {
-				_ = secrets_actions.ActionEncryptSecretsFile(passwordEntry.Text)
-				ui_elements.ShowLogOutput(window)
+				_ = secretsactions.ActionEncryptSecretsFile(passwordEntry.Text)
+				uielements.ShowLogOutput(window)
 			}
 		},
 	}

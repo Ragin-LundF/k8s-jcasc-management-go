@@ -6,6 +6,7 @@ import (
 	"regexp"
 )
 
+// ValidateJenkinsJobConfig validates the Jenkins Job configuration
 func ValidateJenkinsJobConfig(input string) error {
 	// Job repository should not be longer than 512 characters
 	if len(input) > 512 {

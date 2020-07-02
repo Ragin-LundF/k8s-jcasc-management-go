@@ -1,5 +1,6 @@
 package models
 
+// StateData defines the data for project creation
 type StateData struct {
 	ProjectPath            string
 	Namespace              string

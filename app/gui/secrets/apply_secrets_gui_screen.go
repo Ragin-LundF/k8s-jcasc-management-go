@@ -5,12 +5,12 @@ import (
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
-	"k8s-management-go/app/actions/secrets_actions"
-	"k8s-management-go/app/gui/ui_elements"
+	"k8s-management-go/app/actions/secretsactions"
+	"k8s-management-go/app/gui/uielements"
 	"k8s-management-go/app/models"
 )
 
-// apply to all namespaces
+// ScreenApplySecretsToAllNamespace shows the apply to all namespaces screen
 func ScreenApplySecretsToAllNamespace(window fyne.Window) fyne.CanvasObject {
 	// secrets password
 	passwordEntry := widget.NewPasswordEntry()
@@ -21,19 +21,19 @@ func ScreenApplySecretsToAllNamespace(window fyne.Window) fyne.CanvasObject {
 		},
 		OnSubmit: func() {
 			// first try to decrypt the file
-			if err := secrets_actions.ActionDecryptSecretsFile(passwordEntry.Text); err == nil {
+			if err := secretsactions.ActionDecryptSecretsFile(passwordEntry.Text); err == nil {
 				// execute the file and apply to all namespaces
-				bar := ui_elements.ProgressBar{
+				bar := uielements.ProgressBar{
 					Bar:        dialog.NewProgress("Apply secrets to all namespaces", "Progress", window),
 					CurrentCnt: 0,
-					MaxCount:   float64(len(models.GetIpConfiguration().Ips)),
+					MaxCount:   float64(len(models.GetIPConfiguration().Ips)),
 				}
 				bar.Bar.Show()
-				_ = secrets_actions.ActionApplySecretsToAllNamespaces(bar.AddCallback)
+				_ = secretsactions.ActionApplySecretsToAllNamespaces(bar.AddCallback)
 				bar.Bar.Hide()
 			}
 
-			ui_elements.ShowLogOutput(window)
+			uielements.ShowLogOutput(window)
 		},
 	}
 
@@ -44,11 +44,11 @@ func ScreenApplySecretsToAllNamespace(window fyne.Window) fyne.CanvasObject {
 	return box
 }
 
-// apply to one selected namespace
+// ScreenApplySecretsToNamespace shows the apply to one selected namespace screen
 func ScreenApplySecretsToNamespace(window fyne.Window) fyne.CanvasObject {
 	// Namespace
 	namespaceErrorLabel := widget.NewLabel("")
-	namespaceSelectEntry := ui_elements.CreateNamespaceSelectEntry(namespaceErrorLabel)
+	namespaceSelectEntry := uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
 
 	// password
 	passwordEntry := widget.NewPasswordEntry()
@@ -61,13 +61,13 @@ func ScreenApplySecretsToNamespace(window fyne.Window) fyne.CanvasObject {
 		},
 		OnSubmit: func() {
 			// first try to decrypt the file
-			err := secrets_actions.ActionDecryptSecretsFile(passwordEntry.Text)
+			err := secretsactions.ActionDecryptSecretsFile(passwordEntry.Text)
 			if err == nil {
 				// execute the file
-				_ = secrets_actions.ActionApplySecretsToNamespace(namespaceSelectEntry.Text)
+				_ = secretsactions.ActionApplySecretsToNamespace(namespaceSelectEntry.Text)
 			}
 			// show output
-			ui_elements.ShowLogOutput(window)
+			uielements.ShowLogOutput(window)
 		},
 	}
 

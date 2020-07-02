@@ -7,9 +7,9 @@ import (
 	"strings"
 )
 
-// check selected namespace against namespace list
+// ValidateNamespaceAvailableInConfig checks selected namespace against namespace list
 func ValidateNamespaceAvailableInConfig(namespaceToValidate string) bool {
-	for _, ip := range models.GetIpConfiguration().Ips {
+	for _, ip := range models.GetIPConfiguration().Ips {
 		if ip.Namespace == namespaceToValidate {
 			return true
 		}
@@ -17,7 +17,7 @@ func ValidateNamespaceAvailableInConfig(namespaceToValidate string) bool {
 	return false
 }
 
-// validate namespace
+// ValidateNewNamespace validates the namespace
 func ValidateNewNamespace(input string) error {
 	// a namespace name cannot be longer than 63 characters
 	if len(input) > 63 {
@@ -29,7 +29,7 @@ func ValidateNewNamespace(input string) error {
 		return errors.New("Namespace is not valid! It must fit to DNS specification! ")
 	}
 	// check, that namespace was not already used
-	for _, ipConfig := range models.GetIpConfiguration().Ips {
+	for _, ipConfig := range models.GetIPConfiguration().Ips {
 		if strings.ToLower(ipConfig.Namespace) == strings.ToLower(input) {
 			return errors.New("Namespace already in use! ")
 		}

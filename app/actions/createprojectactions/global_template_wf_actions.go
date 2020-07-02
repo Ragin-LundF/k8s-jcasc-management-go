@@ -1,8 +1,8 @@
-package createproject
+package createprojectactions
 
 import "k8s-management-go/app/utils/loggingstate"
 
-// delegation method for replacement of global configuration
+// ActionReplaceGlobalConfigDelegation is a delegation method for replacement of global configuration
 func ActionReplaceGlobalConfigDelegation(projectDirectory string) (success bool, err error) {
 	success, err = ActionReplaceGlobalConfigNginxIngressCtrlHelmValues(projectDirectory)
 	if !success || err != nil {

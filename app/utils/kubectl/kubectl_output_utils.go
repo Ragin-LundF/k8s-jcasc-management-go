@@ -1,14 +1,13 @@
 package kubectl
 
 import (
-	"errors"
 	"fmt"
 	"k8s-management-go/app/utils/arrays"
 	"k8s-management-go/app/utils/logger"
 	"strings"
 )
 
-// function to check if a kubectl output contains a value for a field
+// CheckIfKubectlOutputContainsValueForField is a function to check if a kubectl output contains a value for a field
 func CheckIfKubectlOutputContainsValueForField(kubectlOutput string, fieldName string, searchedValue string) bool {
 	found := false
 
@@ -28,7 +27,7 @@ func CheckIfKubectlOutputContainsValueForField(kubectlOutput string, fieldName s
 	return found
 }
 
-// find field values in kubectl output
+// FindFieldValuesInKubectlOutput finds field values in kubectl output
 func FindFieldValuesInKubectlOutput(kubectlOutput string, fieldName string) (fieldValues []string, err error) {
 	// First find the field index for the field name
 	lineIndex, fieldIndex, err := FindFieldIndexInKubectlOutput(kubectlOutput, fieldName)
@@ -54,7 +53,7 @@ func FindFieldValuesInKubectlOutput(kubectlOutput string, fieldName string) (fie
 	return fieldValues, err
 }
 
-// find the field index in output.
+// FindFieldIndexInKubectlOutput finds the field index in output.
 // it returns also the line index where the field was found.
 func FindFieldIndexInKubectlOutput(kubectlOutput string, fieldName string) (lineIndex int, fieldIndex int, err error) {
 	log := logger.Log()
@@ -83,7 +82,7 @@ func FindFieldIndexInKubectlOutput(kubectlOutput string, fieldName string) (line
 	}
 
 	if fieldIdx == -1 {
-		err = errors.New(fmt.Sprintf("[FindFieldIndexInKubectlOutput] Cannot find index for fieldName [%s]", fieldName))
+		err = fmt.Errorf("[FindFieldIndexInKubectlOutput] Cannot find index for fieldName [%s]", fieldName)
 		log.Errorf(err.Error())
 	}
 

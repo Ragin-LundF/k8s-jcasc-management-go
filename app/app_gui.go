@@ -10,7 +10,7 @@ import (
 	"k8s-management-go/app/gui/menu"
 )
 
-// start app with GUI
+// StartApp will start app with GUI
 func StartApp(info string) {
 	k8sJcascApp := app.NewWithID("k8s_jcasc_mgmt_go_ui")
 	k8sJcascApp.SetIcon(theme.FyneLogo())
@@ -31,7 +31,7 @@ func StartApp(info string) {
 	k8sJcascWindow.ShowAndRun()
 }
 
-// Start App with CLI
+// StartCli will start App with CLI
 func StartCli(info string) {
 	cli.Workflow(info, nil)
 }

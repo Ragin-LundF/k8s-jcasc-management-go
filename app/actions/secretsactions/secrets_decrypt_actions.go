@@ -1,4 +1,4 @@
-package secrets_actions
+package secretsactions
 
 import (
 	"k8s-management-go/app/constants"
@@ -6,7 +6,7 @@ import (
 	"k8s-management-go/app/utils/encryption"
 )
 
-// decrypt secrets file with password
+// ActionDecryptSecretsFile decrypts secrets file with password
 func ActionDecryptSecretsFile(password string) (err error) {
 	secretsFilePath := models.GetGlobalSecretsFile() + constants.SecretsFileEncodedEnding
 	err = encryption.GpgDecryptSecrets(secretsFilePath, password)

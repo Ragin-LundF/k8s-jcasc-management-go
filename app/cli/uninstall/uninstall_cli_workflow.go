@@ -1,13 +1,13 @@
 package uninstall
 
 import (
-	"k8s-management-go/app/actions/uninstall_actions"
+	"k8s-management-go/app/actions/uninstallactions"
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/loggingstate"
 )
 
-// workflow for uninstall
+// DoUninstall is the workflow for uninstall
 func DoUninstall() (err error) {
 	bar := dialogs.CreateProgressBar("Uninstalling Jenkins", 5)
 	// Show dialogs to catch needed information
@@ -18,7 +18,7 @@ func DoUninstall() (err error) {
 	}
 
 	bar.Describe("Uninstalling Jenkins deployment...")
-	err = uninstall_actions.ProcessJenkinsUninstallIfExists(state)
+	err = uninstallactions.ProcessJenkinsUninstallIfExists(state)
 	if err != nil {
 		return err
 	}
@@ -26,11 +26,11 @@ func DoUninstall() (err error) {
 
 	// uninstall nginx ingress controller
 	bar.Describe("Check for Nginx installation...")
-	state = uninstall_actions.ProcessCheckNginxDirectoryExists(state)
+	state = uninstallactions.ProcessCheckNginxDirectoryExists(state)
 	_ = bar.Add(1)
 
 	bar.Describe("Nginx-ingress-controller found...Uninstalling...")
-	err = uninstall_actions.ProcessNginxIngressControllerUninstall(state)
+	err = uninstallactions.ProcessNginxIngressControllerUninstall(state)
 	if err != nil {
 		return err
 	}
@@ -39,12 +39,12 @@ func DoUninstall() (err error) {
 	// in dry-run we do not want to uninstall the scripts
 	if !models.GetConfiguration().K8sManagement.DryRunOnly {
 		bar.Describe("Try to execute uninstall scripts...")
-		uninstall_actions.ProcessScriptsUninstallIfExists(state)
+		uninstallactions.ProcessScriptsUninstallIfExists(state)
 		_ = bar.Add(1)
 
 		// nginx-ingress-controller cleanup
 		bar.Describe("Cleanup configuration...")
-		uninstall_actions.ProcessK8sCleanup(state)
+		uninstallactions.ProcessK8sCleanup(state)
 		_ = bar.Add(1)
 	} else {
 		_ = bar.Add(2) // skipping previous steps

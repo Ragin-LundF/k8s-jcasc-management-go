@@ -4,10 +4,11 @@ import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
-	"k8s-management-go/app/actions/secrets_actions"
-	"k8s-management-go/app/gui/ui_elements"
+	"k8s-management-go/app/actions/secretsactions"
+	"k8s-management-go/app/gui/uielements"
 )
 
+// ScreenDecryptSecrets shows the decrypt secrets screen
 func ScreenDecryptSecrets(window fyne.Window) fyne.CanvasObject {
 	// secrets password
 	passwordEntry := widget.NewPasswordEntry()
@@ -17,8 +18,8 @@ func ScreenDecryptSecrets(window fyne.Window) fyne.CanvasObject {
 			{Text: "Password", Widget: passwordEntry},
 		},
 		OnSubmit: func() {
-			_ = secrets_actions.ActionDecryptSecretsFile(passwordEntry.Text)
-			ui_elements.ShowLogOutput(window)
+			_ = secretsactions.ActionDecryptSecretsFile(passwordEntry.Text)
+			uielements.ShowLogOutput(window)
 		},
 	}
 

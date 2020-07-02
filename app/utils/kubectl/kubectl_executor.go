@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-// Execute Kubectl commands
+// ExecutorKubectl executes kubectl commands
 func ExecutorKubectl(command string, args []string) (output string, err error) {
 	log := logger.Log()
 

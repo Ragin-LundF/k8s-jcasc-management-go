@@ -9,6 +9,7 @@ import (
 	"k8s-management-go/app/gui/namespace"
 )
 
+// ToolsScreen shows the tools scrren
 func ToolsScreen(window fyne.Window, preferences fyne.Preferences) fyne.CanvasObject {
 	return widget.NewVBox(
 		toolsSubMenu(window, preferences),

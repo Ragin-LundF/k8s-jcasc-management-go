@@ -6,6 +6,7 @@ import (
 	"k8s-management-go/app/utils/validator"
 )
 
+// JenkinsJobsConfigRepositoryWorkflow represents the config repository workflow
 func JenkinsJobsConfigRepositoryWorkflow() (jenkinsJobsCfgRepo string, err error) {
 	// Validator
 	validate := validator.ValidateJenkinsJobConfig

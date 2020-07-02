@@ -1,4 +1,4 @@
-package createproject
+package createprojectactions
 
 import (
 	"k8s-management-go/app/constants"
@@ -6,7 +6,7 @@ import (
 	"k8s-management-go/app/utils/files"
 )
 
-// Replace PVC default values
+// ActionReplaceGlobalConfigPvcValues replaces PVC default values
 func ActionReplaceGlobalConfigPvcValues(projectDirectory string) (success bool, err error) {
 	var pvcFile = files.AppendPath(projectDirectory, constants.FilenamePvcClaim)
 	if files.FileOrDirectoryExists(pvcFile) {

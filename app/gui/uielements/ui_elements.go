@@ -1,35 +1,36 @@
-package ui_elements
+package uielements
 
 import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/widget"
-	"k8s-management-go/app/actions/namespace_actions"
+	"k8s-management-go/app/actions/namespaceactions"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/loggingstate"
 	"strings"
 )
 
+// ProgressBar configures the progress bar
 type ProgressBar struct {
 	Bar        *dialog.ProgressDialog
 	MaxCount   float64
 	CurrentCnt float64
 }
 
-// function to add progress. Will be used as callback
+// AddCallback is a function to add progress. Will be used as callback
 func (progress *ProgressBar) AddCallback() {
 	progress.Bar.SetValue(float64(1) / progress.MaxCount * progress.CurrentCnt)
 	progress.CurrentCnt = progress.CurrentCnt + 1
 }
 
-// create namespace select entry
+// CreateNamespaceSelectEntry creates namespace select entry
 func CreateNamespaceSelectEntry(namespaceErrorLabel *widget.Label) (namespaceSelectEntry *widget.SelectEntry) {
 	// Namespace
-	namespaceSelectEntry = widget.NewSelectEntry(namespace_actions.ActionReadNamespaceWithFilter(nil))
+	namespaceSelectEntry = widget.NewSelectEntry(namespaceactions.ActionReadNamespaceWithFilter(nil))
 	namespaceSelectEntry.PlaceHolder = "Type or select namespace"
 	namespaceSelectEntry.OnChanged = func(input string) {
-		namespaces := namespace_actions.ActionReadNamespaceWithFilter(&input)
+		namespaces := namespaceactions.ActionReadNamespaceWithFilter(&input)
 		namespaceSelectEntry.SetOptions(namespaces)
 		if strings.TrimSpace(strings.Join(namespaces, "")) == "" {
 			namespaceErrorLabel.SetText("No namespace found with these characters.")
@@ -41,7 +42,7 @@ func CreateNamespaceSelectEntry(namespaceErrorLabel *widget.Label) (namespaceSel
 	return namespaceSelectEntry
 }
 
-// create deployment name entry
+// CreateDeploymentNameEntry creates deployment name entry
 func CreateDeploymentNameEntry() (deploymentNameEntry *widget.Entry) {
 	// Deployment name
 	deploymentNameEntry = widget.NewEntry()
@@ -53,7 +54,7 @@ func CreateDeploymentNameEntry() (deploymentNameEntry *widget.Entry) {
 	return deploymentNameEntry
 }
 
-// create radio install_actions type radio
+// CreateInstallTypeRadio creates radio install type radio
 func CreateInstallTypeRadio() (radioInstallType *widget.Radio) {
 	// Install or update
 	radioInstallType = widget.NewRadio([]string{constants.HelmCommandInstall, constants.HelmCommandUpgrade}, nil)
@@ -62,7 +63,7 @@ func CreateInstallTypeRadio() (radioInstallType *widget.Radio) {
 	return radioInstallType
 }
 
-// create radio install_actions type radio
+// CreateDryRunRadio creates radio install type radio
 func CreateDryRunRadio() (radioInstallType *widget.Radio) {
 	// Execute or dry-run
 	radioInstallType = widget.NewRadio([]string{constants.InstallDryRunInactive, constants.InstallDryRunActive}, nil)
@@ -71,7 +72,7 @@ func CreateDryRunRadio() (radioInstallType *widget.Radio) {
 	return radioInstallType
 }
 
-// show output of internal logging
+// ShowLogOutput shows output of internal logging
 func ShowLogOutput(window fyne.Window) {
 	// read the log
 	loggingStates := loggingstate.GetLoggingStateEntries()

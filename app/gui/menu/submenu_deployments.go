@@ -9,6 +9,7 @@ import (
 	"k8s-management-go/app/gui/uninstall"
 )
 
+// InstallScreen shows the installation screen
 func InstallScreen(window fyne.Window, preferences fyne.Preferences) fyne.CanvasObject {
 	return widget.NewVBox(
 		installSubMenu(window, preferences),

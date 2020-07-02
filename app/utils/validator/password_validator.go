@@ -1,5 +1,6 @@
 package validator
 
+// ValidateConfirmPasswords validate password confirm
 func ValidateConfirmPasswords(password string, confirmPassword string) (isValid bool, errMessage string) {
 	// check first, if both passwords are equal
 	if password != confirmPassword {

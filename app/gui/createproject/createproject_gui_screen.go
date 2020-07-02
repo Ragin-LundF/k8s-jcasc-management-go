@@ -5,14 +5,14 @@ import (
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
-	"k8s-management-go/app/actions/createproject"
+	"k8s-management-go/app/actions/createprojectactions"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/gui/ui_elements"
+	"k8s-management-go/app/gui/uielements"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/validator"
 )
 
-// Full project setup
+// ScreenCreateFullProject shows the full project setup screen
 func ScreenCreateFullProject(window fyne.Window) fyne.CanvasObject {
 	var projectConfig models.ProjectConfig
 	projectConfig.CreateDeploymentOnlyProject = false
@@ -60,7 +60,7 @@ func ScreenCreateFullProject(window fyne.Window) fyne.CanvasObject {
 		OnSubmit: func() {
 			// get variables
 			projectConfig.Namespace = namespaceEntry.Text
-			projectConfig.IpAddress = ipAddressEntry.Text
+			projectConfig.IPAddress = ipAddressEntry.Text
 			projectConfig.JenkinsSystemMsg = jenkinsSysMsgEntry.Text
 			projectConfig.JobsCfgRepo = jenkinsJobsCfgEntry.Text
 			projectConfig.ExistingPvc = jenkinsExistingPvcEntry.Text
@@ -74,7 +74,7 @@ func ScreenCreateFullProject(window fyne.Window) fyne.CanvasObject {
 			}
 
 			// validate IP address
-			err = validator.ValidateIp(projectConfig.IpAddress)
+			err = validator.ValidateIP(projectConfig.IPAddress)
 			if err != nil {
 				ipAddressErrorLabel.SetText(err.Error())
 				hasErrors = true
@@ -103,17 +103,17 @@ func ScreenCreateFullProject(window fyne.Window) fyne.CanvasObject {
 
 			// process project creation if no error was found
 			if !hasErrors {
-				bar := ui_elements.ProgressBar{
+				bar := uielements.ProgressBar{
 					Bar:        dialog.NewProgress("Create project...", "Progress", window),
 					CurrentCnt: 0,
-					MaxCount:   createproject.CountCreateProjectWorkflow,
+					MaxCount:   createprojectactions.CountCreateProjectWorkflow,
 				}
 				bar.Bar.Show()
-				_ = createproject.ActionProcessProjectCreate(projectConfig, bar.AddCallback)
+				_ = createprojectactions.ActionProcessProjectCreate(projectConfig, bar.AddCallback)
 				bar.Bar.Hide()
 
 				// show output
-				ui_elements.ShowLogOutput(window)
+				uielements.ShowLogOutput(window)
 			}
 		},
 	}
@@ -126,7 +126,7 @@ func ScreenCreateFullProject(window fyne.Window) fyne.CanvasObject {
 	return box
 }
 
-// Deployment only project without Jenkins
+// ScreenCreateDeployOnlyProject shows the screen for deployment only project without Jenkins
 func ScreenCreateDeployOnlyProject(window fyne.Window) fyne.CanvasObject {
 	var projectConfig models.ProjectConfig
 	projectConfig.CreateDeploymentOnlyProject = true
@@ -151,7 +151,7 @@ func ScreenCreateDeployOnlyProject(window fyne.Window) fyne.CanvasObject {
 		OnSubmit: func() {
 			// get variables
 			projectConfig.Namespace = namespaceEntry.Text
-			projectConfig.IpAddress = ipAddressEntry.Text
+			projectConfig.IPAddress = ipAddressEntry.Text
 			hasError := false
 
 			// validate namespace
@@ -162,7 +162,7 @@ func ScreenCreateDeployOnlyProject(window fyne.Window) fyne.CanvasObject {
 			}
 
 			// validate IP address
-			err = validator.ValidateIp(projectConfig.IpAddress)
+			err = validator.ValidateIP(projectConfig.IPAddress)
 			if err != nil {
 				ipAddressErrorLabel.SetText(err.Error())
 				hasError = true
@@ -170,17 +170,17 @@ func ScreenCreateDeployOnlyProject(window fyne.Window) fyne.CanvasObject {
 
 			if !hasError {
 				// process project creation
-				bar := ui_elements.ProgressBar{
+				bar := uielements.ProgressBar{
 					Bar:        dialog.NewProgress("Create project...", "Progress", window),
 					CurrentCnt: 0,
-					MaxCount:   createproject.CountCreateProjectWorkflow,
+					MaxCount:   createprojectactions.CountCreateProjectWorkflow,
 				}
 				bar.Bar.Show()
-				_ = createproject.ActionProcessProjectCreate(projectConfig, bar.AddCallback)
+				_ = createprojectactions.ActionProcessProjectCreate(projectConfig, bar.AddCallback)
 				bar.Bar.Hide()
 
 				// show output
-				ui_elements.ShowLogOutput(window)
+				uielements.ShowLogOutput(window)
 			}
 		},
 	}

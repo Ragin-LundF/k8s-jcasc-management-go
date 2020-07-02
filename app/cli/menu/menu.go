@@ -9,13 +9,14 @@ import (
 	"strings"
 )
 
-// Menu struct
+// MenuitemModel defines the menu item struct
 type MenuitemModel struct {
 	Name        string
 	Description string
 	Spacer      string
 }
 
+// Menu shows the menu and some additional information
 func Menu(info string, err error) string {
 	log := logger.Log()
 	// clear screen
@@ -77,7 +78,7 @@ func Menu(info string, err error) string {
 	return menuStructure[i].Name
 }
 
-// create menuitems
+// CreateMenuItems creates menuitems
 func CreateMenuItems() []MenuitemModel {
 	// Menu structure
 	menuStructure := []MenuitemModel{

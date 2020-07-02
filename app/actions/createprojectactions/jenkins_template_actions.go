@@ -1,4 +1,4 @@
-package createproject
+package createprojectactions
 
 import (
 	"k8s-management-go/app/constants"
@@ -6,7 +6,7 @@ import (
 	"k8s-management-go/app/utils/files"
 )
 
-// Replace Jenkins Helm default values
+// ActionReplaceGlobalConfigJenkinsHelmValues replaces Jenkins Helm default values
 func ActionReplaceGlobalConfigJenkinsHelmValues(projectDirectory string) (success bool, err error) {
 	var jenkinsHelmValues = files.AppendPath(projectDirectory, constants.FilenameJenkinsHelmValues)
 	if files.FileOrDirectoryExists(jenkinsHelmValues) {
@@ -14,7 +14,7 @@ func ActionReplaceGlobalConfigJenkinsHelmValues(projectDirectory string) (succes
 		if success, err = files.ReplaceStringInFile(jenkinsHelmValues, constants.TemplateJenkinsMasterDeploymentName, models.GetConfiguration().Jenkins.Helm.Master.DeploymentName); !success {
 			return success, err
 		}
-		if success, err = files.ReplaceStringInFile(jenkinsHelmValues, constants.TemplateJenkinsMasterDefaultUriPrefix, models.GetConfiguration().Jenkins.Helm.Master.DefaultUriPrefix); !success {
+		if success, err = files.ReplaceStringInFile(jenkinsHelmValues, constants.TemplateJenkinsMasterDefaultURIPrefix, models.GetConfiguration().Jenkins.Helm.Master.DefaultURIPrefix); !success {
 			return success, err
 		}
 		if success, err = files.ReplaceStringInFile(jenkinsHelmValues, constants.TemplateJenkinsMasterDenyAnonymousReadAccess, models.GetConfiguration().Jenkins.Helm.Master.DenyAnonymousReadAccess); !success {
@@ -49,7 +49,7 @@ func ActionReplaceGlobalConfigJenkinsHelmValues(projectDirectory string) (succes
 			return success, err
 		}
 		// JCasC
-		if success, err = files.ReplaceStringInFile(jenkinsHelmValues, constants.TemplateJenkinsJcascConfigurationUrl, models.GetConfiguration().Jenkins.JCasC.ConfigurationUrl); !success {
+		if success, err = files.ReplaceStringInFile(jenkinsHelmValues, constants.TemplateJenkinsJcascConfigurationURL, models.GetConfiguration().Jenkins.JCasC.ConfigurationURL); !success {
 			return success, err
 		}
 	}

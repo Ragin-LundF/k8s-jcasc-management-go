@@ -7,6 +7,7 @@ import (
 	"fyne.io/fyne/widget"
 )
 
+// ScreenWelcome shows the welcome screen
 func ScreenWelcome(info string) fyne.CanvasObject {
 	logo := canvas.NewImageFromFile("docs/images/k8s-mgmt-workflow.png")
 	if fyne.CurrentDevice().IsMobile() {

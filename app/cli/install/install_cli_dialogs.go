@@ -1,7 +1,7 @@
 package install
 
 import (
-	"k8s-management-go/app/actions/install_actions"
+	"k8s-management-go/app/actions/installactions"
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/cli/secrets"
 	"k8s-management-go/app/models"
@@ -9,7 +9,7 @@ import (
 	"k8s-management-go/app/utils/loggingstate"
 )
 
-// show CLI ui_elements
+// ShowInstallDialogs shows CLI ui elements
 func ShowInstallDialogs() (state models.StateData, err error) {
 	// ask for namespace
 	loggingstate.AddInfoEntry("-> Ask for namespace...")
@@ -21,13 +21,13 @@ func ShowInstallDialogs() (state models.StateData, err error) {
 	loggingstate.AddInfoEntry("-> Ask for namespace...done")
 
 	// Directories
-	err, state = install_actions.CalculateDirectoriesForInstall(state, state.Namespace)
+	state, err = installactions.CalculateDirectoriesForInstall(state, state.Namespace)
 	if err != nil {
 		return state, err
 	}
 
 	// check if project configuration contains Jenkins Helm values file
-	state = install_actions.CheckJenkinsDirectories(state)
+	state = installactions.CheckJenkinsDirectories(state)
 
 	// if it is Jenkins installation ask more things
 	if state.JenkinsHelmValuesExist {

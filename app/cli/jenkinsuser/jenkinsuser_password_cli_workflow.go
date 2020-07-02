@@ -7,10 +7,11 @@ import (
 	"k8s-management-go/app/utils/loggingstate"
 )
 
+// CreateJenkinsUserPassword creates the Jenkins user password CLI dialog
 func CreateJenkinsUserPassword() (err error) {
 	loggingstate.AddInfoEntry("-> Ask for plain passwords...")
 
-	err, plainPassword := ShowJenkinsUserPasswordDialog()
+	plainPassword, err := ShowJenkinsUserPasswordDialog()
 	if err != nil {
 		return err
 	}

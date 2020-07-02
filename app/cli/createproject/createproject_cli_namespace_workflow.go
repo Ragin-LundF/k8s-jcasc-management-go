@@ -6,6 +6,7 @@ import (
 	"k8s-management-go/app/utils/validator"
 )
 
+// NamespaceWorkflow represents the namespace workflow
 func NamespaceWorkflow() (namespace string, err error) {
 	// Validator for namespace name
 	validate := validator.ValidateNewNamespace

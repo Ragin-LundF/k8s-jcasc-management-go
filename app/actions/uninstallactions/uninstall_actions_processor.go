@@ -1,4 +1,4 @@
-package uninstall_actions
+package uninstallactions
 
 import (
 	"fmt"
@@ -8,6 +8,7 @@ import (
 	"k8s-management-go/app/utils/loggingstate"
 )
 
+// ProcessJenkinsUninstallIfExists processes Jenkins uninstall if Jenkins Helm values exists
 func ProcessJenkinsUninstallIfExists(state models.StateData) (err error) {
 	if state.JenkinsHelmValuesExist {
 		loggingstate.AddInfoEntry(fmt.Sprintf("-> Uninstalling deployment [%s] on namespace [%s]...", state.DeploymentName, state.Namespace))
@@ -20,6 +21,7 @@ func ProcessJenkinsUninstallIfExists(state models.StateData) (err error) {
 	return nil
 }
 
+// ProcessNginxIngressControllerUninstall processes the nginx ingress controller uninstall
 func ProcessNginxIngressControllerUninstall(state models.StateData) (err error) {
 	if state.NginxHelmValuesExist {
 		loggingstate.AddInfoEntry(fmt.Sprintf("-> Uninstalling nginx-ingress-controller on namespace [%s]...", state.Namespace))
@@ -32,6 +34,7 @@ func ProcessNginxIngressControllerUninstall(state models.StateData) (err error) 
 	return nil
 }
 
+// ProcessScriptsUninstallIfExists processes the uninstall of the scripts if it exists
 func ProcessScriptsUninstallIfExists(state models.StateData) {
 	// try to uninstall scripts
 	loggingstate.AddInfoEntry(fmt.Sprintf("-> Try to execute uninstall scripts on [%s]...", state.Namespace))
@@ -40,12 +43,14 @@ func ProcessScriptsUninstallIfExists(state models.StateData) {
 	loggingstate.AddInfoEntry(fmt.Sprintf("-> Try to execute uninstall scripts on [%s]...done", state.Namespace))
 }
 
+// ProcessK8sCleanup processes the K8S cleanup
 func ProcessK8sCleanup(state models.StateData) {
 	loggingstate.AddInfoEntry(fmt.Sprintf("-> Try to cleanup configuration of [%s]...", state.Namespace))
 	ActionCleanupK8sNginxIngressController(state.Namespace)
 	loggingstate.AddInfoEntry(fmt.Sprintf("-> Try to cleanup configuration of [%s]...done", state.Namespace))
 }
 
+// ProcessCheckNginxDirectoryExists checks if nginx ingress controller helm values file exists
 func ProcessCheckNginxDirectoryExists(state models.StateData) models.StateData {
 	nginxHelmValueFile := files.AppendPath(
 		files.AppendPath(

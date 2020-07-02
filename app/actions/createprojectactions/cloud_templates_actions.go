@@ -1,4 +1,4 @@
-package createproject
+package createprojectactions
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-// read cloud templates and return list
+// ActionReadCloudTemplates reads cloud templates and return list
 func ActionReadCloudTemplates() (cloudTemplates []string) {
 	// look if cloud templates are available
 	var cloudTemplatePath = files.AppendPath(models.GetProjectTemplateDirectory(), constants.DirProjectTemplateCloudTemplates)
@@ -31,7 +31,7 @@ func ActionReadCloudTemplates() (cloudTemplates []string) {
 	return cloudTemplates
 }
 
-// add cloud templates to project template
+// ActionProcessTemplateCloudTemplates adds cloud templates to project template
 func ActionProcessTemplateCloudTemplates(projectDirectory string, cloudTemplateFiles []string) (success bool, err error) {
 	targetFile := files.AppendPath(projectDirectory, constants.FilenameJenkinsConfigurationAsCode)
 	// if file exists -> try to replace files

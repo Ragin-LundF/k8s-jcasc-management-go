@@ -2,14 +2,14 @@ package secrets
 
 import (
 	"errors"
-	"k8s-management-go/app/actions/secrets_actions"
+	"k8s-management-go/app/actions/secretsactions"
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/loggingstate"
 	"strings"
 )
 
-// ask for password
+// AskForSecretsPassword asks for password
 func AskForSecretsPassword(passwordText string) (password string, err error) {
 	// Validator for password (keep it simple for now)
 	validate := func(input string) error {
@@ -35,7 +35,7 @@ func AskForSecretsPassword(passwordText string) (password string, err error) {
 	return password, err
 }
 
-// apply secrets
+// ApplySecrets applies the secrets
 func ApplySecrets() (err error) {
 	// ask for namespace
 	loggingstate.AddInfoEntry("  -> Ask for namespace to apply secrets...")
@@ -61,11 +61,11 @@ func ApplySecrets() (err error) {
 	return nil
 }
 
-// apply secrets to one namespace
+// ApplySecretsToNamespace applies secrets to one namespace
 func ApplySecretsToNamespace(namespace string, password *string) (err error) {
 	// Decrypt secrets file
 	if password != nil {
-		if err = secrets_actions.ActionDecryptSecretsFile(*password); err != nil {
+		if err = secretsactions.ActionDecryptSecretsFile(*password); err != nil {
 			return err
 		}
 	} else {
@@ -75,11 +75,11 @@ func ApplySecretsToNamespace(namespace string, password *string) (err error) {
 	}
 
 	// apply secret to namespace
-	err = secrets_actions.ActionApplySecretsToNamespace(namespace)
+	err = secretsactions.ActionApplySecretsToNamespace(namespace)
 	return err
 }
 
-// apply secrets to all namespaces
+// ApplySecretsToAllNamespaces applies secrets to all namespaces
 func ApplySecretsToAllNamespaces() (err error) {
 	err = DecryptSecretsFile()
 	if err != nil {
@@ -87,12 +87,12 @@ func ApplySecretsToAllNamespaces() (err error) {
 	}
 
 	// prepare progressbar
-	bar := dialogs.CreateProgressBar("Installing...", len(models.GetIpConfiguration().Ips))
+	bar := dialogs.CreateProgressBar("Installing...", len(models.GetIPConfiguration().Ips))
 	progress := dialogs.ProgressBar{
 		Bar: &bar,
 	}
 	// apply secret to namespaces
-	err = secrets_actions.ActionApplySecretsToAllNamespaces(progress.AddCallback)
+	err = secretsactions.ActionApplySecretsToAllNamespaces(progress.AddCallback)
 
 	return err
 }

@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-// Read configuration from k8s-management
+// ReadConfiguration reads the configuration of k8s-management
 func ReadConfiguration(basePath string, dryRunDebug bool, cliOnly bool) {
 	// read plain configuration
 	readConfigurationFromFile(files.AppendPath(files.AppendPath(basePath, constants.DirConfig), constants.FilenameConfiguration))

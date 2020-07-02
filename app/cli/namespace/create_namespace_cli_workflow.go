@@ -1,12 +1,13 @@
 package namespace
 
 import (
-	"k8s-management-go/app/actions/namespace_actions"
+	"k8s-management-go/app/actions/namespaceactions"
 	"k8s-management-go/app/cli/createproject"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/loggingstate"
 )
 
+// WorkflowCreateNamespace is the workflow to create a namespace
 func WorkflowCreateNamespace() (err error) {
 	var state models.StateData
 	state.Namespace, err = createproject.NamespaceWorkflow()
@@ -14,7 +15,7 @@ func WorkflowCreateNamespace() (err error) {
 		loggingstate.AddErrorEntryAndDetails("-> AskForNamespace dialog aborted...", err.Error())
 	}
 
-	err = namespace_actions.ProcessNamespaceCreation(state)
+	err = namespaceactions.ProcessNamespaceCreation(state)
 
 	return nil
 }

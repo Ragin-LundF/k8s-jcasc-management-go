@@ -8,6 +8,7 @@ import (
 	"k8s-management-go/app/utils/loggingstate"
 )
 
+// ShowUninstallDialogs shows the uninstall dialog
 func ShowUninstallDialogs() (state models.StateData, err error) {
 	loggingstate.AddInfoEntry("-> Ask for namespace...")
 	state.Namespace, err = dialogs.DialogAskForNamespace()

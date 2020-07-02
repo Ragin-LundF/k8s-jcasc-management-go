@@ -9,6 +9,7 @@ import (
 	"k8s-management-go/app/utils/logger"
 )
 
+// CreateMainMenu creates the main menu
 func CreateMainMenu(app fyne.App, window fyne.Window) *fyne.MainMenu {
 	// K8S Management Menu
 	settingsItem := fyne.NewMenuItem("Configuration", func() { printConfiguration(window) })
@@ -25,23 +26,23 @@ func CreateMainMenu(app fyne.App, window fyne.Window) *fyne.MainMenu {
 func printConfiguration(window fyne.Window) {
 	// System config
 	configSystem := models.GetConfiguration()
-	configSystemAsJson, _ := json.MarshalIndent(configSystem, "", "\t")
+	configSystemAsJSON, _ := json.MarshalIndent(configSystem, "", "\t")
 
 	// textgrid for system config
 	textGridSystemConfig := widget.NewTextGrid()
-	textGridSystemConfig.SetText(string(configSystemAsJson))
+	textGridSystemConfig.SetText(string(configSystemAsJSON))
 
 	// IP config
-	configIp := models.GetIpConfiguration()
-	configIpAsJson, _ := json.MarshalIndent(configIp, "", "\t")
+	configIP := models.GetIPConfiguration()
+	configIPAsJSON, _ := json.MarshalIndent(configIP, "", "\t")
 
 	// writing into log
 	log := logger.Log()
 	log.Info("---- Printing system configuration start -----")
-	log.Info("\n" + string(configSystemAsJson))
+	log.Info("\n" + string(configSystemAsJSON))
 	log.Info("---- Printing system configuration end   -----")
 	log.Info("---- Printing IP configuration start -----")
-	log.Info("\n" + string(configIpAsJson))
+	log.Info("\n" + string(configIPAsJSON))
 	log.Info("---- Printing IP configuration end   -----")
 
 	dialog.ShowInformation("Configuration", "Your configuration was saved into your logs!", window)

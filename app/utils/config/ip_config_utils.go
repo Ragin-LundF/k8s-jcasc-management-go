@@ -11,16 +11,17 @@ import (
 	"strings"
 )
 
-func ReadIpConfig() {
+// ReadIPConfig reads the IP configuration file
+func ReadIPConfig() {
 	configuration := models.GetConfiguration()
 
 	// if IP config file does not exist, create it
-	if !files.FileOrDirectoryExists(models.GetIpConfigurationFile()) {
-		os.Create(models.GetIpConfigurationFile())
+	if !files.FileOrDirectoryExists(models.GetIPConfigurationFile()) {
+		os.Create(models.GetIPConfigurationFile())
 	}
 
 	// read configuration file. Replace unneeded double quotes if needed.
-	data, err := os.Open(models.GetIpConfigurationFile())
+	data, err := os.Open(models.GetIPConfigurationFile())
 	defer data.Close()
 
 	// check for error
@@ -36,16 +37,16 @@ func ReadIpConfig() {
 			// trim the line to avoid problems
 			line := strings.TrimSpace(scanner.Text())
 			// if line is not a comment (marker: "#") parse the configuration and assign it to the config
-			if line != "" && !strings.HasPrefix(line, "#") && !strings.HasPrefix(line, configuration.IpConfig.IpConfigFileDummyPrefix) {
-				namespace, ip := parseIpConfigurationLine(line)
-				models.AddIpAndNamespaceToConfiguration(namespace, ip)
+			if line != "" && !strings.HasPrefix(line, "#") && !strings.HasPrefix(line, configuration.IPConfig.IPConfigFileDummyPrefix) {
+				namespace, ip := parseIPConfigurationLine(line)
+				models.AddIPAndNamespaceToConfiguration(namespace, ip)
 			}
 		}
 	}
 }
 
 // parse line of configuration and split it into key/value
-func parseIpConfigurationLine(line string) (namespace string, ip string) {
+func parseIPConfigurationLine(line string) (namespace string, ip string) {
 	// split line on "="
 	var lineArray []string
 	if strings.Contains(line, "=") {
@@ -70,20 +71,20 @@ func parseIpConfigurationLine(line string) (namespace string, ip string) {
 	return "", ""
 }
 
-// Add IP to IP config file
-func AddToIpConfigFile(namespace string, ip string) (success bool, err error) {
+// AddToIPConfigFile adds an IP to the IP config file
+func AddToIPConfigFile(namespace string, ip string) (success bool, err error) {
 	log := logger.Log()
-	ipconfigFile, err := os.OpenFile(models.GetIpConfigurationFile(), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	ipconfigFile, err := os.OpenFile(models.GetIPConfigurationFile(), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
-		loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Unable to open IP config file [%s]", models.GetIpConfigurationFile()), err.Error())
-		log.Errorf("[AddToIpConfigFile] Unable to open IP config file [%s]. \n%s", models.GetIpConfigurationFile(), err.Error())
+		loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Unable to open IP config file [%s]", models.GetIPConfigurationFile()), err.Error())
+		log.Errorf("[AddToIPConfigFile] Unable to open IP config file [%s]. \n%s", models.GetIPConfigurationFile(), err.Error())
 		return false, err
 	}
 	defer ipconfigFile.Close()
 
 	if _, err := ipconfigFile.WriteString(namespace + " " + ip + "\n"); err != nil {
-		loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Unable to add new IP and namespace to file [%s]", models.GetIpConfigurationFile()), err.Error())
-		log.Errorf("[AddToIpConfigFile] Unable to add new IP and namespace to file [%s]. \n%s", models.GetIpConfigurationFile(), err.Error())
+		loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Unable to add new IP and namespace to file [%s]", models.GetIPConfigurationFile()), err.Error())
+		log.Errorf("[AddToIPConfigFile] Unable to add new IP and namespace to file [%s]. \n%s", models.GetIPConfigurationFile(), err.Error())
 		return false, err
 	}
 	return true, err

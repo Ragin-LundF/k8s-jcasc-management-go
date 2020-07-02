@@ -8,6 +8,7 @@ import (
 	"k8s-management-go/app/gui/createproject"
 )
 
+// ProjectsScreen shows the projects screen
 func ProjectsScreen(window fyne.Window, preferences fyne.Preferences) fyne.CanvasObject {
 	return widget.NewVBox(
 		projectsSubMenu(window, preferences),

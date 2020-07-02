@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-// encrypt secrets
+// GpgEncryptSecrets encrypts secrets
 func GpgEncryptSecrets(secretsFilePath string, password string) (err error) {
 	// first encrypt file
 	gpgCmdArgs := []string{
@@ -37,7 +37,7 @@ func GpgEncryptSecrets(secretsFilePath string, password string) (err error) {
 	return nil
 }
 
-// decrypt secrets
+// GpgDecryptSecrets decrypts secrets
 func GpgDecryptSecrets(secretsFilePath string, password string) (err error) {
 	gpgCmdArgs := []string{
 		"--batch", "--yes", "--passphrase", password, secretsFilePath,

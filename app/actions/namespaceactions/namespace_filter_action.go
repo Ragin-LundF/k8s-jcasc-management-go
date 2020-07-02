@@ -1,4 +1,4 @@
-package namespace_actions
+package namespaceactions
 
 import (
 	"k8s-management-go/app/models"
@@ -6,9 +6,9 @@ import (
 	"strings"
 )
 
-// namespaces loader and filter
+// ActionReadNamespaceWithFilter is a namespace loader and filter
 func ActionReadNamespaceWithFilter(filter *string) (namespaces []string) {
-	ipList := models.GetIpConfiguration().Ips
+	ipList := models.GetIPConfiguration().Ips
 	for _, ip := range ipList {
 		if filter != nil && *filter != "" {
 			if strings.Contains(ip.Namespace, *filter) {

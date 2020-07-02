@@ -1,4 +1,4 @@
-package createproject
+package createprojectactions
 
 import (
 	"k8s-management-go/app/constants"
@@ -6,7 +6,7 @@ import (
 	"k8s-management-go/app/utils/files"
 )
 
-// Replace Jenkins Configuration as Code default values
+// ActionReplaceGlobalConfigJCasCValues replace Jenkins Configuration as Code default values
 func ActionReplaceGlobalConfigJCasCValues(projectDirectory string) (success bool, err error) {
 	var jcascFile = files.AppendPath(projectDirectory, constants.FilenameJenkinsConfigurationAsCode)
 	if files.FileOrDirectoryExists(jcascFile) {
@@ -14,13 +14,13 @@ func ActionReplaceGlobalConfigJCasCValues(projectDirectory string) (success bool
 		if success, err = files.ReplaceStringInFile(jcascFile, constants.TemplateJenkinsMasterDeploymentName, models.GetConfiguration().Jenkins.Helm.Master.DeploymentName); !success {
 			return success, err
 		}
-		if success, err = files.ReplaceStringInFile(jcascFile, constants.TemplateJenkinsMasterDefaultUriPrefix, models.GetConfiguration().Jenkins.Helm.Master.DefaultUriPrefix); !success {
+		if success, err = files.ReplaceStringInFile(jcascFile, constants.TemplateJenkinsMasterDefaultURIPrefix, models.GetConfiguration().Jenkins.Helm.Master.DefaultURIPrefix); !success {
 			return success, err
 		}
 		if success, err = files.ReplaceStringInFile(jcascFile, constants.TemplateJenkinsMasterDefaultLabel, models.GetConfiguration().Jenkins.Helm.Master.Label); !success {
 			return success, err
 		}
-		if success, err = files.ReplaceStringInFile(jcascFile, constants.TemplateJenkinsJobDslSeedJobScriptUrl, models.GetConfiguration().Jenkins.JobDSL.SeedJobScriptUrl); !success {
+		if success, err = files.ReplaceStringInFile(jcascFile, constants.TemplateJenkinsJobDslSeedJobScriptURL, models.GetConfiguration().Jenkins.JobDSL.SeedJobScriptURL); !success {
 			return success, err
 		}
 		if success, err = files.ReplaceStringInFile(jcascFile, constants.TemplateJenkinsMasterAdminPasswordEncrypted, models.GetConfiguration().Jenkins.Helm.Master.AdminPasswordEncrypted); !success {
@@ -34,16 +34,16 @@ func ActionReplaceGlobalConfigJCasCValues(projectDirectory string) (success bool
 			return success, err
 		}
 		// CredentialIds
-		if success, err = files.ReplaceStringInFile(jcascFile, constants.TemplateCredentialsIdKubernetesDockerRegistry, models.GetConfiguration().CredentialIds.DefaultDockerRegistry); !success {
+		if success, err = files.ReplaceStringInFile(jcascFile, constants.TemplateCredentialsIDKubernetesDockerRegistry, models.GetConfiguration().CredentialIds.DefaultDockerRegistry); !success {
 			return success, err
 		}
-		if success, err = files.ReplaceStringInFile(jcascFile, constants.TemplateCredentialsIdMaven, models.GetConfiguration().CredentialIds.DefaultMavenRepository); !success {
+		if success, err = files.ReplaceStringInFile(jcascFile, constants.TemplateCredentialsIDMaven, models.GetConfiguration().CredentialIds.DefaultMavenRepository); !success {
 			return success, err
 		}
-		if success, err = files.ReplaceStringInFile(jcascFile, constants.TemplateCredentialsIdNpm, models.GetConfiguration().CredentialIds.DefaultNpmRepository); !success {
+		if success, err = files.ReplaceStringInFile(jcascFile, constants.TemplateCredentialsIDNpm, models.GetConfiguration().CredentialIds.DefaultNpmRepository); !success {
 			return success, err
 		}
-		if success, err = files.ReplaceStringInFile(jcascFile, constants.TemplateCredentialsIdVcs, models.GetConfiguration().CredentialIds.DefaultVcsRepository); !success {
+		if success, err = files.ReplaceStringInFile(jcascFile, constants.TemplateCredentialsIDVcs, models.GetConfiguration().CredentialIds.DefaultVcsRepository); !success {
 			return success, err
 		}
 	}

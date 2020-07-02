@@ -11,6 +11,7 @@ import (
 	"k8s-management-go/app/utils/validator"
 )
 
+// ScreenJenkinsUserPasswordCreate shows the Jenkins user psasword creation screen
 func ScreenJenkinsUserPasswordCreate(window fyne.Window) fyne.CanvasObject {
 	// UI elements
 	passwordErrorLabel := widget.NewLabel("")

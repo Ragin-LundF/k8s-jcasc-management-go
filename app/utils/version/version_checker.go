@@ -8,6 +8,7 @@ import (
 	"net/http"
 )
 
+// CheckVersion checks the version if there is a new one available
 func CheckVersion() bool {
 	log := logger.Log()
 

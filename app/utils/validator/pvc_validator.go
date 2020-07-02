@@ -2,6 +2,7 @@ package validator
 
 import "errors"
 
+// ValidatePersistentVolumeClaim validates PVC
 func ValidatePersistentVolumeClaim(input string) error {
 	// a pvc name cannot be longer than 253 characters
 	if len(input) > 253 {

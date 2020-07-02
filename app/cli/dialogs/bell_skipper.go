@@ -2,7 +2,7 @@ package dialogs
 
 import "os"
 
-// bellSkipper implements an io.WriteCloser that skips the terminal bell
+// BellSkipper implements an io.WriteCloser that skips the terminal bell
 // character (ASCII code 7), and writes the rest to os.Stderr. It is used to
 // replace readline.Stdout, that is the package used by promptui to display the
 // prompts.

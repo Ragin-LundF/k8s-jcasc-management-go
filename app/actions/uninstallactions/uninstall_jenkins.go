@@ -1,4 +1,4 @@
-package uninstall_actions
+package uninstallactions
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"k8s-management-go/app/utils/loggingstate"
 )
 
-// uninstall Jenkins with Helm
+// ActionHelmUninstallJenkins executes the actions to uninstall Jenkins with Helm
 func ActionHelmUninstallJenkins(namespace string, deploymentName string) (err error) {
 	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Uninstall Jenkins on namespace [%s] with deployment name [%s] start....", namespace, deploymentName))
 	// prepare Helm command

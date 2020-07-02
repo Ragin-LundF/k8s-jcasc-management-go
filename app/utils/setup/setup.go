@@ -12,8 +12,7 @@ import (
 	"strings"
 )
 
-// initial setup
-// reads the configuration
+// Setup is the initial setup and reads the configuration
 func Setup() {
 	// configure flags
 	logFileFlag := flag.String("logfile", "", "Logging output file. If empty it logs to console.")
@@ -76,7 +75,7 @@ func Setup() {
 func configure(basePath string, dryRunDebug bool, cliOnly bool) {
 	// read configuration
 	config.ReadConfiguration(basePath, dryRunDebug, cliOnly)
-	config.ReadIpConfig()
+	config.ReadIPConfig()
 
 	// overwrite logging
 	if logger.LogEncoding == "" && models.GetConfiguration().K8sManagement.Logging.LogEncoding != "" {

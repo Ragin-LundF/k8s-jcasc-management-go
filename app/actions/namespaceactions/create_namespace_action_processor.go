@@ -1,4 +1,4 @@
-package namespace_actions
+package namespaceactions
 
 import (
 	"fmt"
@@ -8,6 +8,7 @@ import (
 	"k8s-management-go/app/utils/loggingstate"
 )
 
+// ProcessNamespaceCreation processes the namespace creation
 func ProcessNamespaceCreation(state models.StateData) (err error) {
 	loggingstate.AddInfoEntry("Start creating namespace...")
 	loggingstate.AddInfoEntry("-> Check and create namespace if necessary...")
@@ -36,9 +37,8 @@ func ProcessNamespaceCreation(state models.StateData) (err error) {
 		}
 
 		loggingstate.AddInfoEntry(fmt.Sprintf("  -> Namespace [%s] is not available. Trying to create...done", state.Namespace))
-	} else {
-		loggingstate.AddInfoEntry(fmt.Sprintf("  -> Namespace [%s] found.", state.Namespace))
 	}
+	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Namespace [%s] found.", state.Namespace))
 
 	loggingstate.AddInfoEntry("-> Check and create namespace if necessary...done")
 	loggingstate.AddInfoEntry("Start creating namespace...done")
