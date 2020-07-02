@@ -66,11 +66,14 @@ func filterFilename(filename string, filter *FileFilter) bool {
 			if !strings.HasPrefix(filename, *filter.Prefix) {
 				fileIsOk = false
 			}
+		}
+		if filter.Suffix != nil {
 			// filter suffix if exists and file is still ok
 			if fileIsOk && !strings.HasSuffix(filename, *filter.Suffix) {
 				fileIsOk = false
 			}
 		}
+
 	}
 	return fileIsOk
 }

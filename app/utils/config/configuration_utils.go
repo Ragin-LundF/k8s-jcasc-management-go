@@ -72,15 +72,18 @@ func processLine(line string) {
 func parseConfigurationLine(line string) (key string, value string) {
 	// split line on "="
 	lineArray := strings.Split(line, "=")
-	// assign to variables
-	key = lineArray[0]
-	value = lineArray[1]
-	// if value contains double quotes, replace them with empty string
-	if strings.Contains(value, "\"") {
-		value = strings.Replace(value, "\"", "", -1)
+	if cap(lineArray) == 2 {
+		// assign to variables
+		key = lineArray[0]
+		value = lineArray[1]
+		// if value contains double quotes, replace them with empty string
+		if strings.Contains(value, "\"") {
+			value = strings.Replace(value, "\"", "", -1)
+		}
+		if strings.HasPrefix(value, "'") && strings.HasSuffix(value, "'") {
+			value = strings.Replace(value, "'", "", -1)
+		}
+		return strings.TrimSpace(key), strings.TrimSpace(value)
 	}
-	if strings.HasPrefix(value, "'") && strings.HasSuffix(value, "'") {
-		value = strings.Replace(value, "'", "", -1)
-	}
-	return key, value
+	return "", ""
 }

@@ -47,15 +47,27 @@ func ReadIpConfig() {
 // parse line of configuration and split it into key/value
 func parseIpConfigurationLine(line string) (namespace string, ip string) {
 	// split line on "="
-	lineArray := strings.Split(line, " ")
-	// assign to variables
-	namespace = lineArray[0]
-	ip = lineArray[1]
-	// if value contains double quotes, replace them with empty string
-	if strings.Contains(namespace, "\"") {
-		namespace = strings.Replace(namespace, "\"", "", -1)
+	var lineArray []string
+	if strings.Contains(line, "=") {
+		lineArray = strings.Split(line, "=")
+	} else {
+		lineArray = strings.Split(line, " ")
 	}
-	return namespace, ip
+
+	// assign to variables
+	if cap(lineArray) == 2 {
+		namespace = lineArray[0]
+		ip = lineArray[1]
+		// if value contains double quotes, replace them with empty string
+		if strings.Contains(namespace, "\"") {
+			namespace = strings.Replace(namespace, "\"", "", -1)
+		}
+		if strings.Contains(namespace, "'") {
+			namespace = strings.Replace(namespace, "'", "", -1)
+		}
+		return strings.TrimSpace(namespace), strings.TrimSpace(ip)
+	}
+	return "", ""
 }
 
 // Add IP to IP config file
