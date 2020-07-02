@@ -27,6 +27,10 @@ func CheckVersion() bool {
 		return false
 	}
 
+	return compareVersions(localVersion, remoteVersion)
+}
+
+func compareVersions(localVersion string, remoteVersion string) bool {
 	semVerRemote, _ := version.NewSemver(remoteVersion)
 	semVerLocal, _ := version.NewSemver(localVersion)
 
