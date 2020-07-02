@@ -27,7 +27,7 @@ func Menu(info string, err error) string {
 		fmt.Println()
 	}
 
-	// If errors not emtpy, show them
+	// If errors not empty, show them
 	if err != nil {
 		fmt.Printf("%s[ERRORS]\n%v%v", constants.ColorError, err, constants.ColorNormal)
 		fmt.Println()

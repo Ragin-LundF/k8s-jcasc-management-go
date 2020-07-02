@@ -1,5 +1,13 @@
 # K8S-JCasC-Management (Go version)
 
+# Build status #
+
+| | Develop | Master |
+| --- | --- | --- |
+| Build | ![Go](https://github.com/Ragin-LundF/k8s-jcasc-management-go/workflows/Go/badge.svg?branch=develop) | ![Go](https://github.com/Ragin-LundF/k8s-jcasc-management-go/workflows/Go/badge.svg?branch=master) |
+| GoReportCard | | ![Report](https://goreportcard.com/badge/github.com/Ragin-LundF/k8s-jcasc-management-go) |
+
+
 # Table of content #
 
 * [Kubernetes Jenkins as Code management](#kubernetes-jenkins-as-code-management)
