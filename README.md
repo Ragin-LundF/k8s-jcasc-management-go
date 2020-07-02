@@ -4,9 +4,9 @@
 
 | | Develop | Master |
 | --- | --- | --- |
-| Build | ![Go](https://github.com/Ragin-LundF/k8s-jcasc-management-go/workflows/Go/badge.svg?branch=develop) | ![Go](https://github.com/Ragin-LundF/k8s-jcasc-management-go/workflows/Go/badge.svg?branch=master) |
-| GoReportCard | | ![Report](https://goreportcard.com/badge/github.com/Ragin-LundF/k8s-jcasc-management-go) |
-
+| Build | <a href="https://github.com/Ragin-LundF/k8s-jcasc-management-go/actions"><img src="https://github.com/Ragin-LundF/k8s-jcasc-management-go/workflows/Go/badge.svg?branch=develop"></a> | <a href="https://github.com/Ragin-LundF/k8s-jcasc-management-go/actions"><img src="https://github.com/Ragin-LundF/k8s-jcasc-management-go/workflows/Go/badge.svg?branch=master"></a> |
+| GoReportCard | | <a href="https://goreportcard.com/report/github.com/Ragin-LundF/k8s-jcasc-management-go"><img src="https://goreportcard.com/badge/github.com/Ragin-LundF/k8s-jcasc-management-go" alt="Code Status" /></a> |
+| Coveralls | <a href='https://coveralls.io/github.com/Ragin-LundF/k8s-jcasc-management-go?branch=develop'><img src='https://coveralls.io/repos/github.com/Ragin-LundF/k8s-jcasc-management-go/badge.svg?branch=develop' alt='Coverage Status' /></a> | <a href='https://coveralls.io/github.com/Ragin-LundF/k8s-jcasc-management-go?branch=master'><img src='https://coveralls.io/repos/github.com/Ragin-LundF/k8s-jcasc-management-go/badge.svg?branch=master' alt='Coverage Status' /></a> |
 
 # Table of content #
 
