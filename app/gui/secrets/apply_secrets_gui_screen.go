@@ -26,7 +26,7 @@ func ScreenApplySecretsToAllNamespace(window fyne.Window) fyne.CanvasObject {
 				bar := uielements.ProgressBar{
 					Bar:        dialog.NewProgress("Apply secrets to all namespaces", "Progress", window),
 					CurrentCnt: 0,
-					MaxCount:   float64(len(models.GetIPConfiguration().Ips)),
+					MaxCount:   float64(len(models.GetIPConfiguration().IPs)),
 				}
 				bar.Bar.Show()
 				_ = secretsactions.ActionApplySecretsToAllNamespaces(bar.AddCallback)

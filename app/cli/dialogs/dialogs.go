@@ -139,7 +139,7 @@ func DialogAskForNamespace() (namespace string, err error) {
 
 	// searcher (with "/")
 	searcher := func(input string, index int) bool {
-		namespaceItem := models.GetIPConfiguration().Ips[index]
+		namespaceItem := models.GetIPConfiguration().IPs[index]
 		name := strings.Replace(strings.ToLower(namespaceItem.Namespace), " ", "", -1)
 		input = strings.Replace(strings.ToLower(input), " ", "", -1)
 
@@ -148,7 +148,7 @@ func DialogAskForNamespace() (namespace string, err error) {
 
 	prompt := promptui.Select{
 		Label:     "Please select the namespace to which the secrets should be applied",
-		Items:     models.GetIPConfiguration().Ips,
+		Items:     models.GetIPConfiguration().IPs,
 		Templates: templates,
 		Size:      12,
 		Searcher:  searcher,
@@ -159,7 +159,7 @@ func DialogAskForNamespace() (namespace string, err error) {
 	if err != nil {
 		log.Errorf("[DialogAskForNamespace] Prompt ask for namespace failed %s\n", err.Error())
 	} else {
-		namespace = models.GetIPConfiguration().Ips[i].Namespace
+		namespace = models.GetIPConfiguration().IPs[i].Namespace
 	}
 
 	return namespace, err
@@ -232,7 +232,7 @@ func DialogShowLogging(loggingStateEntries []loggingstate.LoggingState, err erro
 	ClearScreen()
 
 	// if there is something to show, create dialog and show the log
-	if cap(loggingStateEntries) > 0 {
+	if len(loggingStateEntries) > 0 {
 		// Template for displaying MenuitemModel
 		templates := &promptui.SelectTemplates{
 			Label:    "{{ . }}?",

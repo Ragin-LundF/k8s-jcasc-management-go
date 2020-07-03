@@ -48,7 +48,7 @@ func GetLoggingStateEntries() []LoggingState {
 // LogLoggingStateEntries logs the StateEntries to the logfile
 func LogLoggingStateEntries() {
 	log := logger.Log()
-	if loggingStateEntries != nil && cap(loggingStateEntries) > 0 {
+	if loggingStateEntries != nil && len(loggingStateEntries) > 0 {
 		log.Info("---- Output of internal Logging history start ----")
 
 		for _, logEntry := range loggingStateEntries {
@@ -63,7 +63,7 @@ func LogLoggingStateEntries() {
 		log.Info("---- Output of internal Logging history end ----")
 
 		// cleanup log to avoid doubles and do it only if it is not empty to avoid loop
-		if loggingStateEntries != nil && cap(loggingStateEntries) > 0 {
+		if loggingStateEntries != nil && len(loggingStateEntries) > 0 {
 			loggingStateEntries = nil
 		}
 	}

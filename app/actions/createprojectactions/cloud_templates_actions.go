@@ -23,7 +23,7 @@ func ActionReadCloudTemplates() (cloudTemplates []string) {
 
 	// The cloud-templates directory is existing -> read files
 	fileArray, _ := files.ListFilesOfDirectory(cloudTemplatePath)
-	if fileArray != nil && cap(*fileArray) > 0 {
+	if fileArray != nil && len(*fileArray) > 0 {
 		// Prepare prompt
 		cloudTemplates = append(cloudTemplates, *fileArray...)
 	}
@@ -37,7 +37,7 @@ func ActionProcessTemplateCloudTemplates(projectDirectory string, cloudTemplateF
 	// if file exists -> try to replace files
 	if files.FileOrDirectoryExists(targetFile) {
 		// first check if there are templates which should be processed
-		if cap(cloudTemplateFiles) > 0 {
+		if len(cloudTemplateFiles) > 0 {
 			// prepare vars and directory
 			var cloudTemplateContent string
 			var cloudTemplatePath = files.AppendPath(models.GetProjectTemplateDirectory(), constants.DirProjectTemplateCloudTemplates)

@@ -1,6 +1,9 @@
 package config
 
-import "testing"
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
 
 func TestParseIpConfigurationLine(t *testing.T) {
 	var namespaceToCheck = "mynamespace"
@@ -8,13 +11,8 @@ func TestParseIpConfigurationLine(t *testing.T) {
 	var line = namespaceToCheck + " " + ipToCheck
 	namespace, ip := parseIPConfigurationLine(line)
 
-	if namespace != namespaceToCheck {
-		t.Errorf("Failed. Namespace is [%s] instead of [%s]", namespace, namespaceToCheck)
-	} else if ip != ipToCheck {
-		t.Errorf("Failed. IP is [%s] instead of [%s]", ip, ipToCheck)
-	} else {
-		t.Logf("Success. Found namespace [%s] and IP [%s]", namespace, ip)
-	}
+	assert.Equal(t, namespaceToCheck, namespace)
+	assert.Equal(t, ipToCheck, ip)
 }
 
 func TestParseIpConfigurationWithEqual(t *testing.T) {
@@ -23,11 +21,8 @@ func TestParseIpConfigurationWithEqual(t *testing.T) {
 	var line = namespaceToCheck + "=" + ipToCheck
 	namespace, ip := parseIPConfigurationLine(line)
 
-	if namespace == namespaceToCheck && ip == ipToCheck {
-		t.Logf("Success. Namespace is [%s] and IP is [%s].", namespaceToCheck, ip)
-	} else {
-		t.Errorf("Failed. Namespace is [%s] and IP is [%s], but both should be empty!", namespace, ip)
-	}
+	assert.Equal(t, namespaceToCheck, namespace)
+	assert.Equal(t, ipToCheck, ip)
 }
 
 func TestParseIpConfigurationWithSpaces(t *testing.T) {
@@ -36,11 +31,8 @@ func TestParseIpConfigurationWithSpaces(t *testing.T) {
 	var line = namespaceToCheck + " = " + ipToCheck
 	namespace, ip := parseIPConfigurationLine(line)
 
-	if namespace == namespaceToCheck && ip == ipToCheck {
-		t.Logf("Success. Namespace is [%s] and IP is [%s].", namespaceToCheck, ip)
-	} else {
-		t.Errorf("Failed. Namespace is [%s] and IP is [%s], but both should be empty!", namespace, ip)
-	}
+	assert.Equal(t, namespaceToCheck, namespace)
+	assert.Equal(t, ipToCheck, ip)
 }
 
 func TestParseIpConfigurationWithInvalidLine(t *testing.T) {
@@ -48,9 +40,6 @@ func TestParseIpConfigurationWithInvalidLine(t *testing.T) {
 	var line = namespaceToCheck
 	namespace, ip := parseIPConfigurationLine(line)
 
-	if namespace == "" && ip == "" {
-		t.Log("Success. Both values are empty.")
-	} else {
-		t.Errorf("Failed. Namespace is [%s] and IP is [%s], but both should be empty!", namespace, ip)
-	}
+	assert.Equal(t, "", namespace)
+	assert.Equal(t, "", ip)
 }

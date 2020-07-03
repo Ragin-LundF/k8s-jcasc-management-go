@@ -57,7 +57,7 @@ func ActionPersistenceVolumeClaimInstall(namespace string) (err error) {
 
 		// check if pvc is already available in namespace
 		loggingstate.AddInfoEntry(fmt.Sprintf("  -> Checking if PVC [%s] is already available for namespace [%s].", pvcName, namespace))
-		pvcExists, err := isPvcAvailableInNamespace(namespace, pvcName)
+		pvcExists, _ := isPvcAvailableInNamespace(namespace, pvcName)
 
 		// no PVC found, so install it
 		if !pvcExists {

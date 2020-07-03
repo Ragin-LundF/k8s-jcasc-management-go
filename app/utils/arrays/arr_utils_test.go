@@ -1,6 +1,7 @@
 package arrays
 
 import (
+	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
 )
@@ -13,11 +14,7 @@ func TestIndexOfArr(t *testing.T) {
 	var idx = IndexOfArr("World", testArray)
 
 	// validate result
-	if idx != 1 {
-		t.Errorf("Function IndexOf has not found the right value (%v instead of 1", idx)
-	} else {
-		t.Log("Success finding index of element")
-	}
+	assert.Equal(t, 1, idx)
 }
 
 func TestIndexOfArrWithNonExistingValue(t *testing.T) {
@@ -28,11 +25,7 @@ func TestIndexOfArrWithNonExistingValue(t *testing.T) {
 	var idx = IndexOfArr("NotAvailable", testArray)
 
 	// validate result
-	if idx != -1 {
-		t.Errorf("Function IndexOf has not found the right value (%v instead of 1", idx)
-	} else {
-		t.Log("Success finding index of element")
-	}
+	assert.Equal(t, -1, idx)
 }
 
 func TestRemoveElementFromStringArr(t *testing.T) {
@@ -43,11 +36,8 @@ func TestRemoveElementFromStringArr(t *testing.T) {
 	var resultArr = RemoveElementFromStringArr(testArray, 1)
 
 	// validate results
-	if cap(resultArr) != 4 && strings.Join(resultArr, " ") != "Hello Here I Am" {
-		t.Errorf("Right element was not removed from slice: [%s]", strings.Join(resultArr, " "))
-	} else {
-		t.Log("Success removing elements from slice")
-	}
+	assert.Len(t, resultArr, 4)
+	assert.Equal(t, strings.Join(resultArr, " "), "Hello Here I Am")
 }
 
 func createTestArray() []string {

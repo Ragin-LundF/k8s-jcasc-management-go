@@ -23,8 +23,20 @@ jobs:
       - name: Build
         run: go build -v .
 
-      - name: Test
-        run: go test ./... -cover
-
       - name: Go report card
         uses: creekorful/goreportcard-action@v1.0
+
+      - name: Test with coverage
+        run: go test ./... -v -covermode=count -coverprofile=coverage.out
+
+      - name: Convert coverage to lcov
+        uses: jandelgado/gcov2lcov-action@v1.0.2
+        with:
+          infile: coverage.out
+          outfile: coverage.lcov
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: coverage.lcov

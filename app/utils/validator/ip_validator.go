@@ -15,7 +15,7 @@ func ValidateIP(input string) error {
 		return errors.New("IP address is not valid! ")
 	}
 	// check, that ip address was not already used
-	for _, ipConfig := range models.GetIPConfiguration().Ips {
+	for _, ipConfig := range models.GetIPConfiguration().IPs {
 		if strings.ToLower(ipConfig.IP) == strings.ToLower(input) {
 			return errors.New("IP address already in use! ")
 		}

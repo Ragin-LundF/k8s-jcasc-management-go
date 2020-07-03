@@ -4,7 +4,7 @@ import "errors"
 
 // ValidateJenkinsSystemMessage validates the Jenkins System Message
 func ValidateJenkinsSystemMessage(input string) error {
-	// a namespace name cannot be longer than 63 characters
+	// a Jenkins System Message cannot be longer than 255 characters
 	if len(input) > 255 {
 		return errors.New("Should not be longer than 255 characters. ")
 	}
