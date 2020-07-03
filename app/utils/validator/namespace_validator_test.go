@@ -84,3 +84,14 @@ func TestValidateNewNamespaceTooLong(t *testing.T) {
 		t.Error("Failed. Too long namespace was accepted.")
 	}
 }
+
+func TestValidateNewNamespaceAlreadyExisting(t *testing.T) {
+	var namespace = "product-dev"
+	err := ValidateNewNamespace(namespace)
+
+	if err != nil {
+		t.Log("Success. Validator recognized already existing namespace.")
+	} else {
+		t.Error("Failed. Already existing namespace not recognized.")
+	}
+}
