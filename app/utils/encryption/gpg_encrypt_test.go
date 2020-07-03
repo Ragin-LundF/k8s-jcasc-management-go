@@ -1,6 +1,7 @@
 package encryption
 
 import (
+	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
 )
@@ -15,9 +16,5 @@ func TestMaskedGpgCmdArgsAsString(t *testing.T) {
 	}
 	maskedString := maskedGpgCmdArgsAsString(gpgCmdArgs, 4)
 
-	if maskedString == strings.Join(gpgCmdArgsMasked, " ") {
-		t.Log("Success. Password is masked.")
-	} else {
-		t.Errorf("Failed. Return string was: [%s], but should be [%s]", maskedString, strings.Join(gpgCmdArgsMasked, " "))
-	}
+	assert.Equal(t, maskedString, strings.Join(gpgCmdArgsMasked, " "))
 }

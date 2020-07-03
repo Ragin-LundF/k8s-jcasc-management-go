@@ -1,6 +1,7 @@
 package loggingstate
 
 import (
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -9,11 +10,11 @@ func TestAddInfoEntry(t *testing.T) {
 	AddInfoEntry(msg)
 	entry := GetLoggingStateEntries()[0]
 
-	if entry.Type == "INFO" && entry.Details == "" && entry.Entry == msg {
-		t.Log("Success. INFO message without details added.")
-	} else {
-		t.Error("Failed. Can not find correct INFO message without details.")
-	}
+	assert.Equal(t, "INFO", entry.Type)
+	assert.Equal(t, "", entry.Details)
+	assert.Equal(t, msg, entry.Entry)
+
+	// clear state
 	ClearLoggingState()
 }
 
@@ -23,11 +24,11 @@ func TestAddInfoEntryAndDetails(t *testing.T) {
 	AddInfoEntryAndDetails(msg, details)
 	entry := GetLoggingStateEntries()[0]
 
-	if entry.Type == "INFO" && entry.Details == details && entry.Entry == msg {
-		t.Log("Success. INFO message with details added.")
-	} else {
-		t.Errorf("Failed. Can not find correct INFO message with details. Type [%v] Entry [%v] Details [%v]", entry.Type, entry.Entry, entry.Details)
-	}
+	assert.Equal(t, "INFO", entry.Type)
+	assert.Equal(t, details, entry.Details)
+	assert.Equal(t, msg, entry.Entry)
+
+	// clear state
 	ClearLoggingState()
 }
 
@@ -36,11 +37,11 @@ func TestAddErrorEntry(t *testing.T) {
 	AddErrorEntry(msg)
 	entry := GetLoggingStateEntries()[0]
 
-	if entry.Type == "ERROR" && entry.Details == "" && entry.Entry == msg {
-		t.Log("Success. ERROR message without details added.")
-	} else {
-		t.Error("Failed. Can not find correct ERROR message without details.")
-	}
+	assert.Equal(t, "ERROR", entry.Type)
+	assert.Equal(t, "", entry.Details)
+	assert.Equal(t, msg, entry.Entry)
+
+	// clear state
 	ClearLoggingState()
 }
 
@@ -50,11 +51,11 @@ func TestAddErrorEntryAndDetails(t *testing.T) {
 	AddErrorEntryAndDetails(msg, details)
 	entry := GetLoggingStateEntries()[0]
 
-	if entry.Type == "ERROR" && entry.Details == details && entry.Entry == msg {
-		t.Log("Success. ERROR message with details added.")
-	} else {
-		t.Errorf("Failed. Can not find correct ERROR message with details. Type [%v] Entry [%v] Details [%v]", entry.Type, entry.Entry, entry.Details)
-	}
+	assert.Equal(t, "ERROR", entry.Type)
+	assert.Equal(t, details, entry.Details)
+	assert.Equal(t, msg, entry.Entry)
+
+	// clear state
 	ClearLoggingState()
 }
 
@@ -63,15 +64,8 @@ func TestClearLoggingState(t *testing.T) {
 	AddInfoEntry("Info")
 	loggingEntries := GetLoggingStateEntries()
 
-	if len(loggingEntries) > 0 {
-		ClearLoggingState()
-		loggingEntries = GetLoggingStateEntries()
-		if loggingEntries == nil {
-			t.Log("Success. LoggingStateEntries are nil.")
-		} else {
-			t.Error("Failed. LoggingStateEntries still have values.")
-		}
-	} else {
-		t.Error("Failed. LoggingStateEntries are empty, but should have 2 values.")
-	}
+	assert.Greater(t, len(loggingStateEntries), 0)
+	ClearLoggingState()
+	loggingEntries = GetLoggingStateEntries()
+	assert.Nil(t, loggingEntries)
 }

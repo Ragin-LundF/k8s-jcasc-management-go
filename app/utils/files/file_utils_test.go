@@ -1,6 +1,7 @@
 package files
 
 import (
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -12,11 +13,7 @@ func TestFilterFilenamePrefix(t *testing.T) {
 	}
 	isValid := filterFilename(filename, &filter)
 
-	if isValid {
-		t.Log("Success. Found file with correct prefix.")
-	} else {
-		t.Errorf("Failed. File [%s] with prefix filter [%s] should return true", filename, prefix)
-	}
+	assert.True(t, isValid)
 }
 
 func TestFilterFilenameInvalidPrefix(t *testing.T) {
@@ -27,11 +24,7 @@ func TestFilterFilenameInvalidPrefix(t *testing.T) {
 	}
 	isValid := filterFilename(filename, &filter)
 
-	if !isValid {
-		t.Log("Success. No file found.")
-	} else {
-		t.Errorf("Failed. File [%s] with prefix filter [%s] should return false", filename, prefix)
-	}
+	assert.False(t, isValid)
 }
 
 func TestFilterFilenameSuffix(t *testing.T) {
@@ -42,11 +35,7 @@ func TestFilterFilenameSuffix(t *testing.T) {
 	}
 	isValid := filterFilename(filename, &filter)
 
-	if isValid {
-		t.Log("Success. Found file with correct suffix.")
-	} else {
-		t.Errorf("Failed. File [%s] with suffix filter [%s] should return true", filename, suffix)
-	}
+	assert.True(t, isValid)
 }
 
 func TestFilterFilenameInvalidSuffix(t *testing.T) {
@@ -57,11 +46,7 @@ func TestFilterFilenameInvalidSuffix(t *testing.T) {
 	}
 	isValid := filterFilename(filename, &filter)
 
-	if !isValid {
-		t.Log("Success. No file found with invalid suffix.")
-	} else {
-		t.Errorf("Failed. File [%s] with suffix filter [%s] should return false", filename, suffix)
-	}
+	assert.False(t, isValid)
 }
 
 func TestFilterFilenamePrefixSuffix(t *testing.T) {
@@ -74,11 +59,7 @@ func TestFilterFilenamePrefixSuffix(t *testing.T) {
 	}
 	isValid := filterFilename(filename, &filter)
 
-	if isValid {
-		t.Log("Success. File found with prefix and suffix.")
-	} else {
-		t.Errorf("Failed. File [%s] with prefix [%s] and suffix filter [%s] should return false", filename, prefix, suffix)
-	}
+	assert.True(t, isValid)
 }
 
 func TestFilterFilenameInvalidPrefixSuffix(t *testing.T) {
@@ -91,11 +72,7 @@ func TestFilterFilenameInvalidPrefixSuffix(t *testing.T) {
 	}
 	isValid := filterFilename(filename, &filter)
 
-	if !isValid {
-		t.Log("Success. No file found with invalid prefix and valid suffix.")
-	} else {
-		t.Errorf("Failed. File [%s] with prefix [%s] and suffix filter [%s] should return false", filename, *filter.Prefix, *filter.Suffix)
-	}
+	assert.False(t, isValid)
 }
 
 func TestFilterFilenamePrefixInvalidSuffix(t *testing.T) {
@@ -108,11 +85,7 @@ func TestFilterFilenamePrefixInvalidSuffix(t *testing.T) {
 	}
 	isValid := filterFilename(filename, &filter)
 
-	if !isValid {
-		t.Log("Success. No file found with invalid prefix and valid suffix.")
-	} else {
-		t.Errorf("Failed. File [%s] with prefix [%s] and suffix filter [%s] should return false", filename, *filter.Prefix, *filter.Suffix)
-	}
+	assert.False(t, isValid)
 }
 
 func TestAppendPathTrailingSlashes(t *testing.T) {
@@ -121,11 +94,8 @@ func TestAppendPathTrailingSlashes(t *testing.T) {
 	var expectedPath = "/mypath/yourpath"
 
 	path := AppendPath(basepath, secondpath)
-	if path == expectedPath {
-		t.Logf("Success. Path is: [%s]", path)
-	} else {
-		t.Errorf("Failed. Wrong path is [%s]", path)
-	}
+
+	assert.Equal(t, expectedPath, path)
 }
 
 func TestAppendPathTrailingAndLeadingSlashes(t *testing.T) {
@@ -134,11 +104,8 @@ func TestAppendPathTrailingAndLeadingSlashes(t *testing.T) {
 	var expectedPath = "/mypath/yourpath"
 
 	path := AppendPath(basepath, secondpath)
-	if path == expectedPath {
-		t.Logf("Success. Path is: [%s]", path)
-	} else {
-		t.Errorf("Failed. Wrong path is [%s]", path)
-	}
+
+	assert.Equal(t, expectedPath, path)
 }
 
 func TestAppendPathSecondWithoutSlashes(t *testing.T) {
@@ -147,11 +114,8 @@ func TestAppendPathSecondWithoutSlashes(t *testing.T) {
 	var expectedPath = "/mypath/yourpath"
 
 	path := AppendPath(basepath, secondpath)
-	if path == expectedPath {
-		t.Logf("Success. Path is: [%s]", path)
-	} else {
-		t.Errorf("Failed. Wrong path is [%s]", path)
-	}
+
+	assert.Equal(t, expectedPath, path)
 }
 
 func TestAppendPathWithoutSlashes(t *testing.T) {
@@ -160,9 +124,6 @@ func TestAppendPathWithoutSlashes(t *testing.T) {
 	var expectedPath = "mypath/yourpath"
 
 	path := AppendPath(basepath, secondpath)
-	if path == expectedPath {
-		t.Logf("Success. Path is: [%s]", path)
-	} else {
-		t.Errorf("Failed. Wrong path is [%s]", path)
-	}
+
+	assert.Equal(t, expectedPath, path)
 }

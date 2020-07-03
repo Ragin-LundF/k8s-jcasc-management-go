@@ -1,6 +1,7 @@
 package validator
 
 import (
+	"github.com/stretchr/testify/assert"
 	"k8s-management-go/app/models"
 	"testing"
 )
@@ -10,11 +11,8 @@ func TestValidateJenkinsJobConfig(t *testing.T) {
 	var jenkinsJobConfig = "https://github.com/repo.git"
 
 	err := ValidateJenkinsJobConfig(jenkinsJobConfig)
-	if err != nil {
-		t.Error("Failed. Validator returned error.")
-	} else {
-		t.Log("Success. Validator successfully accepted repository.")
-	}
+
+	assert.NoError(t, err)
 }
 
 func TestValidateJenkinsJobConfigWithoutGitRepo(t *testing.T) {
@@ -22,11 +20,8 @@ func TestValidateJenkinsJobConfigWithoutGitRepo(t *testing.T) {
 	var jenkinsJobConfig = "https://github.com/repo"
 
 	err := ValidateJenkinsJobConfig(jenkinsJobConfig)
-	if err != nil {
-		t.Log("Success. Validator successfully returned an error.")
-	} else {
-		t.Error("Failed. Validator accepted the repo without extensions.")
-	}
+
+	assert.Error(t, err)
 }
 
 func assignPattern() {

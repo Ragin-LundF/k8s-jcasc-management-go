@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/stretchr/testify/assert"
 	"k8s-management-go/app/models"
 	"testing"
 )
@@ -9,53 +10,38 @@ import (
 func TestParseConfigurationLine(t *testing.T) {
 	key, value := parseConfigurationLine("KEY=MYVALUE")
 
-	if key != "KEY" && value != "MYVALUE" {
-		t.Errorf("Unable to parse configuration. Key [%v] Value[%v]", key, value)
-	} else {
-		t.Log("Success. Config was parsed and split into correct key/value pair.")
-	}
+	assert.Equal(t, "KEY", key)
+	assert.Equal(t, "MYVALUE", value)
 }
 
 func TestParseConfigurationLineWithDoubleQuotes(t *testing.T) {
 	key, value := parseConfigurationLine("KEY=\"MYVALUE\"")
 
-	if key != "KEY" && value != "MYVALUE" {
-		t.Errorf("Unable to parse configuration. Key [%v] Value[%v]", key, value)
-	} else {
-		t.Log("Success. Config was parsed and split into correct key/value pair.")
-	}
+	assert.Equal(t, "KEY", key)
+	assert.Equal(t, "MYVALUE", value)
 }
 
 func TestParseConfigurationLineWithSingleQuotes(t *testing.T) {
 	key, value := parseConfigurationLine("KEY='MYVALUE'")
 
-	if key != "KEY" && value != "MYVALUE" {
-		t.Errorf("Unable to parse configuration. Key [%v] Value[%v]", key, value)
-	} else {
-		t.Log("Success. Config was parsed and split into correct key/value pair.")
-	}
+	assert.Equal(t, "KEY", key)
+	assert.Equal(t, "MYVALUE", value)
 }
 
 func TestProcessLineWithComment(t *testing.T) {
 	testString := "Test"
 	line := "#LOG_LEVEL=" + testString
 	processLine(line)
-	if models.GetConfiguration().LogLevel != "" {
-		t.Errorf("Failed. LogLevel was set to [%s]", models.GetConfiguration().LogLevel)
-	} else {
-		t.Log("Success. No LogLevel was set.")
-	}
+
+	assert.Equal(t, "", models.GetConfiguration().LogLevel)
 }
 
 func TestProcessLineWithValidLine(t *testing.T) {
 	testString := "Test"
 	line := "LOG_LEVEL=" + testString
 	processLine(line)
-	if models.GetConfiguration().LogLevel != testString {
-		t.Errorf("Failed. LogLevel was set to [%s]", models.GetConfiguration().LogLevel)
-	} else {
-		t.Logf("Success. No LogLevel should be [%s] and was set to [%s].", testString, models.GetConfiguration().LogLevel)
-	}
+
+	assert.Equal(t, testString, models.GetConfiguration().LogLevel)
 }
 
 func TestProcessLineWithValidLineAndSpaces(t *testing.T) {
@@ -63,9 +49,6 @@ func TestProcessLineWithValidLineAndSpaces(t *testing.T) {
 	testString := " " + testStringWithoutSpace
 	line := "LOG_LEVEL =" + testString
 	processLine(line)
-	if models.GetConfiguration().LogLevel != testStringWithoutSpace {
-		t.Errorf("Failed. LogLevel was set to [%s]", models.GetConfiguration().LogLevel)
-	} else {
-		t.Logf("Success. No LogLevel should be [%s] and was set to [%s].", testStringWithoutSpace, models.GetConfiguration().LogLevel)
-	}
+
+	assert.Equal(t, testStringWithoutSpace, models.GetConfiguration().LogLevel)
 }

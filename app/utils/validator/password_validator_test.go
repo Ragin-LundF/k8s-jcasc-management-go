@@ -1,17 +1,17 @@
 package validator
 
-import "testing"
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
 
 func TestValidateConfirmPasswords(t *testing.T) {
 	var password = "mypass"
 	var confirmPw = password
 
 	valid, _ := ValidateConfirmPasswords(password, confirmPw)
-	if valid {
-		t.Log("Success. Both passwords are equal and valid.")
-	} else {
-		t.Error("Failed. Equal passwords with correct length not accepted.")
-	}
+
+	assert.True(t, valid)
 }
 
 func TestValidateConfirmPasswordsTooShort(t *testing.T) {
@@ -19,11 +19,8 @@ func TestValidateConfirmPasswordsTooShort(t *testing.T) {
 	var confirmPw = password
 
 	valid, _ := ValidateConfirmPasswords(password, confirmPw)
-	if valid {
-		t.Error("Failed. Equal, but too small passwords accepted.")
-	} else {
-		t.Log("Success. Equal, but too small passwords rejected.")
-	}
+
+	assert.False(t, valid)
 }
 
 func TestValidateConfirmPasswordsNotEqual(t *testing.T) {
@@ -31,9 +28,6 @@ func TestValidateConfirmPasswordsNotEqual(t *testing.T) {
 	var confirmPw = "654321"
 
 	valid, _ := ValidateConfirmPasswords(password, confirmPw)
-	if valid {
-		t.Error("Failed. Not equal passwords accepted.")
-	} else {
-		t.Log("Success. Not equal passwords rejected.")
-	}
+
+	assert.False(t, valid)
 }

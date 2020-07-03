@@ -1,6 +1,7 @@
 package validator
 
 import (
+	"github.com/stretchr/testify/assert"
 	"k8s-management-go/app/models"
 	"testing"
 )
@@ -15,83 +16,51 @@ func init() {
 func TestValidateNamespaceAvailableInConfig(t *testing.T) {
 	exists := ValidateNamespaceAvailableInConfig("existing-namespace")
 
-	if exists {
-		t.Log("Success. Found existing-namespace")
-	} else {
-		t.Error("Failed. Validator did not recognize the existing-namespace")
-	}
+	assert.True(t, exists)
 }
 
 func TestValidateNamespaceAvailableInConfigOtherNamespace(t *testing.T) {
 	exists := ValidateNamespaceAvailableInConfig("valid-namespace")
 
-	if exists {
-		t.Log("Success. Found existing valid-namespace")
-	} else {
-		t.Error("Failed. Validator did not recognize the existing valid-namespace")
-	}
+	assert.True(t, exists)
 }
 
 func TestValidateNamespaceAvailableInConfigWithWrongNamespace(t *testing.T) {
 	exists := ValidateNamespaceAvailableInConfig("valid-namespace2")
 
-	if exists {
-		t.Error("Failed. Validator did found non existing valid-namespace2")
-	} else {
-		t.Log("Success. Validator recognized that valid-namespace2 is not existing")
-	}
+	assert.False(t, exists)
 }
 
 func TestValidateNamespaceAvailableInConfigWithWrongNamespaceLessCharacters(t *testing.T) {
 	exists := ValidateNamespaceAvailableInConfig("valid-namespac")
 
-	if exists {
-		t.Error("Failed. Validator did found non existing valid-namespac")
-	} else {
-		t.Log("Success. Validator recognized that valid-namespac is not existing")
-	}
+	assert.False(t, exists)
 }
 
 func TestValidateNewNamespace(t *testing.T) {
 	var namespace = "correct-namespace"
 	err := ValidateNewNamespace(namespace)
 
-	if err != nil {
-		t.Error("Failed. Valid namespace was recognized as invalid.")
-	} else {
-		t.Log("Success. Valid namespace accepted.")
-	}
+	assert.NoError(t, err)
 }
 
 func TestValidateNewNamespaceInvalid(t *testing.T) {
 	var namespace = "correct-namespace-"
 	err := ValidateNewNamespace(namespace)
 
-	if err != nil {
-		t.Log("Success. Invalid namespace rejected.")
-	} else {
-		t.Error("Failed. Invalid namespace was accepted.")
-	}
+	assert.Error(t, err)
 }
 
 func TestValidateNewNamespaceTooLong(t *testing.T) {
 	var namespace = "incorrect-namespace-with-more-than-allowed-63-characters-should-fail"
 	err := ValidateNewNamespace(namespace)
 
-	if err != nil {
-		t.Log("Success. Too long namespace rejected.")
-	} else {
-		t.Error("Failed. Too long namespace was accepted.")
-	}
+	assert.Error(t, err)
 }
 
 func TestValidateNewNamespaceAlreadyExisting(t *testing.T) {
 	var namespace = "product-dev"
 	err := ValidateNewNamespace(namespace)
 
-	if err != nil {
-		t.Log("Success. Validator recognized already existing namespace.")
-	} else {
-		t.Error("Failed. Already existing namespace not recognized.")
-	}
+	assert.Error(t, err)
 }

@@ -1,6 +1,7 @@
 package namespaceactions
 
 import (
+	"github.com/stretchr/testify/assert"
 	"k8s-management-go/app/models"
 	"testing"
 )
@@ -17,29 +18,20 @@ func init() {
 
 func TestActionReadNamespaceWithFilterNil(t *testing.T) {
 	var namespaces = ActionReadNamespaceWithFilter(nil)
-	if len(namespaces) == 6 {
-		t.Log("Success. Found all entries")
-	} else {
-		t.Errorf("Failed. Number of returned items with nil filter was wrong [%v]", len(namespaces))
-	}
+
+	assert.Len(t, namespaces, 6)
 }
 
 func TestActionReadNamespaceWithFilterValue(t *testing.T) {
 	var filter = "project"
 	var namespaces = ActionReadNamespaceWithFilter(&filter)
-	if len(namespaces) == 2 {
-		t.Log("Success. Found all filtered entries")
-	} else {
-		t.Errorf("Failed. Number of returned items with project filter was wrong [%v]", len(namespaces))
-	}
+
+	assert.Len(t, namespaces, 2)
 }
 
 func TestActionReadNamespaceWithFilterValueNotExisting(t *testing.T) {
 	var filter = "notexisting"
 	var namespaces = ActionReadNamespaceWithFilter(&filter)
-	if len(namespaces) == 0 {
-		t.Log("Success. Found no entries")
-	} else {
-		t.Errorf("Failed. Number of returned items with project filter was wrong [%v]", len(namespaces))
-	}
+
+	assert.Len(t, namespaces, 0)
 }
