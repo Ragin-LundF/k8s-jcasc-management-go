@@ -56,10 +56,10 @@ logvalue3	namerentry3	test3	namespace-value`
 	if err != nil {
 		t.Error("Failed. An error happened.")
 	}
-	if cap(fieldValues) == 4 && fieldValues[0] == "namespace-name" && fieldValues[2] == "namespace-value" {
+	if len(fieldValues) == 3 && fieldValues[0] == "namespace-name" && fieldValues[2] == "namespace-value" {
 		t.Log("Success. Found expected data.")
 	} else {
-		t.Errorf("Failed. Did not find expected values. Cap [%v] Value1 [%v].", cap(fieldValues), fieldValues[0])
+		t.Errorf("Failed. Did not find expected values. Len [%v] Value1 [%v].", len(fieldValues), fieldValues[0])
 	}
 }
 

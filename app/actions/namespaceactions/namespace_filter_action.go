@@ -8,7 +8,7 @@ import (
 
 // ActionReadNamespaceWithFilter is a namespace loader and filter
 func ActionReadNamespaceWithFilter(filter *string) (namespaces []string) {
-	ipList := models.GetIPConfiguration().Ips
+	ipList := models.GetIPConfiguration().IPs
 	for _, ip := range ipList {
 		if filter != nil && *filter != "" {
 			if strings.Contains(ip.Namespace, *filter) {

@@ -63,7 +63,7 @@ func TestClearLoggingState(t *testing.T) {
 	AddInfoEntry("Info")
 	loggingEntries := GetLoggingStateEntries()
 
-	if cap(loggingEntries) > 0 {
+	if len(loggingEntries) > 0 {
 		ClearLoggingState()
 		loggingEntries = GetLoggingStateEntries()
 		if loggingEntries == nil {

@@ -25,7 +25,7 @@ func ActionApplySecretsToNamespace(namespace string) (err error) {
 func ActionApplySecretsToAllNamespaces(callback func()) (err error) {
 	secretsFilePath := models.GetGlobalSecretsFile()
 	// apply secret to namespaces
-	for _, ip := range models.GetIPConfiguration().Ips {
+	for _, ip := range models.GetIPConfiguration().IPs {
 		if err = executingSecretsFile(secretsFilePath, ip.Namespace); err != nil {
 			_ = removeDecryptedSecretsFile(secretsFilePath)
 			return err

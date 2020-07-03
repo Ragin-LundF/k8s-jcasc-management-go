@@ -56,7 +56,7 @@ func parseIPConfigurationLine(line string) (namespace string, ip string) {
 	}
 
 	// assign to variables
-	if cap(lineArray) == 2 {
+	if len(lineArray) == 2 {
 		namespace = lineArray[0]
 		ip = lineArray[1]
 		// if value contains double quotes, replace them with empty string

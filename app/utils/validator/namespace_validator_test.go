@@ -5,8 +5,14 @@ import (
 	"testing"
 )
 
+func init() {
+	models.ResetIPAndNamespaces()
+	models.AddIPAndNamespaceToConfiguration("existing-namespace", "1.2.3.4")
+	models.AddIPAndNamespaceToConfiguration("valid-namespace", "1.2.3.5")
+	models.AddIPAndNamespaceToConfiguration("product-dev", "1.2.3.6")
+}
+
 func TestValidateNamespaceAvailableInConfig(t *testing.T) {
-	addNamespaceAndIp()
 	exists := ValidateNamespaceAvailableInConfig("existing-namespace")
 
 	if exists {
@@ -17,7 +23,6 @@ func TestValidateNamespaceAvailableInConfig(t *testing.T) {
 }
 
 func TestValidateNamespaceAvailableInConfigOtherNamespace(t *testing.T) {
-	addNamespaceAndIp()
 	exists := ValidateNamespaceAvailableInConfig("valid-namespace")
 
 	if exists {
@@ -28,7 +33,6 @@ func TestValidateNamespaceAvailableInConfigOtherNamespace(t *testing.T) {
 }
 
 func TestValidateNamespaceAvailableInConfigWithWrongNamespace(t *testing.T) {
-	addNamespaceAndIp()
 	exists := ValidateNamespaceAvailableInConfig("valid-namespace2")
 
 	if exists {
@@ -39,7 +43,6 @@ func TestValidateNamespaceAvailableInConfigWithWrongNamespace(t *testing.T) {
 }
 
 func TestValidateNamespaceAvailableInConfigWithWrongNamespaceLessCharacters(t *testing.T) {
-	addNamespaceAndIp()
 	exists := ValidateNamespaceAvailableInConfig("valid-namespac")
 
 	if exists {
@@ -80,10 +83,4 @@ func TestValidateNewNamespaceTooLong(t *testing.T) {
 	} else {
 		t.Error("Failed. Too long namespace was accepted.")
 	}
-}
-
-func addNamespaceAndIp() {
-	models.AddIPAndNamespaceToConfiguration("existing-namespace", "1.2.3.4")
-	models.AddIPAndNamespaceToConfiguration("valid-namespace", "1.2.3.5")
-	models.AddIPAndNamespaceToConfiguration("product-dev", "1.2.3.6")
 }

@@ -15,7 +15,7 @@ func CloudTemplatesWorkflow() (cloudTemplates []string, err error) {
 	cloudTemplateSelectionList := []string{"===== Select templates below or continue here ======"}
 
 	// if cloud templates were found add them to the new select list and ask which should be used
-	if cap(cloudTemplateSelectionList) > 0 {
+	if len(cloudTemplateSelectionList) > 0 {
 		cloudTemplateSelectionList = append(cloudTemplateSelectionList, cloudTemplateFileList...)
 		cloudTemplateDialog.CloudTemplateFiles = cloudTemplateSelectionList
 

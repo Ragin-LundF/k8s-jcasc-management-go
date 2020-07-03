@@ -5,7 +5,7 @@ import (
 )
 
 func TestValidateIP(t *testing.T) {
-	var ip = "1.2.3.4"
+	var ip = "5.2.3.4"
 	err := ValidateIP(ip)
 
 	if err != nil {
@@ -15,8 +15,19 @@ func TestValidateIP(t *testing.T) {
 	}
 }
 
+func TestValidateIPAlreadyExisting(t *testing.T) {
+	var ip = "1.2.3.4"
+	err := ValidateIP(ip)
+
+	if err != nil {
+		t.Log("Success. IP duplicate was detected.")
+	} else {
+		t.Error("Failed. IP duplicate was not detected.")
+	}
+}
+
 func TestValidateIPWrongNumber(t *testing.T) {
-	var ip = "1.2.321.4"
+	var ip = "5.2.321.4"
 	err := ValidateIP(ip)
 
 	if err != nil {
@@ -27,7 +38,7 @@ func TestValidateIPWrongNumber(t *testing.T) {
 }
 
 func TestValidateIPWithThreeNumbers(t *testing.T) {
-	var ip = "1.2.321"
+	var ip = "5.2.321"
 	err := ValidateIP(ip)
 
 	if err != nil {

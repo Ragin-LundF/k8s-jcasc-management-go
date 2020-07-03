@@ -43,7 +43,7 @@ func TestRemoveElementFromStringArr(t *testing.T) {
 	var resultArr = RemoveElementFromStringArr(testArray, 1)
 
 	// validate results
-	if cap(resultArr) != 4 && strings.Join(resultArr, " ") != "Hello Here I Am" {
+	if len(resultArr) != 4 && strings.Join(resultArr, " ") != "Hello Here I Am" {
 		t.Errorf("Right element was not removed from slice: [%s]", strings.Join(resultArr, " "))
 	} else {
 		t.Log("Success removing elements from slice")

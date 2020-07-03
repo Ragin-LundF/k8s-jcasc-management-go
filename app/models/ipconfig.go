@@ -8,7 +8,7 @@ type IP struct {
 
 // IPConfiguration contains a list of IPs
 type IPConfiguration struct {
-	Ips []IP
+	IPs []IP
 }
 
 var ipConfig IPConfiguration
@@ -20,5 +20,10 @@ func GetIPConfiguration() IPConfiguration {
 
 // AddIPAndNamespaceToConfiguration adds IP and namespace to the IP configuration
 func AddIPAndNamespaceToConfiguration(namespace string, ip string) {
-	ipConfig.Ips = append(ipConfig.Ips, IP{namespace, ip})
+	ipConfig.IPs = append(ipConfig.IPs, IP{namespace, ip})
+}
+
+// ResetIPAndNamespaces will reset the configured IPs
+func ResetIPAndNamespaces() {
+	ipConfig.IPs = nil
 }

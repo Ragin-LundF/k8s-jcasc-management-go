@@ -72,7 +72,7 @@ func processLine(line string) {
 func parseConfigurationLine(line string) (key string, value string) {
 	// split line on "="
 	lineArray := strings.Split(line, "=")
-	if cap(lineArray) == 2 {
+	if len(lineArray) == 2 {
 		// assign to variables
 		key = lineArray[0]
 		value = lineArray[1]

@@ -41,7 +41,7 @@ func ExecuteScriptsInstallScriptsForNamespace(namespace string, filePrefix strin
 		}
 
 		// if array has content -> execute scripts
-		if cap(*fileArray) > 0 {
+		if len(*fileArray) > 0 {
 			// iterate over filtered file array and execute scripts
 			for _, file := range *fileArray {
 				scriptWithPath := files.AppendPath(scriptFolder, file)

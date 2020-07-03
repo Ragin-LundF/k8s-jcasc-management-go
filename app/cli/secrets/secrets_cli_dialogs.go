@@ -87,7 +87,7 @@ func ApplySecretsToAllNamespaces() (err error) {
 	}
 
 	// prepare progressbar
-	bar := dialogs.CreateProgressBar("Installing...", len(models.GetIPConfiguration().Ips))
+	bar := dialogs.CreateProgressBar("Installing...", len(models.GetIPConfiguration().IPs))
 	progress := dialogs.ProgressBar{
 		Bar: &bar,
 	}
