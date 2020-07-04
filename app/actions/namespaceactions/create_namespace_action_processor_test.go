@@ -19,6 +19,16 @@ func TestProcessNamespaceCreation(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestProcessNamespaceCreationWithErr(t *testing.T) {
+	cmdexecutor.Executor = TestCommandExecKubectlErr{}
+	var stateData = models.StateData{
+		Namespace: "new-namespace",
+	}
+	err := ProcessNamespaceCreation(stateData)
+
+	assert.Error(t, err)
+}
+
 func TestIsNamespaceAvailable(t *testing.T) {
 	cmdexecutor.Executor = TestCommandExecKubectl{}
 	available, err := isNamespaceAvailable("project-b")
@@ -35,8 +45,18 @@ func TestIsNamespaceNotAvailable(t *testing.T) {
 	assert.False(t, available)
 }
 
+func TestIsNamespaceWithError(t *testing.T) {
+	cmdexecutor.Executor = TestCommandExecKubectlErr{}
+	_, err := isNamespaceAvailable("project-not-existing")
+
+	assert.Error(t, err)
+}
+
 // TestCommandExecKubectl is a mock with available namespace
 type TestCommandExecKubectl struct{}
+
+// TestCommandExecKubectlErr is a mock with error as result
+type TestCommandExecKubectlErr struct{}
 
 func (c TestCommandExecKubectl) CombinedOutput(command string, args ...string) ([]byte, error) {
 	if command == "kubectl" {
@@ -47,6 +67,10 @@ func (c TestCommandExecKubectl) CombinedOutput(command string, args ...string) (
 		}
 	}
 	return []byte("no result"), errors.New("No known command. ")
+}
+
+func (c TestCommandExecKubectlErr) CombinedOutput(command string, args ...string) ([]byte, error) {
+	return nil, errors.New("exit with status 1")
 }
 
 // resultCreateNamespace generates output of expected kubectl create namespace xy
