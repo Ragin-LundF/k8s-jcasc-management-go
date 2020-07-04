@@ -2,8 +2,8 @@ package helm
 
 import (
 	"fmt"
+	"k8s-management-go/app/utils/cmdexecutor"
 	"k8s-management-go/app/utils/loggingstate"
-	"os/exec"
 	"strings"
 )
 
@@ -20,7 +20,7 @@ func ExecutorHelm(command string, args []string) (err error) {
 	loggingstate.AddInfoEntryAndDetails("   -> [ExecHelm] Executing Helm command...", fmt.Sprintf("helm %s", strings.Join(argsForCommand, " ")))
 
 	// execute
-	cmdOutput, err := exec.Command("helm", argsForCommand...).CombinedOutput()
+	cmdOutput, err := cmdexecutor.Executor.CombinedOutput("helm", argsForCommand...)
 	if err != nil {
 		// log output error
 		loggingstate.AddErrorEntryAndDetails("[ExecHelm] -> Helm command failed. See details.", string(cmdOutput))

@@ -4,7 +4,6 @@ import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/dialog"
 	"k8s-management-go/app/actions/uninstallactions"
-	"k8s-management-go/app/gui/uielements"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/loggingstate"
 )
@@ -56,6 +55,5 @@ func ExecuteUninstallWorkflow(window fyne.Window, state models.StateData) (err e
 
 	loggingstate.AddInfoEntry("Starting Uninstall...done")
 	bar.Hide()
-	uielements.ShowLogOutput(window)
 	return err
 }
