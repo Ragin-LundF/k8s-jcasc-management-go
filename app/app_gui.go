@@ -15,6 +15,9 @@ func StartApp(info string) {
 	k8sJcascApp := app.NewWithID("k8s_jcasc_mgmt_go_ui")
 	k8sJcascApp.SetIcon(theme.FyneLogo())
 
+	// set theme
+	setTheme(k8sJcascApp)
+
 	k8sJcascWindow := k8sJcascApp.NewWindow("K8S JCasC Management")
 	mainMenu := menu.CreateMainMenu(k8sJcascApp, k8sJcascWindow)
 
@@ -34,4 +37,12 @@ func StartApp(info string) {
 // StartCli will start App with CLI
 func StartCli(info string) {
 	cli.Workflow(info, nil)
+}
+
+func setTheme(app fyne.App) {
+	if app.Preferences().String(menu.PreferencesTheme) == menu.PreferencesThemeLight {
+		app.Settings().SetTheme(theme.LightTheme())
+	} else {
+		app.Settings().SetTheme(theme.DarkTheme())
+	}
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fyne.io/fyne"
 	"fyne.io/fyne/dialog"
+	"fyne.io/fyne/theme"
 	"fyne.io/fyne/widget"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/logger"
@@ -14,10 +15,19 @@ func CreateMainMenu(app fyne.App, window fyne.Window) *fyne.MainMenu {
 	// K8S Management Menu
 	settingsItem := fyne.NewMenuItem("Configuration", func() { printConfiguration(window) })
 	quitItem := fyne.NewMenuItem("Quit", func() { app.Quit() })
+	darkThemeItem := fyne.NewMenuItem("Dark Theme", func() {
+		app.Settings().SetTheme(theme.DarkTheme())
+		app.Preferences().SetString(PreferencesTheme, PreferencesThemeDark)
+	})
+	lightThemeItem := fyne.NewMenuItem("Light Theme", func() {
+		app.Settings().SetTheme(theme.LightTheme())
+		app.Preferences().SetString(PreferencesTheme, PreferencesThemeLight)
+	})
 
 	mainMenu := fyne.NewMainMenu(
 		// a quit item will be appended to our first menu
 		fyne.NewMenu("K8S Management", fyne.NewMenuItemSeparator(), settingsItem, fyne.NewMenuItemSeparator(), quitItem),
+		fyne.NewMenu("Theme", darkThemeItem, lightThemeItem),
 	)
 
 	return mainMenu
