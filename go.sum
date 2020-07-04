@@ -6,6 +6,8 @@ fyne.io/fyne v1.3.1-0.20200630182836-102ff9e4a866 h1:b3WrVfokr6xTHVU/HkiVJB64RY2
 fyne.io/fyne v1.3.1-0.20200630182836-102ff9e4a866/go.mod h1:osD/JXxGf8AC7aB+Ek0YuFF2QXzdTFFzMRM8cdqrwvQ=
 fyne.io/fyne v1.3.1-0.20200702162525-db1aa26e724d h1:qUko5HAQSPdJ6S1aSu8q7gNbdWBqiLoB09oRX8KxGBM=
 fyne.io/fyne v1.3.1-0.20200702162525-db1aa26e724d/go.mod h1:osD/JXxGf8AC7aB+Ek0YuFF2QXzdTFFzMRM8cdqrwvQ=
+fyne.io/fyne v1.3.1-0.20200703193552-1bd0d2c3a21a h1:UVnHPqw35BY2djImOh0IpDSKvhCjqGx1ae6Sqz1y8pk=
+fyne.io/fyne v1.3.1-0.20200703193552-1bd0d2c3a21a/go.mod h1:osD/JXxGf8AC7aB+Ek0YuFF2QXzdTFFzMRM8cdqrwvQ=
 github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/Kodeworks/golang-image-ico v0.0.0-20141118225523-73f0f4cfade9/go.mod h1:7uhhqiBaR4CpN0k9rMjOtjpcfGd6DG2m04zQxKnWQ0I=
