@@ -37,7 +37,9 @@ func ScreenCreateFullProject(window fyne.Window) fyne.CanvasObject {
 	jenkinsJobsCfgEntry := widget.NewEntry()
 	jenkinsJobsCfgEntry.PlaceHolder = "http://vcs.domain.tld/project/repo/jenkins-jobs.git"
 
-	// todo cloud templates
+	// Cloud templates
+	cloudTemplatesCheckBoxes := createCloudTemplates()
+	cloudBox := createCloudTemplatesCheckboxes(cloudTemplatesCheckBoxes)
 
 	// Existing PVC
 	jenkinsExistingPvcErrorLabel := widget.NewLabel("")
@@ -56,6 +58,7 @@ func ScreenCreateFullProject(window fyne.Window) fyne.CanvasObject {
 			{Text: "", Widget: jenkinsJobsCfgErrorLabel},
 			{Text: "Jenkins Existing PVC", Widget: jenkinsExistingPvcEntry},
 			{Text: "", Widget: jenkinsExistingPvcErrorLabel},
+			{Text: "Cloud Templates", Widget: cloudBox},
 		},
 		OnSubmit: func() {
 			// get variables
@@ -64,6 +67,7 @@ func ScreenCreateFullProject(window fyne.Window) fyne.CanvasObject {
 			projectConfig.JenkinsSystemMsg = jenkinsSysMsgEntry.Text
 			projectConfig.JobsCfgRepo = jenkinsJobsCfgEntry.Text
 			projectConfig.ExistingPvc = jenkinsExistingPvcEntry.Text
+			projectConfig.SelectedCloudTemplates = checkCloudboxes(cloudTemplatesCheckBoxes)
 			hasErrors := false
 
 			// validate namespace
@@ -191,4 +195,39 @@ func ScreenCreateDeployOnlyProject(window fyne.Window) fyne.CanvasObject {
 	)
 
 	return box
+}
+
+func createCloudTemplates() []*widget.Check {
+	var cloudtemplates = createprojectactions.ActionReadCloudTemplates()
+	var checkboxes []*widget.Check
+	for _, cloudTemplate := range cloudtemplates {
+		checkboxes = append(checkboxes, widget.NewCheck(cloudTemplate, func(set bool) {}))
+	}
+
+	return checkboxes
+}
+
+func createCloudTemplatesCheckboxes(boxes []*widget.Check) *widget.ScrollContainer {
+	var box = widget.NewVBox()
+	// append boxes to VBox
+	for _, checkbox := range boxes {
+		box.Append(checkbox)
+	}
+	// pack them into a new VScrollContainer
+	var content = widget.NewVScrollContainer(box)
+	// set a min size, that it is possible to see more than 1
+	content.SetMinSize(fyne.NewSize(-1, 150))
+
+	return content
+}
+
+func checkCloudboxes(checkboxes []*widget.Check) []string {
+	var checkedBoxes []string
+	for _, checkbox := range checkboxes {
+		if checkbox.Checked {
+			checkedBoxes = append(checkedBoxes, checkbox.Text)
+		}
+	}
+
+	return checkedBoxes
 }
