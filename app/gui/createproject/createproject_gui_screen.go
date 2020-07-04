@@ -3,7 +3,6 @@ package createproject
 import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/dialog"
-	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
 	"k8s-management-go/app/actions/createprojectactions"
 	"k8s-management-go/app/constants"
@@ -12,8 +11,8 @@ import (
 	"k8s-management-go/app/utils/validator"
 )
 
-// ScreenCreateFullProject shows the full project setup screen
-func ScreenCreateFullProject(window fyne.Window) fyne.CanvasObject {
+// ScreenCreateFullProject shows the full project setup screen form
+func ScreenCreateFullProject(window fyne.Window) *widget.Form {
 	var projectConfig models.ProjectConfig
 	projectConfig.CreateDeploymentOnlyProject = false
 
@@ -122,16 +121,11 @@ func ScreenCreateFullProject(window fyne.Window) fyne.CanvasObject {
 		},
 	}
 
-	box := widget.NewVBox(
-		widget.NewHBox(layout.NewSpacer()),
-		form,
-	)
-
-	return box
+	return form
 }
 
-// ScreenCreateDeployOnlyProject shows the screen for deployment only project without Jenkins
-func ScreenCreateDeployOnlyProject(window fyne.Window) fyne.CanvasObject {
+// ScreenCreateDeployOnlyProject creates the screen form for deployment only project without Jenkins
+func ScreenCreateDeployOnlyProject(window fyne.Window) *widget.Form {
 	var projectConfig models.ProjectConfig
 	projectConfig.CreateDeploymentOnlyProject = true
 
@@ -189,12 +183,7 @@ func ScreenCreateDeployOnlyProject(window fyne.Window) fyne.CanvasObject {
 		},
 	}
 
-	box := widget.NewVBox(
-		widget.NewHBox(layout.NewSpacer()),
-		form,
-	)
-
-	return box
+	return form
 }
 
 func createCloudTemplates() []*widget.Check {
