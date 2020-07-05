@@ -6,7 +6,6 @@ import (
 	"k8s-management-go/app/utils/cmdexecutor"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/loggingstate"
-	"os"
 	"strings"
 )
 
@@ -26,13 +25,6 @@ func GpgEncryptSecrets(secretsFilePath string, password string) (err error) {
 	}
 
 	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Encrypt secrets file [%s] done.", secretsFilePath))
-
-	// after everything was ok -> delete original file
-	err = os.Remove(secretsFilePath)
-	if err != nil {
-		loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Unable to delete decrypted secrets file [%s].", secretsFilePath), err.Error())
-		return err
-	}
 
 	return nil
 }
