@@ -404,7 +404,7 @@ _Mac OSX Screenshot, light theme_
 ![alt text](docs/images/screenshot_cli_mainmenu.png "K8S-JCasC-Mgmt CLI Main Menu")
 _Main menu in CLI mode_
 
-### Main Menu
+### Namespace selection
 ![alt text](docs/images/screenshot_cli_namespace-select.png "K8S-JCasC-Mgmt CLI Namespace Selection")
 _Namespace selection in CLI mode_
 
