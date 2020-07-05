@@ -381,18 +381,32 @@ If you create a new project via the wizard, the system also checks, if a IP addr
 
 # Screenshots #
 
-## Welcome ##
-![alt text](docs/images/screenshot_gui_welcome_win.png "K8S GUI Welcome Windows")
-_Windows screenshot_
+## GUI
 
-## Deployment ##
-![alt text](docs/images/screenshot_gui_deployment.png "K8S GUI Deployment")
-_MacOS screenshot_
+### Welcome
+![alt text](docs/images/screenshot_gui_welcome_win.png "K8S-JCasC-Mgmt GUI Welcome")
+_Windows screenshot, dark theme_
 
-## Create Project ##
-![alt text](docs/images/screenshot_gui_createprj.png "K8S GUI Deployment")
-_MacOS screenshot_
+### Deployment
+![alt text](docs/images/screenshot_gui_deployment.png "K8S-JCasC-Mgmt GUI Deployment (Dark Theme)")
+_Mac OSX Screenshot, dark theme_
+![alt text](docs/images/screenshot_gui_deployment_light.png "K8S-JCasC-Mgmt GUI Deployment (Light Theme)")
+_Mac OSX Screenshot, light theme_
 
+### Create Project
+![alt text](docs/images/screenshot_gui_createprj.png "K8S-JCasC-Mgmt GUI Project Create (Dark Theme)")
+_Mac OSX Screenshot, dark theme_
+![alt text](docs/images/screenshot_gui_createprj_light.png "K8S-JCasC-Mgmt GUI Project Create (Light Theme)")
+_Mac OSX Screenshot, light theme_
+
+## CLI
+### Main Menu
+![alt text](docs/images/screenshot_cli_mainmenu.png "K8S-JCasC-Mgmt CLI Main Menu")
+_Main menu in CLI mode_
+
+### Main Menu
+![alt text](docs/images/screenshot_cli_namespace-select.png "K8S-JCasC-Mgmt CLI Namespace Selection")
+_Namespace selection in CLI mode_
 
 # Additional tools #
 ## k8sfullconfigexport ##
