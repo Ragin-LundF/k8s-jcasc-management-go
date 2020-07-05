@@ -3,10 +3,9 @@ package encryption
 import (
 	"errors"
 	"fmt"
+	"k8s-management-go/app/utils/cmdexecutor"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/loggingstate"
-	"os"
-	"os/exec"
 	"strings"
 )
 
@@ -18,7 +17,7 @@ func GpgEncryptSecrets(secretsFilePath string, password string) (err error) {
 	}
 	loggingstate.AddInfoEntryAndDetails("  -> Executing Gpg encrypt command...", fmt.Sprintf("gpg %s", maskedGpgCmdArgsAsString(gpgCmdArgs, 4)))
 
-	cmdOutput, err := exec.Command("gpg", gpgCmdArgs...).CombinedOutput()
+	cmdOutput, err := cmdexecutor.Executor.CombinedOutput("gpg", gpgCmdArgs...)
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to encrypt secrets file...failed. See output", string(cmdOutput))
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to encrypt secrets file...failed. See error", err.Error())
@@ -26,13 +25,6 @@ func GpgEncryptSecrets(secretsFilePath string, password string) (err error) {
 	}
 
 	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Encrypt secrets file [%s] done.", secretsFilePath))
-
-	// after everything was ok -> delete original file
-	err = os.Remove(secretsFilePath)
-	if err != nil {
-		loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Unable to delete decrypted secrets file [%s].", secretsFilePath), err.Error())
-		return err
-	}
 
 	return nil
 }
@@ -44,7 +36,7 @@ func GpgDecryptSecrets(secretsFilePath string, password string) (err error) {
 	}
 	loggingstate.AddInfoEntryAndDetails("  -> Executing Gpg decrypt command...", fmt.Sprintf("gpg %s", maskedGpgCmdArgsAsString(gpgCmdArgs, 4)))
 
-	cmdOutput, err := exec.Command("gpg", gpgCmdArgs...).CombinedOutput()
+	cmdOutput, err := cmdexecutor.Executor.CombinedOutput("gpg", gpgCmdArgs...)
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to decrypt secrets file...failed. See output", string(cmdOutput))
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to decrypt secrets file...failed. See error", err.Error())

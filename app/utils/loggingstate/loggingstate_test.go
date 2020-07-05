@@ -62,10 +62,8 @@ func TestAddErrorEntryAndDetails(t *testing.T) {
 func TestClearLoggingState(t *testing.T) {
 	AddErrorEntry("Error")
 	AddInfoEntry("Info")
-	loggingEntries := GetLoggingStateEntries()
+	assert.Greater(t, len(GetLoggingStateEntries()), 0)
 
-	assert.Greater(t, len(loggingStateEntries), 0)
 	ClearLoggingState()
-	loggingEntries = GetLoggingStateEntries()
-	assert.Nil(t, loggingEntries)
+	assert.Nil(t, GetLoggingStateEntries())
 }

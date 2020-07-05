@@ -100,7 +100,7 @@ func ShowLogOutput(window fyne.Window) {
 		}
 	}
 
-	scrollContainer := widget.NewVScrollContainer(logAccordion)
+	scrollContainer := widget.NewScrollContainer(logAccordion)
 	scrollContainer.SetMinSize(fyne.Size{
 		Width:  700,
 		Height: 400,

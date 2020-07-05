@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
+	"k8s-management-go/app/utils/cmdexecutor"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/logger"
 	"k8s-management-go/app/utils/loggingstate"
-	"os/exec"
 )
 
 // ExecuteScriptsInstallScriptsForNamespace executes install scripts, which have the prefix for the given namespace
@@ -49,8 +49,8 @@ func ExecuteScriptsInstallScriptsForNamespace(namespace string, filePrefix strin
 				loggingstate.AddInfoEntryAndDetails(fmt.Sprintf("  -> Try to execute script [%s]...", file), scriptWithPath)
 
 				// Execute scripts
-				_ = exec.Command("chmod", "755", scriptWithPath).Run()
-				outputCmd, err := exec.Command(scriptWithPath).CombinedOutput()
+				_, _ = cmdexecutor.Executor.CombinedOutput("chmod", "755", scriptWithPath)
+				outputCmd, err := cmdexecutor.Executor.CombinedOutput(scriptWithPath)
 				if err != nil {
 					loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Try to execute script [%s]...failed. See output.", file), string(outputCmd))
 					loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Try to execute script [%s]...failed. See error.", file), err.Error())

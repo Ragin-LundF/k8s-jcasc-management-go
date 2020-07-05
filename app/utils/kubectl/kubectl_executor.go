@@ -2,9 +2,9 @@ package kubectl
 
 import (
 	"fmt"
+	"k8s-management-go/app/utils/cmdexecutor"
 	"k8s-management-go/app/utils/logger"
 	"k8s-management-go/app/utils/loggingstate"
-	"os/exec"
 	"strings"
 )
 
@@ -24,7 +24,7 @@ func ExecutorKubectl(command string, args []string) (output string, err error) {
 	log.Infof("[ExecKubectl] Executing K8S command: \n   -> kubectl %s", strings.Join(argsForCommand, " "))
 
 	// execute
-	cmdOutput, err := exec.Command("kubectl", argsForCommand...).CombinedOutput()
+	cmdOutput, err := cmdexecutor.Executor.CombinedOutput("kubectl", argsForCommand...)
 	if err != nil {
 		// log output error
 		loggingstate.AddErrorEntryAndDetails("  -> Unable to execute kubectl command. See output.", string(cmdOutput))

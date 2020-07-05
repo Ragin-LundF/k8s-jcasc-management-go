@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/server"
+	"k8s-management-go/app/utils/cmdexecutor"
 	"k8s-management-go/app/utils/config"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/logger"
@@ -70,6 +71,9 @@ func Setup() {
 	if serverStart {
 		server.StartServer()
 	}
+
+	// Set the OS executor for exec.Command().CombinedOutput() execution
+	cmdexecutor.Executor = cmdexecutor.OsCommandExec{}
 }
 
 func configure(basePath string, dryRunDebug bool, cliOnly bool) {
