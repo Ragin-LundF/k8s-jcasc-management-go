@@ -1,4 +1,4 @@
-# 2.0.0
+# 2.0.1
 
 ## Introducing new UI
 * K8S-Jcasc-Management supports now native UIs for the following platforms:
@@ -6,28 +6,31 @@
   * Linux and BSD
   * MacOS X
 
+This was realized with the [fyne](https://fyne.io/) framework.
+
 To use K8S-JcasC-Management on a CLI, you can start it with the `-cli` flag.
 
 ## Build hints
-
-This was realized with the [fyne](https://fyne.io/) framework.
 If you have trouble to compile the project, please visit the [fyne developer](https://developer.fyne.io/started/) site first to check the prerequisites.
-On Windows, it is recommended to install [TDM-GCC - tdm-gcc.tdragon.net](https://tdm-gcc.tdragon.net).
+On Windows, it is recommended to install [TDM-GCC - tdm-gcc.tdragon.net](https://tdm-gcc.tdragon.net), which works very easy. It can be required to set the PATH variable to the `TDM-GCC` directory, if the `go` compiler still wants a `GCC`.
 
-If you have trouble, you can also exchange the `!ignore` and `ignore` in first line comment at the `/app/app_cli.go` and `/app/app_gui.go` file.
+### Using on server-systems only (without GUI)
+If you have trouble or if you want to use it on a server without `X11`, you can also exchange the `!ignore` and `ignore` in first line comment at the `/app/app_cli.go` and `/app/app_gui.go` file.
 Golang will then use the `app_cli.go` file to compile and ignores the GUI implementation completely.
 
 ## Screenshots
 
-### Deployment
+### Welcome (Windows)
+![alt text](docs/images/screenshot_gui_welcome_win.png "K8S GUI Welcome")
+
+### Deployment (Mac Dark Theme)
 ![alt text](docs/images/screenshot_gui_deployment.png "K8S GUI Deployment")
 
-
-### Create Project
-![alt text](docs/images/screenshot_gui_createprj.png "K8S GUI Deployment")
+### Create Project (Mac Light Theme)
+![alt text](docs/images/screenshot_gui_createprj_light.png "K8S GUI Project Create")
 
 # 1.13.1
-* Hotfix for configuration of encrypted users.
+* Hotfix for the configuration of encrypted users.
   * Fixes the issue, that `JENKINS_MASTER_ADMIN_PASSWORD_ENCRYPTED` and `JENKINS_MASTER_PROJECT_USER_PASSWORD_ENCRYPTED` need encrypted password surrounded with `'` characters, that the `bash` version will not interpret this configuration as arguments.
 
 # 1.13.0
