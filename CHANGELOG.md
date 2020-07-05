@@ -11,11 +11,11 @@ This was realized with the [fyne](https://fyne.io/) framework.
 To use K8S-JcasC-Management on a CLI, you can start it with the `-cli` flag.
 
 ## Build hints
-If you have trouble to compile the project, please visit the [fyne developer](https://developer.fyne.io/started/) site first to check the prerequisites.
-On Windows, it is recommended to install [TDM-GCC - tdm-gcc.tdragon.net](https://tdm-gcc.tdragon.net), which works very easy. It can be required to set the PATH variable to the `TDM-GCC` directory, if the `go` compiler still wants a `GCC`.
+If you have trouble compiling the project, please visit the [fyne developer](https://developer.fyne.io/started/) site first to check the prerequisites.
+On Windows, it is recommended to install [TDM-GCC - tdm-gcc.tdragon.net](https://tdm-gcc.tdragon.net), which works very easily. It can be required to set the PATH variable to the `TDM-GCC` directory if the `go` compiler still wants a `GCC`.
 
 ### Using on server-systems only (without GUI)
-If you have trouble or if you want to use it on a server without `X11`, you can also exchange the `!ignore` and `ignore` in first line comment at the `/app/app_cli.go` and `/app/app_gui.go` file.
+If you have trouble or if you want to use it on a server without `X11`, you can also exchange the `!ignore` and `ignore` in first-line comment at the `/app/app_cli.go` and `/app/app_gui.go` file.
 Golang will then use the `app_cli.go` file to compile and ignores the GUI implementation completely.
 
 ## Screenshots
