@@ -13,7 +13,6 @@ import (
 // StartApp will start app with GUI
 func StartApp(info string) {
 	k8sJcascApp := app.NewWithID("k8s_jcasc_mgmt_go_ui")
-	k8sJcascApp.SetIcon(theme.FyneLogo())
 
 	// set theme
 	setTheme(k8sJcascApp)
