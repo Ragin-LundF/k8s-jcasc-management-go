@@ -1,3 +1,8 @@
+# 2.1.0
+* Update of `fyne` to `1.3.1`
+* Better support for server only environments
+  * It is possible to use `go run -tags cli k8s-jcasc-mgmt.go` to avoid compile with `fyne` and its dependencies (`gcc`, `x11`,...)
+
 # 2.0.1
 
 ## Introducing new UI
