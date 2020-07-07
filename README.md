@@ -18,6 +18,7 @@
 * [Configuration](#configuration)
   * [Configure alternative configuration with overlays](#configure-alternative-configuration-with-overlays)
 * [How to use](#how-to-use)
+  * [Server only usage / CLI](#server-only-usage--cli)
   * [Build hints](#build-hints)
   * [Dry-Run and Logging](#dry-run-and-logging)
   * [Debugging](#debugging)
@@ -76,6 +77,8 @@ The default users and passwords are:
   - permissions: read all and execute build
 
 This can be changed on the `jcasc_config.yaml` file under the `jenkins.securityRealm` section.
+
+To learn more about the internal processes see [here](docs/processes/README.md).
 
 ## Prerequisites ##
 
