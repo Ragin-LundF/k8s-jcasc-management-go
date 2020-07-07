@@ -249,15 +249,19 @@ You can also add one of the following flags:
 | -logencoding=<encoding> | Set log encoding of the logger (`zap`). Default is `json`. Possible values are: `json` or `console` | `-logencoding=console` |
 | -server=<true|false> | *Experimental*. Starts the system as a server. Currently it has not enough functions to talk about... | `-server=true` |
 
+## Server only usage / CLI
+To use the CLI interface only (e.g. on a server) the tag `cli` deactivates the GUI completely:
+```bash
+go run -tags cli k8s-jcasc-mgmt.go
+```
+With this tag the flag `-cli` is not necessary.
+In this case Go uses the `app_cli.go` file instead of `app_gui.go` to compile.
+
 ## Build hints ##
 
 This was realized with the [fyne](https://fyne.io/) framework.
 If you have trouble to compile the project, please visit the [fyne developer](https://developer.fyne.io/started/) site first to check the prerequisites.
 On Windows, it is recommended to install [TDM-GCC - tdm-gcc.tdragon.net](https://tdm-gcc.tdragon.net).
-
-If you have trouble, you can also exchange the `!ignore` and `ignore` in first line comment at the `/app/app_cli.go` and `/app/app_gui.go` file.
-Golang will then use the `app_cli.go` file to compile and ignores the GUI implementation completely.
-
 
 ## Dry-Run and Logging ##
 
