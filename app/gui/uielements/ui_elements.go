@@ -87,11 +87,7 @@ func ShowLogOutput(window fyne.Window) {
 	for _, logState := range loggingStates {
 		if logState.Details != "" {
 			accLabel = widget.NewLabel(processLogTextForBestView(logState.Details))
-			if logState.Type != "ERROR" {
-				accItem = widget.NewAccordionItem(processLogTextForBestView("["+logState.Type+"] "+logState.Entry), accLabel)
-			} else {
-				accItem = widget.NewAccordionItem(processLogTextForBestView("["+logState.Type+"] "+logState.Entry), accLabel)
-			}
+			accItem = widget.NewAccordionItem(processLogTextForBestView("["+logState.Type+"] "+logState.Entry), accLabel)
 			logAccordion.Append(accItem)
 		} else {
 			accLabel = widget.NewLabel("No content...")
