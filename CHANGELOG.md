@@ -1,3 +1,9 @@
+# 2.2.0
+* Update of libraries:
+  * fyne: 1.3.2
+    * fyne had some cache issues, which are solved with new version
+  * crypto (latest branch)
+
 # 2.1.0
 * Update of `fyne` to `1.3.1`
 * Better support for server only environments
