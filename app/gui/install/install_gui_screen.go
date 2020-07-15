@@ -3,7 +3,6 @@ package install
 import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/dialog"
-	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
 	"k8s-management-go/app/actions/installactions"
 	"k8s-management-go/app/constants"
@@ -90,7 +89,6 @@ func ScreenInstall(window fyne.Window) fyne.CanvasObject {
 	}
 
 	box := widget.NewVBox(
-		widget.NewHBox(layout.NewSpacer()),
 		form,
 	)
 

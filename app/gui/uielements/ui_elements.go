@@ -4,6 +4,7 @@ import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/widget"
+	"k8s-management-go/app/actions/kubernetesactions"
 	"k8s-management-go/app/actions/namespaceactions"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
@@ -40,6 +41,24 @@ func CreateNamespaceSelectEntry(namespaceErrorLabel *widget.Label) (namespaceSel
 	}
 
 	return namespaceSelectEntry
+}
+
+// CreateKubernetesContextSelectEntry creates kubernetes context select entry
+func CreateKubernetesContextSelectEntry(k8sErrorLabel *widget.Label) (k8sContextSelectEntry *widget.SelectEntry) {
+	// K8S Context
+	k8sContextSelectEntry = widget.NewSelectEntry(kubernetesactions.ActionReadK8SContextWithFilter(nil))
+	k8sContextSelectEntry.PlaceHolder = "Type or select context name"
+	k8sContextSelectEntry.OnChanged = func(input string) {
+		k8sContext := kubernetesactions.ActionReadK8SContextWithFilter(&input)
+		k8sContextSelectEntry.SetOptions(k8sContext)
+		if strings.TrimSpace(strings.Join(k8sContext, "")) == "" {
+			k8sErrorLabel.SetText("No contexts found with these characters.")
+		} else {
+			k8sErrorLabel.SetText("")
+		}
+	}
+
+	return k8sContextSelectEntry
 }
 
 // CreateDeploymentNameEntry creates deployment name entry
@@ -87,11 +106,7 @@ func ShowLogOutput(window fyne.Window) {
 	for _, logState := range loggingStates {
 		if logState.Details != "" {
 			accLabel = widget.NewLabel(processLogTextForBestView(logState.Details))
-			if logState.Type != "ERROR" {
-				accItem = widget.NewAccordionItem(processLogTextForBestView("["+logState.Type+"] "+logState.Entry), accLabel)
-			} else {
-				accItem = widget.NewAccordionItem(processLogTextForBestView("["+logState.Type+"] "+logState.Entry), accLabel)
-			}
+			accItem = widget.NewAccordionItem(processLogTextForBestView("["+logState.Type+"] "+logState.Entry), accLabel)
 			logAccordion.Append(accItem)
 		} else {
 			accLabel = widget.NewLabel("No content...")

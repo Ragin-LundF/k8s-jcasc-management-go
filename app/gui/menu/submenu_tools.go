@@ -7,6 +7,7 @@ import (
 	"fyne.io/fyne/widget"
 	"k8s-management-go/app/gui/jenkinsuser"
 	"k8s-management-go/app/gui/namespace"
+	"k8s-management-go/app/gui/uiconstants"
 )
 
 // ToolsScreen shows the tools scrren
@@ -22,7 +23,7 @@ func toolsSubMenu(window fyne.Window, preferences fyne.Preferences) (tabs *widge
 		widget.NewTabItemWithIcon("Create Jenkins User Password", theme.ConfirmIcon(), jenkinsuser.ScreenJenkinsUserPasswordCreate(window)))
 
 	tabs.SetTabLocation(widget.TabLocationTop)
-	tabs.SelectTabIndex(preferences.Int(PreferencesSubMenuToolsTab))
+	tabs.SelectTabIndex(preferences.Int(uiconstants.PreferencesSubMenuToolsTab))
 
 	return tabs
 }

@@ -2,7 +2,6 @@ package secrets
 
 import (
 	"fyne.io/fyne"
-	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
 	"k8s-management-go/app/actions/secretsactions"
 	"k8s-management-go/app/gui/uielements"
@@ -34,7 +33,6 @@ func ScreenEncryptSecrets(window fyne.Window) fyne.CanvasObject {
 	}
 
 	box := widget.NewVBox(
-		widget.NewHBox(layout.NewSpacer()),
 		form,
 	)
 

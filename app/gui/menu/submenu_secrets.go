@@ -6,6 +6,7 @@ import (
 	"fyne.io/fyne/theme"
 	"fyne.io/fyne/widget"
 	"k8s-management-go/app/gui/secrets"
+	"k8s-management-go/app/gui/uiconstants"
 )
 
 // SecretsScreen shows the secrets screen
@@ -23,7 +24,7 @@ func secretsSubMenu(window fyne.Window, preferences fyne.Preferences) (tabs *wid
 		widget.NewTabItemWithIcon("Decrypt Secrets", theme.VisibilityIcon(), secrets.ScreenDecryptSecrets(window)))
 
 	tabs.SetTabLocation(widget.TabLocationTop)
-	tabs.SelectTabIndex(preferences.Int(PreferencesSubMenuSecretsTab))
+	tabs.SelectTabIndex(preferences.Int(uiconstants.PreferencesSubMenuSecretsTab))
 
 	return tabs
 }

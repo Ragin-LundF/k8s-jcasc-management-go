@@ -3,7 +3,6 @@ package secrets
 import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/dialog"
-	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
 	"k8s-management-go/app/actions/secretsactions"
 	"k8s-management-go/app/gui/uielements"
@@ -38,7 +37,6 @@ func ScreenApplySecretsToAllNamespace(window fyne.Window) fyne.CanvasObject {
 	}
 
 	box := widget.NewVBox(
-		widget.NewHBox(layout.NewSpacer()),
 		form,
 	)
 	return box
@@ -72,7 +70,6 @@ func ScreenApplySecretsToNamespace(window fyne.Window) fyne.CanvasObject {
 	}
 
 	box := widget.NewVBox(
-		widget.NewHBox(layout.NewSpacer()),
 		form,
 	)
 

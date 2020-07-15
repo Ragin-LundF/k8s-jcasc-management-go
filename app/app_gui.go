@@ -6,9 +6,11 @@ import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/app"
 	"fyne.io/fyne/theme"
+	"k8s-management-go/app/actions/kubernetesactions"
 	"k8s-management-go/app/cli"
 	"k8s-management-go/app/gui/menu"
 	"k8s-management-go/app/gui/resources"
+	"k8s-management-go/app/gui/uiconstants"
 )
 
 // StartApp will start app with GUI
@@ -19,7 +21,7 @@ func StartApp(info string) {
 	// set theme
 	setTheme(k8sJcascApp)
 
-	k8sJcascWindow := k8sJcascApp.NewWindow("K8S JCasC Management")
+	k8sJcascWindow := k8sJcascApp.NewWindow(uiconstants.K8sJcasCMgmtTitle + kubernetesactions.GetKubernetesConfig().CurrentContext())
 	k8sJcascWindow.SetIcon(resources.K8sJcascMgmtIcon())
 	mainMenu := menu.CreateMainMenu(k8sJcascApp, k8sJcascWindow)
 
@@ -42,7 +44,7 @@ func StartCli(info string) {
 }
 
 func setTheme(app fyne.App) {
-	if app.Preferences().String(menu.PreferencesTheme) == menu.PreferencesThemeLight {
+	if app.Preferences().String(uiconstants.PreferencesTheme) == uiconstants.PreferencesThemeLight {
 		app.Settings().SetTheme(theme.LightTheme())
 	} else {
 		app.Settings().SetTheme(theme.DarkTheme())
