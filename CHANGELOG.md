@@ -1,3 +1,9 @@
+# 2.3.0
+* Adding Kubernetes Context Switch (GUI only)
+  * This release introduces the possibility to switch the Kubernetes Context in the app.
+  The available contexts has to be configured in the `~.kube/config` file.
+  * Configure access to multiple clusters: https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/
+
 # 2.2.0
 * Update of libraries:
   * fyne: 1.3.2

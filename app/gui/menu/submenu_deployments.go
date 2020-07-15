@@ -6,6 +6,7 @@ import (
 	"fyne.io/fyne/theme"
 	"fyne.io/fyne/widget"
 	"k8s-management-go/app/gui/install"
+	"k8s-management-go/app/gui/uiconstants"
 	"k8s-management-go/app/gui/uninstall"
 )
 
@@ -22,7 +23,7 @@ func installSubMenu(window fyne.Window, preferences fyne.Preferences) (tabs *wid
 		widget.NewTabItemWithIcon("Uninstall", theme.MediaPauseIcon(), uninstall.ScreenUninstall(window)))
 
 	tabs.SetTabLocation(widget.TabLocationTop)
-	tabs.SelectTabIndex(preferences.Int(PreferencesSubMenuDeploymentsTab))
+	tabs.SelectTabIndex(preferences.Int(uiconstants.PreferencesSubMenuDeploymentsTab))
 
 	return tabs
 }

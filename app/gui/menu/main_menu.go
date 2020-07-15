@@ -10,7 +10,7 @@ import (
 // CreateTabMenu creates the main tab menu
 func CreateTabMenu(k8sJcascApp fyne.App, k8sJcascWindow fyne.Window, info string) (tabs *widget.TabContainer) {
 	tabs = widget.NewTabContainer(
-		widget.NewTabItemWithIcon("Welcome", theme.HomeIcon(), welcome.ScreenWelcome(info)),
+		widget.NewTabItemWithIcon("Welcome", theme.HomeIcon(), welcome.ScreenWelcome(k8sJcascWindow, info)),
 		widget.NewTabItemWithIcon("Deployments", theme.ConfirmIcon(), InstallScreen(k8sJcascWindow, k8sJcascApp.Preferences())),
 		widget.NewTabItemWithIcon("Secrets", theme.WarningIcon(), SecretsScreen(k8sJcascWindow, k8sJcascApp.Preferences())),
 		widget.NewTabItemWithIcon("Create Project", theme.DocumentCreateIcon(), ProjectsScreen(k8sJcascWindow, k8sJcascApp.Preferences())),

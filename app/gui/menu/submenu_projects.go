@@ -6,6 +6,7 @@ import (
 	"fyne.io/fyne/theme"
 	"fyne.io/fyne/widget"
 	"k8s-management-go/app/gui/createproject"
+	"k8s-management-go/app/gui/uiconstants"
 )
 
 // ProjectsScreen shows the projects screen
@@ -34,7 +35,7 @@ func projectsSubMenu(window fyne.Window, preferences fyne.Preferences) (tabs *wi
 		widget.NewTabItemWithIcon("Create Deployment-Only Project", theme.MediaReplayIcon(), boxScreenCreateDeployOnlyProject))
 
 	tabs.SetTabLocation(widget.TabLocationTop)
-	tabs.SelectTabIndex(preferences.Int(PreferencesSubMenuProjectsTab))
+	tabs.SelectTabIndex(preferences.Int(uiconstants.PreferencesSubMenuProjectsTab))
 
 	return tabs
 }

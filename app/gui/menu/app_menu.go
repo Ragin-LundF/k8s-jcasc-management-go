@@ -6,6 +6,7 @@ import (
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/theme"
 	"fyne.io/fyne/widget"
+	"k8s-management-go/app/gui/uiconstants"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/logger"
 )
@@ -17,11 +18,11 @@ func CreateMainMenu(app fyne.App, window fyne.Window) *fyne.MainMenu {
 	quitItem := fyne.NewMenuItem("Quit", func() { app.Quit() })
 	darkThemeItem := fyne.NewMenuItem("Dark Theme", func() {
 		app.Settings().SetTheme(theme.DarkTheme())
-		app.Preferences().SetString(PreferencesTheme, PreferencesThemeDark)
+		app.Preferences().SetString(uiconstants.PreferencesTheme, uiconstants.PreferencesThemeDark)
 	})
 	lightThemeItem := fyne.NewMenuItem("Light Theme", func() {
 		app.Settings().SetTheme(theme.LightTheme())
-		app.Preferences().SetString(PreferencesTheme, PreferencesThemeLight)
+		app.Preferences().SetString(uiconstants.PreferencesTheme, uiconstants.PreferencesThemeLight)
 	})
 
 	mainMenu := fyne.NewMainMenu(

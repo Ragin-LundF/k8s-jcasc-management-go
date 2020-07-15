@@ -64,7 +64,6 @@ func ScreenJenkinsUserPasswordCreate(window fyne.Window) fyne.CanvasObject {
 	}
 
 	box := widget.NewVBox(
-		widget.NewHBox(layout.NewSpacer()),
 		form,
 	)
 

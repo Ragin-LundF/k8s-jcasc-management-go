@@ -1,4 +1,7 @@
-package menu
+package uiconstants
+
+// K8sJcasCMgmtTitle defines the base of the window title
+const K8sJcasCMgmtTitle = "K8S JCasC Management - K8S Context: "
 
 // PreferencesSubMenuDeploymentsTab is the preferences constant for the deployment tab
 const PreferencesSubMenuDeploymentsTab = "subMenuDeploymentTab"
