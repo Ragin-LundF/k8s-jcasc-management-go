@@ -1,3 +1,13 @@
+# 2.4.0
+* Bugfix that Kubernetes Server certificate has not been replaced in template
+* Adding support for multiple cluster certificates
+  * The template `KUBERNETES_SERVER_CERTIFICATE` is now a fallback/default configuration.
+  * With `KUBERNETES_SERVER_CERTIFICATE_<context_name>` it is now possible to add certificates for multiple contexts.
+  The context name should not contain spaces!
+  * Examples:
+    * `KUBERNETES_SERVER_CERTIFICATE_CLUSTER_A` is for the context `cluster_a`
+    * `KUBERNETES_SERVER_CERTIFICATE_PRODUCTION-CLUSTER` is for the context `production-cluster`
+
 # 2.3.0
 * Adding Kubernetes Context Switch (GUI only)
   * This release introduces the possibility to switch the Kubernetes Context in the app.

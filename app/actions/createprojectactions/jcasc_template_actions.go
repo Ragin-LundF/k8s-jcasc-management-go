@@ -1,9 +1,11 @@
 package createprojectactions
 
 import (
+	"k8s-management-go/app/actions/kubernetesactions"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
+	"strings"
 )
 
 // ActionReplaceGlobalConfigJCasCValues replace Jenkins Configuration as Code default values
@@ -30,7 +32,7 @@ func ActionReplaceGlobalConfigJCasCValues(projectDirectory string) (success bool
 			return success, err
 		}
 		// Kubernetes configuration
-		if success, err = files.ReplaceStringInFile(jcascFile, constants.TemplateKubernetesServerCertificate, models.GetConfiguration().Kubernetes.ServerCertificate); !success {
+		if success, err = replaceKubernetesServerCertificate(jcascFile); !success {
 			return success, err
 		}
 		// CredentialIds
@@ -48,4 +50,25 @@ func ActionReplaceGlobalConfigJCasCValues(projectDirectory string) (success bool
 		}
 	}
 	return true, nil
+}
+
+// replace certificate depending on context of default if no matching context was found
+func replaceKubernetesServerCertificate(jcascFile string) (success bool, err error) {
+	var found = false
+	var context = strings.ToUpper(kubernetesactions.GetKubernetesConfig().CurrentContext())
+	if len(models.GetConfiguration().Kubernetes.ContextServerCertificates) > 0 {
+		for _, contextCertificate := range models.GetConfiguration().Kubernetes.ContextServerCertificates {
+			if strings.ToUpper(contextCertificate.Context) == context {
+				success, err = files.ReplaceStringInFile(jcascFile, constants.TemplateKubernetesServerCertificate, contextCertificate.Certificate)
+				found = true
+				break
+			}
+		}
+	}
+
+	if !found {
+		success, err = files.ReplaceStringInFile(jcascFile, constants.TemplateKubernetesServerCertificate, models.GetConfiguration().Kubernetes.ServerCertificate)
+	}
+
+	return success, err
 }
