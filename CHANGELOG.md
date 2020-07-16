@@ -1,7 +1,7 @@
 # 2.4.0
-* Bugfix that Kubernetes Server certificate has not been replaced in template
+* Bugfix that Kubernetes Server certificate has not been replaced in the template
 * Adding support for multiple cluster certificates
-  * The template `KUBERNETES_SERVER_CERTIFICATE` is now a fallback/default configuration.
+  * The configuration `KUBERNETES_SERVER_CERTIFICATE` is now a fallback/default configuration.
   * With `KUBERNETES_SERVER_CERTIFICATE_<context_name>` it is now possible to add certificates for multiple contexts.
   The context name should not contain spaces!
   * Examples:
