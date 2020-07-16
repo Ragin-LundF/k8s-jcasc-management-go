@@ -425,6 +425,7 @@ This can help to figure out differences between clusters.
 
 # Helpful links #
 
+- K8S JCasC Management internal Processes: [Process overview](docs/README.md)
 - Kubernetes DNS-Based Service Discovery: https://github.com/kubernetes/dns/blob/master/docs/specification.md
 - JCasC Examples: https://github.com/jenkinsci/configuration-as-code-plugin/tree/master/demos
 - Jenkins Seed Job script to create jobs from a JSON in a GIT repository: https://github.com/Ragin-LundF/jenkins-jobdsl-remote
