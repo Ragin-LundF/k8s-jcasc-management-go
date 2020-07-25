@@ -100,7 +100,6 @@ type namespaceCreatedNotifier struct {
 func (notifier namespaceCreatedNotifier) updateView() {
 	logger.Log().Info("[uninstall_gui] -> Retrieved event to that new namespace was created")
 	namespaceSelectEntry.SetOptions(namespaceactions.ActionReadNamespaceWithFilter(nil))
-	namespaceSelectEntry.Refresh()
 }
 
 func (notifier namespaceCreatedNotifier) Handle(payload events.NamespaceCreatedPayload) {

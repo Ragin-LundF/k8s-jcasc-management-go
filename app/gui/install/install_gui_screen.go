@@ -93,11 +93,9 @@ func ScreenInstall(window fyne.Window) fyne.CanvasObject {
 		},
 	}
 
-	box := widget.NewVBox(
+	return widget.NewVBox(
 		form,
 	)
-
-	return box
 }
 
 // Secrets password dialog
@@ -127,7 +125,6 @@ type namespaceCreatedNotifier struct {
 func (notifier namespaceCreatedNotifier) updateView() {
 	logger.Log().Info("[install_gui] -> Retrieved event to that new namespace was created")
 	namespaceSelectEntry.SetOptions(namespaceactions.ActionReadNamespaceWithFilter(nil))
-	namespaceSelectEntry.Refresh()
 }
 
 func (notifier namespaceCreatedNotifier) Handle(payload events.NamespaceCreatedPayload) {
