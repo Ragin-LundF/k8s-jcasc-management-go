@@ -10,6 +10,7 @@ import (
 	"k8s-management-go/app/gui/uielements"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/logger"
+	"time"
 )
 
 // ScreenApplySecretsToAllNamespace shows the apply to all namespaces screen
@@ -91,11 +92,11 @@ type namespaceCreatedNotifier struct {
 	namespace string
 }
 
-func (notifier namespaceCreatedNotifier) updateView() {
+func (notifier namespaceCreatedNotifier) Handle(payload events.NamespaceCreatedPayload) {
 	logger.Log().Info("[secrets_gui] -> Retrieved event to that new namespace was created")
 	namespaceSelectEntry.SetOptions(namespaceactions.ActionReadNamespaceWithFilter(nil))
-}
 
-func (notifier namespaceCreatedNotifier) Handle(payload events.NamespaceCreatedPayload) {
-	notifier.updateView()
+	events.RefreshTabs.Trigger(events.RefreshTabsPayload{
+		Time: time.Now(),
+	})
 }

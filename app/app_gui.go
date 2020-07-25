@@ -58,15 +58,14 @@ func setTheme(app fyne.App) {
 
 func init() {
 	// register as finalizer
-	createNamespaceNotifier := namespaceCreatedNotifier{}
-	events.NamespaceCreated.Register(createNamespaceNotifier)
+	notifierRefreshTabs := tabsRefreshNotifier{}
+	events.RefreshTabs.Register(notifierRefreshTabs)
 }
 
-type namespaceCreatedNotifier struct {
-	namespace string
+type tabsRefreshNotifier struct {
 }
 
-func (notifier namespaceCreatedNotifier) Handle(payload events.NamespaceCreatedPayload) {
-	logger.Log().Info("[app] -> Retrieved event to that new namespace was created")
+func (notifier tabsRefreshNotifier) Handle(payload events.RefreshTabsPayload) {
+	logger.Log().Info("[app] -> Retrieved event to refresh tabs")
 	tabs.Refresh()
 }
