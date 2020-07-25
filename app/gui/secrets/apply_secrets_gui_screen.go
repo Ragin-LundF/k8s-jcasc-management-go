@@ -4,9 +4,12 @@ import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/widget"
+	"k8s-management-go/app/actions/namespaceactions"
 	"k8s-management-go/app/actions/secretsactions"
+	"k8s-management-go/app/events"
 	"k8s-management-go/app/gui/uielements"
 	"k8s-management-go/app/models"
+	"k8s-management-go/app/utils/logger"
 )
 
 // ScreenApplySecretsToAllNamespace shows the apply to all namespaces screen
@@ -42,11 +45,14 @@ func ScreenApplySecretsToAllNamespace(window fyne.Window) fyne.CanvasObject {
 	return box
 }
 
+// Namespace
+var namespaceErrorLabel = widget.NewLabel("")
+var namespaceSelectEntry *widget.SelectEntry
+
 // ScreenApplySecretsToNamespace shows the apply to one selected namespace screen
 func ScreenApplySecretsToNamespace(window fyne.Window) fyne.CanvasObject {
 	// Namespace
-	namespaceErrorLabel := widget.NewLabel("")
-	namespaceSelectEntry := uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
+	namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
 
 	// password
 	passwordEntry := widget.NewPasswordEntry()
@@ -74,4 +80,23 @@ func ScreenApplySecretsToNamespace(window fyne.Window) fyne.CanvasObject {
 	)
 
 	return box
+}
+
+func init() {
+	createNamespaceNotifier := namespaceCreatedNotifier{}
+	events.NamespaceCreated.Register(createNamespaceNotifier)
+}
+
+type namespaceCreatedNotifier struct {
+	namespace string
+}
+
+func (notifier namespaceCreatedNotifier) updateView() {
+	logger.Log().Info("[secrets_gui] -> Retrieved event to that new namespace was created")
+	namespaceSelectEntry.SetOptions(namespaceactions.ActionReadNamespaceWithFilter(nil))
+	namespaceSelectEntry.Refresh()
+}
+
+func (notifier namespaceCreatedNotifier) Handle(payload events.NamespaceCreatedPayload) {
+	notifier.updateView()
 }

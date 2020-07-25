@@ -5,11 +5,17 @@ import (
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/widget"
 	"k8s-management-go/app/actions/installactions"
+	"k8s-management-go/app/actions/namespaceactions"
 	"k8s-management-go/app/constants"
+	"k8s-management-go/app/events"
 	"k8s-management-go/app/gui/uielements"
 	"k8s-management-go/app/models"
+	"k8s-management-go/app/utils/logger"
 	"k8s-management-go/app/utils/validator"
 )
+
+var namespaceSelectEntry *widget.SelectEntry
+var namespaceErrorLabel = widget.NewLabel("")
 
 // ScreenInstall shows the install screen
 func ScreenInstall(window fyne.Window) fyne.CanvasObject {
@@ -20,8 +26,7 @@ func ScreenInstall(window fyne.Window) fyne.CanvasObject {
 	var secretsPasswords string
 
 	// Namespace
-	namespaceErrorLabel := widget.NewLabel("")
-	namespaceSelectEntry := uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
+	namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
 
 	// Deployment name
 	deploymentNameEntry := uielements.CreateDeploymentNameEntry()
@@ -108,4 +113,23 @@ func openSecretsPasswordDialog(window fyne.Window, secretsPasswordEntry *widget.
 			return
 		}
 	}, window)
+}
+
+func init() {
+	createNamespaceNotifier := namespaceCreatedNotifier{}
+	events.NamespaceCreated.Register(createNamespaceNotifier)
+}
+
+type namespaceCreatedNotifier struct {
+	namespace string
+}
+
+func (notifier namespaceCreatedNotifier) updateView() {
+	logger.Log().Info("[install_gui] -> Retrieved event to that new namespace was created")
+	namespaceSelectEntry.SetOptions(namespaceactions.ActionReadNamespaceWithFilter(nil))
+	namespaceSelectEntry.Refresh()
+}
+
+func (notifier namespaceCreatedNotifier) Handle(payload events.NamespaceCreatedPayload) {
+	notifier.updateView()
 }

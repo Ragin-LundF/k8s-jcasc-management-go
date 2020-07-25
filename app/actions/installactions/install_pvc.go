@@ -2,7 +2,7 @@ package installactions
 
 import (
 	"fmt"
-	"gopkg.in/yaml.v2"
+	"github.com/goccy/go-yaml"
 	"io/ioutil"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
