@@ -146,7 +146,7 @@ func GetGlobalSecretsPath() (secretsFilePath string) {
 }
 
 // GetSecretsFiles returns a list of secret files to support different environments
-func GetSecretsFiles() *[]string {
+func GetSecretsFiles() []string {
 	secretsFilePath := GetGlobalSecretsPath()
 
 	if secretsFilePath != "" {
@@ -163,7 +163,7 @@ func GetSecretsFiles() *[]string {
 
 		var secretFiles []string
 
-		secretFiles = append(secretFiles, strings.Replace(GetGlobalSecretsFile(), secretsFilePath, "", -1))
+		secretFiles = appendUnique(secretFiles, strings.Replace(GetGlobalSecretsFile(), secretsFilePath, "", -1))
 		if secretFilesWithPath != nil && len(*secretFilesWithPath) > 0 {
 			for _, secretFile := range *secretFilesWithPath {
 				secretFile = strings.Replace(secretFile, secretsFilePath, "", -1)
@@ -173,7 +173,7 @@ func GetSecretsFiles() *[]string {
 			}
 		}
 
-		return &secretFiles
+		return secretFiles
 	}
 	return nil
 }

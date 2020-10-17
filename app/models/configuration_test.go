@@ -10,7 +10,7 @@ import (
 )
 
 func TestGetAlternativeSecretsFilesEmpty(t *testing.T) {
-	assert.Empty(t, GetSecretsFiles())
+	assert.True(t, len(GetSecretsFiles()) == 1)
 }
 
 func TestGetAlternativeSecretsFilesWithAlternatives(t *testing.T) {
@@ -20,12 +20,13 @@ func TestGetAlternativeSecretsFilesWithAlternatives(t *testing.T) {
 	var secretsFile = GetGlobalSecretsFile()
 	var secretsFileA = strings.Replace(secretsFile, "secrets.sh", "secrets_environment_a.sh", -1)
 	var secretsFileB = strings.Replace(secretsFile, "secrets.sh", "secrets_environment_b.sh", -1)
+	_ = ioutil.WriteFile(secretsFile, []byte(""), 0644)
 	_ = ioutil.WriteFile(secretsFileA, []byte(""), 0644)
 	_ = ioutil.WriteFile(secretsFileB, []byte(""), 0644)
 
 	var alternativeSecretFiles = GetSecretsFiles()
 	assert.NotEmpty(t, alternativeSecretFiles)
-	assert.True(t, len(*alternativeSecretFiles) == 2)
+	assert.True(t, len(alternativeSecretFiles) == 3)
 
 	os.Remove(secretsFileA)
 	os.Remove(secretsFileB)

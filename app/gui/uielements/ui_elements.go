@@ -77,8 +77,8 @@ func CreateDeploymentNameEntry() (deploymentNameEntry *widget.Entry) {
 func CreateSecretsFileEntry() (secretsFileEntry *widget.Select) {
 	var secretFiles []string
 	var alternativeSecretFiles = models.GetSecretsFiles()
-	if alternativeSecretFiles != nil && len(*alternativeSecretFiles) > 0 {
-		secretFiles = append(secretFiles, *alternativeSecretFiles...)
+	if len(alternativeSecretFiles) > 0 {
+		secretFiles = append(secretFiles, alternativeSecretFiles...)
 	}
 	secretsFileEntry = widget.NewSelect(secretFiles, func(s string) {})
 	secretsFileEntry.SetSelected(secretsFileEntry.Options[0])

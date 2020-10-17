@@ -169,7 +169,7 @@ func DialogAskForNamespace() (namespace string, err error) {
 func DialogAskForSecretsFile() (secretsFile string, err error) {
 	log := logger.Log()
 	ClearScreen()
-	var secretFilesArray = *models.GetSecretsFiles()
+	var secretFilesArray = models.GetSecretsFiles()
 
 	// Template for displaying menu
 	templates := &promptui.SelectTemplates{
@@ -191,7 +191,7 @@ func DialogAskForSecretsFile() (secretsFile string, err error) {
 
 	prompt := promptui.Select{
 		Label:     "Please select the secrets file which should be applied",
-		Items:     *models.GetSecretsFiles(),
+		Items:     secretFilesArray,
 		Templates: templates,
 		Size:      12,
 		Searcher:  searcher,
