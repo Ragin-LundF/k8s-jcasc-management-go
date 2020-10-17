@@ -33,8 +33,9 @@ func ShowInstallDialogs() (state models.StateData, err error) {
 	if state.JenkinsHelmValuesExist {
 		// if it is no dry-run, ask for secrets password
 		if !models.GetConfiguration().K8sManagement.DryRunOnly {
-			secretsPassword, err := secrets.AskForSecretsPassword("Password for secrets file")
+			secretsFileName, secretsPassword, err := secrets.AskForSecretsPassword("Password for secrets file", true)
 			state.SecretsPassword = &secretsPassword
+			state.SecretsFileName = secretsFileName
 			if err != nil {
 				return state, err
 			}

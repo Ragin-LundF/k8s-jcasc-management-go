@@ -38,7 +38,7 @@ func startCommandAction(command string) (err error) {
 	case constants.CommandEncryptSecrets:
 		err = secrets.EncryptSecretsFile()
 	case constants.CommandDecryptSecrets:
-		err = secrets.DecryptSecretsFile()
+		err = secrets.DecryptSecretsFile(nil)
 	case constants.CommandApplySecrets:
 		err = secrets.ApplySecrets()
 	case constants.CommandApplySecretsToAll:

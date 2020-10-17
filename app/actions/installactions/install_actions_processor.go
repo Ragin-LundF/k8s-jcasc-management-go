@@ -26,7 +26,7 @@ func ProcessCreateSecrets(state models.StateData) (err error) {
 	// apply secrets
 	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Starting apply secrets to namespace [%s]...", state.Namespace))
 
-	if err = secrets.ApplySecretsToNamespace(state.Namespace, state.SecretsPassword); err != nil {
+	if err = secrets.ApplySecretsToNamespace(state.Namespace, state.SecretsFileName, state.SecretsPassword); err != nil {
 		loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Starting apply secrets to namespace [%s]...failed", state.Namespace), err.Error())
 		return err
 	}

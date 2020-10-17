@@ -1,3 +1,10 @@
+# 2.6.0
+**Introduction of multiple secret files**
+
+To set up multiple secret files, simply add new files in the same directory where the `secrets.sh(.gpg)` is located.
+These files need the prefix `secrets_`.
+
+
 # 2.5.0
 * Fixes the error that after project creation the new namespace is not available and the application must be restarted.
 

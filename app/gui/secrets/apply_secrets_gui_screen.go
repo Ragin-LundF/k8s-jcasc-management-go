@@ -16,15 +16,17 @@ import (
 // ScreenApplySecretsToAllNamespace shows the apply to all namespaces screen
 func ScreenApplySecretsToAllNamespace(window fyne.Window) fyne.CanvasObject {
 	// secrets password
-	passwordEntry := widget.NewPasswordEntry()
+	var secretsFiles = uielements.CreateSecretsFileEntry()
+	var passwordEntry = widget.NewPasswordEntry()
 
-	form := &widget.Form{
+	var form = &widget.Form{
 		Items: []*widget.FormItem{
+			{Text: "Secrets file", Widget: secretsFiles},
 			{Text: "Password", Widget: passwordEntry},
 		},
 		OnSubmit: func() {
 			// first try to decrypt the file
-			if err := secretsactions.ActionDecryptSecretsFile(passwordEntry.Text); err == nil {
+			if err := secretsactions.ActionDecryptSecretsFile(passwordEntry.Text, secretsFiles.Selected); err == nil {
 				// execute the file and apply to all namespaces
 				bar := uielements.ProgressBar{
 					Bar:        dialog.NewProgress("Apply secrets to all namespaces", "Progress", window),
@@ -32,7 +34,7 @@ func ScreenApplySecretsToAllNamespace(window fyne.Window) fyne.CanvasObject {
 					MaxCount:   float64(len(models.GetIPConfiguration().IPs)),
 				}
 				bar.Bar.Show()
-				_ = secretsactions.ActionApplySecretsToAllNamespaces(bar.AddCallback)
+				_ = secretsactions.ActionApplySecretsToAllNamespaces(secretsFiles.Selected, bar.AddCallback)
 				bar.Bar.Hide()
 			}
 
@@ -52,24 +54,23 @@ var namespaceSelectEntry *widget.SelectEntry
 
 // ScreenApplySecretsToNamespace shows the apply to one selected namespace screen
 func ScreenApplySecretsToNamespace(window fyne.Window) fyne.CanvasObject {
-	// Namespace
-	namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
+	var secretsFiles = uielements.CreateSecretsFileEntry()
+	var namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
+	var passwordEntry = widget.NewPasswordEntry()
 
-	// password
-	passwordEntry := widget.NewPasswordEntry()
-
-	form := &widget.Form{
+	var form = &widget.Form{
 		Items: []*widget.FormItem{
+			{Text: "Secrets file", Widget: secretsFiles},
 			{Text: "Namespace", Widget: namespaceSelectEntry},
 			{Text: "", Widget: namespaceErrorLabel},
 			{Text: "Password", Widget: passwordEntry},
 		},
 		OnSubmit: func() {
 			// first try to decrypt the file
-			err := secretsactions.ActionDecryptSecretsFile(passwordEntry.Text)
+			err := secretsactions.ActionDecryptSecretsFile(passwordEntry.Text, secretsFiles.Selected)
 			if err == nil {
 				// execute the file
-				_ = secretsactions.ActionApplySecretsToNamespace(namespaceSelectEntry.Text)
+				_ = secretsactions.ActionApplySecretsToNamespace(namespaceSelectEntry.Text, secretsFiles.Selected)
 			}
 			// show output
 			uielements.ShowLogOutput(window)

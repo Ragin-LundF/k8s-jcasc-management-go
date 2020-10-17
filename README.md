@@ -17,6 +17,7 @@
 * [Build slaves](#build-slaves)
 * [Configuration](#configuration)
   * [Configure alternative configuration with overlays](#configure-alternative-configuration-with-overlays)
+  * [Setup with multiple secret files](#setup-with-multiple-secret-files)
 * [How to use](#how-to-use)
   * [Server only usage / CLI](#server-only-usage--cli)
   * [Build hints](#build-hints)
@@ -231,6 +232,11 @@ Any other configuration should be versioned inside of the project directory.
 
 For base paths like templates, the system searches first for the configured base path and if the directory does not exist, it tries to find the directory in the local (`./`) directory.
 With this mechanism it is not required to copy for example also the templates into the project directory if they are ok.
+
+## Setup with multiple secret files
+
+To set up multiple secret files, simply add new files in the same directory where the `secrets.sh(.gpg)` is located.
+These files need the prefix `secrets_`.
 
 
 # How to use #

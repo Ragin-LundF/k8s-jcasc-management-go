@@ -73,6 +73,19 @@ func CreateDeploymentNameEntry() (deploymentNameEntry *widget.Entry) {
 	return deploymentNameEntry
 }
 
+// CreateSecretsFileEntry creates a dropdown which contains a selection of secret files
+func CreateSecretsFileEntry() (secretsFileEntry *widget.Select) {
+	var secretFiles []string
+	var alternativeSecretFiles = models.GetSecretsFiles()
+	if len(alternativeSecretFiles) > 0 {
+		secretFiles = append(secretFiles, alternativeSecretFiles...)
+	}
+	// NewSelect will be evaluated later with secretFileEntry.Select instead of the function to make it reusable
+	secretsFileEntry = widget.NewSelect(secretFiles, func(s string) {})
+	secretsFileEntry.SetSelected(secretsFileEntry.Options[0])
+	return secretsFileEntry
+}
+
 // CreateInstallTypeRadio creates radio install type radio
 func CreateInstallTypeRadio() (radioInstallType *widget.Radio) {
 	// Install or update

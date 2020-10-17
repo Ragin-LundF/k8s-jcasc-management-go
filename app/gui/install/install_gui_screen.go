@@ -24,26 +24,21 @@ func ScreenInstall(window fyne.Window) fyne.CanvasObject {
 	var deploymentName string
 	var installTypeOption string
 	var dryRunOption string
+	var secretsFile string
 	var secretsPasswords string
 
-	// Namespace
-	namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
+	// Entries
+	var namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
+	var secretsFileSelect = uielements.CreateSecretsFileEntry()
+	var deploymentNameEntry = uielements.CreateDeploymentNameEntry()
+	var installTypeRadio = uielements.CreateInstallTypeRadio()
+	var dryRunRadio = uielements.CreateDryRunRadio()
+	var secretsPasswordEntry = widget.NewPasswordEntry()
 
-	// Deployment name
-	deploymentNameEntry := uielements.CreateDeploymentNameEntry()
-
-	// Install or update
-	installTypeRadio := uielements.CreateInstallTypeRadio()
-
-	// Dry-run or execute
-	dryRunRadio := uielements.CreateDryRunRadio()
-
-	// secrets password
-	secretsPasswordEntry := widget.NewPasswordEntry()
-
-	form := &widget.Form{
+	var form = &widget.Form{
 		Items: []*widget.FormItem{
 			{Text: "Namespace", Widget: namespaceSelectEntry},
+			{Text: "Secrets file", Widget: secretsFileSelect},
 			{Text: "", Widget: namespaceErrorLabel},
 			{Text: "Deployment Name", Widget: deploymentNameEntry},
 			{Text: "Installation type", Widget: installTypeRadio},
@@ -51,6 +46,7 @@ func ScreenInstall(window fyne.Window) fyne.CanvasObject {
 		},
 		OnSubmit: func() {
 			// get variables
+			secretsFile = secretsFileSelect.Selected
 			namespace = namespaceSelectEntry.Text
 			deploymentName = deploymentNameEntry.Text
 			installTypeOption = installTypeRadio.Selected
@@ -67,11 +63,12 @@ func ScreenInstall(window fyne.Window) fyne.CanvasObject {
 			}
 
 			// map state
-			state := models.StateData{
+			var state = models.StateData{
 				Namespace:       namespace,
 				DeploymentName:  deploymentName,
 				HelmCommand:     installTypeOption,
 				SecretsPassword: &secretsPasswords,
+				SecretsFileName: secretsFile,
 			}
 
 			// Directories
@@ -101,7 +98,7 @@ func ScreenInstall(window fyne.Window) fyne.CanvasObject {
 
 // Secrets password dialog
 func openSecretsPasswordDialog(window fyne.Window, secretsPasswordEntry *widget.Entry, state models.StateData) {
-	secretsPasswordWindow := widget.NewForm(widget.NewFormItem("Password", secretsPasswordEntry))
+	var secretsPasswordWindow = widget.NewForm(widget.NewFormItem("Password", secretsPasswordEntry))
 	secretsPasswordWindow.Resize(fyne.Size{Width: 300, Height: 90})
 
 	dialog.ShowCustomConfirm("Password for Secrets...", "Ok", "Cancel", secretsPasswordWindow, func(confirmed bool) {
@@ -115,7 +112,7 @@ func openSecretsPasswordDialog(window fyne.Window, secretsPasswordEntry *widget.
 }
 
 func init() {
-	createNamespaceNotifier := namespaceCreatedNotifier{}
+	var createNamespaceNotifier = namespaceCreatedNotifier{}
 	events.NamespaceCreated.Register(createNamespaceNotifier)
 }
 
