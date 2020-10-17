@@ -80,6 +80,7 @@ func CreateSecretsFileEntry() (secretsFileEntry *widget.Select) {
 	if len(alternativeSecretFiles) > 0 {
 		secretFiles = append(secretFiles, alternativeSecretFiles...)
 	}
+	// NewSelect will be evaluated later with secretFileEntry.Select instead of the function to make it reusable
 	secretsFileEntry = widget.NewSelect(secretFiles, func(s string) {})
 	secretsFileEntry.SetSelected(secretsFileEntry.Options[0])
 	return secretsFileEntry
