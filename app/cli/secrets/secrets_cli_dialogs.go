@@ -10,11 +10,11 @@ import (
 )
 
 // AskForSecretsPassword asks for password
-func AskForSecretsPassword(passwordText string, selectSecretsFile bool) (secretsFilename string, password string, err error) {
+func AskForSecretsPassword(passwordText string, selectSecretsFile bool) (secretsFile string, password string, err error) {
 	if selectSecretsFile {
 		// ask for secrets file
 		loggingstate.AddInfoEntry("  -> Ask for secrets file to apply...")
-		secretsFilename, err = dialogs.DialogAskForSecretsFile()
+		secretsFile, err = dialogs.DialogAskForSecretsFile()
 		if err != nil {
 			loggingstate.AddErrorEntryAndDetails("  -> Ask for secrets file to apply...failed", err.Error())
 			return "", "", err
@@ -39,11 +39,11 @@ func AskForSecretsPassword(passwordText string, selectSecretsFile bool) (secrets
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("  -> Ask for the password for secret files...failed", err.Error())
 
-		return secretsFilename, "", err
+		return secretsFile, "", err
 	}
 	loggingstate.AddInfoEntry("  -> Ask for the password for secret file...done")
 
-	return secretsFilename, password, err
+	return secretsFile, password, err
 }
 
 // ApplySecrets applies the secrets

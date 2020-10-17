@@ -169,7 +169,7 @@ func GetSecretsFiles() *[]string {
 				secretFile = strings.Replace(secretFile, secretsFilePath, "", -1)
 				secretFile = strings.Replace(secretFile, ".gpg", "", -1)
 
-				secretFiles = append(secretFiles, secretFile)
+				secretFiles = appendUnique(secretFiles, secretFile)
 			}
 		}
 
@@ -498,6 +498,15 @@ func addK8sManagementConfig(key string, value string) (success bool) {
 	}
 
 	return success
+}
+
+func appendUnique(slice []string, element string) []string {
+	for _, sliceElement := range slice {
+		if sliceElement == element {
+			return slice
+		}
+	}
+	return append(slice, element)
 }
 
 func replaceUnneededChars(value string) string {

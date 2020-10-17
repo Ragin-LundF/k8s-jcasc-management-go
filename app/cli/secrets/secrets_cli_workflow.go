@@ -39,13 +39,15 @@ func EncryptSecretsFile() (err error) {
 func DecryptSecretsFile(secretsFile *string) (err error) {
 	var password string
 	if secretsFile == nil {
-		*secretsFile, password, err = AskForSecretsPassword("Password for secrets file", true)
+		var secretsFilePath string
+		secretsFilePath, password, err = AskForSecretsPassword("Password for secrets file", true)
+		secretsFile = &secretsFilePath
 	} else {
 		_, password, err = AskForSecretsPassword("Password for secrets file", false)
 	}
 	if err != nil {
 		return err
 	}
-	err = secretsactions.ActionDecryptSecretsFile(*secretsFile, password)
+	err = secretsactions.ActionDecryptSecretsFile(password, *secretsFile)
 	return err
 }

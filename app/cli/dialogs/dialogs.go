@@ -169,21 +169,21 @@ func DialogAskForNamespace() (namespace string, err error) {
 func DialogAskForSecretsFile() (secretsFile string, err error) {
 	log := logger.Log()
 	ClearScreen()
+	var secretFilesArray = *models.GetSecretsFiles()
 
 	// Template for displaying menu
 	templates := &promptui.SelectTemplates{
 		Label:    "{{ . }}?",
-		Active:   "\U000027A4 {{ .SecretsFile | green }}",
-		Inactive: "  {{ .SecretsFile | cyan }}",
-		Selected: "\U000027A4 {{ .SecretsFile | red | cyan }}",
+		Active:   "\U000027A4 {{ . | green }}",
+		Inactive: "  {{ . | cyan }}",
+		Selected: "\U000027A4 {{ . | red | cyan }}",
 		Details: `
 --------- Secrets file selection ----------
-{{ "SecretsFile: " | faint }}	{{ .SecretsFile }}`,
+{{ "SecretsFile: " | faint }}	{{ . }}`,
 	}
 
 	// searcher (with "/")
 	searcher := func(input string, index int) bool {
-		var secretFilesArray = *models.GetSecretsFiles()
 		var secretFileItem = secretFilesArray[index]
 
 		return strings.Contains(secretFileItem, input)
@@ -191,7 +191,7 @@ func DialogAskForSecretsFile() (secretsFile string, err error) {
 
 	prompt := promptui.Select{
 		Label:     "Please select the secrets file which should be applied",
-		Items:     models.GetSecretsFiles(),
+		Items:     *models.GetSecretsFiles(),
 		Templates: templates,
 		Size:      12,
 		Searcher:  searcher,
@@ -202,7 +202,7 @@ func DialogAskForSecretsFile() (secretsFile string, err error) {
 	if err != nil {
 		log.Errorf("[DialogAskForSecretsFile] Prompt ask for secrets file failed %s\n", err.Error())
 	} else {
-		secretsFile = models.GetIPConfiguration().IPs[i].Namespace
+		secretsFile = secretFilesArray[i]
 	}
 
 	return secretsFile, err
