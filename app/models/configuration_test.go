@@ -2,9 +2,34 @@ package models
 
 import (
 	"github.com/stretchr/testify/assert"
+	"io/ioutil"
+	"os"
 	"strconv"
+	"strings"
 	"testing"
 )
+
+func TestGetAlternativeSecretsFilesEmpty(t *testing.T) {
+	assert.Empty(t, GetSecretsFiles())
+}
+
+func TestGetAlternativeSecretsFilesWithAlternatives(t *testing.T) {
+	configuration = GetConfiguration()
+	configuration.GlobalSecretsFile = "./secrets.sh"
+
+	var secretsFile = GetGlobalSecretsFile()
+	var secretsFileA = strings.Replace(secretsFile, "secrets.sh", "secrets_environment_a.sh", -1)
+	var secretsFileB = strings.Replace(secretsFile, "secrets.sh", "secrets_environment_b.sh", -1)
+	_ = ioutil.WriteFile(secretsFileA, []byte(""), 0644)
+	_ = ioutil.WriteFile(secretsFileB, []byte(""), 0644)
+
+	var alternativeSecretFiles = GetSecretsFiles()
+	assert.NotEmpty(t, alternativeSecretFiles)
+	assert.True(t, len(*alternativeSecretFiles) == 2)
+
+	os.Remove(secretsFileA)
+	os.Remove(secretsFileB)
+}
 
 func TestAssignDryRun(t *testing.T) {
 	assert.False(t, GetConfiguration().K8sManagement.DryRunOnly)

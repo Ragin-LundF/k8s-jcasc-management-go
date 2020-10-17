@@ -7,8 +7,8 @@ import (
 )
 
 // ActionDecryptSecretsFile decrypts secrets file with password
-func ActionDecryptSecretsFile(password string) (err error) {
-	secretsFilePath := models.GetGlobalSecretsFile() + constants.SecretsFileEncodedEnding
+func ActionDecryptSecretsFile(password string, fileName string) (err error) {
+	var secretsFilePath = models.GetGlobalSecretsPath() + fileName + constants.SecretsFileEncodedEnding
 	err = encryption.GpgDecryptSecrets(secretsFilePath, password)
 
 	return err

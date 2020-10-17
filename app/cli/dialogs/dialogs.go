@@ -165,6 +165,49 @@ func DialogAskForNamespace() (namespace string, err error) {
 	return namespace, err
 }
 
+// DialogAskForSecretsFile shows dialog to ask for the secrets file
+func DialogAskForSecretsFile() (secretsFile string, err error) {
+	log := logger.Log()
+	ClearScreen()
+
+	// Template for displaying menu
+	templates := &promptui.SelectTemplates{
+		Label:    "{{ . }}?",
+		Active:   "\U000027A4 {{ .SecretsFile | green }}",
+		Inactive: "  {{ .SecretsFile | cyan }}",
+		Selected: "\U000027A4 {{ .SecretsFile | red | cyan }}",
+		Details: `
+--------- Secrets file selection ----------
+{{ "SecretsFile: " | faint }}	{{ .SecretsFile }}`,
+	}
+
+	// searcher (with "/")
+	searcher := func(input string, index int) bool {
+		var secretFilesArray = *models.GetSecretsFiles()
+		var secretFileItem = secretFilesArray[index]
+
+		return strings.Contains(secretFileItem, input)
+	}
+
+	prompt := promptui.Select{
+		Label:     "Please select the secrets file which should be applied",
+		Items:     models.GetSecretsFiles(),
+		Templates: templates,
+		Size:      12,
+		Searcher:  searcher,
+		Stdout:    &BellSkipper{},
+	}
+
+	i, _, err := prompt.Run()
+	if err != nil {
+		log.Errorf("[DialogAskForSecretsFile] Prompt ask for secrets file failed %s\n", err.Error())
+	} else {
+		secretsFile = models.GetIPConfiguration().IPs[i].Namespace
+	}
+
+	return secretsFile, err
+}
+
 // DialogAskForCloudTemplates shows dialog to ask for cloud templates
 func DialogAskForCloudTemplates(cloudTemplateDialog *CloudTemplatesDialog) (err error) {
 	log := logger.Log()

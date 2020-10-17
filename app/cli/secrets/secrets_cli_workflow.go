@@ -10,14 +10,14 @@ import (
 func EncryptSecretsFile() (err error) {
 	// read password
 	loggingstate.AddInfoEntry("  -> Ask for the password for secret file...")
-	password, err := AskForSecretsPassword("Password for secrets file")
+	secretsFile, password, err := AskForSecretsPassword("Password for secrets file", true)
 	if err != nil {
 		return err
 	}
 
 	// let password confirm
 	loggingstate.AddInfoEntry("  -> Ask for the confirmation password for secret file...")
-	passwordConfirm, err := AskForSecretsPassword("Confirmation password for secrets file")
+	_, passwordConfirm, err := AskForSecretsPassword("Confirmation password for secrets file", false)
 	if err != nil {
 		return err
 	}
@@ -30,17 +30,22 @@ func EncryptSecretsFile() (err error) {
 
 	loggingstate.AddInfoEntry("  -> Passwords did match! Starting encryption....")
 	// encrypt secrets file
-	err = secretsactions.ActionEncryptSecretsFile(password)
+	err = secretsactions.ActionEncryptSecretsFile(password, secretsFile)
 
 	return err
 }
 
 // DecryptSecretsFile decrypts the secrets file
-func DecryptSecretsFile() (err error) {
-	password, err := AskForSecretsPassword("Password for secrets file")
+func DecryptSecretsFile(secretsFile *string) (err error) {
+	var password string
+	if secretsFile == nil {
+		*secretsFile, password, err = AskForSecretsPassword("Password for secrets file", true)
+	} else {
+		_, password, err = AskForSecretsPassword("Password for secrets file", false)
+	}
 	if err != nil {
 		return err
 	}
-	err = secretsactions.ActionDecryptSecretsFile(password)
+	err = secretsactions.ActionDecryptSecretsFile(*secretsFile, password)
 	return err
 }
