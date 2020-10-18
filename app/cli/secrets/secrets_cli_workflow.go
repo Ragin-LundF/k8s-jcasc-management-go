@@ -3,32 +3,33 @@ package secrets
 import (
 	"errors"
 	"k8s-management-go/app/actions/secretsactions"
+	"k8s-management-go/app/constants"
 	"k8s-management-go/app/utils/loggingstate"
 )
 
 // EncryptSecretsFile encrypts the secrets file with given password
 func EncryptSecretsFile() (err error) {
 	// read password
-	loggingstate.AddInfoEntry("  -> Ask for the password for secret file...")
-	secretsFile, password, err := AskForSecretsPassword("Password for secrets file", true)
+	loggingstate.AddInfoEntry(constants.LogAskForPasswordOfSecretsFile)
+	secretsFile, password, err := AskForSecretsPassword(constants.TextPasswordForSecretsFile, true)
 	if err != nil {
 		return err
 	}
 
 	// let password confirm
-	loggingstate.AddInfoEntry("  -> Ask for the confirmation password for secret file...")
-	_, passwordConfirm, err := AskForSecretsPassword("Confirmation password for secrets file", false)
+	loggingstate.AddInfoEntry(constants.LogAskForConfirmationPasswordOfSecretsFile)
+	_, passwordConfirm, err := AskForSecretsPassword(constants.TextPasswordForSecretsFileConfirmation, false)
 	if err != nil {
 		return err
 	}
 
 	// check if passwords match
 	if password != passwordConfirm {
-		loggingstate.AddErrorEntry("  -> Passwords did not match! ")
-		return errors.New("Passwords did not match! ")
+		loggingstate.AddErrorEntry(constants.LogErrPasswordDidNotMatch)
+		return errors.New(constants.TextPasswordDidNotMatch)
 	}
 
-	loggingstate.AddInfoEntry("  -> Passwords did match! Starting encryption....")
+	loggingstate.AddInfoEntry(constants.LogInfoPasswordDidMatchStartEncrypting)
 	// encrypt secrets file
 	err = secretsactions.ActionEncryptSecretsFile(password, secretsFile)
 
@@ -40,10 +41,10 @@ func DecryptSecretsFile(secretsFile *string) (err error) {
 	var password string
 	if secretsFile == nil {
 		var secretsFilePath string
-		secretsFilePath, password, err = AskForSecretsPassword("Password for secrets file", true)
+		secretsFilePath, password, err = AskForSecretsPassword(constants.TextPasswordForSecretsFile, true)
 		secretsFile = &secretsFilePath
 	} else {
-		_, password, err = AskForSecretsPassword("Password for secrets file", false)
+		_, password, err = AskForSecretsPassword(constants.TextPasswordForSecretsFile, false)
 	}
 	if err != nil {
 		return err

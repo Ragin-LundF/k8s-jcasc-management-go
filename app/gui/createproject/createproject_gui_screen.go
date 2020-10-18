@@ -190,7 +190,9 @@ func createCloudTemplates() []*widget.Check {
 	var cloudtemplates = createprojectactions.ActionReadCloudTemplates()
 	var checkboxes []*widget.Check
 	for _, cloudTemplate := range cloudtemplates {
-		checkboxes = append(checkboxes, widget.NewCheck(cloudTemplate, func(set bool) {}))
+		checkboxes = append(checkboxes, widget.NewCheck(cloudTemplate, func(set bool) {
+			// not needed, because it ready it later from the options
+		}))
 	}
 
 	return checkboxes

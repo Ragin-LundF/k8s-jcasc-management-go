@@ -4,6 +4,7 @@ import (
 	"errors"
 	"k8s-management-go/app/actions/secretsactions"
 	"k8s-management-go/app/cli/dialogs"
+	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/loggingstate"
 	"strings"
@@ -13,13 +14,13 @@ import (
 func AskForSecretsPassword(passwordText string, selectSecretsFile bool) (secretsFile string, password string, err error) {
 	if selectSecretsFile {
 		// ask for secrets file
-		loggingstate.AddInfoEntry("  -> Ask for secrets file to apply...")
+		loggingstate.AddInfoEntry(constants.LogAskForSecretsFile)
 		secretsFile, err = dialogs.DialogAskForSecretsFile()
 		if err != nil {
-			loggingstate.AddErrorEntryAndDetails("  -> Ask for secrets file to apply...failed", err.Error())
+			loggingstate.AddErrorEntryAndDetails(constants.LogAskForSecretsFileFailed, err.Error())
 			return "", "", err
 		}
-		loggingstate.AddInfoEntry("  -> Ask for secrets file to apply...done")
+		loggingstate.AddInfoEntry(constants.LogAskForSecretsFileDone)
 	}
 
 	// Validator for password (keep it simple for now)
@@ -34,14 +35,14 @@ func AskForSecretsPassword(passwordText string, selectSecretsFile bool) (secrets
 	}
 
 	// ask for password
-	loggingstate.AddInfoEntry("  -> Ask for the password for secret file...")
+	loggingstate.AddInfoEntry(constants.LogAskForPasswordOfSecretsFile)
 	password, err = dialogs.DialogAskForPassword(passwordText, validate)
 	if err != nil {
-		loggingstate.AddErrorEntryAndDetails("  -> Ask for the password for secret files...failed", err.Error())
+		loggingstate.AddErrorEntryAndDetails(constants.LogAskForPasswordOfSecretsFileFailed, err.Error())
 
 		return secretsFile, "", err
 	}
-	loggingstate.AddInfoEntry("  -> Ask for the password for secret file...done")
+	loggingstate.AddInfoEntry(constants.LogAskForPasswordOfSecretsFileDone)
 
 	return secretsFile, password, err
 }
@@ -49,33 +50,33 @@ func AskForSecretsPassword(passwordText string, selectSecretsFile bool) (secrets
 // ApplySecrets applies the secrets
 func ApplySecrets() (err error) {
 	// ask for namespace
-	loggingstate.AddInfoEntry("  -> Ask for namespace to apply secrets...")
+	loggingstate.AddInfoEntry(constants.LogAskForNamespaceForSecretApply)
 
 	namespace, err := dialogs.DialogAskForNamespace()
 	if err != nil {
-		loggingstate.AddErrorEntryAndDetails("  -> Ask for namespace to apply secrets...failed", err.Error())
+		loggingstate.AddErrorEntryAndDetails(constants.LogAskForNamespaceForSecretApplyFailed, err.Error())
 		return err
 	}
-	loggingstate.AddInfoEntry("  -> Ask for namespace to apply secrets...done")
+	loggingstate.AddInfoEntry(constants.LogAskForNamespaceForSecretApplyDone)
 
 	// ask for secrets file
-	loggingstate.AddInfoEntry("  -> Ask for secrets file to apply...")
+	loggingstate.AddInfoEntry(constants.LogAskForSecretsFile)
 	secretsFile, err := dialogs.DialogAskForSecretsFile()
 	if err != nil {
-		loggingstate.AddErrorEntryAndDetails("  -> Ask for secrets file to apply...failed", err.Error())
+		loggingstate.AddErrorEntryAndDetails(constants.LogAskForSecretsFileFailed, err.Error())
 		return err
 	}
-	loggingstate.AddInfoEntry("  -> Ask for secrets file to apply...done")
+	loggingstate.AddInfoEntry(constants.LogAskForSecretsFileDone)
 
 	// apply secrets to namespace
-	loggingstate.AddInfoEntry("  -> Ask for namespace to apply secrets...")
+	loggingstate.AddInfoEntry(constants.LogApplySecretsToNamespace)
 
 	if err = ApplySecretsToNamespace(namespace, secretsFile, nil); err != nil {
-		loggingstate.AddErrorEntryAndDetails("  -> Ask for namespace to apply secrets...failed", err.Error())
+		loggingstate.AddErrorEntryAndDetails(constants.LogApplySecretsToNamespaceFailed, err.Error())
 		return err
 	}
 
-	loggingstate.AddInfoEntry("  -> Ask for namespace to apply secrets...done")
+	loggingstate.AddInfoEntry(constants.LogApplySecretsToNamespaceDone)
 
 	return nil
 }
@@ -101,13 +102,13 @@ func ApplySecretsToNamespace(namespace string, secretsFileName string, password 
 // ApplySecretsToAllNamespaces applies secrets to all namespaces
 func ApplySecretsToAllNamespaces() (err error) {
 	// ask for secrets file
-	loggingstate.AddInfoEntry("  -> Ask for secrets file to apply...")
+	loggingstate.AddInfoEntry(constants.LogAskForSecretsFile)
 	secretsFile, err := dialogs.DialogAskForSecretsFile()
 	if err != nil {
-		loggingstate.AddErrorEntryAndDetails("  -> Ask for secrets file to apply...failed", err.Error())
+		loggingstate.AddErrorEntryAndDetails(constants.LogAskForSecretsFileFailed, err.Error())
 		return err
 	}
-	loggingstate.AddInfoEntry("  -> Ask for secrets file to apply...done")
+	loggingstate.AddInfoEntry(constants.LogAskForSecretsFileDone)
 
 	err = DecryptSecretsFile(&secretsFile)
 	if err != nil {
@@ -115,7 +116,7 @@ func ApplySecretsToAllNamespaces() (err error) {
 	}
 
 	// prepare progressbar
-	bar := dialogs.CreateProgressBar("Installing...", len(models.GetIPConfiguration().IPs))
+	bar := dialogs.CreateProgressBar(constants.ActionInstalling, len(models.GetIPConfiguration().IPs))
 	progress := dialogs.ProgressBar{
 		Bar: &bar,
 	}
