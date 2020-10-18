@@ -12,16 +12,13 @@ import (
 )
 
 var namespaceErrorLabel = widget.NewLabel("")
-var namespaceSelectEntry *widget.SelectEntry
+var namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
 
 // ScreenNamespaceCreate shows the create namespace screen
 func ScreenNamespaceCreate(window fyne.Window) fyne.CanvasObject {
 	var namespace string
 
-	// Namespace
-	namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
-
-	form := &widget.Form{
+	var form = &widget.Form{
 		Items: []*widget.FormItem{
 			{Text: "Namespace", Widget: namespaceSelectEntry},
 			{Text: "", Widget: namespaceErrorLabel},
@@ -31,7 +28,7 @@ func ScreenNamespaceCreate(window fyne.Window) fyne.CanvasObject {
 			namespace = namespaceSelectEntry.Text
 
 			// map state
-			state := models.StateData{
+			var state = models.StateData{
 				Namespace: namespace,
 			}
 
@@ -41,22 +38,24 @@ func ScreenNamespaceCreate(window fyne.Window) fyne.CanvasObject {
 		},
 	}
 
-	box := widget.NewVBox(
+	return widget.NewVBox(
+		widget.NewLabel(""),
 		form,
 	)
-
-	return box
 }
 
+// NOSONAR
 func init() {
-	createNamespaceNotifier := namespaceCreatedNotifier{}
+	var createNamespaceNotifier = namespaceCreatedNotifier{}
 	events.NamespaceCreated.Register(createNamespaceNotifier)
 }
 
+// NOSONAR
 type namespaceCreatedNotifier struct {
 	namespace string
 }
 
+// NOSONAR
 func (notifier namespaceCreatedNotifier) Handle(payload events.NamespaceCreatedPayload) {
 	logger.Log().Info("[namespace_gui] -> Retrieved event to that new namespace was created")
 	namespaceSelectEntry.SetOptions(namespaceactions.ActionReadNamespaceWithFilter(nil))

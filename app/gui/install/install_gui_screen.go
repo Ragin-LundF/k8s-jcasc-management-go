@@ -92,6 +92,7 @@ func ScreenInstall(window fyne.Window) fyne.CanvasObject {
 	}
 
 	return widget.NewVBox(
+		widget.NewLabel(""),
 		form,
 	)
 }

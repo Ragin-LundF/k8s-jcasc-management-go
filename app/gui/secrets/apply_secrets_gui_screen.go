@@ -13,6 +13,10 @@ import (
 	"time"
 )
 
+// Namespace
+var namespaceErrorLabel = widget.NewLabel("")
+var namespaceSelectEntry *widget.SelectEntry
+
 // ScreenApplySecretsToAllNamespace shows the apply to all namespaces screen
 func ScreenApplySecretsToAllNamespace(window fyne.Window) fyne.CanvasObject {
 	// secrets password
@@ -28,7 +32,7 @@ func ScreenApplySecretsToAllNamespace(window fyne.Window) fyne.CanvasObject {
 			// first try to decrypt the file
 			if err := secretsactions.ActionDecryptSecretsFile(passwordEntry.Text, secretsFiles.Selected); err == nil {
 				// execute the file and apply to all namespaces
-				bar := uielements.ProgressBar{
+				var bar = uielements.ProgressBar{
 					Bar:        dialog.NewProgress("Apply secrets to all namespaces", "Progress", window),
 					CurrentCnt: 0,
 					MaxCount:   float64(len(models.GetIPConfiguration().IPs)),
@@ -42,21 +46,17 @@ func ScreenApplySecretsToAllNamespace(window fyne.Window) fyne.CanvasObject {
 		},
 	}
 
-	box := widget.NewVBox(
+	return widget.NewVBox(
+		widget.NewLabel(""),
 		form,
 	)
-	return box
 }
-
-// Namespace
-var namespaceErrorLabel = widget.NewLabel("")
-var namespaceSelectEntry *widget.SelectEntry
 
 // ScreenApplySecretsToNamespace shows the apply to one selected namespace screen
 func ScreenApplySecretsToNamespace(window fyne.Window) fyne.CanvasObject {
 	var secretsFiles = uielements.CreateSecretsFileEntry()
-	var namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
 	var passwordEntry = widget.NewPasswordEntry()
+	var namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
 
 	var form = &widget.Form{
 		Items: []*widget.FormItem{
@@ -67,7 +67,7 @@ func ScreenApplySecretsToNamespace(window fyne.Window) fyne.CanvasObject {
 		},
 		OnSubmit: func() {
 			// first try to decrypt the file
-			err := secretsactions.ActionDecryptSecretsFile(passwordEntry.Text, secretsFiles.Selected)
+			var err = secretsactions.ActionDecryptSecretsFile(passwordEntry.Text, secretsFiles.Selected)
 			if err == nil {
 				// execute the file
 				_ = secretsactions.ActionApplySecretsToNamespace(namespaceSelectEntry.Text, secretsFiles.Selected)
@@ -77,22 +77,24 @@ func ScreenApplySecretsToNamespace(window fyne.Window) fyne.CanvasObject {
 		},
 	}
 
-	box := widget.NewVBox(
+	return widget.NewVBox(
+		widget.NewLabel(""),
 		form,
 	)
-
-	return box
 }
 
+// NOSONAR
 func init() {
 	createNamespaceNotifier := namespaceCreatedNotifier{}
 	events.NamespaceCreated.Register(createNamespaceNotifier)
 }
 
+// NOSONAR
 type namespaceCreatedNotifier struct {
 	namespace string
 }
 
+// NOSONAR
 func (notifier namespaceCreatedNotifier) Handle(payload events.NamespaceCreatedPayload) {
 	logger.Log().Info("[secrets_gui] -> Retrieved event to that new namespace was created")
 	namespaceSelectEntry.SetOptions(namespaceactions.ActionReadNamespaceWithFilter(nil))

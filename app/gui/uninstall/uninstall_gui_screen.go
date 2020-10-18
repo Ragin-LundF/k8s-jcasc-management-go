@@ -27,16 +27,14 @@ func ScreenUninstall(window fyne.Window) fyne.CanvasObject {
 	var dryRunOption string
 	var secretsPasswords string
 
-	// Namespace
-	namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
-
 	// Deployment name
-	deploymentNameEntry := uielements.CreateDeploymentNameEntry()
+	var deploymentNameEntry = uielements.CreateDeploymentNameEntry()
 
 	// Dry-run or execute
-	dryRunRadio := uielements.CreateDryRunRadio()
+	var dryRunRadio = uielements.CreateDryRunRadio()
+	namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
 
-	form := &widget.Form{
+	var form = &widget.Form{
 		Items: []*widget.FormItem{
 			{Text: "Namespace", Widget: namespaceSelectEntry},
 			{Text: "", Widget: namespaceErrorLabel},
@@ -60,7 +58,7 @@ func ScreenUninstall(window fyne.Window) fyne.CanvasObject {
 			}
 
 			// map state
-			state := models.StateData{
+			var state = models.StateData{
 				Namespace:       namespace,
 				DeploymentName:  deploymentName,
 				HelmCommand:     installTypeOption,
@@ -82,22 +80,24 @@ func ScreenUninstall(window fyne.Window) fyne.CanvasObject {
 		},
 	}
 
-	box := widget.NewVBox(
+	return widget.NewVBox(
+		widget.NewLabel(""),
 		form,
 	)
-
-	return box
 }
 
+// NOSONAR
 func init() {
-	createNamespaceNotifier := namespaceCreatedNotifier{}
+	var createNamespaceNotifier = namespaceCreatedNotifier{}
 	events.NamespaceCreated.Register(createNamespaceNotifier)
 }
 
+// NOSONAR
 type namespaceCreatedNotifier struct {
 	namespace string
 }
 
+// NOSONAR
 func (notifier namespaceCreatedNotifier) Handle(payload events.NamespaceCreatedPayload) {
 	logger.Log().Info("[uninstall_gui] -> Retrieved event to that new namespace was created")
 	namespaceSelectEntry.SetOptions(namespaceactions.ActionReadNamespaceWithFilter(nil))
