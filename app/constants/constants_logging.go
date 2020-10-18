@@ -1,5 +1,7 @@
 package constants
 
+// NOSONAR
+
 // CLI Workflow
 const LogWizardStartProjectWizardDialogs = "Starting Project Wizard: Dialogs..."
 const LogWizardStartProjectWizardDialogsDone = "Starting Project Wizard: Dialogs...done"
