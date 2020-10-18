@@ -1,7 +1,5 @@
 package constants
 
-// NOSONAR
-
 // CLI Workflow
 const LogWizardStartProjectWizardDialogs = "Starting Project Wizard: Dialogs..."
 const LogWizardStartProjectWizardDialogsDone = "Starting Project Wizard: Dialogs...done"
@@ -15,12 +13,12 @@ const LogAskForSecretsFileFailed = "Ask for secrets file to apply...failed"
 const LogAskForSecretsFileDone = "Ask for secrets file to apply...done"
 
 // Password of secrets file
-const LogAskForPasswordOfSecretsFile = "  -> Ask for the password for secret file..."
-const LogAskForPasswordOfSecretsFileFailed = "  -> Ask for the password for secret file...failed"
-const LogAskForPasswordOfSecretsFileDone = "  -> Ask for the password for secret file...done"
-const LogAskForConfirmationPasswordOfSecretsFile = "  -> Ask for the confirmation password for secret file..."
-const LogErrPasswordDidNotMatch = "  -> Passwords did not match!"
-const LogInfoPasswordDidMatchStartEncrypting = "  -> Passwords did match! Starting encryption...."
+const LogAskForPasswordOfSecretsFile = "  -> Ask for the password for secret file..."                          // NOSONAR
+const LogAskForPasswordOfSecretsFileFailed = "  -> Ask for the password for secret file...failed"              // NOSONAR
+const LogAskForPasswordOfSecretsFileDone = "  -> Ask for the password for secret file...done"                  // NOSONAR
+const LogAskForConfirmationPasswordOfSecretsFile = "  -> Ask for the confirmation password for secret file..." // NOSONAR
+const LogErrPasswordDidNotMatch = "  -> Passwords did not match!"                                              // NOSONAR
+const LogInfoPasswordDidMatchStartEncrypting = "  -> Passwords did match! Starting encryption...."             // NOSONAR
 
 // Namespace to apply secrets
 const LogAskForNamespace = "-> Ask for namespace..."
