@@ -14,10 +14,10 @@ func JenkinsSystemMessageWorkflow() (jenkinsSysMsg string, err error) {
 
 	// Prepare prompt
 	dialogs.ClearScreen()
-	jenkinsSysMsg, err = dialogs.DialogPrompt("Enter the Jenkins system message or leave empty for default", validate)
+	jenkinsSysMsg, err = dialogs.DialogPrompt(constants.TextEnterJenkinsSystemMessageOrLeaveEmptyForDefault, validate)
 	// check if everything was ok
 	if err != nil {
-		loggingstate.AddErrorEntryAndDetails("  -> Unable to get the Jenkins system message.", err.Error())
+		loggingstate.AddErrorEntryAndDetails(constants.LogUnableToGetJenkinsSystemMessage, err.Error())
 		return jenkinsSysMsg, err
 	}
 

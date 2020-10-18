@@ -232,6 +232,7 @@ func AssignCliOnlyMode(cliOnly bool) {
 	configuration.CliOnly = cliOnly
 }
 
+// NOSONAR
 // AssignToConfiguration assigns a key / value pair to the configuration object
 func AssignToConfiguration(key string, value string) {
 	if key != "" && value != "" {
