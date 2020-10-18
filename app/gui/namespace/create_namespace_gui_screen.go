@@ -44,18 +44,15 @@ func ScreenNamespaceCreate(window fyne.Window) fyne.CanvasObject {
 	)
 }
 
-// NOSONAR
 func init() {
 	var createNamespaceNotifier = namespaceCreatedNotifier{}
 	events.NamespaceCreated.Register(createNamespaceNotifier)
 }
 
-// NOSONAR
 type namespaceCreatedNotifier struct {
 	namespace string
 }
 
-// NOSONAR
 func (notifier namespaceCreatedNotifier) Handle(payload events.NamespaceCreatedPayload) {
 	logger.Log().Info("[namespace_gui] -> Retrieved event to that new namespace was created")
 	namespaceSelectEntry.SetOptions(namespaceactions.ActionReadNamespaceWithFilter(nil))
