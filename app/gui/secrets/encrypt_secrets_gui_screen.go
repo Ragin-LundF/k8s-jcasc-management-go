@@ -11,13 +11,15 @@ import (
 // ScreenEncryptSecrets shows the encrypt secrets screen
 func ScreenEncryptSecrets(window fyne.Window) fyne.CanvasObject {
 	// UI elements
-	passwordErrorLabel := widget.NewLabel("")
+	var secretsFiles = uielements.CreateSecretsFileEntry()
+	var passwordErrorLabel = widget.NewLabel("")
 	// secrets password
-	passwordEntry := widget.NewPasswordEntry()
-	confirmPasswordEntry := widget.NewPasswordEntry()
+	var passwordEntry = widget.NewPasswordEntry()
+	var confirmPasswordEntry = widget.NewPasswordEntry()
 
-	form := &widget.Form{
+	var form = &widget.Form{
 		Items: []*widget.FormItem{
+			{Text: "Secrets file", Widget: secretsFiles},
 			{Text: "Password", Widget: passwordEntry},
 			{Text: "Confirm password", Widget: confirmPasswordEntry},
 			{Text: "", Widget: passwordErrorLabel},
@@ -26,15 +28,14 @@ func ScreenEncryptSecrets(window fyne.Window) fyne.CanvasObject {
 			isValid, errMessage := validator.ValidateConfirmPasswords(passwordEntry.Text, confirmPasswordEntry.Text)
 			passwordErrorLabel.SetText(errMessage)
 			if isValid {
-				_ = secretsactions.ActionEncryptSecretsFile(passwordEntry.Text)
+				_ = secretsactions.ActionEncryptSecretsFile(passwordEntry.Text, secretsFiles.Selected)
 				uielements.ShowLogOutput(window)
 			}
 		},
 	}
 
-	box := widget.NewVBox(
+	return widget.NewVBox(
+		widget.NewLabel(""),
 		form,
 	)
-
-	return box
 }

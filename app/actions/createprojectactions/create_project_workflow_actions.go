@@ -3,11 +3,13 @@ package createprojectactions
 import (
 	"fmt"
 	"k8s-management-go/app/constants"
+	"k8s-management-go/app/events"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/config"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/loggingstate"
 	"os"
+	"time"
 )
 
 // CountCreateProjectWorkflow represents the max count for the progress bar
@@ -155,6 +157,13 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig, callback fun
 	loggingstate.AddInfoEntry("-> Start template processing: Persistent volume claim...done")
 	callback()
 
+	// reload config
+	models.ResetIPAndNamespaces()
+	config.ReadIPConfig()
+
+	// send event that new namespace was created
+	createNamespaceEvent(projectConfig.Namespace)
+
 	return nil
 }
 
@@ -170,4 +179,11 @@ func replacePlaceholderInTemplates(templateFiles []string, placeholder string, n
 		}
 	}
 	return true, nil
+}
+
+func createNamespaceEvent(namespace string) {
+	events.NamespaceCreated.Trigger(events.NamespaceCreatedPayload{
+		Namespace: namespace,
+		Time:      time.Now(),
+	})
 }

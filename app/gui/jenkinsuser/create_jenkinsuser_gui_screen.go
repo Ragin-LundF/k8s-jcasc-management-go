@@ -14,12 +14,12 @@ import (
 // ScreenJenkinsUserPasswordCreate shows the Jenkins user psasword creation screen
 func ScreenJenkinsUserPasswordCreate(window fyne.Window) fyne.CanvasObject {
 	// UI elements
-	passwordErrorLabel := widget.NewLabel("")
+	var passwordErrorLabel = widget.NewLabel("")
 	// secrets password
-	userPasswordEntry := widget.NewPasswordEntry()
-	userConfirmPasswordEntry := widget.NewPasswordEntry()
+	var userPasswordEntry = widget.NewPasswordEntry()
+	var userConfirmPasswordEntry = widget.NewPasswordEntry()
 
-	form := &widget.Form{
+	var form = &widget.Form{
 		Items: []*widget.FormItem{
 			{Text: "Password", Widget: userPasswordEntry},
 			{Text: "Confirm password", Widget: userConfirmPasswordEntry},
@@ -35,10 +35,10 @@ func ScreenJenkinsUserPasswordCreate(window fyne.Window) fyne.CanvasObject {
 					dialog.ShowError(err, window)
 				} else {
 					// Prepare dialog to show result
-					encPassEntry := widget.NewEntry()
+					var encPassEntry = widget.NewEntry()
 					encPassEntry.Text = hashedPassword
 
-					encPassBox := widget.NewVBox(
+					var encPassBox = widget.NewVBox(
 						widget.NewHBox(layout.NewSpacer()),
 						encPassEntry,
 						widget.NewHBox(layout.NewSpacer()),
@@ -63,9 +63,8 @@ func ScreenJenkinsUserPasswordCreate(window fyne.Window) fyne.CanvasObject {
 		},
 	}
 
-	box := widget.NewVBox(
+	return widget.NewVBox(
+		widget.NewLabel(""),
 		form,
 	)
-
-	return box
 }

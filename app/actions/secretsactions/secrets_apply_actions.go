@@ -8,9 +8,9 @@ import (
 )
 
 // ActionApplySecretsToNamespace executes the secrets to the namespace
-func ActionApplySecretsToNamespace(namespace string) (err error) {
+func ActionApplySecretsToNamespace(namespace string, secretsFileName string) (err error) {
 	// apply secret to namespace
-	secretsFilePath := models.GetGlobalSecretsFile()
+	var secretsFilePath = models.GetGlobalSecretsPath() + secretsFileName
 	if err = executingSecretsFile(secretsFilePath, namespace); err != nil {
 		// try to delete it and return original error
 		_ = removeDecryptedSecretsFile(secretsFilePath)
@@ -22,8 +22,8 @@ func ActionApplySecretsToNamespace(namespace string) (err error) {
 }
 
 // ActionApplySecretsToAllNamespaces applies secrets to all namespaces
-func ActionApplySecretsToAllNamespaces(callback func()) (err error) {
-	secretsFilePath := models.GetGlobalSecretsFile()
+func ActionApplySecretsToAllNamespaces(secretsFileName string, callback func()) (err error) {
+	secretsFilePath := models.GetGlobalSecretsPath() + secretsFileName
 	// apply secret to namespaces
 	for _, ip := range models.GetIPConfiguration().IPs {
 		if err = executingSecretsFile(secretsFilePath, ip.Namespace); err != nil {

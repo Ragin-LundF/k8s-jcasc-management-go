@@ -17,6 +17,7 @@
 * [Build slaves](#build-slaves)
 * [Configuration](#configuration)
   * [Configure alternative configuration with overlays](#configure-alternative-configuration-with-overlays)
+  * [Setup with multiple secret files](#setup-with-multiple-secret-files)
 * [How to use](#how-to-use)
   * [Server only usage / CLI](#server-only-usage--cli)
   * [Build hints](#build-hints)
@@ -232,6 +233,11 @@ Any other configuration should be versioned inside of the project directory.
 For base paths like templates, the system searches first for the configured base path and if the directory does not exist, it tries to find the directory in the local (`./`) directory.
 With this mechanism it is not required to copy for example also the templates into the project directory if they are ok.
 
+## Setup with multiple secret files
+
+To set up multiple secret files, simply add new files in the same directory where the `secrets.sh(.gpg)` is located.
+These files need the prefix `secrets_`.
+
 
 # How to use #
 
@@ -425,6 +431,7 @@ This can help to figure out differences between clusters.
 
 # Helpful links #
 
+- K8S JCasC Management internal Processes: [Processes overview](docs/processes/README.md)
 - Kubernetes DNS-Based Service Discovery: https://github.com/kubernetes/dns/blob/master/docs/specification.md
 - JCasC Examples: https://github.com/jenkinsci/configuration-as-code-plugin/tree/master/demos
 - Jenkins Seed Job script to create jobs from a JSON in a GIT repository: https://github.com/Ragin-LundF/jenkins-jobdsl-remote

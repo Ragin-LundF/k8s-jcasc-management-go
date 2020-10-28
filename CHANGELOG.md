@@ -1,7 +1,17 @@
+# 2.6.0
+**Introduction of multiple secret files**
+
+To set up multiple secret files, simply add new files in the same directory where the `secrets.sh(.gpg)` is located.
+These files need the prefix `secrets_`.
+
+
+# 2.5.0
+* Fixes the error that after project creation the new namespace is not available and the application must be restarted.
+
 # 2.4.0
-* Bugfix that Kubernetes Server certificate has not been replaced in template
+* Bugfix that Kubernetes Server certificate has not been replaced in the template
 * Adding support for multiple cluster certificates
-  * The template `KUBERNETES_SERVER_CERTIFICATE` is now a fallback/default configuration.
+  * The configuration `KUBERNETES_SERVER_CERTIFICATE` is now a fallback/default configuration.
   * With `KUBERNETES_SERVER_CERTIFICATE_<context_name>` it is now possible to add certificates for multiple contexts.
   The context name should not contain spaces!
   * Examples:

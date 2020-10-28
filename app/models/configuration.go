@@ -1,8 +1,11 @@
 package models
 
 import (
+	"fmt"
 	"k8s-management-go/app/utils/files"
+	"k8s-management-go/app/utils/loggingstate"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -134,6 +137,47 @@ func GetGlobalSecretsFile() string {
 	return FilePathWithBasePath(configuration.GlobalSecretsFile)
 }
 
+func GetGlobalSecretsPath() (secretsFilePath string) {
+	secretsFilePath, err := filepath.Abs(filepath.Dir(GetConfiguration().GlobalSecretsFile))
+	if err != nil {
+		loggingstate.AddErrorEntry("Unable to determine global secrets path.")
+	}
+	return fmt.Sprintf("%s%s", secretsFilePath, string(os.PathSeparator))
+}
+
+// GetSecretsFiles returns a list of secret files to support different environments
+func GetSecretsFiles() []string {
+	secretsFilePath := GetGlobalSecretsPath()
+
+	if secretsFilePath != "" {
+		var filePrefix = "secrets_"
+		var fileFilter = files.FileFilter{
+			Prefix: &filePrefix,
+		}
+		var secretFilesWithPath, err = files.ListFilesOfDirectoryWithFilter(secretsFilePath, &fileFilter)
+		if err != nil {
+			loggingstate.AddErrorEntryAndDetails(
+				"Unable to filter for secrets files",
+				fmt.Sprintf("SearchDirectory: [%s]", secretsFilePath))
+		}
+
+		var secretFiles []string
+
+		secretFiles = appendUnique(secretFiles, strings.Replace(GetGlobalSecretsFile(), secretsFilePath, "", -1))
+		if secretFilesWithPath != nil && len(*secretFilesWithPath) > 0 {
+			for _, secretFile := range *secretFilesWithPath {
+				secretFile = strings.Replace(secretFile, secretsFilePath, "", -1)
+				secretFile = strings.Replace(secretFile, ".gpg", "", -1)
+
+				secretFiles = appendUnique(secretFiles, secretFile)
+			}
+		}
+
+		return secretFiles
+	}
+	return nil
+}
+
 // GetProjectBaseDirectory : Get project base directory with full path
 func GetProjectBaseDirectory() string {
 	return calculateFullDirectoryPath(configuration.Directories.ProjectsBaseDirectory)
@@ -188,6 +232,7 @@ func AssignCliOnlyMode(cliOnly bool) {
 	configuration.CliOnly = cliOnly
 }
 
+// NOSONAR
 // AssignToConfiguration assigns a key / value pair to the configuration object
 func AssignToConfiguration(key string, value string) {
 	if key != "" && value != "" {
@@ -454,6 +499,15 @@ func addK8sManagementConfig(key string, value string) (success bool) {
 	}
 
 	return success
+}
+
+func appendUnique(slice []string, element string) []string {
+	for _, sliceElement := range slice {
+		if sliceElement == element {
+			return slice
+		}
+	}
+	return append(slice, element)
 }
 
 func replaceUnneededChars(value string) string {

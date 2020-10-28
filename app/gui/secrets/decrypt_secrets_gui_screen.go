@@ -10,21 +10,22 @@ import (
 // ScreenDecryptSecrets shows the decrypt secrets screen
 func ScreenDecryptSecrets(window fyne.Window) fyne.CanvasObject {
 	// secrets password
-	passwordEntry := widget.NewPasswordEntry()
+	var secretsFiles = uielements.CreateSecretsFileEntry()
+	var passwordEntry = widget.NewPasswordEntry()
 
-	form := &widget.Form{
+	var form = &widget.Form{
 		Items: []*widget.FormItem{
+			{Text: "Secrets file", Widget: secretsFiles},
 			{Text: "Password", Widget: passwordEntry},
 		},
 		OnSubmit: func() {
-			_ = secretsactions.ActionDecryptSecretsFile(passwordEntry.Text)
+			_ = secretsactions.ActionDecryptSecretsFile(passwordEntry.Text, secretsFiles.Selected)
 			uielements.ShowLogOutput(window)
 		},
 	}
 
-	box := widget.NewVBox(
+	return widget.NewVBox(
+		widget.NewLabel(""),
 		form,
 	)
-
-	return box
 }

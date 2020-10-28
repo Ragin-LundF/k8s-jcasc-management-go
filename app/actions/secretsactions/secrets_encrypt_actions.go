@@ -8,9 +8,9 @@ import (
 	"os"
 )
 
-// ActionEncryptSecretsFile encrypts the secrets file
-func ActionEncryptSecretsFile(password string) (err error) {
-	secretsFilePath := models.GetGlobalSecretsFile()
+// ActionEncryptSecretsFileByName encrypts the given secrets file
+func ActionEncryptSecretsFile(password string, secretsFileName string) (err error) {
+	var secretsFilePath = models.GetGlobalSecretsPath() + secretsFileName
 	err = encryption.GpgEncryptSecrets(secretsFilePath, password)
 
 	if err != nil {

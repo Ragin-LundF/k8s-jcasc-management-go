@@ -2,6 +2,7 @@ package createproject
 
 import (
 	"k8s-management-go/app/cli/dialogs"
+	"k8s-management-go/app/constants"
 	"k8s-management-go/app/utils/loggingstate"
 	"k8s-management-go/app/utils/validator"
 )
@@ -13,10 +14,10 @@ func NamespaceWorkflow() (namespace string, err error) {
 
 	// Prepare prompt
 	dialogs.ClearScreen()
-	namespace, err = dialogs.DialogPrompt("Enter namespace name", validate)
+	namespace, err = dialogs.DialogPrompt(constants.TextEnterNamespaceName, validate)
 	// check if everything was ok
 	if err != nil {
-		loggingstate.AddErrorEntryAndDetails("  -> Unable to get name of new namespace!", err.Error())
+		loggingstate.AddErrorEntryAndDetails(constants.LogUnableToGetNameOfNewNamespace, err.Error())
 		return namespace, err
 	}
 

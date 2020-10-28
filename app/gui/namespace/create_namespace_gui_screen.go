@@ -3,19 +3,22 @@ package namespace
 import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/widget"
+	"k8s-management-go/app/actions/namespaceactions"
+	"k8s-management-go/app/events"
 	"k8s-management-go/app/gui/uielements"
 	"k8s-management-go/app/models"
+	"k8s-management-go/app/utils/logger"
+	"time"
 )
+
+var namespaceErrorLabel = widget.NewLabel("")
+var namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
 
 // ScreenNamespaceCreate shows the create namespace screen
 func ScreenNamespaceCreate(window fyne.Window) fyne.CanvasObject {
 	var namespace string
 
-	// Namespace
-	namespaceErrorLabel := widget.NewLabel("")
-	namespaceSelectEntry := uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
-
-	form := &widget.Form{
+	var form = &widget.Form{
 		Items: []*widget.FormItem{
 			{Text: "Namespace", Widget: namespaceSelectEntry},
 			{Text: "", Widget: namespaceErrorLabel},
@@ -25,7 +28,7 @@ func ScreenNamespaceCreate(window fyne.Window) fyne.CanvasObject {
 			namespace = namespaceSelectEntry.Text
 
 			// map state
-			state := models.StateData{
+			var state = models.StateData{
 				Namespace: namespace,
 			}
 
@@ -35,9 +38,26 @@ func ScreenNamespaceCreate(window fyne.Window) fyne.CanvasObject {
 		},
 	}
 
-	box := widget.NewVBox(
+	return widget.NewVBox(
+		widget.NewLabel(""),
 		form,
 	)
+}
 
-	return box
+func init() {
+	var createNamespaceNotifier = namespaceCreatedNotifier{}
+	events.NamespaceCreated.Register(createNamespaceNotifier)
+}
+
+type namespaceCreatedNotifier struct {
+	namespace string
+}
+
+func (notifier namespaceCreatedNotifier) Handle(payload events.NamespaceCreatedPayload) {
+	logger.Log().Info("[namespace_gui] -> Retrieved event to that new namespace was created")
+	namespaceSelectEntry.SetOptions(namespaceactions.ActionReadNamespaceWithFilter(nil))
+
+	events.RefreshTabs.Trigger(events.RefreshTabsPayload{
+		Time: time.Now(),
+	})
 }

@@ -5,11 +5,19 @@ import (
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/widget"
 	"k8s-management-go/app/actions/installactions"
+	"k8s-management-go/app/actions/namespaceactions"
 	"k8s-management-go/app/constants"
+	"k8s-management-go/app/events"
 	"k8s-management-go/app/gui/uielements"
 	"k8s-management-go/app/models"
+	"k8s-management-go/app/utils/logger"
 	"k8s-management-go/app/utils/validator"
+	"time"
 )
+
+// Namespace
+var namespaceErrorLabel = widget.NewLabel("")
+var namespaceSelectEntry *widget.SelectEntry
 
 // ScreenUninstall shows the uninstall screen
 func ScreenUninstall(window fyne.Window) fyne.CanvasObject {
@@ -19,17 +27,14 @@ func ScreenUninstall(window fyne.Window) fyne.CanvasObject {
 	var dryRunOption string
 	var secretsPasswords string
 
-	// Namespace
-	namespaceErrorLabel := widget.NewLabel("")
-	namespaceSelectEntry := uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
-
 	// Deployment name
-	deploymentNameEntry := uielements.CreateDeploymentNameEntry()
+	var deploymentNameEntry = uielements.CreateDeploymentNameEntry()
 
 	// Dry-run or execute
-	dryRunRadio := uielements.CreateDryRunRadio()
+	var dryRunRadio = uielements.CreateDryRunRadio()
+	namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
 
-	form := &widget.Form{
+	var form = &widget.Form{
 		Items: []*widget.FormItem{
 			{Text: "Namespace", Widget: namespaceSelectEntry},
 			{Text: "", Widget: namespaceErrorLabel},
@@ -53,7 +58,7 @@ func ScreenUninstall(window fyne.Window) fyne.CanvasObject {
 			}
 
 			// map state
-			state := models.StateData{
+			var state = models.StateData{
 				Namespace:       namespace,
 				DeploymentName:  deploymentName,
 				HelmCommand:     installTypeOption,
@@ -75,9 +80,26 @@ func ScreenUninstall(window fyne.Window) fyne.CanvasObject {
 		},
 	}
 
-	box := widget.NewVBox(
+	return widget.NewVBox(
+		widget.NewLabel(""),
 		form,
 	)
+}
 
-	return box
+func init() {
+	var createNamespaceNotifier = namespaceCreatedNotifier{}
+	events.NamespaceCreated.Register(createNamespaceNotifier)
+}
+
+type namespaceCreatedNotifier struct {
+	namespace string
+}
+
+func (notifier namespaceCreatedNotifier) Handle(payload events.NamespaceCreatedPayload) {
+	logger.Log().Info("[uninstall_gui] -> Retrieved event to that new namespace was created")
+	namespaceSelectEntry.SetOptions(namespaceactions.ActionReadNamespaceWithFilter(nil))
+
+	events.RefreshTabs.Trigger(events.RefreshTabsPayload{
+		Time: time.Now(),
+	})
 }

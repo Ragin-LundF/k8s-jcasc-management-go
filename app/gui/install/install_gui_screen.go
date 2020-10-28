@@ -5,11 +5,18 @@ import (
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/widget"
 	"k8s-management-go/app/actions/installactions"
+	"k8s-management-go/app/actions/namespaceactions"
 	"k8s-management-go/app/constants"
+	"k8s-management-go/app/events"
 	"k8s-management-go/app/gui/uielements"
 	"k8s-management-go/app/models"
+	"k8s-management-go/app/utils/logger"
 	"k8s-management-go/app/utils/validator"
+	"time"
 )
+
+var namespaceSelectEntry *widget.SelectEntry
+var namespaceErrorLabel = widget.NewLabel("")
 
 // ScreenInstall shows the install screen
 func ScreenInstall(window fyne.Window) fyne.CanvasObject {
@@ -17,27 +24,21 @@ func ScreenInstall(window fyne.Window) fyne.CanvasObject {
 	var deploymentName string
 	var installTypeOption string
 	var dryRunOption string
+	var secretsFile string
 	var secretsPasswords string
 
-	// Namespace
-	namespaceErrorLabel := widget.NewLabel("")
-	namespaceSelectEntry := uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
+	// Entries
+	var namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
+	var secretsFileSelect = uielements.CreateSecretsFileEntry()
+	var deploymentNameEntry = uielements.CreateDeploymentNameEntry()
+	var installTypeRadio = uielements.CreateInstallTypeRadio()
+	var dryRunRadio = uielements.CreateDryRunRadio()
+	var secretsPasswordEntry = widget.NewPasswordEntry()
 
-	// Deployment name
-	deploymentNameEntry := uielements.CreateDeploymentNameEntry()
-
-	// Install or update
-	installTypeRadio := uielements.CreateInstallTypeRadio()
-
-	// Dry-run or execute
-	dryRunRadio := uielements.CreateDryRunRadio()
-
-	// secrets password
-	secretsPasswordEntry := widget.NewPasswordEntry()
-
-	form := &widget.Form{
+	var form = &widget.Form{
 		Items: []*widget.FormItem{
 			{Text: "Namespace", Widget: namespaceSelectEntry},
+			{Text: "Secrets file", Widget: secretsFileSelect},
 			{Text: "", Widget: namespaceErrorLabel},
 			{Text: "Deployment Name", Widget: deploymentNameEntry},
 			{Text: "Installation type", Widget: installTypeRadio},
@@ -45,6 +46,7 @@ func ScreenInstall(window fyne.Window) fyne.CanvasObject {
 		},
 		OnSubmit: func() {
 			// get variables
+			secretsFile = secretsFileSelect.Selected
 			namespace = namespaceSelectEntry.Text
 			deploymentName = deploymentNameEntry.Text
 			installTypeOption = installTypeRadio.Selected
@@ -61,11 +63,12 @@ func ScreenInstall(window fyne.Window) fyne.CanvasObject {
 			}
 
 			// map state
-			state := models.StateData{
+			var state = models.StateData{
 				Namespace:       namespace,
 				DeploymentName:  deploymentName,
 				HelmCommand:     installTypeOption,
 				SecretsPassword: &secretsPasswords,
+				SecretsFileName: secretsFile,
 			}
 
 			// Directories
@@ -88,16 +91,15 @@ func ScreenInstall(window fyne.Window) fyne.CanvasObject {
 		},
 	}
 
-	box := widget.NewVBox(
+	return widget.NewVBox(
+		widget.NewLabel(""),
 		form,
 	)
-
-	return box
 }
 
 // Secrets password dialog
 func openSecretsPasswordDialog(window fyne.Window, secretsPasswordEntry *widget.Entry, state models.StateData) {
-	secretsPasswordWindow := widget.NewForm(widget.NewFormItem("Password", secretsPasswordEntry))
+	var secretsPasswordWindow = widget.NewForm(widget.NewFormItem("Password", secretsPasswordEntry))
 	secretsPasswordWindow.Resize(fyne.Size{Width: 300, Height: 90})
 
 	dialog.ShowCustomConfirm("Password for Secrets...", "Ok", "Cancel", secretsPasswordWindow, func(confirmed bool) {
@@ -108,4 +110,22 @@ func openSecretsPasswordDialog(window fyne.Window, secretsPasswordEntry *widget.
 			return
 		}
 	}, window)
+}
+
+func init() {
+	var createNamespaceNotifier = namespaceCreatedNotifier{}
+	events.NamespaceCreated.Register(createNamespaceNotifier)
+}
+
+type namespaceCreatedNotifier struct {
+	namespace string
+}
+
+func (notifier namespaceCreatedNotifier) Handle(payload events.NamespaceCreatedPayload) {
+	logger.Log().Info("[install_gui] -> Retrieved event to that new namespace was created")
+	namespaceSelectEntry.SetOptions(namespaceactions.ActionReadNamespaceWithFilter(nil))
+
+	events.RefreshTabs.Trigger(events.RefreshTabsPayload{
+		Time: time.Now(),
+	})
 }

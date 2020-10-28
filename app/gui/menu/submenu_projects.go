@@ -18,14 +18,16 @@ func ProjectsScreen(window fyne.Window, preferences fyne.Preferences) fyne.Canva
 
 func projectsSubMenu(window fyne.Window, preferences fyne.Preferences) (tabs *widget.TabContainer) {
 	// form create full project
-	formScreenCreateFullProject := createproject.ScreenCreateFullProject(window)
-	boxScreenCreateFullProject := widget.NewVBox(
+	var formScreenCreateFullProject = createproject.ScreenCreateFullProject(window)
+	var boxScreenCreateFullProject = widget.NewVBox(
+		widget.NewLabel(""),
 		widget.NewHBox(layout.NewSpacer()),
 		formScreenCreateFullProject,
 	)
 	// form create deploy only project
-	formScreenCreateDeployOnlyProject := createproject.ScreenCreateDeployOnlyProject(window)
-	boxScreenCreateDeployOnlyProject := widget.NewVBox(
+	var formScreenCreateDeployOnlyProject = createproject.ScreenCreateDeployOnlyProject(window)
+	var boxScreenCreateDeployOnlyProject = widget.NewVBox(
+		widget.NewLabel(""),
 		widget.NewHBox(layout.NewSpacer()),
 		formScreenCreateDeployOnlyProject,
 	)
