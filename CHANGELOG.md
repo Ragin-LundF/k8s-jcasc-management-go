@@ -1,3 +1,7 @@
+# 2.7.0
+This release mainly updates the underlying fyne.io framework to version 1.4.0.
+With this update the UI is much better and gets a fresher color scheme.
+
 # 2.6.0
 **Introduction of multiple secret files**
 
