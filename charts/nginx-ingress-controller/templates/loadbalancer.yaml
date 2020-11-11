@@ -7,6 +7,15 @@ metadata:
   labels:
     app.kubernetes.io/name: ingress-nginx
     app.kubernetes.io/part-of: ingress-nginx
+  {{- if .Values.k8sJenkinsMgmt.loadbalancer.annotations.enabled}}
+  annotations:
+  {{- if .Values.k8sJenkinsMgmt.loadbalancer.annotations.external_dns_hostname }}
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.k8sJenkinsMgmt.loadbalancer.annotations.external_dns_hostname }}}}
+  {{- end }}
+  {{- if .Values.k8sJenkinsMgmt.loadbalancer.annotations.external_dns_ttl }}
+    external-dns.alpha.kubernetes.io/ttl: {{ .Values.k8sJenkinsMgmt.loadbalancer.annotations.external_dns_ttl }}}}
+  {{- end }}
+
 spec:
   # externalTrafficPolicy: Local
   type: LoadBalancer
