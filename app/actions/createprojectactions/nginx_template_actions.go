@@ -51,6 +51,16 @@ func ActionReplaceGlobalConfigNginxIngressCtrlHelmValues(projectDirectory string
 		if success, err = files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxLoadbalancerHTTPSTargetPort, strconv.FormatUint(models.GetConfiguration().LoadBalancer.Port.HTTPSTarget, 10)); !success {
 			return success, err
 		}
+		// Loadbalancer annotations placeholder
+		if success, err = files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxLoadbalancerAnnotationsEnabled, strconv.FormatBool(models.GetConfiguration().LoadBalancer.Annotations.Enabled)); !success {
+			return success, err
+		}
+		if success, err = files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxLoadbalancerAnnotationsExtDnsHostname, models.GetConfiguration().LoadBalancer.Annotations.ExtDNS.Hostname); !success {
+			return success, err
+		}
+		if success, err = files.ReplaceStringInFile(nginxHelmValuesFile, constants.TemplateNginxLoadbalancerAnnotationsExtDnsTtl, strconv.FormatUint(models.GetConfiguration().LoadBalancer.Annotations.ExtDNS.Ttl, 10)); !success {
+			return success, err
+		}
 	}
 	return true, nil
 }

@@ -213,6 +213,15 @@ const TemplateNginxLoadbalancerHTTPSPort = "##NGINX_LOADBALANCER_HTTPS_PORT##"
 // TemplateNginxLoadbalancerHTTPSTargetPort : Placeholder for Nginx load balancer HTTPS target port
 const TemplateNginxLoadbalancerHTTPSTargetPort = "##NGINX_LOADBALANCER_HTTPS_TARGETPORT##"
 
+// TemplateNginxLoadbalancerAnnotationsEnabled : Placeholder for Nginx Annotation support
+const TemplateNginxLoadbalancerAnnotationsEnabled = "##NGINX_LOADBALANCER_ANNOTATIONS_ENABLED##"
+
+// TemplateNginxLoadbalancerAnnotationsExtDnsTtl : Placeholder for external DNS TTL annotation
+const TemplateNginxLoadbalancerAnnotationsExtDnsTtl = "##NGINX_LOADBALANCER_ANNOTATIONS_EXT_DNS_TTL##"
+
+// TemplateNginxLoadbalancerAnnotationsExtDnsTtl : Placeholder for external DNS hostname annotation
+const TemplateNginxLoadbalancerAnnotationsExtDnsHostname = "##NGINX_LOADBALANCER_ANNOTATIONS_EXT_DNS_HOSTNAME##"
+
 // TemplateKubernetesServerCertificate : Placeholder for Kubernetes server certificate
 const TemplateKubernetesServerCertificate = "##KUBERNETES_SERVER_CERTIFICATE##"
 

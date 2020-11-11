@@ -13,6 +13,10 @@ k8sJenkinsMgmt:
       enabled: false
   loadbalancer:
     enabled: false
+    annotations:
+      enabled: false
+      external_dns_hostname: "my.domain.tld,another.domain.tld"
+      external_dns_ttl: 60
     ports:
       http:
         port: 80

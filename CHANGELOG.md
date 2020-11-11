@@ -1,3 +1,38 @@
+# 2.8.0
+## Bugfixes
+This version fixes a problem with the namespace events after creating a new project.
+
+## External DNS annotations
+This version introduces support for external DNS annotations on the Nginx load balancer service.
+To activate it, the following configurations can be changed in your project configuration:
+
+```bash
+# enable annotations on the load balancer service
+NGINX_LOADBALANCER_ANNOTATIONS_ENABLED=false
+
+# external DNS hostname
+NGINX_LOADBALANCER_ANNOTATIONS_EXT_DNS_HOSTNAME="domain.tld"
+# external DNS TTL time in seconds
+NGINX_LOADBALANCER_ANNOTATIONS_EXT_DNS_TTL=60
+```
+
+These values are replacing the annotations block in the [nginx_ingress_helm_values.yaml](templates/nginx_ingress_helm_values.yaml):
+```yaml
+    annotations:
+      enabled: ##NGINX_LOADBALANCER_ANNOTATIONS_ENABLED##
+      external_dns_hostname: "##NAMESPACE##.##NGINX_LOADBALANCER_ANNOTATIONS_EXT_DNS_HOSTNAME##"
+      external_dns_ttl: ##NGINX_LOADBALANCER_ANNOTATIONS_EXT_DNS_TTL##
+```
+The default for new DNS names is `<namespace>.<ext_dns_host>`.
+This version supports no direct UI edit (but it is possible to abuse e.g. the Jenkins Welcome Message).
+
+Please update this file in the project templates, if modified templates are used.
+
+If own charts are used, please update the following files in the `nginx-ingress-controller` folder:
+- [templates/loadbalancer.yaml](charts/nginx-ingress-controller/templates/loadbalancer.yaml)
+- [values.yaml](charts/nginx-ingress-controller/values.yaml)
+
+
 # 2.7.0
 This release mainly updates the underlying fyne.io framework to version 1.4.0.
 With this update the UI is much better and gets a fresher color scheme.

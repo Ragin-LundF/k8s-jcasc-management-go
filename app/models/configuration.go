@@ -97,6 +97,13 @@ type Configuration struct {
 			HTTPS       uint64
 			HTTPSTarget uint64
 		}
+		Annotations struct {
+			Enabled bool
+			ExtDNS  struct {
+				Ttl      uint64
+				Hostname string
+			}
+		}
 	}
 	// Kubernetes relevant data
 	Kubernetes struct {
@@ -412,6 +419,18 @@ func addLoadBalancerConfig(key string, value string) (success bool) {
 		break
 	case "NGINX_LOADBALANCER_HTTPS_TARGETPORT":
 		configuration.LoadBalancer.Port.HTTPSTarget, _ = strconv.ParseUint(value, 10, 16)
+		success = true
+		break
+	case "NGINX_LOADBALANCER_ANNOTATIONS_ENABLED":
+		configuration.LoadBalancer.Annotations.Enabled, _ = strconv.ParseBool(value)
+		success = true
+		break
+	case "NGINX_LOADBALANCER_ANNOTATIONS_EXT_DNS_HOSTNAME":
+		configuration.LoadBalancer.Annotations.ExtDNS.Hostname = value
+		success = true
+		break
+	case "NGINX_LOADBALANCER_ANNOTATIONS_EXT_DNS_TTL":
+		configuration.LoadBalancer.Annotations.ExtDNS.Ttl, _ = strconv.ParseUint(value, 10, 16)
 		success = true
 		break
 	}
