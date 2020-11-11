@@ -20,6 +20,6 @@ k8sJenkinsMgmt:
         port: ##NGINX_LOADBALANCER_HTTPS_PORT##
         targetPort: ##NGINX_LOADBALANCER_HTTPS_TARGETPORT##
     annotations:
-      enabled: false
-      external_dns_hostname: "my.domain.tld,another.domain.tld"
-      external_dns_ttl: 60
+      enabled: ##NGINX_LOADBALANCER_ANNOTATIONS_ENABLED##
+      external_dns_hostname: "##NAMESPACE##.##NGINX_LOADBALANCER_ANNOTATIONS_EXT_DNS_HOSTNAME##"
+      external_dns_ttl: ##NGINX_LOADBALANCER_ANNOTATIONS_EXT_DNS_TTL##
