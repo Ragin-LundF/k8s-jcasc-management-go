@@ -81,7 +81,7 @@ NGINX_LOADBALANCER_HTTP_TARGETPORT=80
 NGINX_LOADBALANCER_HTTPS_PORT=443
 NGINX_LOADBALANCER_HTTPS_TARGETPORT=443
 
-# enable annotations on the loadbalancer service
+# enable annotations on the load balancer service
 NGINX_LOADBALANCER_ANNOTATIONS_ENABLED=false
 
 # external DNS hostname
