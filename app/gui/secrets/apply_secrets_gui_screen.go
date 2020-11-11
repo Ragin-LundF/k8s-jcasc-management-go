@@ -15,7 +15,7 @@ import (
 
 // Namespace
 var namespaceErrorLabel = widget.NewLabel("")
-var namespaceSelectEntry *widget.SelectEntry
+var namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
 
 // ScreenApplySecretsToAllNamespace shows the apply to all namespaces screen
 func ScreenApplySecretsToAllNamespace(window fyne.Window) fyne.CanvasObject {
@@ -56,7 +56,6 @@ func ScreenApplySecretsToAllNamespace(window fyne.Window) fyne.CanvasObject {
 func ScreenApplySecretsToNamespace(window fyne.Window) fyne.CanvasObject {
 	var secretsFiles = uielements.CreateSecretsFileEntry()
 	var passwordEntry = widget.NewPasswordEntry()
-	var namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
 
 	var form = &widget.Form{
 		Items: []*widget.FormItem{
@@ -94,7 +93,9 @@ type namespaceCreatedNotifier struct {
 
 func (notifier namespaceCreatedNotifier) Handle(payload events.NamespaceCreatedPayload) {
 	logger.Log().Info("[secrets_gui] -> Retrieved event to that new namespace was created")
-	namespaceSelectEntry.SetOptions(namespaceactions.ActionReadNamespaceWithFilter(nil))
+	if namespaceSelectEntry != nil {
+		namespaceSelectEntry.SetOptions(namespaceactions.ActionReadNamespaceWithFilter(nil))
+	}
 
 	events.RefreshTabs.Trigger(events.RefreshTabsPayload{
 		Time: time.Now(),

@@ -15,8 +15,8 @@ import (
 	"time"
 )
 
-var namespaceSelectEntry *widget.SelectEntry
 var namespaceErrorLabel = widget.NewLabel("")
+var namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
 
 // ScreenInstall shows the install screen
 func ScreenInstall(window fyne.Window) fyne.CanvasObject {
@@ -28,7 +28,6 @@ func ScreenInstall(window fyne.Window) fyne.CanvasObject {
 	var secretsPasswords string
 
 	// Entries
-	var namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
 	var secretsFileSelect = uielements.CreateSecretsFileEntry()
 	var deploymentNameEntry = uielements.CreateDeploymentNameEntry()
 	var installTypeRadio = uielements.CreateInstallTypeRadio()
@@ -123,7 +122,9 @@ type namespaceCreatedNotifier struct {
 
 func (notifier namespaceCreatedNotifier) Handle(payload events.NamespaceCreatedPayload) {
 	logger.Log().Info("[install_gui] -> Retrieved event to that new namespace was created")
-	namespaceSelectEntry.SetOptions(namespaceactions.ActionReadNamespaceWithFilter(nil))
+	if namespaceSelectEntry != nil {
+		namespaceSelectEntry.SetOptions(namespaceactions.ActionReadNamespaceWithFilter(nil))
+	}
 
 	events.RefreshTabs.Trigger(events.RefreshTabsPayload{
 		Time: time.Now(),

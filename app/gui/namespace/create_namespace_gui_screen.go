@@ -55,7 +55,9 @@ type namespaceCreatedNotifier struct {
 
 func (notifier namespaceCreatedNotifier) Handle(payload events.NamespaceCreatedPayload) {
 	logger.Log().Info("[namespace_gui] -> Retrieved event to that new namespace was created")
-	namespaceSelectEntry.SetOptions(namespaceactions.ActionReadNamespaceWithFilter(nil))
+	if namespaceSelectEntry != nil {
+		namespaceSelectEntry.SetOptions(namespaceactions.ActionReadNamespaceWithFilter(nil))
+	}
 
 	events.RefreshTabs.Trigger(events.RefreshTabsPayload{
 		Time: time.Now(),
