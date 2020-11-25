@@ -1,3 +1,11 @@
+# 2.8.1
+## Bugfixes
+This version fixes a bug in the resolution of the paths of the alternative secret files.
+Now the path for the alternative secrets is always the same as the path of the global secrets file. 
+
+## Dependency updates
+Update of the dependencies.
+
 # 2.8.0
 ## Bugfixes
 This version fixes a problem with the namespace events after creating a new project.
