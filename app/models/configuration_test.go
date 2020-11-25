@@ -10,13 +10,17 @@ import (
 )
 
 func TestGetAlternativeSecretsFilesEmpty(t *testing.T) {
+	AssignToConfiguration("K8S_MGMT_BASE_PATH", "./")
+	AssignToConfiguration("GLOBAL_SECRETS_FILE", "./secrets.sh")
+
 	assert.True(t, len(GetSecretsFiles()) == 1)
 }
 
-func TestGetAlternativeSecretsFilesWithAlternatives(t *testing.T) {
-	configuration = GetConfiguration()
-	configuration.GlobalSecretsFile = "./secrets.sh"
+func TestGetAlternativeSecretsFilesWithDifferentBasePath(t *testing.T) {
+	AssignToConfiguration("K8S_MGMT_BASE_PATH", "../")
+	AssignToConfiguration("GLOBAL_SECRETS_FILE", "./secrets.sh")
 
+	_ = ioutil.WriteFile("../secrets.sh", []byte(""), 0644)
 	var secretsFile = GetGlobalSecretsFile()
 	var secretsFileA = strings.Replace(secretsFile, "secrets.sh", "secrets_environment_a.sh", -1)
 	var secretsFileB = strings.Replace(secretsFile, "secrets.sh", "secrets_environment_b.sh", -1)
@@ -27,9 +31,14 @@ func TestGetAlternativeSecretsFilesWithAlternatives(t *testing.T) {
 	var alternativeSecretFiles = GetSecretsFiles()
 	assert.NotEmpty(t, alternativeSecretFiles)
 	assert.True(t, len(alternativeSecretFiles) == 3)
+	for _, secretFile := range alternativeSecretFiles {
+		runeSecretFile := []rune(secretFile)
+		assert.Equal(t, "secrets", string(runeSecretFile[0:7]))
+	}
 
 	os.Remove(secretsFileA)
 	os.Remove(secretsFileB)
+	os.Remove("../secrets.sh")
 }
 
 func TestAssignDryRun(t *testing.T) {
