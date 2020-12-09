@@ -136,20 +136,23 @@ func GetConfiguration() Configuration {
 
 // GetIPConfigurationFile is a helper method for IP configuration file
 func GetIPConfigurationFile() string {
-	return FilePathWithBasePath(configuration.IPConfig.IPConfigFile)
+	return FilePathWithBasePath(GetConfiguration().IPConfig.IPConfigFile)
 }
 
 // GetGlobalSecretsFile is a helper method for secrets file
 func GetGlobalSecretsFile() string {
-	return FilePathWithBasePath(configuration.GlobalSecretsFile)
+	var globalSecretsFile = GetConfiguration().GlobalSecretsFile
+	if globalSecretsFile == "" {
+		panic("The configured secrets file is not a file!")
+	}
+	return FilePathWithBasePath(globalSecretsFile)
 }
 
 func GetGlobalSecretsPath() (secretsFilePath string) {
-	secretsFilePath, err := filepath.Abs(filepath.Dir(GetConfiguration().GlobalSecretsFile))
-	if err != nil {
-		loggingstate.AddErrorEntry("Unable to determine global secrets path.")
-	}
-	return fmt.Sprintf("%s%s", secretsFilePath, string(os.PathSeparator))
+	var globalSecretsFile = GetGlobalSecretsFile()
+	var fileName = filepath.Base(globalSecretsFile)
+	return strings.Replace(globalSecretsFile, fileName, "", -1)
+	// return fmt.Sprintf("%s%s", secretsFilePath, string(os.PathSeparator))
 }
 
 // GetSecretsFiles returns a list of secret files to support different environments
@@ -161,18 +164,24 @@ func GetSecretsFiles() []string {
 		var fileFilter = files.FileFilter{
 			Prefix: &filePrefix,
 		}
-		var secretFilesWithPath, err = files.ListFilesOfDirectoryWithFilter(secretsFilePath, &fileFilter)
+		var secretFilesWithoutPath, err = files.ListFilesOfDirectoryWithFilter(secretsFilePath, &fileFilter)
 		if err != nil {
 			loggingstate.AddErrorEntryAndDetails(
 				"Unable to filter for secrets files",
 				fmt.Sprintf("SearchDirectory: [%s]", secretsFilePath))
 		}
+		var secretFilesWithPath []string
+		if secretFilesWithoutPath != nil && len(*secretFilesWithoutPath) > 0 {
+			for _, secretFileOfFilter := range *secretFilesWithoutPath {
+				secretFilesWithPath = append(secretFilesWithPath, GetGlobalSecretsPath()+secretFileOfFilter)
+			}
+		}
 
 		var secretFiles []string
 
 		secretFiles = appendUnique(secretFiles, strings.Replace(GetGlobalSecretsFile(), secretsFilePath, "", -1))
-		if secretFilesWithPath != nil && len(*secretFilesWithPath) > 0 {
-			for _, secretFile := range *secretFilesWithPath {
+		if secretFilesWithPath != nil && len(secretFilesWithPath) > 0 {
+			for _, secretFile := range secretFilesWithPath {
 				secretFile = strings.Replace(secretFile, secretsFilePath, "", -1)
 				secretFile = strings.Replace(secretFile, ".gpg", "", -1)
 
