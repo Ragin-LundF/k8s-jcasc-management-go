@@ -10,13 +10,12 @@ metadata:
   {{- if .Values.k8sJenkinsMgmt.loadbalancer.annotations.enabled}}
   annotations:
   {{- if .Values.k8sJenkinsMgmt.loadbalancer.annotations.external_dns_hostname }}
-    external-dns.alpha.kubernetes.io/hostname: {{ .Values.k8sJenkinsMgmt.loadbalancer.annotations.external_dns_hostname }}
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.k8sJenkinsMgmt.loadbalancer.annotations.external_dns_hostname | quote }}
   {{- end }}
   {{- if .Values.k8sJenkinsMgmt.loadbalancer.annotations.external_dns_ttl }}
-    external-dns.alpha.kubernetes.io/ttl: {{ .Values.k8sJenkinsMgmt.loadbalancer.annotations.external_dns_ttl }}
+    external-dns.alpha.kubernetes.io/ttl: {{ .Values.k8sJenkinsMgmt.loadbalancer.annotations.external_dns_ttl | quote }}
   {{- end }}
   {{- end }}
-
 spec:
   # externalTrafficPolicy: Local
   type: LoadBalancer
