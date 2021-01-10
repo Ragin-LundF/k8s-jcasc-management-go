@@ -1,3 +1,7 @@
+# 2.8.2 Update of Libraries
+This release updates the base libraries.
+Mainly fyne.io to 1.4.3.
+
 # 2.8.1
 ## Bugfixes
 This version fixes a bug in the resolution of the paths of the alternative secret files.
