@@ -1,8 +1,8 @@
 package install
 
 import (
-	"fyne.io/fyne"
-	"fyne.io/fyne/dialog"
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/dialog"
 	"k8s-management-go/app/actions/installactions"
 	"k8s-management-go/app/actions/namespaceactions"
 	"k8s-management-go/app/gui/uielements"

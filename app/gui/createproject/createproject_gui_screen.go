@@ -1,9 +1,9 @@
 package createproject
 
 import (
-	"fyne.io/fyne"
-	"fyne.io/fyne/dialog"
-	"fyne.io/fyne/widget"
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/widget"
 	"k8s-management-go/app/actions/createprojectactions"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/gui/uielements"
@@ -107,7 +107,7 @@ func ScreenCreateFullProject(window fyne.Window) *widget.Form {
 			// process project creation if no error was found
 			if !hasErrors {
 				bar := uielements.ProgressBar{
-					Bar:        dialog.NewProgress("Create project...", "Progress", window),
+					Bar:        widget.NewProgressBar(), //("Create project...", "Progress", window),
 					CurrentCnt: 0,
 					MaxCount:   createprojectactions.CountCreateProjectWorkflow,
 				}
@@ -169,7 +169,7 @@ func ScreenCreateDeployOnlyProject(window fyne.Window) *widget.Form {
 			if !hasError {
 				// process project creation
 				bar := uielements.ProgressBar{
-					Bar:        dialog.NewProgress("Create project...", "Progress", window),
+					Bar:        widget.NewProgressBar(), // ("Create project...", "Progress", window),
 					CurrentCnt: 0,
 					MaxCount:   createprojectactions.CountCreateProjectWorkflow,
 				}
@@ -198,14 +198,14 @@ func createCloudTemplates() []*widget.Check {
 	return checkboxes
 }
 
-func createCloudTemplatesCheckboxes(boxes []*widget.Check) *widget.ScrollContainer {
-	var box = widget.NewVBox()
+func createCloudTemplatesCheckboxes(boxes []*widget.Check) *container.Scroll {
+	var box = container.NewVBox()
 	// append boxes to VBox
 	for _, checkbox := range boxes {
-		box.Append(checkbox)
+		box.Add(checkbox)
 	}
 	// pack them into a new VScrollContainer
-	var content = widget.NewVScrollContainer(box)
+	var content = container.NewVScroll(box)
 	// set a min size, that it is possible to see more than 1
 	content.SetMinSize(fyne.NewSize(-1, 150))
 

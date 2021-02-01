@@ -1,8 +1,9 @@
 package createproject
 
 import (
-	"fyne.io/fyne/test"
-	"fyne.io/fyne/widget"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/test"
+	"fyne.io/fyne/v2/widget"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -32,7 +33,7 @@ func TestScreenCreateFullProject(t *testing.T) {
 	assert.Equal(t, "", deployOnlyPrjForm.Items[9].Text)
 	assert.IsType(t, &widget.Label{}, deployOnlyPrjForm.Items[9].Widget)
 	assert.Equal(t, "Cloud Templates", deployOnlyPrjForm.Items[10].Text)
-	assert.IsType(t, &widget.ScrollContainer{}, deployOnlyPrjForm.Items[10].Widget)
+	assert.IsType(t, &container.Scroll{}, deployOnlyPrjForm.Items[10].Widget)
 }
 
 func TestScreenCreateDeployOnlyProject(t *testing.T) {

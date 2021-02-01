@@ -1,10 +1,10 @@
 package menu
 
 import (
-	"fyne.io/fyne"
-	"fyne.io/fyne/layout"
-	"fyne.io/fyne/theme"
-	"fyne.io/fyne/widget"
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/layout"
+	"fyne.io/fyne/v2/theme"
 	"k8s-management-go/app/gui/install"
 	"k8s-management-go/app/gui/uiconstants"
 	"k8s-management-go/app/gui/uninstall"
@@ -12,17 +12,17 @@ import (
 
 // InstallScreen shows the installation screen
 func InstallScreen(window fyne.Window, preferences fyne.Preferences) fyne.CanvasObject {
-	return widget.NewVBox(
+	return container.NewVBox(
 		installSubMenu(window, preferences),
 		layout.NewSpacer())
 }
 
-func installSubMenu(window fyne.Window, preferences fyne.Preferences) (tabs *widget.TabContainer) {
-	tabs = widget.NewTabContainer(
-		widget.NewTabItemWithIcon("Install", theme.MediaPlayIcon(), install.ScreenInstall(window)),
-		widget.NewTabItemWithIcon("Uninstall", theme.MediaPauseIcon(), uninstall.ScreenUninstall(window)))
+func installSubMenu(window fyne.Window, preferences fyne.Preferences) (tabs *container.AppTabs) {
+	tabs = container.NewAppTabs(
+		container.NewTabItemWithIcon("Install", theme.MediaPlayIcon(), install.ScreenInstall(window)),
+		container.NewTabItemWithIcon("Uninstall", theme.MediaPauseIcon(), uninstall.ScreenUninstall(window)))
 
-	tabs.SetTabLocation(widget.TabLocationTop)
+	tabs.SetTabLocation(container.TabLocationTop)
 	tabs.SelectTabIndex(preferences.Int(uiconstants.PreferencesSubMenuDeploymentsTab))
 
 	return tabs
