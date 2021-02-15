@@ -1,4 +1,4 @@
-# 2.8.2 Small improvements and dependency updates
+# 2.9.0 Small improvements and dependency updates
 ## Dependency updates
 This release updates the base libraries.
 Mainly fyne.io to 1.4.3.
