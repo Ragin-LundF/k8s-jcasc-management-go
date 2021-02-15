@@ -143,7 +143,7 @@ func ScreenCreateDeployOnlyProject(window fyne.Window) *widget.Form {
 		Items: []*widget.FormItem{
 			{Text: "Namespace", Widget: namespaceEntry},
 			{Text: "", Widget: namespaceErrorLabel},
-			{Text: "IP address/Domain", Widget: ipAddressEntry},
+			{Text: "IP address or domain", Widget: ipAddressEntry},
 			{Text: "", Widget: ipAddressErrorLabel},
 		},
 		OnSubmit: func() {
