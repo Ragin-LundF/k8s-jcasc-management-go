@@ -3,10 +3,10 @@
 package app
 
 import (
-	"fyne.io/fyne"
-	"fyne.io/fyne/app"
-	"fyne.io/fyne/theme"
-	"fyne.io/fyne/widget"
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/theme"
 	"k8s-management-go/app/actions/kubernetesactions"
 	"k8s-management-go/app/cli"
 	"k8s-management-go/app/events"
@@ -16,7 +16,7 @@ import (
 	"k8s-management-go/app/utils/logger"
 )
 
-var tabs *widget.TabContainer
+var tabs *container.AppTabs
 
 // StartApp will start app with GUI
 func StartApp(info string) {

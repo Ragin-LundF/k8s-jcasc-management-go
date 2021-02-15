@@ -1,8 +1,9 @@
 package secrets
 
 import (
-	"fyne.io/fyne"
-	"fyne.io/fyne/widget"
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/widget"
 	"k8s-management-go/app/actions/secretsactions"
 	"k8s-management-go/app/gui/uielements"
 )
@@ -24,7 +25,7 @@ func ScreenDecryptSecrets(window fyne.Window) fyne.CanvasObject {
 		},
 	}
 
-	return widget.NewVBox(
+	return container.NewVBox(
 		widget.NewLabel(""),
 		form,
 	)

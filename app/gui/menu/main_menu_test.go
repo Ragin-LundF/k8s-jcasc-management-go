@@ -1,7 +1,7 @@
 package menu
 
 import (
-	"fyne.io/fyne/test"
+	"fyne.io/fyne/v2/test"
 	"github.com/stretchr/testify/assert"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/cmdexecutor"

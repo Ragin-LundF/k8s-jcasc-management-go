@@ -1,6 +1,14 @@
-# 2.8.2 Update of Libraries
+# 2.9.0 Small improvements and dependency updates
+## Dependency updates
 This release updates the base libraries.
 Mainly fyne.io to 1.4.3.
+
+## Bugfixes
+Fixed a minor bug where the GUI does not initially display the namespace dropdown.
+
+## Improvements
+The IP address field has been converted to an IP and domain field.
+This allows adding domains for load balancers.
 
 # 2.8.1
 ## Bugfixes

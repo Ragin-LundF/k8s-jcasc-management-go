@@ -1,8 +1,8 @@
 package uninstall
 
 import (
-	"fyne.io/fyne"
-	"fyne.io/fyne/dialog"
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/dialog"
 	"k8s-management-go/app/actions/uninstallactions"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/loggingstate"

@@ -11,12 +11,23 @@ func main() {
 	// setup the system and read config
 	setup.Setup()
 	// check version
+	info := checkVersion()
+
+	// start app
+	startApp(info)
+}
+
+func checkVersion() string {
 	newVersionAvailable := version.CheckVersion()
 	info := ""
 	if newVersionAvailable {
 		info = "A new version is available!"
 	}
 
+	return info
+}
+
+func startApp(info string) {
 	if models.GetConfiguration().CliOnly {
 		// cli
 		app.StartCli(info)

@@ -2,10 +2,10 @@ package menu
 
 import (
 	"encoding/json"
-	"fyne.io/fyne"
-	"fyne.io/fyne/dialog"
-	"fyne.io/fyne/theme"
-	"fyne.io/fyne/widget"
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/theme"
+	"fyne.io/fyne/v2/widget"
 	"k8s-management-go/app/gui/uiconstants"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/logger"

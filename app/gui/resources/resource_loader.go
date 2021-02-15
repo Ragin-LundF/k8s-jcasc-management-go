@@ -1,6 +1,6 @@
 package resources
 
-import "fyne.io/fyne"
+import "fyne.io/fyne/v2"
 
 // K8sJcascMgmtIcon returns the Icon as a StaticResource
 func K8sJcascMgmtIcon() *fyne.StaticResource {

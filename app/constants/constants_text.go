@@ -6,7 +6,7 @@ const TextPasswordForSecretsFileConfirmation = "Confirmation password for secret
 const TextPasswordDidNotMatch = "Passwords did not match! "                             // NOSONAR
 
 // Load balancer related texts
-const TextEnterLoadBalancerIPAddress = "Enter the load balancer IP address"
+const TextEnterLoadBalancerIPAddress = "Enter the load balancer IP address or domain"
 
 // Jenkins system message related texts
 const TextEnterJenkinsSystemMessageOrLeaveEmptyForDefault = "Enter the Jenkins system message or leave empty for default"
