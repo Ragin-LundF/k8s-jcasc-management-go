@@ -15,13 +15,14 @@ import (
 
 // Namespace
 var namespaceErrorLabel = widget.NewLabel("")
-var namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
+var namespaceSelectEntry = widget.NewSelectEntry([]string{})
 
 // ScreenApplySecretsToAllNamespace shows the apply to all namespaces screen
 func ScreenApplySecretsToAllNamespace(window fyne.Window) fyne.CanvasObject {
 	// secrets password
 	var secretsFiles = uielements.CreateSecretsFileEntry()
 	var passwordEntry = widget.NewPasswordEntry()
+	namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
 
 	var form = &widget.Form{
 		Items: []*widget.FormItem{
@@ -56,6 +57,7 @@ func ScreenApplySecretsToAllNamespace(window fyne.Window) fyne.CanvasObject {
 func ScreenApplySecretsToNamespace(window fyne.Window) fyne.CanvasObject {
 	var secretsFiles = uielements.CreateSecretsFileEntry()
 	var passwordEntry = widget.NewPasswordEntry()
+	namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
 
 	var form = &widget.Form{
 		Items: []*widget.FormItem{

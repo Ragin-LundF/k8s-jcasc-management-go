@@ -18,7 +18,7 @@ import (
 
 // Namespace
 var namespaceErrorLabel = widget.NewLabel("")
-var namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
+var namespaceSelectEntry = widget.NewSelectEntry([]string{})
 
 // ScreenUninstall shows the uninstall screen
 func ScreenUninstall(window fyne.Window) fyne.CanvasObject {
@@ -27,6 +27,7 @@ func ScreenUninstall(window fyne.Window) fyne.CanvasObject {
 	var installTypeOption string
 	var dryRunOption string
 	var secretsPasswords string
+	namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
 
 	// Deployment name
 	var deploymentNameEntry = uielements.CreateDeploymentNameEntry()

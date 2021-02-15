@@ -24,7 +24,7 @@ func ScreenCreateFullProject(window fyne.Window) *widget.Form {
 	// IP address
 	ipAddressErrorLabel := widget.NewLabel("")
 	ipAddressEntry := widget.NewEntry()
-	ipAddressEntry.PlaceHolder = "0.0.0.0"
+	ipAddressEntry.PlaceHolder = "0.0.0.0 or mydomain.tld"
 
 	// Jenkins system message
 	jenkinsSysMsgErrorLabel := widget.NewLabel("")
@@ -49,7 +49,7 @@ func ScreenCreateFullProject(window fyne.Window) *widget.Form {
 		Items: []*widget.FormItem{
 			{Text: "Namespace", Widget: namespaceEntry},
 			{Text: "", Widget: namespaceErrorLabel},
-			{Text: "IP address", Widget: ipAddressEntry},
+			{Text: "IP address or domain", Widget: ipAddressEntry},
 			{Text: "", Widget: ipAddressErrorLabel},
 			{Text: "Jenkins system message", Widget: jenkinsSysMsgEntry},
 			{Text: "", Widget: jenkinsSysMsgErrorLabel},
@@ -137,13 +137,13 @@ func ScreenCreateDeployOnlyProject(window fyne.Window) *widget.Form {
 	// IP address
 	ipAddressErrorLabel := widget.NewLabel("")
 	ipAddressEntry := widget.NewEntry()
-	ipAddressEntry.PlaceHolder = "0.0.0.0"
+	ipAddressEntry.PlaceHolder = "0.0.0.0 or mydomain.tld"
 
 	form := &widget.Form{
 		Items: []*widget.FormItem{
 			{Text: "Namespace", Widget: namespaceEntry},
 			{Text: "", Widget: namespaceErrorLabel},
-			{Text: "IP address", Widget: ipAddressEntry},
+			{Text: "IP address/Domain", Widget: ipAddressEntry},
 			{Text: "", Widget: ipAddressErrorLabel},
 		},
 		OnSubmit: func() {

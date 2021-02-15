@@ -17,7 +17,7 @@ import (
 )
 
 var namespaceErrorLabel = widget.NewLabel("")
-var namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
+var namespaceSelectEntry = widget.NewSelectEntry([]string{})
 
 // ScreenInstall shows the install screen
 func ScreenInstall(window fyne.Window) fyne.CanvasObject {
@@ -29,6 +29,7 @@ func ScreenInstall(window fyne.Window) fyne.CanvasObject {
 	var secretsPasswords string
 
 	// Entries
+	namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
 	var secretsFileSelect = uielements.CreateSecretsFileEntry()
 	var deploymentNameEntry = uielements.CreateDeploymentNameEntry()
 	var installTypeRadio = uielements.CreateInstallTypeRadio()

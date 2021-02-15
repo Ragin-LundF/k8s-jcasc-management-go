@@ -13,11 +13,12 @@ import (
 )
 
 var namespaceErrorLabel = widget.NewLabel("")
-var namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
+var namespaceSelectEntry = widget.NewSelectEntry([]string{})
 
 // ScreenNamespaceCreate shows the create namespace screen
 func ScreenNamespaceCreate(window fyne.Window) fyne.CanvasObject {
 	var namespace string
+	namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
 
 	var form = &widget.Form{
 		Items: []*widget.FormItem{
