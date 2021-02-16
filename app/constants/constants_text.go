@@ -9,7 +9,7 @@ const TextPasswordDidNotMatch = "Passwords did not match! "                     
 const TextEnterLoadBalancerIPAddress = "Enter the load balancer IP address"
 
 // Jenkins URL text
-const TextEnterJenkinsUrl = "Enter the public domain or leave empty to use the IP address"
+const TextEnterJenkinsUrl = "Enter the public domain or leave empty to use the <namespace>.<configured nginx domain>"
 
 // Jenkins system message related texts
 const TextEnterJenkinsSystemMessageOrLeaveEmptyForDefault = "Enter the Jenkins system message or leave empty for default"

@@ -30,7 +30,7 @@ func ScreenCreateFullProject(window fyne.Window) *widget.Form {
 	// Domain for Jenkins
 	jenkinsUrlErrorLabel := widget.NewLabel("")
 	jenkinsUrlEntry := widget.NewEntry()
-	jenkinsUrlEntry.PlaceHolder = "domain.tld (or leave empty to use IP address)"
+	jenkinsUrlEntry.PlaceHolder = "domain.tld (or leave empty to use <namespace>.<configured nginx domain>)"
 
 	// Jenkins system message
 	jenkinsSysMsgErrorLabel := widget.NewLabel("")
@@ -167,7 +167,7 @@ func ScreenCreateDeployOnlyProject(window fyne.Window) *widget.Form {
 	// Domain for Jenkins
 	jenkinsUrlErrorLabel := widget.NewLabel("")
 	jenkinsUrlEntry := widget.NewEntry()
-	jenkinsUrlEntry.PlaceHolder = "domain.tld (or leave empty to use IP address)"
+	jenkinsUrlEntry.PlaceHolder = "domain.tld (or leave empty to use <namespace>.<configured nginx domain>)"
 
 	form := &widget.Form{
 		Items: []*widget.FormItem{
