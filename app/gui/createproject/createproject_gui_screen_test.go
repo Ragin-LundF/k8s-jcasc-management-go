@@ -10,44 +10,71 @@ import (
 
 func TestScreenCreateFullProject(t *testing.T) {
 	var deployOnlyPrjForm = ScreenCreateFullProject(test.NewApp().NewWindow("test"))
+	var i = 0
 
-	assert.Len(t, deployOnlyPrjForm.Items, 11)
-	assert.Equal(t, "Namespace", deployOnlyPrjForm.Items[0].Text)
-	assert.IsType(t, &widget.Entry{}, deployOnlyPrjForm.Items[0].Widget)
-	assert.Equal(t, "", deployOnlyPrjForm.Items[1].Text)
-	assert.IsType(t, &widget.Label{}, deployOnlyPrjForm.Items[1].Widget)
-	assert.Equal(t, "IP address or domain", deployOnlyPrjForm.Items[2].Text)
-	assert.IsType(t, &widget.Entry{}, deployOnlyPrjForm.Items[2].Widget)
-	assert.Equal(t, "", deployOnlyPrjForm.Items[3].Text)
-	assert.IsType(t, &widget.Label{}, deployOnlyPrjForm.Items[3].Widget)
-	assert.Equal(t, "Jenkins system message", deployOnlyPrjForm.Items[4].Text)
-	assert.IsType(t, &widget.Entry{}, deployOnlyPrjForm.Items[4].Widget)
-	assert.Equal(t, "", deployOnlyPrjForm.Items[5].Text)
-	assert.IsType(t, &widget.Label{}, deployOnlyPrjForm.Items[5].Widget)
-	assert.Equal(t, "Jenkins Jobs Repository", deployOnlyPrjForm.Items[6].Text)
-	assert.IsType(t, &widget.Entry{}, deployOnlyPrjForm.Items[6].Widget)
-	assert.Equal(t, "", deployOnlyPrjForm.Items[7].Text)
-	assert.IsType(t, &widget.Label{}, deployOnlyPrjForm.Items[7].Widget)
-	assert.Equal(t, "Jenkins Existing PVC", deployOnlyPrjForm.Items[8].Text)
-	assert.IsType(t, &widget.Entry{}, deployOnlyPrjForm.Items[8].Widget)
-	assert.Equal(t, "", deployOnlyPrjForm.Items[9].Text)
-	assert.IsType(t, &widget.Label{}, deployOnlyPrjForm.Items[9].Widget)
-	assert.Equal(t, "Cloud Templates", deployOnlyPrjForm.Items[10].Text)
-	assert.IsType(t, &container.Scroll{}, deployOnlyPrjForm.Items[10].Widget)
+	assert.Len(t, deployOnlyPrjForm.Items, 13)
+	assert.Equal(t, "Namespace", deployOnlyPrjForm.Items[i].Text)
+	assert.IsType(t, &widget.Entry{}, deployOnlyPrjForm.Items[i].Widget)
+	i++
+	assert.Equal(t, "", deployOnlyPrjForm.Items[i].Text)
+	assert.IsType(t, &widget.Label{}, deployOnlyPrjForm.Items[i].Widget)
+	i++
+	assert.Equal(t, "IP address", deployOnlyPrjForm.Items[i].Text)
+	assert.IsType(t, &widget.Entry{}, deployOnlyPrjForm.Items[i].Widget)
+	i++
+	assert.Equal(t, "", deployOnlyPrjForm.Items[i].Text)
+	assert.IsType(t, &widget.Label{}, deployOnlyPrjForm.Items[i].Widget)
+	i++
+	assert.Equal(t, "Domain name", deployOnlyPrjForm.Items[i].Text)
+	assert.IsType(t, &widget.Entry{}, deployOnlyPrjForm.Items[i].Widget)
+	i++
+	assert.Equal(t, "", deployOnlyPrjForm.Items[i].Text)
+	assert.IsType(t, &widget.Label{}, deployOnlyPrjForm.Items[i].Widget)
+	i++
+	assert.Equal(t, "Jenkins system message", deployOnlyPrjForm.Items[i].Text)
+	assert.IsType(t, &widget.Entry{}, deployOnlyPrjForm.Items[i].Widget)
+	i++
+	assert.Equal(t, "", deployOnlyPrjForm.Items[i].Text)
+	assert.IsType(t, &widget.Label{}, deployOnlyPrjForm.Items[i].Widget)
+	i++
+	assert.Equal(t, "Jenkins Jobs Repository", deployOnlyPrjForm.Items[i].Text)
+	assert.IsType(t, &widget.Entry{}, deployOnlyPrjForm.Items[i].Widget)
+	i++
+	assert.Equal(t, "", deployOnlyPrjForm.Items[i].Text)
+	assert.IsType(t, &widget.Label{}, deployOnlyPrjForm.Items[i].Widget)
+	i++
+	assert.Equal(t, "Jenkins Existing PVC", deployOnlyPrjForm.Items[i].Text)
+	assert.IsType(t, &widget.Entry{}, deployOnlyPrjForm.Items[i].Widget)
+	i++
+	assert.Equal(t, "", deployOnlyPrjForm.Items[i].Text)
+	assert.IsType(t, &widget.Label{}, deployOnlyPrjForm.Items[i].Widget)
+	i++
+	assert.Equal(t, "Cloud Templates", deployOnlyPrjForm.Items[i].Text)
+	assert.IsType(t, &container.Scroll{}, deployOnlyPrjForm.Items[i].Widget)
 }
 
 func TestScreenCreateDeployOnlyProject(t *testing.T) {
 	var deployOnlyPrjForm = ScreenCreateDeployOnlyProject(test.NewApp().NewWindow("test"))
+	var i = 0
 
-	assert.Len(t, deployOnlyPrjForm.Items, 4)
-	assert.Equal(t, "Namespace", deployOnlyPrjForm.Items[0].Text)
-	assert.IsType(t, &widget.Entry{}, deployOnlyPrjForm.Items[0].Widget)
-	assert.Equal(t, "", deployOnlyPrjForm.Items[1].Text)
-	assert.IsType(t, &widget.Label{}, deployOnlyPrjForm.Items[1].Widget)
-	assert.Equal(t, "IP address or domain", deployOnlyPrjForm.Items[2].Text)
-	assert.IsType(t, &widget.Entry{}, deployOnlyPrjForm.Items[2].Widget)
-	assert.Equal(t, "", deployOnlyPrjForm.Items[3].Text)
-	assert.IsType(t, &widget.Label{}, deployOnlyPrjForm.Items[3].Widget)
+	assert.Len(t, deployOnlyPrjForm.Items, 6)
+	assert.Equal(t, "Namespace", deployOnlyPrjForm.Items[i].Text)
+	assert.IsType(t, &widget.Entry{}, deployOnlyPrjForm.Items[i].Widget)
+	i++
+	assert.Equal(t, "", deployOnlyPrjForm.Items[i].Text)
+	assert.IsType(t, &widget.Label{}, deployOnlyPrjForm.Items[i].Widget)
+	i++
+	assert.Equal(t, "IP address", deployOnlyPrjForm.Items[i].Text)
+	assert.IsType(t, &widget.Entry{}, deployOnlyPrjForm.Items[i].Widget)
+	i++
+	assert.Equal(t, "", deployOnlyPrjForm.Items[i].Text)
+	assert.IsType(t, &widget.Label{}, deployOnlyPrjForm.Items[i].Widget)
+	i++
+	assert.Equal(t, "Domain name", deployOnlyPrjForm.Items[i].Text)
+	assert.IsType(t, &widget.Entry{}, deployOnlyPrjForm.Items[i].Widget)
+	i++
+	assert.Equal(t, "", deployOnlyPrjForm.Items[i].Text)
+	assert.IsType(t, &widget.Label{}, deployOnlyPrjForm.Items[i].Widget)
 }
 
 func TestCheckCloudboxes(t *testing.T) {

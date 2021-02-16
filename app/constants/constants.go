@@ -132,6 +132,9 @@ const TemplateNamespace = "##NAMESPACE##"
 // TemplatePublicIPAddress : Placeholder for public IP address
 const TemplatePublicIPAddress = "##PUBLIC_IP_ADDRESS##"
 
+// TemplateJenkinsUrl : Jenkins URL or IP
+const TemplateJenkinsUrl = "##JENKINS_URL##"
+
 // TemplateProjectDirectory : Placeholder for project directory
 const TemplateProjectDirectory = "##PROJECT_DIRECTORY##"
 

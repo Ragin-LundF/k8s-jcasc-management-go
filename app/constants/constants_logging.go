@@ -38,6 +38,10 @@ const LogAskForIPAddress = "-> Ask for IP address..."
 const LogAskForIPAddressDone = "-> Ask for IP address...done"
 const LogErrUnableToGetIPAddress = "  -> Unable to get the IP address."
 
+// domain name
+const LogAskForJenkinsUrl = "-> Ask for Jenkins domain..."
+const LogAskForJenkinsUrlDone = "-> Ask for Jenkins domain...done"
+
 // Cloud templates
 const LogAskForCloudTemplates = "-> Ask for cloud templates..."
 const LogAskForCloudTemplatesDone = "-> Ask for cloud templates...done"

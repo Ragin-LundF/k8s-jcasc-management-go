@@ -116,7 +116,7 @@ unclassified:
   # URL under which the Jenkins is reachable.
   # This URL will also be used for notifying the VCS like Github or Bitbucket to link to build number results.
   location:
-    url: "http://##PUBLIC_IP_ADDRESS####JENKINS_MASTER_DEFAULT_URI_PREFIX##"
+    url: "http://##JENKINS_URL####JENKINS_MASTER_DEFAULT_URI_PREFIX##"
 
   # Definition of the metrics plugin to monitor Jenkins via Prometheus
   metricsaccesskey:

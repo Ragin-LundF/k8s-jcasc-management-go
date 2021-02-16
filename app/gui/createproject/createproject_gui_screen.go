@@ -9,6 +9,7 @@ import (
 	"k8s-management-go/app/gui/uielements"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/validator"
+	"strings"
 )
 
 // ScreenCreateFullProject shows the full project setup screen form
@@ -25,6 +26,11 @@ func ScreenCreateFullProject(window fyne.Window) *widget.Form {
 	ipAddressErrorLabel := widget.NewLabel("")
 	ipAddressEntry := widget.NewEntry()
 	ipAddressEntry.PlaceHolder = "0.0.0.0 or mydomain.tld"
+
+	// Domain for Jenkins
+	jenkinsUrlErrorLabel := widget.NewLabel("")
+	jenkinsUrlEntry := widget.NewEntry()
+	jenkinsUrlEntry.PlaceHolder = "domain.tld (or leave empty to use IP address)"
 
 	// Jenkins system message
 	jenkinsSysMsgErrorLabel := widget.NewLabel("")
@@ -49,8 +55,10 @@ func ScreenCreateFullProject(window fyne.Window) *widget.Form {
 		Items: []*widget.FormItem{
 			{Text: "Namespace", Widget: namespaceEntry},
 			{Text: "", Widget: namespaceErrorLabel},
-			{Text: "IP address or domain", Widget: ipAddressEntry},
+			{Text: "IP address", Widget: ipAddressEntry},
 			{Text: "", Widget: ipAddressErrorLabel},
+			{Text: "Domain name", Widget: jenkinsUrlEntry},
+			{Text: "", Widget: jenkinsUrlErrorLabel},
 			{Text: "Jenkins system message", Widget: jenkinsSysMsgEntry},
 			{Text: "", Widget: jenkinsSysMsgErrorLabel},
 			{Text: "Jenkins Jobs Repository", Widget: jenkinsJobsCfgEntry},
@@ -63,6 +71,7 @@ func ScreenCreateFullProject(window fyne.Window) *widget.Form {
 			// get variables
 			projectConfig.Namespace = namespaceEntry.Text
 			projectConfig.IPAddress = ipAddressEntry.Text
+			projectConfig.JenkinsDomain = jenkinsUrlEntry.Text
 			projectConfig.JenkinsSystemMsg = jenkinsSysMsgEntry.Text
 			projectConfig.JobsCfgRepo = jenkinsJobsCfgEntry.Text
 			projectConfig.ExistingPvc = jenkinsExistingPvcEntry.Text
@@ -81,6 +90,22 @@ func ScreenCreateFullProject(window fyne.Window) *widget.Form {
 			if err != nil {
 				ipAddressErrorLabel.SetText(err.Error())
 				hasErrors = true
+			}
+
+			// validate Jenkins domain
+			if projectConfig.JenkinsDomain == "" && models.GetConfiguration().LoadBalancer.Annotations.ExtDNS.Hostname != "" {
+				projectConfig.JenkinsDomain = projectConfig.Namespace + models.GetConfiguration().LoadBalancer.Annotations.ExtDNS.Hostname
+			} else {
+				err = validator.ValidateIP(projectConfig.JenkinsDomain)
+				if err != nil {
+					jenkinsUrlErrorLabel.SetText(err.Error())
+					hasErrors = true
+				} else {
+					if strings.HasSuffix(projectConfig.JenkinsDomain, "/") {
+						jenkinsUrlErrorLabel.SetText("URL should not end with a slash")
+						hasErrors = true
+					}
+				}
 			}
 
 			// validate jenkins system message
@@ -137,19 +162,27 @@ func ScreenCreateDeployOnlyProject(window fyne.Window) *widget.Form {
 	// IP address
 	ipAddressErrorLabel := widget.NewLabel("")
 	ipAddressEntry := widget.NewEntry()
-	ipAddressEntry.PlaceHolder = "0.0.0.0 or mydomain.tld"
+	ipAddressEntry.PlaceHolder = "0.0.0.0"
+
+	// Domain for Jenkins
+	jenkinsUrlErrorLabel := widget.NewLabel("")
+	jenkinsUrlEntry := widget.NewEntry()
+	jenkinsUrlEntry.PlaceHolder = "domain.tld (or leave empty to use IP address)"
 
 	form := &widget.Form{
 		Items: []*widget.FormItem{
 			{Text: "Namespace", Widget: namespaceEntry},
 			{Text: "", Widget: namespaceErrorLabel},
-			{Text: "IP address or domain", Widget: ipAddressEntry},
+			{Text: "IP address", Widget: ipAddressEntry},
 			{Text: "", Widget: ipAddressErrorLabel},
+			{Text: "Domain name", Widget: jenkinsUrlEntry},
+			{Text: "", Widget: jenkinsUrlErrorLabel},
 		},
 		OnSubmit: func() {
 			// get variables
 			projectConfig.Namespace = namespaceEntry.Text
 			projectConfig.IPAddress = ipAddressEntry.Text
+			projectConfig.JenkinsDomain = jenkinsUrlEntry.Text
 			hasError := false
 
 			// validate namespace
@@ -164,6 +197,22 @@ func ScreenCreateDeployOnlyProject(window fyne.Window) *widget.Form {
 			if err != nil {
 				ipAddressErrorLabel.SetText(err.Error())
 				hasError = true
+			}
+
+			// validate Jenkins domain
+			if projectConfig.JenkinsDomain == "" && models.GetConfiguration().LoadBalancer.Annotations.ExtDNS.Hostname != "" {
+				projectConfig.JenkinsDomain = projectConfig.Namespace + models.GetConfiguration().LoadBalancer.Annotations.ExtDNS.Hostname
+			} else {
+				err = validator.ValidateIP(projectConfig.JenkinsDomain)
+				if err != nil {
+					jenkinsUrlErrorLabel.SetText(err.Error())
+					hasError = true
+				} else {
+					if strings.HasSuffix(projectConfig.JenkinsDomain, "/") {
+						jenkinsUrlErrorLabel.SetText("URL should not end with a slash")
+						hasError = true
+					}
+				}
 			}
 
 			if !hasError {
@@ -187,9 +236,9 @@ func ScreenCreateDeployOnlyProject(window fyne.Window) *widget.Form {
 }
 
 func createCloudTemplates() []*widget.Check {
-	var cloudtemplates = createprojectactions.ActionReadCloudTemplates()
+	var cloudTemplates = createprojectactions.ActionReadCloudTemplates()
 	var checkboxes []*widget.Check
-	for _, cloudTemplate := range cloudtemplates {
+	for _, cloudTemplate := range cloudTemplates {
 		checkboxes = append(checkboxes, widget.NewCheck(cloudTemplate, func(set bool) {
 			// not needed, because it ready it later from the options
 		}))

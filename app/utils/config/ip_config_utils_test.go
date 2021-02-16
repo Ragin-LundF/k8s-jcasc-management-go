@@ -40,6 +40,6 @@ func TestParseIpConfigurationWithInvalidLine(t *testing.T) {
 	var line = namespaceToCheck
 	namespace, ip := parseIPConfigurationLine(line)
 
-	assert.Equal(t, "", namespace)
+	assert.Equal(t, namespaceToCheck, namespace)
 	assert.Equal(t, "", ip)
 }

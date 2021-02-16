@@ -118,6 +118,12 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig, callback fun
 		_ = os.RemoveAll(newProjectDir)
 		return err
 	}
+
+	success, err = replacePlaceholderInTemplates(templateFiles, constants.TemplateJenkinsUrl, projectConfig.JenkinsDomain)
+	if !success || err != nil {
+		_ = os.RemoveAll(newProjectDir)
+		return err
+	}
 	loggingstate.AddInfoEntry("-> Start template processing: IP address...done")
 	callback()
 
@@ -182,8 +188,10 @@ func replacePlaceholderInTemplates(templateFiles []string, placeholder string, n
 }
 
 func createNamespaceEvent(namespace string) {
-	events.NamespaceCreated.Trigger(events.NamespaceCreatedPayload{
-		Namespace: namespace,
-		Time:      time.Now(),
-	})
+	if !models.GetConfiguration().CliOnly {
+		events.NamespaceCreated.Trigger(events.NamespaceCreatedPayload{
+			Namespace: namespace,
+			Time:      time.Now(),
+		})
+	}
 }
