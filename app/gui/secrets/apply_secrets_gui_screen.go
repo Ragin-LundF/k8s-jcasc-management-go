@@ -1,9 +1,9 @@
 package secrets
 
 import (
-	"fyne.io/fyne"
-	"fyne.io/fyne/dialog"
-	"fyne.io/fyne/widget"
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/widget"
 	"k8s-management-go/app/actions/namespaceactions"
 	"k8s-management-go/app/actions/secretsactions"
 	"k8s-management-go/app/events"
@@ -15,13 +15,14 @@ import (
 
 // Namespace
 var namespaceErrorLabel = widget.NewLabel("")
-var namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
+var namespaceSelectEntry = widget.NewSelectEntry([]string{})
 
 // ScreenApplySecretsToAllNamespace shows the apply to all namespaces screen
 func ScreenApplySecretsToAllNamespace(window fyne.Window) fyne.CanvasObject {
 	// secrets password
 	var secretsFiles = uielements.CreateSecretsFileEntry()
 	var passwordEntry = widget.NewPasswordEntry()
+	namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
 
 	var form = &widget.Form{
 		Items: []*widget.FormItem{
@@ -33,7 +34,7 @@ func ScreenApplySecretsToAllNamespace(window fyne.Window) fyne.CanvasObject {
 			if err := secretsactions.ActionDecryptSecretsFile(passwordEntry.Text, secretsFiles.Selected); err == nil {
 				// execute the file and apply to all namespaces
 				var bar = uielements.ProgressBar{
-					Bar:        dialog.NewProgress("Apply secrets to all namespaces", "Progress", window),
+					Bar:        widget.NewProgressBar(), //NewProgress("Apply secrets to all namespaces", "Progress", window),
 					CurrentCnt: 0,
 					MaxCount:   float64(len(models.GetIPConfiguration().IPs)),
 				}
@@ -46,7 +47,7 @@ func ScreenApplySecretsToAllNamespace(window fyne.Window) fyne.CanvasObject {
 		},
 	}
 
-	return widget.NewVBox(
+	return container.NewVBox(
 		widget.NewLabel(""),
 		form,
 	)
@@ -56,6 +57,7 @@ func ScreenApplySecretsToAllNamespace(window fyne.Window) fyne.CanvasObject {
 func ScreenApplySecretsToNamespace(window fyne.Window) fyne.CanvasObject {
 	var secretsFiles = uielements.CreateSecretsFileEntry()
 	var passwordEntry = widget.NewPasswordEntry()
+	namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
 
 	var form = &widget.Form{
 		Items: []*widget.FormItem{
@@ -76,7 +78,7 @@ func ScreenApplySecretsToNamespace(window fyne.Window) fyne.CanvasObject {
 		},
 	}
 
-	return widget.NewVBox(
+	return container.NewVBox(
 		widget.NewLabel(""),
 		form,
 	)

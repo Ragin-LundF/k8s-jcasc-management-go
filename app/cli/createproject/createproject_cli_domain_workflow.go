@@ -7,19 +7,19 @@ import (
 	"k8s-management-go/app/utils/validator"
 )
 
-// IPAddressWorkflow represents the ip address workflow
-func IPAddressWorkflow() (ipAddress string, err error) {
+// JenkinsDomainWorkflow represents the domain for Jenkins workflow
+func JenkinsDomainWorkflow() (jenkinsUrl string, err error) {
 	// Validator for IP address
 	var validate = validator.ValidateIP
 
 	// Prepare prompt
 	dialogs.ClearScreen()
-	ipAddress, err = dialogs.DialogPrompt(constants.TextEnterLoadBalancerIPAddress, validate)
+	jenkinsUrl, err = dialogs.DialogPrompt(constants.TextEnterJenkinsUrl, validate)
 	// check if everything was ok
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails(constants.LogErrUnableToGetIPAddress, err.Error())
-		return ipAddress, err
+		return jenkinsUrl, err
 	}
 
-	return ipAddress, nil
+	return jenkinsUrl, nil
 }

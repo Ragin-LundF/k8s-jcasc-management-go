@@ -1,9 +1,10 @@
 package uielements
 
 import (
-	"fyne.io/fyne"
-	"fyne.io/fyne/dialog"
-	"fyne.io/fyne/widget"
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/widget"
 	"k8s-management-go/app/actions/kubernetesactions"
 	"k8s-management-go/app/actions/namespaceactions"
 	"k8s-management-go/app/constants"
@@ -14,7 +15,7 @@ import (
 
 // ProgressBar configures the progress bar
 type ProgressBar struct {
-	Bar        *dialog.ProgressDialog
+	Bar        *widget.ProgressBar
 	MaxCount   float64
 	CurrentCnt float64
 }
@@ -89,18 +90,18 @@ func CreateSecretsFileEntry() (secretsFileEntry *widget.Select) {
 }
 
 // CreateInstallTypeRadio creates radio install type radio
-func CreateInstallTypeRadio() (radioInstallType *widget.Radio) {
+func CreateInstallTypeRadio() (radioInstallType *widget.RadioGroup) {
 	// Install or update
-	radioInstallType = widget.NewRadio([]string{constants.HelmCommandInstall, constants.HelmCommandUpgrade}, nil)
+	radioInstallType = widget.NewRadioGroup([]string{constants.HelmCommandInstall, constants.HelmCommandUpgrade}, nil)
 	radioInstallType.SetSelected(constants.HelmCommandInstall)
 
 	return radioInstallType
 }
 
 // CreateDryRunRadio creates radio install type radio
-func CreateDryRunRadio() (radioInstallType *widget.Radio) {
+func CreateDryRunRadio() (radioInstallType *widget.RadioGroup) {
 	// Execute or dry-run
-	radioInstallType = widget.NewRadio([]string{constants.InstallDryRunInactive, constants.InstallDryRunActive}, nil)
+	radioInstallType = widget.NewRadioGroup([]string{constants.InstallDryRunInactive, constants.InstallDryRunActive}, nil)
 	radioInstallType.SetSelected(constants.InstallDryRunInactive)
 
 	return radioInstallType
@@ -114,7 +115,7 @@ func ShowLogOutput(window fyne.Window) {
 	loggingstate.ClearLoggingState()
 
 	// prepare accordion
-	logAccordion := widget.NewAccordionContainer()
+	logAccordion := widget.NewAccordion()
 	var accItem *widget.AccordionItem
 	var accLabel *widget.Label
 
@@ -130,7 +131,7 @@ func ShowLogOutput(window fyne.Window) {
 		}
 	}
 
-	scrollContainer := widget.NewScrollContainer(logAccordion)
+	scrollContainer := container.NewScroll(logAccordion)
 	scrollContainer.SetMinSize(fyne.Size{
 		Width:  700,
 		Height: 400,

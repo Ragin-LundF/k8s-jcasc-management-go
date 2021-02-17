@@ -51,24 +51,33 @@ func parseIPConfigurationLine(line string) (namespace string, ip string) {
 	var lineArray []string
 	if strings.Contains(line, "=") {
 		lineArray = strings.Split(line, "=")
-	} else {
+	} else if strings.Contains(line, " ") {
 		lineArray = strings.Split(line, " ")
+	} else {
+		if strings.TrimSpace(line) != "" {
+			return optimizeNamespaces(line), ""
+		}
 	}
 
 	// assign to variables
 	if len(lineArray) == 2 {
 		namespace = lineArray[0]
 		ip = lineArray[1]
-		// if value contains double quotes, replace them with empty string
-		if strings.Contains(namespace, "\"") {
-			namespace = strings.Replace(namespace, "\"", "", -1)
-		}
-		if strings.Contains(namespace, "'") {
-			namespace = strings.Replace(namespace, "'", "", -1)
-		}
-		return strings.TrimSpace(namespace), strings.TrimSpace(ip)
+		return optimizeNamespaces(namespace), strings.TrimSpace(ip)
 	}
 	return "", ""
+}
+
+func optimizeNamespaces(namespace string) string {
+	// if value contains double quotes, replace them with empty string
+	if strings.Contains(namespace, "\"") {
+		namespace = strings.Replace(namespace, "\"", "", -1)
+	}
+	if strings.Contains(namespace, "'") {
+		namespace = strings.Replace(namespace, "'", "", -1)
+	}
+
+	return strings.TrimSpace(namespace)
 }
 
 // AddToIPConfigFile adds an IP to the IP config file

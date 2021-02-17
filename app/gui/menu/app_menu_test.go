@@ -1,7 +1,7 @@
 package menu
 
 import (
-	"fyne.io/fyne/test"
+	"fyne.io/fyne/v2/test"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

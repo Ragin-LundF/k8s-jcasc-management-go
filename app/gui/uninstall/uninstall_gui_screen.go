@@ -1,9 +1,10 @@
 package uninstall
 
 import (
-	"fyne.io/fyne"
-	"fyne.io/fyne/dialog"
-	"fyne.io/fyne/widget"
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/widget"
 	"k8s-management-go/app/actions/installactions"
 	"k8s-management-go/app/actions/namespaceactions"
 	"k8s-management-go/app/constants"
@@ -17,7 +18,7 @@ import (
 
 // Namespace
 var namespaceErrorLabel = widget.NewLabel("")
-var namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
+var namespaceSelectEntry = widget.NewSelectEntry([]string{})
 
 // ScreenUninstall shows the uninstall screen
 func ScreenUninstall(window fyne.Window) fyne.CanvasObject {
@@ -26,6 +27,7 @@ func ScreenUninstall(window fyne.Window) fyne.CanvasObject {
 	var installTypeOption string
 	var dryRunOption string
 	var secretsPasswords string
+	namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
 
 	// Deployment name
 	var deploymentNameEntry = uielements.CreateDeploymentNameEntry()
@@ -79,7 +81,7 @@ func ScreenUninstall(window fyne.Window) fyne.CanvasObject {
 		},
 	}
 
-	return widget.NewVBox(
+	return container.NewVBox(
 		widget.NewLabel(""),
 		form,
 	)

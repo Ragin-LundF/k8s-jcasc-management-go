@@ -21,5 +21,6 @@ k8sJenkinsMgmt:
         targetPort: ##NGINX_LOADBALANCER_HTTPS_TARGETPORT##
     annotations:
       enabled: ##NGINX_LOADBALANCER_ANNOTATIONS_ENABLED##
-      external_dns_hostname: "##NAMESPACE##.##NGINX_LOADBALANCER_ANNOTATIONS_EXT_DNS_HOSTNAME##"
+      # "##NAMESPACE##.##NGINX_LOADBALANCER_ANNOTATIONS_EXT_DNS_HOSTNAME##"
+      external_dns_hostname: "##JENKINS_URL##"
       external_dns_ttl: ##NGINX_LOADBALANCER_ANNOTATIONS_EXT_DNS_TTL##

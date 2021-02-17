@@ -302,6 +302,8 @@ At the `templates` directory contains the following:
 - `pvc_claim.yaml` -> Template for Persistent Volume Claim
 - `secrets.sh` -> Example of secrets.sh script
 
+To find out more about available placeholders in the template files see [docs/TemplatePlaceholder.md](docs/TemplatePlaceholder.md).
+
 ### Deployment-only Namespaces ###
 
 `jenkins_helm_values.yaml` offers the possibility to add other namespaces for a Jenkins instance, that should deploy.

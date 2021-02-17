@@ -32,6 +32,17 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 	}
 	loggingstate.AddInfoEntry(constants.LogAskForIPAddressDone)
 
+	// Ask for Domain
+	loggingstate.AddInfoEntry(constants.LogAskForJenkinsUrl)
+	projectConfig.JenkinsDomain, err = JenkinsDomainWorkflow()
+	if err != nil {
+		return err
+	}
+	if projectConfig.JenkinsDomain == "" && models.GetConfiguration().LoadBalancer.Annotations.ExtDNS.Hostname != "" {
+		projectConfig.JenkinsDomain = projectConfig.Namespace + models.GetConfiguration().LoadBalancer.Annotations.ExtDNS.Hostname
+	}
+	loggingstate.AddInfoEntry(constants.LogAskForJenkinsUrlDone)
+
 	// if it is not only a deployment project ask for other Jenkins related vars
 	if !projectConfig.CreateDeploymentOnlyProject {
 		// Select cloud templates

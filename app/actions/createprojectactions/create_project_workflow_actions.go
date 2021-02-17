@@ -40,6 +40,13 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig, callback fun
 	loggingstate.AddInfoEntry("-> Start to copy templates to new project directory...done")
 	callback()
 
+	// load copied files
+	templateFiles, err := loadTemplateFilesOfDirectory(newProjectDir)
+	if err != nil {
+		_ = os.RemoveAll(newProjectDir)
+		return err
+	}
+
 	// add IP and namespace to IP configuration
 	loggingstate.AddInfoEntry("-> Start adding IP address to ipconfig file...")
 	success, err := config.AddToIPConfigFile(projectConfig.Namespace, projectConfig.IPAddress)
@@ -62,7 +69,6 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig, callback fun
 
 	// Replace Jenkins system message
 	loggingstate.AddInfoEntry("-> Start template processing: Jenkins system message...")
-	templateFiles := []string{files.AppendPath(newProjectDir, constants.FilenameJenkinsConfigurationAsCode)}
 	success, err = replacePlaceholderInTemplates(templateFiles, constants.TemplateJenkinsSystemMessage, projectConfig.JenkinsSystemMsg)
 	if !success || err != nil {
 		_ = os.RemoveAll(newProjectDir)
@@ -73,7 +79,6 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig, callback fun
 
 	// Replace Jenkins seed job repository
 	loggingstate.AddInfoEntry("-> Start template processing: Jenkins Jobs repository...")
-	templateFiles = []string{files.AppendPath(newProjectDir, constants.FilenameJenkinsConfigurationAsCode)}
 	success, err = replacePlaceholderInTemplates(templateFiles, constants.TemplateJobDefinitionRepository, projectConfig.JobsCfgRepo)
 	if !success || err != nil {
 		_ = os.RemoveAll(newProjectDir)
@@ -94,11 +99,6 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig, callback fun
 
 	// Replace namespace
 	loggingstate.AddInfoEntry("-> Start template processing: Namespaces...")
-	templateFiles = []string{
-		files.AppendPath(newProjectDir, constants.FilenameJenkinsConfigurationAsCode),
-		files.AppendPath(newProjectDir, constants.FilenamePvcClaim),
-		files.AppendPath(newProjectDir, constants.FilenameNginxIngressControllerHelmValues),
-	}
 	success, err = replacePlaceholderInTemplates(templateFiles, constants.TemplateNamespace, projectConfig.Namespace)
 	if !success || err != nil {
 		_ = os.RemoveAll(newProjectDir)
@@ -109,11 +109,13 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig, callback fun
 
 	// Replace ip address
 	loggingstate.AddInfoEntry("-> Start template processing: IP address...")
-	templateFiles = []string{
-		files.AppendPath(newProjectDir, constants.FilenameJenkinsConfigurationAsCode),
-		files.AppendPath(newProjectDir, constants.FilenameNginxIngressControllerHelmValues),
-	}
 	success, err = replacePlaceholderInTemplates(templateFiles, constants.TemplatePublicIPAddress, projectConfig.IPAddress)
+	if !success || err != nil {
+		_ = os.RemoveAll(newProjectDir)
+		return err
+	}
+
+	success, err = replacePlaceholderInTemplates(templateFiles, constants.TemplateJenkinsUrl, projectConfig.JenkinsDomain)
 	if !success || err != nil {
 		_ = os.RemoveAll(newProjectDir)
 		return err
@@ -123,10 +125,6 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig, callback fun
 
 	// Replace project directory with namespace name
 	loggingstate.AddInfoEntry("-> Start template processing: Project directory for JCasC...")
-	templateFiles = []string{
-		files.AppendPath(newProjectDir, constants.FilenameJenkinsConfigurationAsCode),
-		files.AppendPath(newProjectDir, constants.FilenameJenkinsHelmValues),
-	}
 	success, err = replacePlaceholderInTemplates(templateFiles, constants.TemplateProjectDirectory, projectConfig.Namespace)
 	if !success || err != nil {
 		_ = os.RemoveAll(newProjectDir)
@@ -137,7 +135,6 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig, callback fun
 
 	// Replace existing pvc in Jenkins
 	loggingstate.AddInfoEntry("-> Start template processing: Jenkins existing persistent volume claim...")
-	templateFiles = []string{files.AppendPath(newProjectDir, constants.FilenameJenkinsHelmValues)}
 	success, err = replacePlaceholderInTemplates(templateFiles, constants.TemplatePvcExistingVolumeClaim, projectConfig.ExistingPvc)
 	if !success || err != nil {
 		_ = os.RemoveAll(newProjectDir)
@@ -148,7 +145,6 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig, callback fun
 
 	// Replace existing pvc in Jenkins
 	loggingstate.AddInfoEntry("-> Start template processing: Persistent volume claim...")
-	templateFiles = []string{files.AppendPath(newProjectDir, constants.FilenamePvcClaim)}
 	success, err = replacePlaceholderInTemplates(templateFiles, constants.TemplatePvcName, projectConfig.ExistingPvc)
 	if !success || err != nil {
 		_ = os.RemoveAll(newProjectDir)
@@ -182,8 +178,28 @@ func replacePlaceholderInTemplates(templateFiles []string, placeholder string, n
 }
 
 func createNamespaceEvent(namespace string) {
-	events.NamespaceCreated.Trigger(events.NamespaceCreatedPayload{
-		Namespace: namespace,
-		Time:      time.Now(),
-	})
+	if !models.GetConfiguration().CliOnly {
+		events.NamespaceCreated.Trigger(events.NamespaceCreatedPayload{
+			Namespace: namespace,
+			Time:      time.Now(),
+		})
+	}
+}
+
+func loadTemplateFilesOfDirectory(directory string) ([]string, error) {
+	var configFiles = ".yaml"
+	var fileFilter = files.FileFilter{
+		Suffix: &configFiles,
+	}
+	filesInDirectory, err := files.ListFilesOfDirectoryWithFilter(directory, &fileFilter)
+	if filesInDirectory == nil {
+		loggingstate.AddErrorEntry("-> Could not find any yaml files in directory [" + directory + "].")
+		return []string{}, err
+	}
+
+	var templateFiles []string
+	for _, file := range *filesInDirectory {
+		templateFiles = append(templateFiles, files.AppendPath(directory, file))
+	}
+	return templateFiles, nil
 }

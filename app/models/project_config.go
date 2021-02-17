@@ -4,6 +4,7 @@ package models
 type ProjectConfig struct {
 	Namespace                   string
 	IPAddress                   string
+	JenkinsDomain               string
 	JenkinsSystemMsg            string
 	JobsCfgRepo                 string
 	SelectedCloudTemplates      []string

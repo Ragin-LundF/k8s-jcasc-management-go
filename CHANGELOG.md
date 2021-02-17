@@ -1,3 +1,15 @@
+# 2.9.0 Small improvements and dependency updates
+## Dependency updates
+This release updates the base libraries.
+Mainly fyne.io to 1.4.3.
+
+## Bugfixes
+Fixed a minor bug where the GUI does not initially display the namespace dropdown.
+
+## Improvements
+There is a new option to add a domain for the load balancers.
+Domains can be used in the templates with the placeholder "##JENKINS_URL##".
+
 # 2.8.1
 ## Bugfixes
 This version fixes a bug in the resolution of the paths of the alternative secret files.

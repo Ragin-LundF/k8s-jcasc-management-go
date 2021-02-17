@@ -1,10 +1,11 @@
 package jenkinsuser
 
 import (
-	"fyne.io/fyne"
-	"fyne.io/fyne/dialog"
-	"fyne.io/fyne/layout"
-	"fyne.io/fyne/widget"
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/layout"
+	"fyne.io/fyne/v2/widget"
 	"github.com/atotto/clipboard"
 	"k8s-management-go/app/utils/encryption"
 	"k8s-management-go/app/utils/loggingstate"
@@ -38,10 +39,10 @@ func ScreenJenkinsUserPasswordCreate(window fyne.Window) fyne.CanvasObject {
 					var encPassEntry = widget.NewEntry()
 					encPassEntry.Text = hashedPassword
 
-					var encPassBox = widget.NewVBox(
-						widget.NewHBox(layout.NewSpacer()),
+					var encPassBox = container.NewVBox(
+						container.NewHBox(layout.NewSpacer()),
 						encPassEntry,
-						widget.NewHBox(layout.NewSpacer()),
+						container.NewHBox(layout.NewSpacer()),
 						widget.NewLabelWithStyle("Do you want to copy the password to clipboard?", fyne.TextAlignLeading, fyne.TextStyle{Italic: true}),
 					)
 					dialog.ShowCustomConfirm("Your encrypted password",
@@ -63,7 +64,7 @@ func ScreenJenkinsUserPasswordCreate(window fyne.Window) fyne.CanvasObject {
 		},
 	}
 
-	return widget.NewVBox(
+	return container.NewVBox(
 		widget.NewLabel(""),
 		form,
 	)

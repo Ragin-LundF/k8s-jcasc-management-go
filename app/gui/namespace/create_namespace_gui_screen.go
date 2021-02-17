@@ -1,8 +1,9 @@
 package namespace
 
 import (
-	"fyne.io/fyne"
-	"fyne.io/fyne/widget"
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/widget"
 	"k8s-management-go/app/actions/namespaceactions"
 	"k8s-management-go/app/events"
 	"k8s-management-go/app/gui/uielements"
@@ -12,11 +13,12 @@ import (
 )
 
 var namespaceErrorLabel = widget.NewLabel("")
-var namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
+var namespaceSelectEntry = widget.NewSelectEntry([]string{})
 
 // ScreenNamespaceCreate shows the create namespace screen
 func ScreenNamespaceCreate(window fyne.Window) fyne.CanvasObject {
 	var namespace string
+	namespaceSelectEntry = uielements.CreateNamespaceSelectEntry(namespaceErrorLabel)
 
 	var form = &widget.Form{
 		Items: []*widget.FormItem{
@@ -38,7 +40,7 @@ func ScreenNamespaceCreate(window fyne.Window) fyne.CanvasObject {
 		},
 	}
 
-	return widget.NewVBox(
+	return container.NewVBox(
 		widget.NewLabel(""),
 		form,
 	)
