@@ -197,7 +197,7 @@ func loadTemplateFilesOfDirectory(directory string) ([]string, error) {
 		return []string{}, err
 	}
 
-	var templateFiles = []string{}
+	var templateFiles []string
 	for _, file := range *filesInDirectory {
 		templateFiles = append(templateFiles, files.AppendPath(directory, file))
 	}
