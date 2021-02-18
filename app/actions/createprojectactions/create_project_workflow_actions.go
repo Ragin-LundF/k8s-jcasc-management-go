@@ -41,7 +41,7 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig, callback fun
 	callback()
 
 	// load copied files
-	templateFiles, err := loadTemplateFilesOfDirectory(newProjectDir)
+	templateFiles, err := files.LoadTemplateFilesOfDirectory(newProjectDir)
 	if err != nil {
 		_ = os.RemoveAll(newProjectDir)
 		return err
@@ -184,22 +184,4 @@ func createNamespaceEvent(namespace string) {
 			Time:      time.Now(),
 		})
 	}
-}
-
-func loadTemplateFilesOfDirectory(directory string) ([]string, error) {
-	var configFiles = ".yaml"
-	var fileFilter = files.FileFilter{
-		Suffix: &configFiles,
-	}
-	filesInDirectory, err := files.ListFilesOfDirectoryWithFilter(directory, &fileFilter)
-	if filesInDirectory == nil {
-		loggingstate.AddErrorEntry("-> Could not find any yaml files in directory [" + directory + "].")
-		return []string{}, err
-	}
-
-	var templateFiles []string
-	for _, file := range *filesInDirectory {
-		templateFiles = append(templateFiles, files.AppendPath(directory, file))
-	}
-	return templateFiles, nil
 }
