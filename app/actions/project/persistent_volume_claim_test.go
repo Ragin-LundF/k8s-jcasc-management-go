@@ -6,26 +6,19 @@ import (
 	"testing"
 )
 
-const pvcName = "my-pvc"
-const pvcNamespace = "my-Namespace"
-const configJenkinsMasterDeploymentName = "jenkins-master"
-const configJenkinsMasterPvcAccessMode = "ReadWriteOnce"
-const configJenkinsMasterPvcStorageClassName = "hostpath"
-const configJenkinsMasterPvcSize = "1Gi"
-
 func TestCreatePersistentVolumeClaim(t *testing.T) {
 	defaultPersistentVolumeClaimConfiguration()
 
-	var pvc = NewPersistentVolumeClaim(pvcNamespace, pvcName)
-	assert.Equal(t, pvcName, pvc.Metadata.Name)
-	assert.Equal(t, pvcNamespace, pvc.Metadata.Namespace)
+	var pvc = NewPersistentVolumeClaim(testPvcNamespace)
+	assert.Empty(t, pvc.Metadata.Name)
+	assert.Equal(t, testPvcNamespace, pvc.Metadata.Namespace)
 
-	assert.Equal(t, configJenkinsMasterDeploymentName, pvc.Metadata.Labels.Component)
-	assert.Equal(t, configJenkinsMasterDeploymentName, pvc.Metadata.Labels.Name)
+	assert.Equal(t, testConfigJenkinsMasterDeploymentName, pvc.Metadata.Labels.Component)
+	assert.Equal(t, testConfigJenkinsMasterDeploymentName, pvc.Metadata.Labels.Name)
 
-	assert.Equal(t, configJenkinsMasterPvcSize, pvc.Spec.Resources.StorageSize)
-	assert.Equal(t, configJenkinsMasterPvcAccessMode, pvc.Spec.AccessMode)
-	assert.Equal(t, configJenkinsMasterPvcStorageClassName, pvc.Spec.StorageClassName)
+	assert.Equal(t, testConfigJenkinsMasterPvcSize, pvc.Spec.Resources.StorageSize)
+	assert.Equal(t, testConfigJenkinsMasterPvcAccessMode, pvc.Spec.AccessMode)
+	assert.Equal(t, testConfigJenkinsMasterPvcStorageClassName, pvc.Spec.StorageClassName)
 }
 
 func TestCreatePersistentVolumeClaimWithOverwrittenConfig(t *testing.T) {
@@ -36,26 +29,27 @@ func TestCreatePersistentVolumeClaimWithOverwrittenConfig(t *testing.T) {
 
 	defaultPersistentVolumeClaimConfiguration()
 
-	var pvc = NewPersistentVolumeClaim(pvcNamespace, pvcName)
+	var pvc = NewPersistentVolumeClaim(testPvcNamespace)
 	pvc.SetMetadataLabelComponentName(customLabelComponentName)
 	pvc.SetMetadataLabelName(customLabelName)
 	pvc.SetMetadataName(customMetadataName)
 	pvc.SetMetadataNamespace(customNamespace)
 
+	println(pvc.Metadata.Name)
 	assert.Equal(t, customMetadataName, pvc.Metadata.Name)
 	assert.Equal(t, customNamespace, pvc.Metadata.Namespace)
 
 	assert.Equal(t, customLabelComponentName, pvc.Metadata.Labels.Component)
 	assert.Equal(t, customLabelName, pvc.Metadata.Labels.Name)
 
-	assert.Equal(t, configJenkinsMasterPvcSize, pvc.Spec.Resources.StorageSize)
-	assert.Equal(t, configJenkinsMasterPvcAccessMode, pvc.Spec.AccessMode)
-	assert.Equal(t, configJenkinsMasterPvcStorageClassName, pvc.Spec.StorageClassName)
+	assert.Equal(t, testConfigJenkinsMasterPvcSize, pvc.Spec.Resources.StorageSize)
+	assert.Equal(t, testConfigJenkinsMasterPvcAccessMode, pvc.Spec.AccessMode)
+	assert.Equal(t, testConfigJenkinsMasterPvcStorageClassName, pvc.Spec.StorageClassName)
 }
 
 func defaultPersistentVolumeClaimConfiguration() {
-	models.AssignToConfiguration("JENKINS_MASTER_DEPLOYMENT_NAME", configJenkinsMasterDeploymentName)
-	models.AssignToConfiguration("JENKINS_MASTER_PERSISTENCE_ACCESS_MODE", configJenkinsMasterPvcAccessMode)
-	models.AssignToConfiguration("JENKINS_MASTER_PERSISTENCE_STORAGE_SIZE", configJenkinsMasterPvcSize)
-	models.AssignToConfiguration("JENKINS_MASTER_PERSISTENCE_STORAGE_CLASS", configJenkinsMasterPvcStorageClassName)
+	models.AssignToConfiguration("JENKINS_MASTER_DEPLOYMENT_NAME", testConfigJenkinsMasterDeploymentName)
+	models.AssignToConfiguration("JENKINS_MASTER_PERSISTENCE_ACCESS_MODE", testConfigJenkinsMasterPvcAccessMode)
+	models.AssignToConfiguration("JENKINS_MASTER_PERSISTENCE_STORAGE_SIZE", testConfigJenkinsMasterPvcSize)
+	models.AssignToConfiguration("JENKINS_MASTER_PERSISTENCE_STORAGE_CLASS", testConfigJenkinsMasterPvcStorageClassName)
 }

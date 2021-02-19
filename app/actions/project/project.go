@@ -11,10 +11,15 @@ import (
 )
 
 type Project struct {
-	Namespace struct {
-		Name string
+	PersistentVolumeClaim *persistentVolumeClaim
+	Nginx                 *Nginx
+}
+
+func NewProject(namespace string) Project {
+	return Project{
+		PersistentVolumeClaim: NewPersistentVolumeClaim(namespace),
+		Nginx:                 NewNginx(namespace, nil, nil),
 	}
-	PersistentVolumeClaim *PersistentVolumeClaim
 }
 
 // ProcessTemplates : Interface implementation to process templates with PVC placeholder
@@ -30,14 +35,6 @@ func (project *Project) ProcessTemplates(projectDirectory string) (err error) {
 			_ = os.Remove(projectDirectory)
 			loggingstate.AddErrorEntryAndDetails(
 				fmt.Sprintf("-> Unable to process file [%v] with template engine", templateFile),
-				err.Error())
-			return err
-		}
-
-		err = processWithPlaceholderReplace(templateFile, *project)
-		if err != nil {
-			loggingstate.AddErrorEntryAndDetails(
-				fmt.Sprintf("-> Unable to process file [%v] with placeholder replacement", templateFile),
 				err.Error())
 			return err
 		}
@@ -64,9 +61,4 @@ func processWithTemplateEngine(filename string, project Project) (err error) {
 	}
 
 	return nil
-}
-
-// processWithPlaceholderReplace : process files with old "##" templates
-func processWithPlaceholderReplace(filename string, project Project) (err error) {
-	return project.PersistentVolumeClaim.ProcessTemplates(filename)
 }

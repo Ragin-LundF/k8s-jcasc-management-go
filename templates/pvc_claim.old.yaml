@@ -1,0 +1,15 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: ##K8S_MGMT_PERSISTENCE_VOLUME_CLAIM_NAME##
+  namespace: ##NAMESPACE##
+  labels:
+    "app.kubernetes.io/name": "##JENKINS_MASTER_DEPLOYMENT_NAME##"
+    "app.kubernetes.io/component": "##JENKINS_MASTER_DEPLOYMENT_NAME##"
+spec:
+  accessModes:
+    - ##JENKINS_MASTER_PERSISTENCE_ACCESS_MODE##
+  resources:
+    requests:
+      storage: ##JENKINS_MASTER_PERSISTENCE_STORAGE_SIZE##
+  storageClassName: ##JENKINS_MASTER_PERSISTENCE_STORAGE_CLASS##
