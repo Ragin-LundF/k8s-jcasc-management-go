@@ -2,6 +2,8 @@
 
 This documentation describes all possible template placeholders that can be used in all template files.
 
+`{{ .Namespace }}`
+
 | Placeholder | Description | Source |
 | --- | --- | --- |
 | ##NAMESPACE## | Placeholder for namespace | user input |

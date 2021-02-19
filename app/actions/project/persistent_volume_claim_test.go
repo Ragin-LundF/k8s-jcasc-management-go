@@ -15,7 +15,7 @@ func TestCreatePersistentVolumeClaim(t *testing.T) {
 	assert.Equal(t, testConfigJenkinsMasterDeploymentName, pvc.Metadata.Labels.Component)
 	assert.Equal(t, testConfigJenkinsMasterDeploymentName, pvc.Metadata.Labels.Name)
 
-	testDefaultPvcConfiguration(pvc, t)
+	assertDefaultPvcConfiguration(pvc, t)
 }
 
 func TestCreatePersistentVolumeClaimWithOverwrittenConfig(t *testing.T) {
@@ -39,10 +39,10 @@ func TestCreatePersistentVolumeClaimWithOverwrittenConfig(t *testing.T) {
 	assert.Equal(t, customLabelComponentName, pvc.Metadata.Labels.Component)
 	assert.Equal(t, customLabelName, pvc.Metadata.Labels.Name)
 
-	testDefaultPvcConfiguration(pvc, t)
+	assertDefaultPvcConfiguration(pvc, t)
 }
 
-func testDefaultPvcConfiguration(pvc *persistentVolumeClaim, t *testing.T) {
+func assertDefaultPvcConfiguration(pvc *persistentVolumeClaim, t *testing.T) {
 	assert.Equal(t, testConfigJenkinsMasterPvcSize, pvc.Spec.Resources.StorageSize)
 	assert.Equal(t, testConfigJenkinsMasterPvcAccessMode, pvc.Spec.AccessMode)
 	assert.Equal(t, testConfigJenkinsMasterPvcStorageClassName, pvc.Spec.StorageClassName)

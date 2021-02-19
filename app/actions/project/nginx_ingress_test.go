@@ -13,7 +13,7 @@ func TestCreateNginx(t *testing.T) {
 
 	assert.Empty(t, nginx.Ingress.LoadBalancerIP)
 	assert.Equal(t, testNamespace, nginx.Ingress.Namespace)
-	testDefaultNginxConfiguration(nginx, t)
+	assertDefaultNginxConfiguration(nginx, t)
 }
 
 func TestCreateNginxWithCustomConfig(t *testing.T) {
@@ -27,10 +27,10 @@ func TestCreateNginxWithCustomConfig(t *testing.T) {
 
 	assert.Equal(t, customIPAddress, nginx.Ingress.LoadBalancerIP)
 	assert.Equal(t, customNamespace, nginx.Ingress.Namespace)
-	testDefaultNginxConfiguration(nginx, t)
+	assertDefaultNginxConfiguration(nginx, t)
 }
 
-func testDefaultNginxConfiguration(nginx *nginx, t *testing.T) {
+func assertDefaultNginxConfiguration(nginx *nginx, t *testing.T) {
 	assert.NotNil(t, nginx.Ingress)
 	assert.Equal(t, testNginxIngressAnnotationClass, nginx.Ingress.AnnotationIngressClass)
 

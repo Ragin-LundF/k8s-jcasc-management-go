@@ -10,13 +10,19 @@ import (
 	"text/template"
 )
 
+// Project : Structure for a complete project
 type Project struct {
+	Namespace             string
+	JenkinsHelmValues     *jenkinsHelmValues
 	PersistentVolumeClaim *persistentVolumeClaim
-	Nginx                 *Nginx
+	Nginx                 *nginx
 }
 
+// NewProject : create a new Project
 func NewProject(namespace string) Project {
 	return Project{
+		Namespace:             namespace,
+		JenkinsHelmValues:     NewJenkinsHelmValues(),
 		PersistentVolumeClaim: NewPersistentVolumeClaim(namespace),
 		Nginx:                 NewNginx(namespace, nil, nil),
 	}
@@ -45,6 +51,20 @@ func (project *Project) ProcessTemplates(projectDirectory string) (err error) {
 
 // processWithTemplateEngine : Process files with template engine
 func processWithTemplateEngine(filename string, project Project) (err error) {
+	// replace JCasC URL
+	var jcascUrl bytes.Buffer
+	jcascUrlTemplate, err := template.New("JcasC-URL").Parse(project.JenkinsHelmValues.Master.SidecarsConfigAutoReloadFolder)
+	if err != nil {
+		return err
+	}
+
+	err = jcascUrlTemplate.Execute(&jcascUrl, project)
+	if err != nil {
+		return err
+	}
+	project.JenkinsHelmValues.Master.SidecarsConfigAutoReloadFolder = jcascUrl.String()
+
+	// replace templates
 	templates, err := template.ParseFiles(filename)
 	if err != nil {
 		return err

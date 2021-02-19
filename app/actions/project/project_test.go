@@ -36,10 +36,23 @@ const testNginxLoadBalancerAnnotationsEnabled = "true"
 const testNginxLoadBalancerAnnotationsExtDnsHostname = "domain.tld"
 const testNginxLoadBalancerAnnotationsExtDnsTtl = "3600"
 
+const testJenkinsHelmMasterImage = "jenkins/jenkins"
+const testJenkinsHelmMasterImageTag = "latest"
+const testJenkinsHelmMasterPullPolicy = "Always"
+const testJenkinsHelmMasterPullSecret = "my-secret"
+
+const testJenkinsHelmMasterDefaultLabel = "jenkins-master-for-seed"
+
+const testJenkinsHelmMasterDenyAnonymousReadAccess = "true"
+const testJenkinsHelmMasterAdminPassword = "admin"
+
+const testJenkinsHelmMasterJcascConfigUrl = "https://raw.githubusercontent.com/Ragin-LundF/k8s-jcasc-project-config/master/{{ .Namespace }}/jcasc_config.yaml"
+
 func TestProjectTemplates(t *testing.T) {
 	testDefaultProjectConfiguration(t, true)
 	var project = NewProject("my-namespace")
 	project.PersistentVolumeClaim.SetMetadataName("my-pvc-claim")
+	project.JenkinsHelmValues.SetExistingClaim("my-pvc-claim")
 
 	var err = project.ProcessTemplates(testProjectName)
 	assert.Nil(t, err)
@@ -73,6 +86,17 @@ func testDefaultProjectConfiguration(t *testing.T, setupTestProject bool) {
 	models.AssignToConfiguration("NGINX_LOADBALANCER_ANNOTATIONS_ENABLED", testNginxLoadBalancerAnnotationsEnabled)
 	models.AssignToConfiguration("NGINX_LOADBALANCER_ANNOTATIONS_EXT_DNS_HOSTNAME", testNginxLoadBalancerAnnotationsExtDnsHostname)
 	models.AssignToConfiguration("NGINX_LOADBALANCER_ANNOTATIONS_EXT_DNS_TTL", testNginxLoadBalancerAnnotationsExtDnsTtl)
+
+	models.AssignToConfiguration("JENKINS_MASTER_CONTAINER_IMAGE", testJenkinsHelmMasterImage)
+	models.AssignToConfiguration("JENKINS_MASTER_CONTAINER_IMAGE_TAG", testJenkinsHelmMasterImageTag)
+	models.AssignToConfiguration("JENKINS_MASTER_CONTAINER_PULL_POLICY", testJenkinsHelmMasterPullPolicy)
+	models.AssignToConfiguration("JENKINS_MASTER_CONTAINER_IMAGE_PULL_SECRET_NAME", testJenkinsHelmMasterPullSecret)
+
+	models.AssignToConfiguration("JENKINS_MASTER_DEFAULT_LABEL", testJenkinsHelmMasterDefaultLabel)
+
+	models.AssignToConfiguration("JENKINS_MASTER_DENY_ANONYMOUS_READ_ACCESS", testJenkinsHelmMasterDenyAnonymousReadAccess)
+	models.AssignToConfiguration("JENKINS_MASTER_ADMIN_PASSWORD", testJenkinsHelmMasterAdminPassword)
+	models.AssignToConfiguration("JENKINS_JCASC_CONFIGURATION_URL", testJenkinsHelmMasterJcascConfigUrl)
 
 	if setupTestProject {
 		var err = createprojectactions.ActionCreateNewProjectDirectory(testProjectName)
