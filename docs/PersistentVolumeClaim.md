@@ -7,10 +7,11 @@ If the data is to be stored on a persistent volume, this volume must be created 
 created, it is possible to enter the name of the PVC in the tool.
 
 The tool uses the `pvc_claim` template to create the required configuration in Kubernetes.
+It is also possible to use the placeholders in other templates.
 
 ## Placeholder variables for Persistent Volume Claims
 
-| Template | Description | Source |
+| Placeholder | Description | Source |
 | --- | --- | --- |
 | `{{ .PersistentVolumeClaim.Metadata.Name }}` | Placeholder for `metadata.name` for PVC | user input |
 | `{{ .PersistentVolumeClaim.Metadata.Namespace }}` | Placeholder for `metadata.namespace` for PVC | user input |

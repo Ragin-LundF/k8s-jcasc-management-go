@@ -6,8 +6,8 @@ import (
 )
 
 // ----- Structures
-// Nginx : Model which describes the nginx ingress controller and load balancer
-type Nginx struct {
+// nginx : Model which describes the nginx ingress controller and load balancer
+type nginx struct {
 	Ingress      ingress
 	LoadBalancer loadBalancer
 }
@@ -52,7 +52,7 @@ type loadBalancerAnnotations struct {
 }
 
 // NewNginx : creates a new instance of Nginx
-func NewNginx(namespace string, loadBalancerIP *string, annotationExtDnsName *string) *Nginx {
+func NewNginx(namespace string, loadBalancerIP *string, annotationExtDnsName *string) *nginx {
 	var assignedLoadBalancerIP string
 
 	// set default values
@@ -62,7 +62,7 @@ func NewNginx(namespace string, loadBalancerIP *string, annotationExtDnsName *st
 		assignedLoadBalancerIP = ""
 	}
 
-	return &Nginx{
+	return &nginx{
 		Ingress:      newDefaultIngress(namespace, assignedLoadBalancerIP),
 		LoadBalancer: newDefaultLoadBalancer(namespace, annotationExtDnsName),
 	}
@@ -70,12 +70,12 @@ func NewNginx(namespace string, loadBalancerIP *string, annotationExtDnsName *st
 
 // ----- Setter to manipulate the default object
 // SetIngressNamespace : Set namespace to ingress controller
-func (nginx *Nginx) SetIngressNamespace(namespace string) {
+func (nginx *nginx) SetIngressNamespace(namespace string) {
 	nginx.Ingress.Namespace = namespace
 }
 
 // SetIngressLoadBalancerIPAddress : Set load balancer IP address to ingress controller
-func (nginx *Nginx) SetIngressLoadBalancerIPAddress(ipAddress string) {
+func (nginx *nginx) SetIngressLoadBalancerIPAddress(ipAddress string) {
 	nginx.Ingress.LoadBalancerIP = ipAddress
 }
 

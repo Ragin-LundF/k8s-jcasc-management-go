@@ -30,7 +30,7 @@ func TestCreateNginxWithCustomConfig(t *testing.T) {
 	testDefaultNginxConfiguration(nginx, t)
 }
 
-func testDefaultNginxConfiguration(nginx *Nginx, t *testing.T) {
+func testDefaultNginxConfiguration(nginx *nginx, t *testing.T) {
 	assert.NotNil(t, nginx.Ingress)
 	assert.Equal(t, testNginxIngressAnnotationClass, nginx.Ingress.AnnotationIngressClass)
 
