@@ -2,7 +2,11 @@
 
 This documentation describes all possible template placeholders that can be used in all template files.
 
-`{{ .Namespace }}`
+| Placeholder | Description | Source |
+| --- | --- | --- |
+| `{{ .Namespace }}` | Placeholder for the namespace | user input |
+| `{{ .JenkinsSetup.DeploymentName }}` | Placeholder for the Jenkins deployment name | configuration `JENKINS_MASTER_DEPLOYMENT_NAME` |
+| `{{ .JenkinsSetup.JenkinsUriPrefix }}` | Placeholder for the Jenkins URI prefix (e.g. `/jenkins`) | configuration `JENKINS_MASTER_DEFAULT_URI_PREFIX` |
 
 | Placeholder | Description | Source |
 | --- | --- | --- |

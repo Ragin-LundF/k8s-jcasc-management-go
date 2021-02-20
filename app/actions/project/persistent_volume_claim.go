@@ -13,15 +13,7 @@ type persistentVolumeClaim struct {
 
 // pvcMetadata : PVC Metadata
 type pvcMetadata struct {
-	Namespace string
-	Name      string
-	Labels    pvcMetadataLabels
-}
-
-// pvcMetadataLabels : PVC Metadata Labels
-type pvcMetadataLabels struct {
-	Name      string
-	Component string
+	Name string
 }
 
 // pvcSpec : PVC specification
@@ -37,9 +29,9 @@ type pvcSpecResources struct {
 }
 
 // NewPersistentVolumeClaim : creates a new instance of PersistentVolumeClaim
-func NewPersistentVolumeClaim(namespace string) *persistentVolumeClaim {
+func NewPersistentVolumeClaim() *persistentVolumeClaim {
 	var pvc = &persistentVolumeClaim{
-		Metadata: newDefaultMetadata(namespace),
+		Metadata: newDefaultMetadata(),
 		Spec:     newDefaultSpec(),
 	}
 
@@ -52,37 +44,11 @@ func (pvc *persistentVolumeClaim) SetMetadataName(pvcName string) {
 	pvc.Metadata.Name = pvcName
 }
 
-// SetMetadataNamespace : Set PVC Namespace to Metadata
-func (pvc *persistentVolumeClaim) SetMetadataNamespace(pvcNamespace string) {
-	pvc.Metadata.Namespace = pvcNamespace
-}
-
-// SetMetadataLabelComponentName : Set PVC Component Name to the Metadata Labels
-func (pvc *persistentVolumeClaim) SetMetadataLabelComponentName(componentName string) {
-	pvc.Metadata.Labels.Component = componentName
-}
-
-// SetMetadataLabelName : Set PVC label Name to Metadata Labels
-func (pvc *persistentVolumeClaim) SetMetadataLabelName(labelName string) {
-	pvc.Metadata.Labels.Name = labelName
-}
-
 // ----- internal methods
 // newDefaultMetadata : create a new Metadata object
-func newDefaultMetadata(namespace string) pvcMetadata {
+func newDefaultMetadata() pvcMetadata {
 	return pvcMetadata{
-		Namespace: namespace,
-		Name:      "",
-		Labels:    newDefaultMetadataLabels(),
-	}
-}
-
-// newDefaultMetadataLabels : create new default label Metadata with configuration
-func newDefaultMetadataLabels() pvcMetadataLabels {
-	var configuration = models.GetConfiguration()
-	return pvcMetadataLabels{
-		Name:      configuration.Jenkins.Helm.Master.DeploymentName,
-		Component: configuration.Jenkins.Helm.Master.DeploymentName,
+		Name: "",
 	}
 }
 

@@ -1,11 +1,11 @@
 k8sJenkinsMgmt:
   ingress:
     annotationIngressClass: {{ .Nginx.Ingress.AnnotationIngressClass }}
-    namespace: {{ .Nginx.Ingress.Namespace }}
+    namespace: {{ .Namespace }}
     loadbalancerIp: {{ .Nginx.Ingress.LoadBalancerIP }}
     deploymentName: {{ .Nginx.Ingress.DeploymentName }}
-    jenkinsDeploymentName: {{ .Nginx.Ingress.JenkinsDeploymentName }}
-    jenkinsUriPrefix: {{ .Nginx.Ingress.JenkinsUriPrefix }}
+    jenkinsDeploymentName: {{ .JenkinsSetup.DeploymentName }}
+    jenkinsUriPrefix: {{ .JenkinsSetup.JenkinsUriPrefix }}
     containerImage: {{ .Nginx.Ingress.ContainerImage }}
     imagePullSecrets: {{ .Nginx.Ingress.ImagePullSecrets }}
     controllerForNamespace:

@@ -1,18 +1,20 @@
 package project
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"k8s-management-go/app/actions/createprojectactions"
 	"k8s-management-go/app/models"
+	"os"
 	"testing"
 )
 
 // ----- Constants for testing (base configuration)
-const testRootDirectory = "../../../"
-const testProjectName = testRootDirectory + "projects/__k8s_project_test__"
+var testRootDirectory = fmt.Sprintf("..%v..%v..%v", string(os.PathSeparator), string(os.PathSeparator), string(os.PathSeparator))
+var testProjectRootDirectory = "projects"
+var testProjectName = testRootDirectory + testProjectRootDirectory + string(os.PathSeparator) + "__k8s_project_test__"
 
 const testNamespace = "my-namespace"
-const testPvcNamespace = "my-namespace"
 const testConfigJenkinsMasterDefaultUriPrefix = "/jenkins"
 const testConfigJenkinsMasterDeploymentName = "jenkins-master"
 
@@ -45,6 +47,13 @@ const testJenkinsHelmMasterDefaultLabel = "jenkins-master-for-seed"
 
 const testJenkinsHelmMasterDenyAnonymousReadAccess = "true"
 const testJenkinsHelmMasterAdminPassword = "admin"
+const testJenkinsHelmMasterAdminPasswordEncrypted = "$2a$04$UNxiNvJN6R3me9vybVQr/OzpMhgobih8qbxDpGy3lZmmmwc6t48ty"
+const testJenkinsHelmMasterUserPasswordEncrypted = "$2a$04$BFPq6fSa9KGKrlIktz/C8eSFrrG/gglnW1eXWMSjgtCSx36mMOSNm"
+
+const testJcascDockerCredentialsId = "docker-credentials"
+const testJcascMavenCredentialsId = "maven-credentials"
+const testJcascNpmCredentialsId = "npm-credentials"
+const testJcascVcsCredentialsId = "vcs-credentials"
 
 const testJenkinsHelmMasterJcascConfigUrl = "https://raw.githubusercontent.com/Ragin-LundF/k8s-jcasc-project-config/master/{{ .Namespace }}/jcasc_config.yaml"
 
@@ -97,6 +106,13 @@ func testDefaultProjectConfiguration(t *testing.T, setupTestProject bool) {
 	models.AssignToConfiguration("JENKINS_MASTER_DENY_ANONYMOUS_READ_ACCESS", testJenkinsHelmMasterDenyAnonymousReadAccess)
 	models.AssignToConfiguration("JENKINS_MASTER_ADMIN_PASSWORD", testJenkinsHelmMasterAdminPassword)
 	models.AssignToConfiguration("JENKINS_JCASC_CONFIGURATION_URL", testJenkinsHelmMasterJcascConfigUrl)
+	models.AssignToConfiguration("JENKINS_MASTER_ADMIN_PASSWORD_ENCRYPTED", testJenkinsHelmMasterAdminPasswordEncrypted)
+	models.AssignToConfiguration("JENKINS_MASTER_PROJECT_USER_PASSWORD_ENCRYPTED", testJenkinsHelmMasterUserPasswordEncrypted)
+
+	models.AssignToConfiguration("KUBERNETES_DOCKER_REGISTRY_CREDENTIALS_ID", testJcascDockerCredentialsId)
+	models.AssignToConfiguration("MAVEN_REPOSITORY_SECRETS_CREDENTIALS_ID", testJcascMavenCredentialsId)
+	models.AssignToConfiguration("NPM_REPOSITORY_SECRETS_CREDENTIALS_ID", testJcascNpmCredentialsId)
+	models.AssignToConfiguration("VCS_REPOSITORY_SECRETS_CREDENTIALS_ID", testJcascVcsCredentialsId)
 
 	if setupTestProject {
 		var err = createprojectactions.ActionCreateNewProjectDirectory(testProjectName)

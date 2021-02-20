@@ -18,7 +18,6 @@ type jenkinsHelmMaster struct {
 	CustomJenkinsLabels                          string
 	AuthorizationStrategyDenyAnonymousReadAccess string
 	AdminPassword                                string
-	JenkinsUriPrefix                             string
 	SidecarsConfigAutoReloadFolder               string
 }
 
@@ -55,7 +54,6 @@ func newDefaultJenkinsHelmMaster() jenkinsHelmMaster {
 		ImagePullSecretName:            configuration.Jenkins.Helm.Master.Container.PullSecretName,
 		CustomJenkinsLabels:            configuration.Jenkins.Helm.Master.Label,
 		AdminPassword:                  configuration.Jenkins.Helm.Master.AdminPassword,
-		JenkinsUriPrefix:               configuration.Jenkins.Helm.Master.DefaultURIPrefix,
 		SidecarsConfigAutoReloadFolder: configuration.Jenkins.JCasC.ConfigurationURL,
 		AuthorizationStrategyDenyAnonymousReadAccess: configuration.Jenkins.Helm.Master.DenyAnonymousReadAccess,
 	}

@@ -1,5 +1,5 @@
 jenkins:
-  systemMessage: "{{ .JCasc.SystemMessage }}"
+  systemMessage: "##K8S_MGMT_JENKINS_SYSTEM_MESSAGE##"
 
   authorizationStrategy:
     roleBased:
@@ -31,19 +31,19 @@ jenkins:
       allowsSignup: false
       users:
         - id: "admin"
-          password: "#jbcrypt:'{{ .JCasc.SecurityRealm.LocalUsers.AdminPassword }}'"
+          password: "#jbcrypt:##JENKINS_MASTER_ADMIN_PASSWORD_ENCRYPTED##"
         - id: "project-user"
-          password: "#jbcrypt:'{{ .JCasc.SecurityRealm.LocalUsers.UserPassword }}'"
+          password: "#jbcrypt:##JENKINS_MASTER_PROJECT_USER_PASSWORD_ENCRYPTED##"
 
   clouds:
     - kubernetes:
         name: "jenkins-build-slaves"
         serverUrl: ""
-        serverCertificate: {{ .JCasc.Clouds.ServerCertificate }}
+        serverCertificate: ##KUBERNETES_SERVER_CERTIFICATE##
         directConnection: false
         skipTlsVerify: true
-        namespace: "{{ .Namespace }}"
-        jenkinsUrl: "http://{{ .JenkinsSetup.DeploymentName }}:8080"
+        namespace: "##NAMESPACE##"
+        jenkinsUrl: "http://##JENKINS_MASTER_DEPLOYMENT_NAME##:8080"
         maxRequestsPerHostStr: 64
         retentionTimeout: 5
         connectTimeout: 10
@@ -54,13 +54,13 @@ jenkins:
           # Add this name as 'inheritFrom: "pipeline-base-container"' to the other container to inherit all defined containers of
           # this POD.
           - name: "pipeline-base-container"
-            serviceAccount: "{{ .JenkinsSetup.DeploymentName }}-agent"
+            serviceAccount: "##JENKINS_MASTER_DEPLOYMENT_NAME##-agent"
             instanceCap: 10
             idleMinutes: 0
             slaveConnectTimeout: "500"
             label: "pipeline-base-container"
             imagePullSecrets:
-              - name: {{ .JCasc.CredentialIDs.DockerRegistryCredentialsID }}
+              - name: ##KUBERNETES_DOCKER_REGISTRY_CREDENTIALS_ID##
             # add the Docker sockets to the hostPathVolume, that we can use docker commands
             volumes:
               - hostPathVolume:
@@ -106,17 +106,17 @@ jenkins:
             envVars:
               - envVar:
                   key: "JENKINS_URL"
-                  value: "http://{{ .JenkinsSetup.DeploymentName }}:8080{{ .JenkinsSetup.JenkinsUriPrefix }}"
+                  value: "http://##JENKINS_MASTER_DEPLOYMENT_NAME##:8080##JENKINS_MASTER_DEFAULT_URI_PREFIX##"
               - envVar:
                   key: "JENKINS_TUNNEL"
-                  value: "{{ .JenkinsSetup.DeploymentName }}-agent:50000"
+                  value: "##JENKINS_MASTER_DEPLOYMENT_NAME##-agent:50000"
 
 # JcasC configuration for unclassified plugins
 unclassified:
   # URL under which the Jenkins is reachable.
   # This URL will also be used for notifying the VCS like Github or Bitbucket to link to build number results.
   location:
-    url: "http://##JENKINS_URL##{{ .JenkinsSetup.JenkinsUriPrefix }}"
+    url: "http://##JENKINS_URL####JENKINS_MASTER_DEFAULT_URI_PREFIX##"
 
   # Definition of the metrics plugin to monitor Jenkins via Prometheus
   metricsaccesskey:
@@ -143,7 +143,7 @@ unclassified:
               git:
                 id: "my-pipeline-library"
                 remote: "https://github.com/Ragin-LundF/k8s-jcasc-pipeline-library.git"
-                credentialsId: "{{ .JCasc.CredentialIDs.VcsRepositoryCredentialsID }}"
+                credentialsId: "##VCS_REPOSITORY_SECRETS_CREDENTIALS_ID##"
 
   # Definition of a sonar server if required
   sonarglobalconfiguration:
@@ -170,7 +170,7 @@ unclassified:
 jobs:
   - script: >
       job('seed_job') {
-          label('{{ .JenkinsHelmValues.Master.CustomJenkinsLabels }}')
+          label('##JENKINS_MASTER_DEFAULT_LABEL##')
           logRotator {
               numToKeep(5)
               artifactNumToKeep(1)
@@ -179,7 +179,7 @@ jobs:
               git {
                   remote {
                       url('##JENKINS_JOBDSL_SEED_JOB_SCRIPT_URL##')
-                      credentials("{{ .JCasc.CredentialIDs.VcsRepositoryCredentialsID }}")
+                      credentials("##VCS_REPOSITORY_SECRETS_CREDENTIALS_ID##")
                   }
                   extensions {
                     relativeTargetDirectory('jobdslscript')
@@ -188,7 +188,7 @@ jobs:
               git {
                   remote {
                       url('##PROJECT_JENKINS_JOB_DEFINITION_REPOSITORY##')
-                      credentials("{{ .JCasc.CredentialIDs.VcsRepositoryCredentialsID }}")
+                      credentials("##VCS_REPOSITORY_SECRETS_CREDENTIALS_ID##")
                   }
                   extensions {
                     relativeTargetDirectory('jobdefinition')

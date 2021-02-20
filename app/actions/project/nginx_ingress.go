@@ -14,12 +14,9 @@ type nginx struct {
 
 // ingress : Model which describes the Nginx Ingress controller
 type ingress struct {
-	Namespace                    string
 	AnnotationIngressClass       string
 	LoadBalancerIP               string
 	DeploymentName               string
-	JenkinsDeploymentName        string
-	JenkinsUriPrefix             string
 	ContainerImage               string
 	ImagePullSecrets             string
 	EnableControllerForNamespace bool
@@ -63,17 +60,12 @@ func NewNginx(namespace string, loadBalancerIP *string, annotationExtDnsName *st
 	}
 
 	return &nginx{
-		Ingress:      newDefaultIngress(namespace, assignedLoadBalancerIP),
+		Ingress:      newDefaultIngress(assignedLoadBalancerIP),
 		LoadBalancer: newDefaultLoadBalancer(namespace, annotationExtDnsName),
 	}
 }
 
 // ----- Setter to manipulate the default object
-// SetIngressNamespace : Set namespace to ingress controller
-func (nginx *nginx) SetIngressNamespace(namespace string) {
-	nginx.Ingress.Namespace = namespace
-}
-
 // SetIngressLoadBalancerIPAddress : Set load balancer IP address to ingress controller
 func (nginx *nginx) SetIngressLoadBalancerIPAddress(ipAddress string) {
 	nginx.Ingress.LoadBalancerIP = ipAddress
@@ -81,15 +73,12 @@ func (nginx *nginx) SetIngressLoadBalancerIPAddress(ipAddress string) {
 
 // ----- internal methods
 // newDefaultMetadata : create a new default ingress structure
-func newDefaultIngress(namespace string, loadBalancerIP string) ingress {
+func newDefaultIngress(loadBalancerIP string) ingress {
 	var configuration = models.GetConfiguration()
 	return ingress{
-		Namespace:                    namespace,
 		LoadBalancerIP:               loadBalancerIP,
 		AnnotationIngressClass:       configuration.Nginx.Ingress.AnnotationClass,
 		DeploymentName:               configuration.Nginx.Ingress.Controller.DeploymentName,
-		JenkinsDeploymentName:        configuration.Jenkins.Helm.Master.DeploymentName,
-		JenkinsUriPrefix:             configuration.Jenkins.Helm.Master.DefaultURIPrefix,
 		ContainerImage:               configuration.Nginx.Ingress.Controller.Container.Name,
 		ImagePullSecrets:             configuration.Nginx.Ingress.Controller.Container.PullSecret,
 		EnableControllerForNamespace: configuration.Nginx.Ingress.Controller.Container.Namespace,

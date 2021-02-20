@@ -24,7 +24,7 @@ master:
   runAsUser: 1000
   fsGroup: 1000
   # because we want to "proxy" jenkins via ingress routing, we have to set the Uri Prefix here
-  jenkinsUriPrefix: "{{ .JenkinsHelmValues.Master.JenkinsUriPrefix }}"
+  jenkinsUriPrefix: "{{ .JenkinsSetup.JenkinsUriPrefix }}"
   installPlugins:
     - authorize-project:latest
     - blueocean:latest

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/loggingstate"
 	"os"
@@ -16,14 +17,23 @@ type Project struct {
 	JenkinsHelmValues     *jenkinsHelmValues
 	PersistentVolumeClaim *persistentVolumeClaim
 	Nginx                 *nginx
+	JCasc                 *jcascConfig
+	JenkinsSetup          *jenkinsSetup
+}
+
+type jenkinsSetup struct {
+	JenkinsUriPrefix string
+	DeploymentName   string
 }
 
 // NewProject : create a new Project
 func NewProject(namespace string) Project {
 	return Project{
 		Namespace:             namespace,
+		JenkinsSetup:          newJenkinsSetup(),
 		JenkinsHelmValues:     NewJenkinsHelmValues(),
-		PersistentVolumeClaim: NewPersistentVolumeClaim(namespace),
+		JCasc:                 NewJCascConfig(),
+		PersistentVolumeClaim: NewPersistentVolumeClaim(),
 		Nginx:                 NewNginx(namespace, nil, nil),
 	}
 }
@@ -81,4 +91,14 @@ func processWithTemplateEngine(filename string, project Project) (err error) {
 	}
 
 	return nil
+}
+
+// newJenkinsSetup : Common Jenkins setup
+func newJenkinsSetup() *jenkinsSetup {
+	var configuration = models.GetConfiguration()
+
+	return &jenkinsSetup{
+		JenkinsUriPrefix: configuration.Jenkins.Helm.Master.DefaultURIPrefix,
+		DeploymentName:   configuration.Jenkins.Helm.Master.DeploymentName,
+	}
 }

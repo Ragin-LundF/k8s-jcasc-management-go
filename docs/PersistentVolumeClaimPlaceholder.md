@@ -14,9 +14,6 @@ It is also possible to use the placeholders in other templates.
 | Placeholder | Description | Source |
 | --- | --- | --- |
 | `{{ .PersistentVolumeClaim.Metadata.Name }}` | Placeholder for `metadata.name` for PVC | user input |
-| `{{ .PersistentVolumeClaim.Metadata.Namespace }}` | Placeholder for `metadata.namespace` for PVC | user input |
-| `{{ .PersistentVolumeClaim.Metadata.Labels.Name }}` | Placeholder for `metadata.labels.app.kubernetes.io/name` for PVC | configuration `JENKINS_MASTER_DEPLOYMENT_NAME` |
-| `{{ .PersistentVolumeClaim.Metadata.Labels.Component }}` | Placeholder for `metadata.labels.app.kubernetes.io/component` for PVC | configuration `JENKINS_MASTER_DEPLOYMENT_NAME` |
 | `{{ .PersistentVolumeClaim.Spec.AccessMode }}` | Placeholder for `metadata.spec.accessModes` for PVC | configuration `JENKINS_MASTER_PERSISTENCE_ACCESS_MODE` |
 | `{{ .PersistentVolumeClaim.Spec.Resources.StorageSize }}` | Placeholder for `metadata.spec.resources.requests.storage` for PVC | configuration `JENKINS_MASTER_PERSISTENCE_STORAGE_SIZE` |
 | `{{ .PersistentVolumeClaim.Spec.StorageClassName }}` | Placeholder for `metadata.spec.storageClassName` for PVC | configuration `JENKINS_MASTER_PERSISTENCE_STORAGE_CLASS` |

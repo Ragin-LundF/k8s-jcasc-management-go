@@ -10,11 +10,8 @@ It is also possible to use the placeholders in other templates.
 | Placeholder | Description | Source |
 | --- | --- | --- |
 | `{{ .Nginx.Ingress.AnnotationIngressClass }}` | Placeholder for `ingress.annotationIngressClass` for Nginx Ingress Controller | configuration `NGINX_INGRESS_ANNOTATION_CLASS` |
-| `{{ .Nginx.Ingress.Namespace }}` | Placeholder for `ingress.namespace` for Nginx Ingress Controller | user input |
 | `{{ .Nginx.Ingress.LoadBalancerIP }}` | Placeholder for `ingress.loadbalancerIp` for Nginx Ingress Controller | user input |
 | `{{ .Nginx.Ingress.DeploymentName }}` | Placeholder for `ingress.deploymentName` for Nginx Ingress Controller | configuration `NGINX_INGRESS_DEPLOYMENT_NAME` |
-| `{{ .Nginx.Ingress.JenkinsDeploymentName }}` | Placeholder for `ingress.jenkinsDeploymentName` for Nginx Ingress Controller | configuration `JENKINS_MASTER_DEPLOYMENT_NAME` |
-| `{{ .Nginx.Ingress.JenkinsUriPrefix }}` | Placeholder for `ingress.jenkinsUriPrefix` for Nginx Ingress Controller | configuration `JENKINS_MASTER_DEFAULT_URI_PREFIX` |
 | `{{ .Nginx.Ingress.ContainerImage }}` | Placeholder for `ingress.containerImage` for Nginx Ingress Controller | configuration `NGINX_INGRESS_CONTROLLER_CONTAINER_IMAGE` |
 | `{{ .Nginx.Ingress.ImagePullSecrets }}` | Placeholder for `ingress.imagePullSecrets` for Nginx Ingress Controller | configuration `NGINX_INGRESS_CONTROLLER_CONTAINER_PULL_SECRETS` |
 | `{{ .Nginx.Ingress.EnableControllerForNamespace }}` | Placeholder for `ingress.controllerForNamespace.enabled` for Nginx Ingress Controller | configuration `NGINX_INGRESS_CONTROLLER_FOR_NAMESPACE` |
