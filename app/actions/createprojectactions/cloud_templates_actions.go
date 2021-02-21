@@ -38,25 +38,11 @@ func ActionProcessTemplateCloudTemplates(projectDirectory string, cloudTemplateF
 	if files.FileOrDirectoryExists(targetFile) {
 		// first check if there are templates which should be processed
 		if len(cloudTemplateFiles) > 0 {
-			// prepare vars and directory
-			var cloudTemplateContent string
-			var cloudTemplatePath = files.AppendPath(models.GetProjectTemplateDirectory(), constants.DirProjectTemplateCloudTemplates)
-
-			// first read every template into a variable
-			for _, cloudTemplate := range cloudTemplateFiles {
-				cloudTemplateFileWithPath := files.AppendPath(cloudTemplatePath, cloudTemplate)
-				read, err := ioutil.ReadFile(cloudTemplateFileWithPath)
-				if err != nil {
-					loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Unable to read cloud template [%s]", cloudTemplateFileWithPath), err.Error())
-					return false, err
-				}
-				cloudTemplateContent = cloudTemplateContent + constants.NewLine + string(read)
+			cloudTemplateContent, err := ActionReadCloudTemplatesAsString(cloudTemplateFiles)
+			if err != nil {
+				loggingstate.AddErrorEntryAndDetails("  -> Unable to read cloud template files", err.Error())
+				return false, err
 			}
-
-			// Prefix the lines with spaces for correct yaml template
-			prefixReader := prefixer.New(strings.NewReader(cloudTemplateContent), "          ")
-			buffer, _ := ioutil.ReadAll(prefixReader)
-			cloudTemplateContent = string(buffer)
 
 			// replace target template
 			success, err = files.ReplaceStringInFile(targetFile, constants.TemplateJenkinsCloudTemplates, cloudTemplateContent)
@@ -74,4 +60,28 @@ func ActionProcessTemplateCloudTemplates(projectDirectory string, cloudTemplateF
 		}
 	}
 	return true, nil
+}
+
+// ActionReadCloudTemplatesAsString : Rad cloud templates as string for further processing
+func ActionReadCloudTemplatesAsString(cloudTemplateFiles []string) (cloudTemplateContent string, err error) {
+	// prepare vars and directory
+	var cloudTemplatePath = files.AppendPath(models.GetProjectTemplateDirectory(), constants.DirProjectTemplateCloudTemplates)
+
+	// first read every template into a variable
+	for _, cloudTemplate := range cloudTemplateFiles {
+		cloudTemplateFileWithPath := files.AppendPath(cloudTemplatePath, cloudTemplate)
+		read, err := ioutil.ReadFile(cloudTemplateFileWithPath)
+		if err != nil {
+			loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Unable to read cloud template [%s]", cloudTemplateFileWithPath), err.Error())
+			return "", err
+		}
+		cloudTemplateContent = cloudTemplateContent + constants.NewLine + string(read)
+	}
+
+	// Prefix the lines with spaces for correct yaml template
+	prefixReader := prefixer.New(strings.NewReader(cloudTemplateContent), "          ")
+	buffer, _ := ioutil.ReadAll(prefixReader)
+	cloudTemplateContent = string(buffer)
+
+	return cloudTemplateContent, nil
 }

@@ -1,11 +1,11 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: {{ .PersistentVolumeClaim.Metadata.Name }}
-  namespace: {{ .Namespace }}
+  name: {{ .Base.ExistingVolumeClaim }}
+  namespace: {{ .Base.Namespace }}
   labels:
-    "app.kubernetes.io/name": "{{ .JenkinsSetup.DeploymentName }}"
-    "app.kubernetes.io/component": "{{ .JenkinsSetup.DeploymentName }}"
+    "app.kubernetes.io/name": "{{ .Base.DeploymentName }}"
+    "app.kubernetes.io/component": "{{ .Base.DeploymentName }}"
 spec:
   accessModes:
     - {{ .PersistentVolumeClaim.Spec.AccessMode }}

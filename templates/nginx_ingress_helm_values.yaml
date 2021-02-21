@@ -1,11 +1,11 @@
 k8sJenkinsMgmt:
   ingress:
     annotationIngressClass: {{ .Nginx.Ingress.AnnotationIngressClass }}
-    namespace: {{ .Namespace }}
-    loadbalancerIp: {{ .Nginx.Ingress.LoadBalancerIP }}
+    namespace: {{ .Base.Namespace }}
+    loadbalancerIp: {{ .Base.IPAddress }}
     deploymentName: {{ .Nginx.Ingress.DeploymentName }}
-    jenkinsDeploymentName: {{ .JenkinsSetup.DeploymentName }}
-    jenkinsUriPrefix: {{ .JenkinsSetup.JenkinsUriPrefix }}
+    jenkinsDeploymentName: {{ .Base.DeploymentName }}
+    jenkinsUriPrefix: {{ .Base.JenkinsUriPrefix }}
     containerImage: {{ .Nginx.Ingress.ContainerImage }}
     imagePullSecrets: {{ .Nginx.Ingress.ImagePullSecrets }}
     controllerForNamespace:
@@ -21,5 +21,5 @@ k8sJenkinsMgmt:
         targetPort: {{ .Nginx.LoadBalancer.Ports.HTTPS.TargetPort }}
     annotations:
       enabled: {{ .Nginx.LoadBalancer.Annotations.Enabled }}
-      external_dns_hostname: "{{ .Nginx.LoadBalancer.Annotations.ExternalDnsHostname }}"
+      external_dns_hostname: "{{ .Base.JenkinsURL }}"
       external_dns_ttl: {{ .Nginx.LoadBalancer.Annotations.ExternalDnsTtl }}

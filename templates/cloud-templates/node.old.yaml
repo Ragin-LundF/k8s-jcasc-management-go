@@ -2,14 +2,14 @@
 # This POD inherits from 'pipeline-base-container', which results in parallel deployment of all containers.
 # With this, all containers, that are defined under 'pipeline-base-container' can also be used in the pipeline.
 - name: "node"
-  serviceAccount: "{{ .Base.DeploymentName }}-agent"
+  serviceAccount: "##JENKINS_MASTER_DEPLOYMENT_NAME##-agent"
   instanceCap: 10
   idleMinutes: 0
   slaveConnectTimeout: "500"
   label: "node"
   inheritFrom: "pipeline-base-container"
   imagePullSecrets:
-    - name: {{ .JCasc.CredentialIDs.DockerRegistryCredentialsID }}
+    - name: ##KUBERNETES_DOCKER_REGISTRY_CREDENTIALS_ID##
   containers:
     - name: "node"
       image: "node:latest"
@@ -28,9 +28,9 @@
       envVars:
         - secretEnvVar:
             key: 'NPM_USERNAME'
-            secretName: '{{ .JCasc.CredentialIDs.NpmRepositorySecretsCredentialsID }}'
+            secretName: '##NPM_REPOSITORY_SECRETS_CREDENTIALS_ID##'
             secretKey: 'username'
         - secretEnvVar:
             key: 'NPM_PASSWORD'
-            secretName: '{{ .JCasc.CredentialIDs.NpmRepositorySecretsCredentialsID }}'
+            secretName: '##NPM_REPOSITORY_SECRETS_CREDENTIALS_ID##'
             secretKey: 'password'

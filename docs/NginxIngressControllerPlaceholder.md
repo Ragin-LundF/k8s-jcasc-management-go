@@ -10,7 +10,6 @@ It is also possible to use the placeholders in other templates.
 | Placeholder | Description | Source |
 | --- | --- | --- |
 | `{{ .Nginx.Ingress.AnnotationIngressClass }}` | Placeholder for `ingress.annotationIngressClass` for Nginx Ingress Controller | configuration `NGINX_INGRESS_ANNOTATION_CLASS` |
-| `{{ .Nginx.Ingress.LoadBalancerIP }}` | Placeholder for `ingress.loadbalancerIp` for Nginx Ingress Controller | user input |
 | `{{ .Nginx.Ingress.DeploymentName }}` | Placeholder for `ingress.deploymentName` for Nginx Ingress Controller | configuration `NGINX_INGRESS_DEPLOYMENT_NAME` |
 | `{{ .Nginx.Ingress.ContainerImage }}` | Placeholder for `ingress.containerImage` for Nginx Ingress Controller | configuration `NGINX_INGRESS_CONTROLLER_CONTAINER_IMAGE` |
 | `{{ .Nginx.Ingress.ImagePullSecrets }}` | Placeholder for `ingress.imagePullSecrets` for Nginx Ingress Controller | configuration `NGINX_INGRESS_CONTROLLER_CONTAINER_PULL_SECRETS` |
@@ -21,5 +20,4 @@ It is also possible to use the placeholders in other templates.
 | `{{ .Nginx.LoadBalancer.Ports.HTTPS.Port }}` | Placeholder for `loadbalancer.ports.https.port` for Nginx Ingress Controller load balancer | configuration `NGINX_LOADBALANCER_HTTPS_PORT` |
 | `{{ .Nginx.LoadBalancer.Ports.HTTPS.TargetPort }}` | Placeholder for `loadbalancer.ports.https.targetPort` for Nginx Ingress Controller load balancer | configuration `NGINX_LOADBALANCER_HTTPS_TARGETPORT` |
 | `{{ .Nginx.LoadBalancer.Annotations.Enabled }}` | Placeholder for `loadbalancer.annotations.enabled` for Nginx Ingress Controller load balancer | configuration `NGINX_LOADBALANCER_ANNOTATIONS_ENABLED` |
-| `{{ .Nginx.LoadBalancer.Annotations.ExternalDnsHostname }}` | Placeholder for `loadbalancer.annotations.external_dns_hostname` for Nginx Ingress Controller load balancer | If no domain was set by the user, the default is the `<namespace>`.<configuration `NGINX_LOADBALANCER_ANNOTATIONS_EXT_DNS_HOSTNAME`>. Else it uses the entered domain. |
 | `{{ .Nginx.LoadBalancer.Annotations.ExternalDnsTtl }}` | Placeholder for `loadbalancer.annotations.external_dns_ttl` for Nginx Ingress Controller load balancer | configuration `NGINX_LOADBALANCER_ANNOTATIONS_EXT_DNS_TTL` |

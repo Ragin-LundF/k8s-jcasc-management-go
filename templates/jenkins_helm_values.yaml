@@ -24,7 +24,7 @@ master:
   runAsUser: 1000
   fsGroup: 1000
   # because we want to "proxy" jenkins via ingress routing, we have to set the Uri Prefix here
-  jenkinsUriPrefix: "{{ .JenkinsSetup.JenkinsUriPrefix }}"
+  jenkinsUriPrefix: "{{ .Base.JenkinsUriPrefix }}"
   installPlugins:
     - authorize-project:latest
     - blueocean:latest
@@ -63,7 +63,7 @@ master:
       folder: "{{ .JenkinsHelmValues.Master.SidecarsConfigAutoReloadFolder }}"
 
 persistence:
-  existingClaim: {{ .JenkinsHelmValues.Persistence.ExistingClaim }}
+  existingClaim: {{ .Base.ExistingVolumeClaim }}
   storageClass: {{ .JenkinsHelmValues.Persistence.StorageClass }}
   accessMode: {{ .JenkinsHelmValues.Persistence.AccessMode }}
   size: {{ .JenkinsHelmValues.Persistence.Size }}

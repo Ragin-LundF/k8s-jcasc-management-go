@@ -11,18 +11,6 @@ func TestCreateJenkinsHelmValues(t *testing.T) {
 	var jenkinsHelmValues = NewJenkinsHelmValues()
 
 	assertDefaultJenkinsHelmValues(jenkinsHelmValues, t)
-	assert.Empty(t, jenkinsHelmValues.Persistence.ExistingClaim)
-}
-
-func TestCreateJenkinsHelmValuesWithCustomValues(t *testing.T) {
-	var existingPvc = "existing-pvc"
-	testDefaultProjectConfiguration(t, false)
-
-	var jenkinsHelmValues = NewJenkinsHelmValues()
-	jenkinsHelmValues.SetExistingClaim(existingPvc)
-
-	assertDefaultJenkinsHelmValues(jenkinsHelmValues, t)
-	assert.Equal(t, existingPvc, jenkinsHelmValues.Persistence.ExistingClaim)
 }
 
 func assertDefaultJenkinsHelmValues(jenkinsHelmValues *jenkinsHelmValues, t *testing.T) {

@@ -39,22 +39,22 @@ jenkins:
     - kubernetes:
         name: "jenkins-build-slaves"
         serverUrl: ""
-        serverCertificate: {{ .JCasc.Clouds.ServerCertificate }}
+        serverCertificate: {{ .JCasc.Clouds.Kubernetes.ServerCertificate }}
         directConnection: false
         skipTlsVerify: true
-        namespace: "{{ .Namespace }}"
-        jenkinsUrl: "http://{{ .JenkinsSetup.DeploymentName }}:8080"
+        namespace: "{{ .Base.Namespace }}"
+        jenkinsUrl: "http://{{ .Base.DeploymentName }}:8080"
         maxRequestsPerHostStr: 64
         retentionTimeout: 5
         connectTimeout: 10
         readTimeout: 20
         templates:
-##K8S_MGMT_JENKINS_CLOUD_TEMPLATES##
+{{ .JCasc.Clouds.Kubernetes.Templates.AdditionalCloudTemplates }}
           # POD with pipeline base container. Add here container, that you need in multiple build environments (like docker).
           # Add this name as 'inheritFrom: "pipeline-base-container"' to the other container to inherit all defined containers of
           # this POD.
           - name: "pipeline-base-container"
-            serviceAccount: "{{ .JenkinsSetup.DeploymentName }}-agent"
+            serviceAccount: "{{ .Base.DeploymentName }}-agent"
             instanceCap: 10
             idleMinutes: 0
             slaveConnectTimeout: "500"
@@ -106,17 +106,17 @@ jenkins:
             envVars:
               - envVar:
                   key: "JENKINS_URL"
-                  value: "http://{{ .JenkinsSetup.DeploymentName }}:8080{{ .JenkinsSetup.JenkinsUriPrefix }}"
+                  value: "http://{{ .Base.DeploymentName }}:8080{{ .Base.JenkinsUriPrefix }}"
               - envVar:
                   key: "JENKINS_TUNNEL"
-                  value: "{{ .JenkinsSetup.DeploymentName }}-agent:50000"
+                  value: "{{ .Base.DeploymentName }}-agent:50000"
 
 # JcasC configuration for unclassified plugins
 unclassified:
   # URL under which the Jenkins is reachable.
   # This URL will also be used for notifying the VCS like Github or Bitbucket to link to build number results.
   location:
-    url: "http://##JENKINS_URL##{{ .JenkinsSetup.JenkinsUriPrefix }}"
+    url: "http://{{ .Base.JenkinsURL }}{{ .Base.JenkinsUriPrefix }}"
 
   # Definition of the metrics plugin to monitor Jenkins via Prometheus
   metricsaccesskey:
@@ -162,6 +162,7 @@ unclassified:
           skipScmCause: false
           skipUpstreamCause: false
 
+{{ if .JCasc.JobsConfig.JobsAvailable }}
 # JobDSL definition of the seed-job.
 # This job creates all other jobs from a Bitbucket repository.
 # With this mechanism, it is possible to have a simple job definition in your VCS and there is no need to make
@@ -178,7 +179,7 @@ jobs:
           multiscm {
               git {
                   remote {
-                      url('##JENKINS_JOBDSL_SEED_JOB_SCRIPT_URL##')
+                      url('{{ .JCasc.JobsConfig.JobsSeedRepository}}')
                       credentials("{{ .JCasc.CredentialIDs.VcsRepositoryCredentialsID }}")
                   }
                   extensions {
@@ -187,7 +188,7 @@ jobs:
               }
               git {
                   remote {
-                      url('##PROJECT_JENKINS_JOB_DEFINITION_REPOSITORY##')
+                      url('{{ .JCasc.JobsConfig.JobsDefinitionRepository }}')
                       credentials("{{ .JCasc.CredentialIDs.VcsRepositoryCredentialsID }}")
                   }
                   extensions {
@@ -205,3 +206,4 @@ jobs:
               scm('* * * * *')
           }
       }
+{{ end }}

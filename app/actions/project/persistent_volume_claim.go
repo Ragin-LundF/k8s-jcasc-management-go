@@ -7,13 +7,7 @@ import (
 // ----- Structures
 // persistentVolumeClaim : Model which describes the persistent volume claim (PVC)
 type persistentVolumeClaim struct {
-	Metadata pvcMetadata
-	Spec     pvcSpec
-}
-
-// pvcMetadata : PVC Metadata
-type pvcMetadata struct {
-	Name string
+	Spec pvcSpec
 }
 
 // pvcSpec : PVC specification
@@ -31,25 +25,10 @@ type pvcSpecResources struct {
 // NewPersistentVolumeClaim : creates a new instance of PersistentVolumeClaim
 func NewPersistentVolumeClaim() *persistentVolumeClaim {
 	var pvc = &persistentVolumeClaim{
-		Metadata: newDefaultMetadata(),
-		Spec:     newDefaultSpec(),
+		Spec: newDefaultSpec(),
 	}
 
 	return pvc
-}
-
-// ----- Setter to manipulate the default object
-// SetMetadataName : Set PVC Name to Metadata
-func (pvc *persistentVolumeClaim) SetMetadataName(pvcName string) {
-	pvc.Metadata.Name = pvcName
-}
-
-// ----- internal methods
-// newDefaultMetadata : create a new Metadata object
-func newDefaultMetadata() pvcMetadata {
-	return pvcMetadata{
-		Name: "",
-	}
 }
 
 // newDefaultSpec : create new default spec for PVC

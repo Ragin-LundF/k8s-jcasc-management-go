@@ -9,20 +9,7 @@ import (
 func TestCreateNginx(t *testing.T) {
 	testDefaultProjectConfiguration(t, false)
 
-	var nginx = NewNginx(testNamespace, nil, nil)
-
-	assert.Empty(t, nginx.Ingress.LoadBalancerIP)
-	assertDefaultNginxConfiguration(nginx, t)
-}
-
-func TestCreateNginxWithCustomConfig(t *testing.T) {
-	const customIPAddress = "127.0.0.1"
-	testDefaultProjectConfiguration(t, false)
-
-	var nginx = NewNginx(testNamespace, nil, nil)
-	nginx.SetIngressLoadBalancerIPAddress(customIPAddress)
-
-	assert.Equal(t, customIPAddress, nginx.Ingress.LoadBalancerIP)
+	var nginx = NewNginx()
 	assertDefaultNginxConfiguration(nginx, t)
 }
 
@@ -49,7 +36,6 @@ func assertDefaultNginxConfiguration(nginx *nginx, t *testing.T) {
 	assert.Equal(t, expectedLoadBalancerHTTPSTargetPort, nginx.LoadBalancer.Ports.HTTPS.TargetPort)
 	expectedEnableLoadBalancerAnnotation, _ := strconv.ParseBool(testNginxLoadBalancerAnnotationsEnabled)
 	assert.Equal(t, expectedEnableLoadBalancerAnnotation, nginx.LoadBalancer.Annotations.Enabled)
-	assert.Equal(t, testNamespace+"."+testNginxLoadBalancerAnnotationsExtDnsHostname, nginx.LoadBalancer.Annotations.ExternalDnsHostname)
 	expectedNginxLoadBalancerAnnotationsExtDnsTtl, _ := strconv.ParseUint(testNginxLoadBalancerAnnotationsExtDnsTtl, 10, 16)
 	assert.Equal(t, expectedNginxLoadBalancerAnnotationsExtDnsTtl, nginx.LoadBalancer.Annotations.ExternalDnsTtl)
 }

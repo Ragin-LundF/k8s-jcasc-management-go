@@ -55,18 +55,49 @@ const testJcascMavenCredentialsId = "maven-credentials"
 const testJcascNpmCredentialsId = "npm-credentials"
 const testJcascVcsCredentialsId = "vcs-credentials"
 
-const testJenkinsHelmMasterJcascConfigUrl = "https://raw.githubusercontent.com/Ragin-LundF/k8s-jcasc-project-config/master/{{ .Namespace }}/jcasc_config.yaml"
+const testJenkinsHelmMasterJcascConfigUrl = "https://raw.githubusercontent.com/Ragin-LundF/k8s-jcasc-project-config/master/{{ .Base.Namespace }}/jcasc_config.yaml"
 
 func TestProjectTemplates(t *testing.T) {
 	testDefaultProjectConfiguration(t, true)
-	var project = NewProject("my-namespace")
-	project.PersistentVolumeClaim.SetMetadataName("my-pvc-claim")
-	project.JenkinsHelmValues.SetExistingClaim("my-pvc-claim")
+	var cloudTemplates = []string{"gradle_java.yaml", "node.yaml"}
+	var project = NewProject()
+	project.SetNamespace("my-namespace")
 
-	var err = project.ProcessTemplates(testProjectName)
+	// add some default values
+	project.SetJobsSeedRepository("https://my-config.domain.tld/seedJob.git")
+	project.SetJobsDefinitionRepository("https://my-job-repo.domain.tld/jobs.git")
+	project.SetPersistentVolumeClaimExistingName("my-pvc-claim")
+
+	// assign cloud templates
+	var cloudTemplatesString, err = createprojectactions.ActionReadCloudTemplatesAsString(cloudTemplates)
+	assert.Nil(t, err)
+	project.SetCloudKubernetesAdditionalTemplates(cloudTemplatesString)
+
+	err = project.ProcessTemplates(testProjectName)
 	assert.Nil(t, err)
 
 	// _ = os.RemoveAll(testProjectName)
+}
+
+func TestProjectValidationErrorWithEmptyIP(t *testing.T) {
+	testDefaultProjectConfiguration(t, false)
+	models.AssignToConfiguration("NGINX_LOADBALANCER_ANNOTATIONS_ENABLED", "false")
+
+	var project = NewProject()
+	project.SetNamespace("my-namespace")
+	var err = project.validateProject()
+
+	assert.Error(t, err)
+}
+
+func TestProjectValidationErrorWithEmptyNamespace(t *testing.T) {
+	testDefaultProjectConfiguration(t, false)
+
+	var project = NewProject()
+	project.SetIPAddress("127.0.0.1")
+	var err = project.validateProject()
+
+	assert.Error(t, err)
 }
 
 func testDefaultProjectConfiguration(t *testing.T, setupTestProject bool) {

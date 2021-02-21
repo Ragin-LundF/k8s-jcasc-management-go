@@ -23,10 +23,9 @@ type jenkinsHelmMaster struct {
 
 // jenkinsHelmPersistence : Model which describes the persistence section in the helm values
 type jenkinsHelmPersistence struct {
-	ExistingClaim string
-	StorageClass  string
-	AccessMode    string
-	Size          string
+	StorageClass string
+	AccessMode   string
+	Size         string
 }
 
 // NewJenkinsHelmValues : Create new Jenkins Helm values structure
@@ -35,12 +34,6 @@ func NewJenkinsHelmValues() *jenkinsHelmValues {
 		Master:      newDefaultJenkinsHelmMaster(),
 		Persistence: newDefaultJenkinsHelmPersistence(),
 	}
-}
-
-// ----- Setter to manipulate the default object
-// SetExistingClaim : Set existing claim
-func (jenkinsHelmValues *jenkinsHelmValues) SetExistingClaim(existingClaim string) {
-	jenkinsHelmValues.Persistence.ExistingClaim = existingClaim
 }
 
 // ----- internal methods
@@ -62,9 +55,8 @@ func newDefaultJenkinsHelmMaster() jenkinsHelmMaster {
 func newDefaultJenkinsHelmPersistence() jenkinsHelmPersistence {
 	var configuration = models.GetConfiguration()
 	return jenkinsHelmPersistence{
-		ExistingClaim: "",
-		StorageClass:  configuration.Jenkins.Helm.Master.Persistence.StorageClass,
-		AccessMode:    configuration.Jenkins.Helm.Master.Persistence.AccessMode,
-		Size:          configuration.Jenkins.Helm.Master.Persistence.Size,
+		StorageClass: configuration.Jenkins.Helm.Master.Persistence.StorageClass,
+		AccessMode:   configuration.Jenkins.Helm.Master.Persistence.AccessMode,
+		Size:         configuration.Jenkins.Helm.Master.Persistence.Size,
 	}
 }
