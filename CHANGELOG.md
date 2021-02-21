@@ -1,7 +1,40 @@
+# 3.0.0
+## Introducing better template placeholder
+The previous versions were still fully compatible with the deprecated bash version.
+With version 3.0.0 this compatibility is no longer given.
+
+The new template system is based on Golang templates (https://golang.org/pkg/text/template/) and allows a more flexible use, as well as the usual template/placeholder syntax from the Kubernetes environment.
+
+### Migration
+#### GUI
+To make the migration easier, a new item "Tools" has been added to the main menu, which contains the sub-item "Migrate templates v2 -> v3".
+
+This menu item automatically migrates the existing templates by replacing all previous placeholders with the new ones using the "##<placeholder>##" syntax.
+
+#### CLI
+In CLI mode the migration can be started with the argument `-migrate-templates-v2`.
+
+```bash
+go run k8s-jcasc-mgmt.go -cli -migrate-templates-v2
+```
+
+### Placeholder documentation
+Furthermore, the new placeholders are fully documented in [docs/TemplatePlaceholder.md](docs/TemplatePlaceholder.md) and the further linked files.
+
+## Refactored Project Generation
+
+The "Create Project" area has also been completely redesigned under the hood.
+It now relies on a complete project structure instead of individual variables and substructures and associated methods that operate on this structure.
+
+This is also used for the placeholders and associated methods that work on this structure.
+
+This change was urgently needed to add more features like configuration-based deployments (instead of creating the project-specific YAML files) or deploying the tool as a central instance in a Docker container.
+
+
 # 2.9.0 Small improvements and dependency updates
 ## Dependency updates
 This release updates the base libraries.
-Mainly fyne.io to 1.4.3.
+Mainly fyne.io to 2.0.0.
 
 ## Bugfixes
 Fixed a minor bug where the GUI does not initially display the namespace dropdown.

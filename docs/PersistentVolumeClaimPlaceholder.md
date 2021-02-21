@@ -17,4 +17,10 @@ It is also possible to use the placeholders in other templates.
 | `{{ .PersistentVolumeClaim.Spec.Resources.StorageSize }}` | Placeholder for `metadata.spec.resources.requests.storage` for PVC | configuration `JENKINS_MASTER_PERSISTENCE_STORAGE_SIZE` |
 | `{{ .PersistentVolumeClaim.Spec.StorageClassName }}` | Placeholder for `metadata.spec.storageClassName` for PVC | configuration `JENKINS_MASTER_PERSISTENCE_STORAGE_CLASS` |
 
-
+## More placeholder
+| Description | Link |
+| --- | --- |
+| Common base placeholder | [TemplatePlaceholder.md](TemplatePlaceholder.md) |
+| Jenkins configuration as Code (JCasC) `jcasc_config.yaml` placeholder | [JcasCHelmValuesPlaceholder.md](JcasCHelmValuesPlaceholder.md) |
+| Jenkins deployment `jenkins_helm_values.yaml` placeholder | [JenkinsHelmValuesPlaceholder.md](JenkinsHelmValuesPlaceholder.md) |
+| Nginx Ingress Controller `nginx_ingress_helm_values.yaml` placeholder | [NginxIngressControllerPlaceholder.md](NginxIngressControllerPlaceholder.md) |

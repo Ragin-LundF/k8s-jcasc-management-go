@@ -20,4 +20,13 @@ It is also possible to use the placeholders in other templates.
 | `{{ .Nginx.LoadBalancer.Ports.HTTPS.Port }}` | Placeholder for `loadbalancer.ports.https.port` for Nginx Ingress Controller load balancer | configuration `NGINX_LOADBALANCER_HTTPS_PORT` |
 | `{{ .Nginx.LoadBalancer.Ports.HTTPS.TargetPort }}` | Placeholder for `loadbalancer.ports.https.targetPort` for Nginx Ingress Controller load balancer | configuration `NGINX_LOADBALANCER_HTTPS_TARGETPORT` |
 | `{{ .Nginx.LoadBalancer.Annotations.Enabled }}` | Placeholder for `loadbalancer.annotations.enabled` for Nginx Ingress Controller load balancer | configuration `NGINX_LOADBALANCER_ANNOTATIONS_ENABLED` |
+| `{{ .Nginx.LoadBalancer.Annotations.ExternalDnsHostname }}` | Placeholder for `loadbalancer.annotations.external_dns_hostname` for Nginx Ingress Controller load balancer | configuration `NGINX_LOADBALANCER_ANNOTATIONS_EXT_DNS_HOSTNAME` |
 | `{{ .Nginx.LoadBalancer.Annotations.ExternalDnsTtl }}` | Placeholder for `loadbalancer.annotations.external_dns_ttl` for Nginx Ingress Controller load balancer | configuration `NGINX_LOADBALANCER_ANNOTATIONS_EXT_DNS_TTL` |
+
+## More placeholder
+| Description | Link |
+| --- | --- |
+| Common base placeholder | [TemplatePlaceholder.md](TemplatePlaceholder.md) |
+| Jenkins configuration as Code (JCasC) `jcasc_config.yaml` placeholder | [JcasCHelmValuesPlaceholder.md](JcasCHelmValuesPlaceholder.md) |
+| Jenkins deployment `jenkins_helm_values.yaml` placeholder | [JenkinsHelmValuesPlaceholder.md](JenkinsHelmValuesPlaceholder.md) |
+| Persistent Volume Claim `pvc_claim.yaml` placeholder | [PersistentVolumeClaimPlaceholder.md](PersistentVolumeClaimPlaceholder.md) |

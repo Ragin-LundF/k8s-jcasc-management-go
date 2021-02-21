@@ -20,3 +20,11 @@ It is also possible to use the placeholders in other templates.
 | `{{ .JCasc.SecurityRealm.LocalUsers.AdminPassword }}` | Placeholder for `securityRealm.local.users` encrypted admin password | configuration `JENKINS_MASTER_ADMIN_PASSWORD_ENCRYPTED` |
 | `{{ .JCasc.SecurityRealm.LocalUsers.UserPassword }}` | Placeholder for `securityRealm.local.users` encrypted user password | configuration `JENKINS_MASTER_PROJECT_USER_PASSWORD_ENCRYPTED` |
 | `{{ .JCasc.SystemMessage }}` | Placeholder for `systemMessage` which is the Jenkins system welcome message | user input |
+
+## More placeholder
+| Description | Link |
+| --- | --- |
+| Common base placeholder | [TemplatePlaceholder.md](TemplatePlaceholder.md) |
+| Jenkins deployment `jenkins_helm_values.yaml` placeholder | [JenkinsHelmValuesPlaceholder.md](JenkinsHelmValuesPlaceholder.md) |
+| Nginx Ingress Controller `nginx_ingress_helm_values.yaml` placeholder | [NginxIngressControllerPlaceholder.md](NginxIngressControllerPlaceholder.md) |
+| Persistent Volume Claim `pvc_claim.yaml` placeholder | [PersistentVolumeClaimPlaceholder.md](PersistentVolumeClaimPlaceholder.md) |

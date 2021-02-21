@@ -90,6 +90,9 @@ const CommandCreateNamespace = "createNamespace"
 // CommandCreateJenkinsUserPassword : create Jenkins user password command
 const CommandCreateJenkinsUserPassword = "createJenkinsUserPassword"
 
+// CommandTools : tools section in the main menu
+const CommandTools = "tools"
+
 // CommandQuit : quit command
 const CommandQuit = "quit"
 

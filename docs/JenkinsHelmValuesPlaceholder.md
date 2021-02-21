@@ -22,3 +22,10 @@ It is also possible to use the placeholders in other templates.
 | `{{ .JenkinsHelmValues.Persistence.AccessMode }}` | Placeholder for `persistence.accessMode` for Jenkins Helm Values. | configuration `JENKINS_MASTER_PERSISTENCE_ACCESS_MODE` |
 | `{{ .JenkinsHelmValues.Persistence.Size }}` | Placeholder for `persistence.size` for Jenkins Helm Values. | configuration `JENKINS_MASTER_PERSISTENCE_STORAGE_SIZE` |
 
+## More placeholder
+| Description | Link |
+| --- | --- |
+| Common base placeholder | [TemplatePlaceholder.md](TemplatePlaceholder.md) |
+| Jenkins configuration as Code (JCasC) `jcasc_config.yaml` placeholder | [JcasCHelmValuesPlaceholder.md](JcasCHelmValuesPlaceholder.md) |
+| Nginx Ingress Controller `nginx_ingress_helm_values.yaml` placeholder | [NginxIngressControllerPlaceholder.md](NginxIngressControllerPlaceholder.md) |
+| Persistent Volume Claim `pvc_claim.yaml` placeholder | [PersistentVolumeClaimPlaceholder.md](PersistentVolumeClaimPlaceholder.md) |

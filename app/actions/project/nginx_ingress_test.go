@@ -36,6 +36,7 @@ func assertDefaultNginxConfiguration(nginx *nginx, t *testing.T) {
 	assert.Equal(t, expectedLoadBalancerHTTPSTargetPort, nginx.LoadBalancer.Ports.HTTPS.TargetPort)
 	expectedEnableLoadBalancerAnnotation, _ := strconv.ParseBool(testNginxLoadBalancerAnnotationsEnabled)
 	assert.Equal(t, expectedEnableLoadBalancerAnnotation, nginx.LoadBalancer.Annotations.Enabled)
+	assert.Equal(t, testNginxLoadBalancerAnnotationsExtDnsHostname, nginx.LoadBalancer.Annotations.ExternalDnsHostname)
 	expectedNginxLoadBalancerAnnotationsExtDnsTtl, _ := strconv.ParseUint(testNginxLoadBalancerAnnotationsExtDnsTtl, 10, 16)
 	assert.Equal(t, expectedNginxLoadBalancerAnnotationsExtDnsTtl, nginx.LoadBalancer.Annotations.ExternalDnsTtl)
 }

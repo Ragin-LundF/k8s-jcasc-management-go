@@ -41,9 +41,9 @@ type loadBalancerPortsHTTP struct {
 
 // loadBalancerAnnotations : Model which describes the loadBalancer annotations
 type loadBalancerAnnotations struct {
-	Enabled        bool
-	ExternalDnsTtl uint64
-	namespace      string
+	Enabled             bool
+	ExternalDnsHostname string
+	ExternalDnsTtl      uint64
 }
 
 // NewNginx : creates a new instance of Nginx
@@ -82,8 +82,9 @@ func newDefaultLoadBalancerAnnotations() loadBalancerAnnotations {
 	var configuration = models.GetConfiguration()
 
 	return loadBalancerAnnotations{
-		Enabled:        configuration.LoadBalancer.Annotations.Enabled,
-		ExternalDnsTtl: configuration.LoadBalancer.Annotations.ExtDNS.Ttl,
+		Enabled:             configuration.LoadBalancer.Annotations.Enabled,
+		ExternalDnsHostname: configuration.LoadBalancer.Annotations.ExtDNS.Hostname,
+		ExternalDnsTtl:      configuration.LoadBalancer.Annotations.ExtDNS.Ttl,
 	}
 }
 

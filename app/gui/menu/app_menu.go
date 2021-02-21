@@ -3,9 +3,11 @@ package menu
 import (
 	"encoding/json"
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
+	"k8s-management-go/app/actions/migration"
 	"k8s-management-go/app/gui/uiconstants"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/logger"
@@ -15,6 +17,7 @@ import (
 func CreateMainMenu(app fyne.App, window fyne.Window) *fyne.MainMenu {
 	// K8S Management Menu
 	settingsItem := fyne.NewMenuItem("Configuration", func() { printConfiguration(window) })
+	toolsItem := fyne.NewMenuItem("Migrate templates v2 -> v3", func() { migrateTemplatesV2(window) })
 	quitItem := fyne.NewMenuItem("Quit", func() { app.Quit() })
 	darkThemeItem := fyne.NewMenuItem("Dark Theme", func() {
 		app.Settings().SetTheme(theme.DarkTheme())
@@ -28,10 +31,26 @@ func CreateMainMenu(app fyne.App, window fyne.Window) *fyne.MainMenu {
 	mainMenu := fyne.NewMainMenu(
 		// a quit item will be appended to our first menu
 		fyne.NewMenu("K8S Management", fyne.NewMenuItemSeparator(), settingsItem, fyne.NewMenuItemSeparator(), quitItem),
+		fyne.NewMenu("Tools", fyne.NewMenuItemSeparator(), toolsItem),
 		fyne.NewMenu("Theme", darkThemeItem, lightThemeItem),
 	)
 
 	return mainMenu
+}
+
+func migrateTemplatesV2(window fyne.Window) {
+	var progressBar = widget.NewProgressBarInfinite()
+	var progressBox = container.NewVBox(progressBar)
+	var migrationDialog = dialog.NewCustom("Migration", "Please wait...", progressBox, window)
+	progressBar.Show()
+	progressBar.Start()
+	migrationDialog.Show()
+	var information = migration.MigrateTemplatesToV3()
+	migrationDialog.Hide()
+	progressBar.Stop()
+	progressBar.Hide()
+
+	dialog.ShowInformation("Migration", information, window)
 }
 
 func printConfiguration(window fyne.Window) {

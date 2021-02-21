@@ -132,6 +132,25 @@ func CopyFile(src string, dst string) (bytesWritten int64, err error) {
 	return nBytes, err
 }
 
+// LoadTemplateFilesOfDirectory : Load all template files of a directory
+func LoadTemplateFilesOfDirectory(directory string) ([]string, error) {
+	var configFiles = ".yaml"
+	var fileFilter = FileFilter{
+		Suffix: &configFiles,
+	}
+	filesInDirectory, err := ListFilesOfDirectoryWithFilter(directory, &fileFilter)
+	if filesInDirectory == nil {
+		loggingstate.AddErrorEntry("-> Could not find any yaml files in directory [" + directory + "].")
+		return []string{}, err
+	}
+
+	var templateFiles []string
+	for _, file := range *filesInDirectory {
+		templateFiles = append(templateFiles, AppendPath(directory, file))
+	}
+	return templateFiles, nil
+}
+
 // ReplaceStringInFile replaces content in file
 func ReplaceStringInFile(filePath string, stringToReplace string, newString string) (success bool, err error) {
 	log := logger.Log()

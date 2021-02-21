@@ -346,24 +346,24 @@ If this directory does not exist, the `create project` wizard will not ask for o
 
 All files stored there can be selected with the process/menu `create project` and will added to the `jcasc_config.yaml`. 
 
-The file `jcasc_config.yaml` should now have a `##K8S_MGMT_JENKINS_CLOUD_TEMPLATES##` placeholder:
+The file `jcasc_config.yaml` should now have a `{{ .JCasc.Clouds.Kubernetes.Templates.AdditionalCloudTemplates }}` placeholder:
 
 ```yaml
   clouds:
     - kubernetes:
         name: "jenkins-build-slaves"
         serverUrl: ""
-        serverCertificate: ##KUBERNETES_SERVER_CERTIFICATE##
+        serverCertificate: {{ .JCasc.Clouds.Kubernetes.ServerCertificate }}
         directConnection: false
         skipTlsVerify: true
-        namespace: "##NAMESPACE##"
-        jenkinsUrl: "http://##JENKINS_MASTER_DEPLOYMENT_NAME##:8080"
+        namespace: "{{ .Base.Namespace }}"
+        jenkinsUrl: "http://{{ .Base.DeploymentName }}:8080"
         maxRequestsPerHostStr: 64
         retentionTimeout: 5
         connectTimeout: 10
         readTimeout: 20
         templates:
-##K8S_MGMT_JENKINS_CLOUD_TEMPLATES##
+{{ .JCasc.Clouds.Kubernetes.Templates.AdditionalCloudTemplates }}
 ```
 
 **It is important, that the placeholder is at the beginning of the line.**
