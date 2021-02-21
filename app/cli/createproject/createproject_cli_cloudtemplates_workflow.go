@@ -1,7 +1,7 @@
 package createproject
 
 import (
-	"k8s-management-go/app/actions/createprojectactions"
+	"k8s-management-go/app/actions/project"
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/constants"
 )
@@ -10,7 +10,7 @@ import (
 func CloudTemplatesWorkflow() (cloudTemplates []string, err error) {
 	// look if cloud templates are available
 	var cloudTemplateDialog dialogs.CloudTemplatesDialog
-	cloudTemplateFileList := createprojectactions.ActionReadCloudTemplates()
+	cloudTemplateFileList := project.ActionReadCloudTemplates()
 
 	// prepare selection
 	cloudTemplateSelectionList := []string{constants.ActionSelectTemplatesBelowOrContinue}

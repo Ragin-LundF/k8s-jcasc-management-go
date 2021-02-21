@@ -1,4 +1,4 @@
-package createprojectactions
+package project
 
 import (
 	"fmt"
@@ -29,37 +29,6 @@ func ActionReadCloudTemplates() (cloudTemplates []string) {
 	}
 
 	return cloudTemplates
-}
-
-// ActionProcessTemplateCloudTemplates adds cloud templates to project template
-func ActionProcessTemplateCloudTemplates(projectDirectory string, cloudTemplateFiles []string) (success bool, err error) {
-	targetFile := files.AppendPath(projectDirectory, constants.FilenameJenkinsConfigurationAsCode)
-	// if file exists -> try to replace files
-	if files.FileOrDirectoryExists(targetFile) {
-		// first check if there are templates which should be processed
-		if len(cloudTemplateFiles) > 0 {
-			cloudTemplateContent, err := ActionReadCloudTemplatesAsString(cloudTemplateFiles)
-			if err != nil {
-				loggingstate.AddErrorEntryAndDetails("  -> Unable to read cloud template files", err.Error())
-				return false, err
-			}
-
-			// replace target template
-			success, err = files.ReplaceStringInFile(targetFile, constants.TemplateJenkinsCloudTemplates, cloudTemplateContent)
-			if !success || err != nil {
-				loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Unable to replace [%s] in [%s]", constants.TemplateJenkinsCloudTemplates, constants.FilenameJenkinsConfigurationAsCode), err.Error())
-				return false, err
-			}
-		} else {
-			// replace placeholder
-			success, err = files.ReplaceStringInFile(targetFile, constants.TemplateJenkinsCloudTemplates, "")
-			if !success || err != nil {
-				loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Unable to replace [%s] in [%s]", constants.TemplateJenkinsCloudTemplates, constants.FilenameJenkinsConfigurationAsCode), err.Error())
-				return false, err
-			}
-		}
-	}
-	return true, nil
 }
 
 // ActionReadCloudTemplatesAsString : Rad cloud templates as string for further processing

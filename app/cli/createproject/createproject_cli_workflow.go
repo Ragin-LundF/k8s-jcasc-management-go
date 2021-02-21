@@ -1,7 +1,7 @@
 package createproject
 
 import (
-	"k8s-management-go/app/actions/createprojectactions"
+	"k8s-management-go/app/actions/project"
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
@@ -83,14 +83,14 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 	loggingstate.AddInfoEntry(constants.LogWizardStartProcessingTemplates)
 
 	// prepare progressbar
-	var maxProgressCnt = createprojectactions.CountCreateProjectWorkflow
+	var maxProgressCnt = project.CountCreateProjectWorkflow
 	bar := dialogs.CreateProgressBar(constants.ActionCreateProject, maxProgressCnt)
 	progress := dialogs.ProgressBar{
 		Bar: &bar,
 	}
 
 	// Create project
-	err = createprojectactions.ActionProcessProjectCreate(projectConfig, progress.AddCallback)
+	err = project.ActionProcessProjectCreate(projectConfig, progress.AddCallback)
 	if err != nil {
 		loggingstate.AddInfoEntry(constants.LogWizardStartProcessingTemplatesFailed)
 	}

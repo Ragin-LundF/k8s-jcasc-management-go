@@ -58,11 +58,12 @@ type kubernetesTemplates struct {
 
 // NewJCascConfig : Create new Jenkins Helm values structure
 func NewJCascConfig() *jcascConfig {
+	var configuration = models.GetConfiguration()
 	return &jcascConfig{
 		CredentialIDs: newCredentialIDs(),
 		Clouds:        newClouds(),
 		JobsConfig: jobsConfig{
-			JobsSeedRepository:       "",
+			JobsSeedRepository:       configuration.Jenkins.JobDSL.SeedJobScriptURL,
 			JobsDefinitionRepository: "",
 		},
 		SecurityRealm: securityRealm{

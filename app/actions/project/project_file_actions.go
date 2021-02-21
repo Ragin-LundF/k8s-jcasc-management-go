@@ -1,4 +1,4 @@
-package createprojectactions
+package project
 
 import (
 	"fmt"

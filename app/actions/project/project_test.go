@@ -3,7 +3,6 @@ package project
 import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
-	"k8s-management-go/app/actions/createprojectactions"
 	"k8s-management-go/app/models"
 	"os"
 	"strings"
@@ -57,6 +56,7 @@ const testJcascNpmCredentialsId = "npm-credentials"
 const testJcascVcsCredentialsId = "vcs-credentials"
 
 const testJenkinsHelmMasterJcascConfigUrl = "https://raw.githubusercontent.com/Ragin-LundF/k8s-jcasc-project-config/master/{{ .Base.Namespace }}/jcasc_config.yaml"
+const testJenkinsHelmMasterJcascConfigSeedUrl = "https://seed-job.domain.tld/seed.git"
 
 const testJcascKubernetesCertificate = "LN2-test-certificate"
 
@@ -72,14 +72,15 @@ func TestProjectTemplates(t *testing.T) {
 	project.SetPersistentVolumeClaimExistingName("my-pvc-claim")
 
 	// assign cloud templates
-	var cloudTemplatesString, err = createprojectactions.ActionReadCloudTemplatesAsString(cloudTemplates)
+	var cloudTemplatesString, err = ActionReadCloudTemplatesAsString(cloudTemplates)
 	assert.Nil(t, err)
 	project.SetCloudKubernetesAdditionalTemplates(cloudTemplatesString)
 
 	err = project.ProcessTemplates(testProjectName)
 	assert.Nil(t, err)
 
-	// _ = os.RemoveAll(testProjectName)
+	// remove generated templates
+	_ = os.RemoveAll(testProjectName)
 }
 
 func TestProjectValidationErrorWithEmptyIP(t *testing.T) {
@@ -148,12 +149,14 @@ func testDefaultProjectConfiguration(t *testing.T, setupTestProject bool) {
 	models.AssignToConfiguration("NPM_REPOSITORY_SECRETS_CREDENTIALS_ID", testJcascNpmCredentialsId)
 	models.AssignToConfiguration("VCS_REPOSITORY_SECRETS_CREDENTIALS_ID", testJcascVcsCredentialsId)
 
+	models.AssignToConfiguration("JENKINS_JOBDSL_SEED_JOB_SCRIPT_URL", testJenkinsHelmMasterJcascConfigSeedUrl)
+
 	models.AssignToConfiguration("KUBERNETES_SERVER_CERTIFICATE", testJcascKubernetesCertificate)
 
 	if setupTestProject {
-		var err = createprojectactions.ActionCreateNewProjectDirectory(testProjectName)
+		var err = ActionCreateNewProjectDirectory(testProjectName)
 		assert.Nil(t, err)
-		err = createprojectactions.ActionCopyTemplatesToNewDirectory(testProjectName, true, false)
+		err = ActionCopyTemplatesToNewDirectory(testProjectName, true, false)
 		assert.Nil(t, err)
 	}
 }

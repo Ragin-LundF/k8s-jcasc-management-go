@@ -4,7 +4,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
-	"k8s-management-go/app/actions/createprojectactions"
+	"k8s-management-go/app/actions/project"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/gui/uielements"
 	"k8s-management-go/app/models"
@@ -108,6 +108,12 @@ func ScreenCreateFullProject(window fyne.Window) *widget.Form {
 				}
 			}
 
+			// without annotations enabled an IP address is required
+			if !models.GetConfiguration().LoadBalancer.Annotations.Enabled && projectConfig.IPAddress == "" {
+				ipAddressErrorLabel.SetText("If NGINX_LOADBALANCER_ANNOTATIONS_ENABLED is set to false, an IP address is required ")
+				hasErrors = true
+			}
+
 			// validate jenkins system message
 			err = validator.ValidateJenkinsSystemMessage(projectConfig.JenkinsSystemMsg)
 			if err != nil {
@@ -134,10 +140,10 @@ func ScreenCreateFullProject(window fyne.Window) *widget.Form {
 				bar := uielements.ProgressBar{
 					Bar:        widget.NewProgressBar(), //("Create project...", "Progress", window),
 					CurrentCnt: 0,
-					MaxCount:   createprojectactions.CountCreateProjectWorkflow,
+					MaxCount:   project.CountCreateProjectWorkflow,
 				}
 				bar.Bar.Show()
-				_ = createprojectactions.ActionProcessProjectCreate(projectConfig, bar.AddCallback)
+				_ = project.ActionProcessProjectCreate(projectConfig, bar.AddCallback)
 				bar.Bar.Hide()
 
 				// show output
@@ -220,10 +226,10 @@ func ScreenCreateDeployOnlyProject(window fyne.Window) *widget.Form {
 				bar := uielements.ProgressBar{
 					Bar:        widget.NewProgressBar(), // ("Create project...", "Progress", window),
 					CurrentCnt: 0,
-					MaxCount:   createprojectactions.CountCreateProjectWorkflow,
+					MaxCount:   project.CountCreateProjectWorkflow,
 				}
 				bar.Bar.Show()
-				_ = createprojectactions.ActionProcessProjectCreate(projectConfig, bar.AddCallback)
+				_ = project.ActionProcessProjectCreate(projectConfig, bar.AddCallback)
 				bar.Bar.Hide()
 
 				// show output
@@ -236,7 +242,7 @@ func ScreenCreateDeployOnlyProject(window fyne.Window) *widget.Form {
 }
 
 func createCloudTemplates() []*widget.Check {
-	var cloudTemplates = createprojectactions.ActionReadCloudTemplates()
+	var cloudTemplates = project.ActionReadCloudTemplates()
 	var checkboxes []*widget.Check
 	for _, cloudTemplate := range cloudTemplates {
 		checkboxes = append(checkboxes, widget.NewCheck(cloudTemplate, func(set bool) {

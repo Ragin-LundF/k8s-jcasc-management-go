@@ -20,7 +20,7 @@ func TestCreateJCascConfig(t *testing.T) {
 	assert.Empty(t, jcascConfig.SystemMessage)
 
 	assert.False(t, jcascConfig.JobsConfig.JobsAvailable())
-	assert.Empty(t, jcascConfig.JobsConfig.JobsSeedRepository)
+	assert.Equal(t, testJenkinsHelmMasterJcascConfigSeedUrl, jcascConfig.JobsConfig.JobsSeedRepository)
 	assert.Empty(t, jcascConfig.JobsConfig.JobsDefinitionRepository)
 
 	assert.Equal(t, testJenkinsHelmMasterAdminPasswordEncrypted, jcascConfig.SecurityRealm.LocalUsers.AdminPassword)
