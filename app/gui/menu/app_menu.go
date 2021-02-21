@@ -31,8 +31,8 @@ func CreateMainMenu(app fyne.App, window fyne.Window) *fyne.MainMenu {
 	mainMenu := fyne.NewMainMenu(
 		// a quit item will be appended to our first menu
 		fyne.NewMenu("K8S Management", fyne.NewMenuItemSeparator(), settingsItem, fyne.NewMenuItemSeparator(), quitItem),
-		fyne.NewMenu("Tools", fyne.NewMenuItemSeparator(), toolsItem),
 		fyne.NewMenu("Theme", darkThemeItem, lightThemeItem),
+		fyne.NewMenu("Tools", toolsItem),
 	)
 
 	return mainMenu
