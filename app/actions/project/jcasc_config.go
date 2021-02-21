@@ -1,6 +1,10 @@
 package project
 
-import "k8s-management-go/app/models"
+import (
+	"k8s-management-go/app/actions/kubernetesactions"
+	"k8s-management-go/app/models"
+	"strings"
+)
 
 // ----- Structures
 // jcascConfig : Model which describes the JcasC (Jenkins configuration as code) config helm values
@@ -44,8 +48,7 @@ type securityRealmLocalUsers struct {
 
 // kubernetes : Model which describes the Kubernetes section in the helm values
 type kubernetes struct {
-	ServerCertificate string
-	Templates         kubernetesTemplates
+	Templates kubernetesTemplates
 }
 
 // kubernetesTemplates : Model which describes the Kubernetes Templates section in the helm values
@@ -108,8 +111,21 @@ func (jobsConfig *jobsConfig) JobsAvailable() bool {
 	return false
 }
 
-// ----- internal methods
+// ServerCertificate : Get the server certificate for the current context
+func (kubernetes *kubernetes) ServerCertificate() string {
+	var context = strings.ToUpper(kubernetesactions.GetKubernetesConfig().CurrentContext())
+	if len(models.GetConfiguration().Kubernetes.ContextServerCertificates) > 0 {
+		for _, contextCertificate := range models.GetConfiguration().Kubernetes.ContextServerCertificates {
+			if strings.ToUpper(contextCertificate.Context) == context {
+				return contextCertificate.Certificate
+			}
+		}
+	}
 
+	return models.GetConfiguration().Kubernetes.ServerCertificate
+}
+
+// ----- internal methods
 // newCredentialIDs : create new default credential IDs
 func newCredentialIDs() credentialIDs {
 	var configuration = models.GetConfiguration()
@@ -130,10 +146,8 @@ func newClouds() clouds {
 
 // newCloudKubernetes : create new default newCloudKubernetes
 func newCloudKubernetes() kubernetes {
-	var configuration = models.GetConfiguration()
 	return kubernetes{
-		ServerCertificate: configuration.Kubernetes.ServerCertificate,
-		Templates:         newCloudKubernetesSubTemplates(),
+		Templates: newCloudKubernetesSubTemplates(),
 	}
 }
 

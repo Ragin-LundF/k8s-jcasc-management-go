@@ -85,6 +85,14 @@ func GetKubernetesConfig() KubernetesConfiguration {
 	return kubernetesConfig
 }
 
+// ReloadKubernetesConfig : reload the current kubernetes context
+func ReloadKubernetesContext() {
+	readCurrentKubernetesContext()
+	if kubernetesConfig.HasNoContexts() {
+		readKubernetesContexts()
+	}
+}
+
 // SwitchKubernetesConfig switches the current context
 func SwitchKubernetesConfig(context string) (err error) {
 	kubectlCmdArgs := []string{

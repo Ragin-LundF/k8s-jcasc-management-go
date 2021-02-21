@@ -6,6 +6,7 @@ import (
 	"k8s-management-go/app/actions/createprojectactions"
 	"k8s-management-go/app/models"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -57,11 +58,13 @@ const testJcascVcsCredentialsId = "vcs-credentials"
 
 const testJenkinsHelmMasterJcascConfigUrl = "https://raw.githubusercontent.com/Ragin-LundF/k8s-jcasc-project-config/master/{{ .Base.Namespace }}/jcasc_config.yaml"
 
+const testJcascKubernetesCertificate = "LN2-test-certificate"
+
 func TestProjectTemplates(t *testing.T) {
 	testDefaultProjectConfiguration(t, true)
 	var cloudTemplates = []string{"gradle_java.yaml", "node.yaml"}
 	var project = NewProject()
-	project.SetNamespace("my-namespace")
+	project.SetNamespace(testNamespace)
 
 	// add some default values
 	project.SetJobsSeedRepository("https://my-config.domain.tld/seedJob.git")
@@ -84,7 +87,7 @@ func TestProjectValidationErrorWithEmptyIP(t *testing.T) {
 	models.AssignToConfiguration("NGINX_LOADBALANCER_ANNOTATIONS_ENABLED", "false")
 
 	var project = NewProject()
-	project.SetNamespace("my-namespace")
+	project.SetNamespace(testNamespace)
 	var err = project.validateProject()
 
 	assert.Error(t, err)
@@ -145,10 +148,51 @@ func testDefaultProjectConfiguration(t *testing.T, setupTestProject bool) {
 	models.AssignToConfiguration("NPM_REPOSITORY_SECRETS_CREDENTIALS_ID", testJcascNpmCredentialsId)
 	models.AssignToConfiguration("VCS_REPOSITORY_SECRETS_CREDENTIALS_ID", testJcascVcsCredentialsId)
 
+	models.AssignToConfiguration("KUBERNETES_SERVER_CERTIFICATE", testJcascKubernetesCertificate)
+
 	if setupTestProject {
 		var err = createprojectactions.ActionCreateNewProjectDirectory(testProjectName)
 		assert.Nil(t, err)
 		err = createprojectactions.ActionCopyTemplatesToNewDirectory(testProjectName, true, false)
 		assert.Nil(t, err)
 	}
+}
+
+// TestCommandExec is the test executor for mocks
+type TestCommandExec struct{}
+
+// CombinedOutput is the mock implementation of CombinedOutput
+func (c TestCommandExec) CombinedOutput(command string, args ...string) ([]byte, error) {
+	var result []byte
+	var commandAsString = command + " " + strings.Join(args, " ")
+	result = combinedOutputCurrentContext(args)
+	if result != nil {
+		return result, nil
+	}
+	result = combinedOutputGetContexts(args)
+	if result != nil {
+		return result, nil
+	}
+
+	return []byte(commandAsString + "...executed"), nil
+}
+
+// combinedOutputCurrentContext returns the kubernetes config current-context
+func combinedOutputCurrentContext(args []string) []byte {
+	if cap(args) == 2 {
+		if args[0] == "config" && args[1] == "current-context" {
+			return []byte("default-k8s")
+		}
+	}
+	return nil
+}
+
+// combinedOutputGetContexts returns the kubernetes config get-contexts -o name
+func combinedOutputGetContexts(args []string) []byte {
+	if cap(args) == 4 {
+		if args[0] == "config" && args[1] == "get-contexts" && args[2] == "-o" && args[3] == "name" {
+			return []byte("default-k8s")
+		}
+	}
+	return nil
 }

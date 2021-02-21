@@ -13,7 +13,7 @@ type CommandExec interface {
 // OsCommandExec is the real OS executor
 type OsCommandExec struct{}
 
-// Executor is the gobal var to set the CommandExec implementation
+// Executor is the global var to set the CommandExec implementation
 var Executor CommandExec
 
 // CombinedOutput is executes exec.Command(command, args...).CombinedOutput()
