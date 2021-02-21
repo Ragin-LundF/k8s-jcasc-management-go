@@ -33,7 +33,7 @@ func MigrateTemplatesToV3() string {
 	} else {
 		status = "FAILED"
 		for _, errorMessage := range errors {
-			errorMessages = fmt.Sprintf("%v\n\n", errorMessages, errorMessage)
+			errorMessages = fmt.Sprintf("%v\n\n%v", errorMessages, errorMessage)
 		}
 	}
 
