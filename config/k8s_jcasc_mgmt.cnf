@@ -105,7 +105,7 @@ MAVEN_REPOSITORY_SECRETS_CREDENTIALS_ID=repository-credentialsid
 # if you do not need this: look into the 'jcasc_config.yaml' file and remove the environment variable settings
 NPM_REPOSITORY_SECRETS_CREDENTIALS_ID=repository-credentialsid
 
-# NPM repository secrets credentialsId of the npm repository service account/technical user, if a private repository should be used.
+# VCS repository secrets credentialsId for service account/technical user, if a private repository should be used.
 # if you do not need this: look into the 'jcasc_config.yaml' file and remove the environment variable settings
 VCS_REPOSITORY_SECRETS_CREDENTIALS_ID=vcs-notification-credentialsid
 

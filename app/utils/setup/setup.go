@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"k8s-management-go/app/actions/migration"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/server"
 	"k8s-management-go/app/utils/cmdexecutor"
@@ -86,6 +87,11 @@ func Setup() {
 }
 
 func configure(basePath string, dryRunDebug bool, cliOnly bool) {
+	configuration.LoadConfiguration(basePath, dryRunDebug, cliOnly)
+	var configYaml = configuration.GetConfiguration()
+	if configYaml == nil {
+		os.Exit(1)
+	}
 	// read configuration
 	config.ReadConfiguration(basePath, dryRunDebug, cliOnly)
 	config.ReadIPConfig()
