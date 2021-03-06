@@ -4,6 +4,7 @@ import (
 	"k8s-management-go/app/actions/installactions"
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/cli/secrets"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/logger"
 	"k8s-management-go/app/utils/loggingstate"
@@ -32,7 +33,7 @@ func ShowInstallDialogs() (state models.StateData, err error) {
 	// if it is Jenkins installation ask more things
 	if state.JenkinsHelmValuesExist {
 		// if it is no dry-run, ask for secrets password
-		if !models.GetConfiguration().K8sManagement.DryRunOnly {
+		if !configuration.GetConfiguration().K8SManagement.DryRunOnly {
 			secretsFileName, secretsPassword, err := secrets.AskForSecretsPassword("Password for secrets file", true)
 			state.SecretsPassword = &secretsPassword
 			state.SecretsFileName = secretsFileName

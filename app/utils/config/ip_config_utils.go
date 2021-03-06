@@ -3,6 +3,7 @@ package config
 import (
 	"bufio"
 	"fmt"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/logger"
@@ -13,8 +14,6 @@ import (
 
 // ReadIPConfig reads the IP configuration file
 func ReadIPConfig() {
-	configuration := models.GetConfiguration()
-
 	// if IP config file does not exist, create it
 	if !files.FileOrDirectoryExists(models.GetIPConfigurationFile()) {
 		os.Create(models.GetIPConfigurationFile())
@@ -37,7 +36,7 @@ func ReadIPConfig() {
 			// trim the line to avoid problems
 			line := strings.TrimSpace(scanner.Text())
 			// if line is not a comment (marker: "#") parse the configuration and assign it to the config
-			if line != "" && !strings.HasPrefix(line, "#") && !strings.HasPrefix(line, configuration.IPConfig.IPConfigFileDummyPrefix) {
+			if line != "" && !strings.HasPrefix(line, "#") && !strings.HasPrefix(line, configuration.GetConfiguration().K8SManagement.Ipconfig.DummyPrefix) {
 				namespace, ip := parseIPConfigurationLine(line)
 				models.AddIPAndNamespaceToConfiguration(namespace, ip)
 			}

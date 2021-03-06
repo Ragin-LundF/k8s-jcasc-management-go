@@ -3,13 +3,13 @@ package uninstall
 import (
 	"k8s-management-go/app/actions/uninstallactions"
 	"k8s-management-go/app/cli/dialogs"
-	"k8s-management-go/app/models"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/utils/loggingstate"
 )
 
 // DoUninstall is the workflow for uninstall
 func DoUninstall() (err error) {
-	bar := dialogs.CreateProgressBar("Uninstalling Jenkins", 5)
+	var bar = dialogs.CreateProgressBar("Uninstalling Jenkins", 5)
 	// Show dialogs to catch needed information
 	loggingstate.AddInfoEntry("Starting Uninstall...")
 	state, err := ShowUninstallDialogs()
@@ -37,7 +37,7 @@ func DoUninstall() (err error) {
 	_ = bar.Add(1)
 
 	// in dry-run we do not want to uninstall the scripts
-	if !models.GetConfiguration().K8sManagement.DryRunOnly {
+	if !configuration.GetConfiguration().K8SManagement.DryRunOnly {
 		bar.Describe("Try to execute uninstall scripts...")
 		uninstallactions.ProcessScriptsUninstallIfExists(state)
 		_ = bar.Add(1)

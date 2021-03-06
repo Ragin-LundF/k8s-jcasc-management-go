@@ -4,6 +4,7 @@ import (
 	"github.com/inancgumus/screen"
 	"github.com/manifoldco/promptui"
 	"github.com/schollz/progressbar/v3"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/arrays"
 	"k8s-management-go/app/utils/logger"
@@ -105,7 +106,7 @@ func DialogAskForDeploymentName(label string, validate promptui.ValidateFunc) (d
 	log := logger.Log()
 
 	// try to read deployment name from configuration
-	deploymentName = models.GetConfiguration().Jenkins.Helm.Master.DeploymentName
+	deploymentName = configuration.GetConfiguration().Jenkins.Controller.DeploymentName
 	// check if something was set
 	if deploymentName == "" {
 		ClearScreen()

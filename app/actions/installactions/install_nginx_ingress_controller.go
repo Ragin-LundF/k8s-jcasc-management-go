@@ -2,6 +2,7 @@ package installactions
 
 import (
 	"fmt"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
@@ -32,7 +33,7 @@ func ActionHelmInstallNginxIngressController(command string, namespace string, j
 			// prepare files and directories
 			helmChartsNginxIngressCtrlDirectory := models.FilePathWithBasePath(constants.DirHelmNginxIngressCtrl)
 			// execute Helm command
-			nginxIngressCtrlDeploymentName := models.GetConfiguration().Nginx.Ingress.Controller.DeploymentName
+			nginxIngressCtrlDeploymentName := configuration.GetConfiguration().Nginx.Ingress.Deployment.DeploymentName
 
 			// execute Helm command
 			argsForCommand := []string{
@@ -49,7 +50,7 @@ func ActionHelmInstallNginxIngressController(command string, namespace string, j
 			}
 
 			// add dry-run and debug if necessary
-			if models.GetConfiguration().K8sManagement.DryRunOnly {
+			if configuration.GetConfiguration().K8SManagement.DryRunOnly {
 				argsForCommand = append(argsForCommand, "--dry-run", "--debug")
 			}
 

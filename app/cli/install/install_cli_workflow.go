@@ -5,6 +5,7 @@ import (
 	"k8s-management-go/app/actions/installactions"
 	"k8s-management-go/app/actions/namespaceactions"
 	"k8s-management-go/app/cli/dialogs"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/logger"
 	"k8s-management-go/app/utils/loggingstate"
@@ -51,13 +52,13 @@ func DoUpgradeOrInstall(helmCommand string) (err error) {
 
 // execute the workflow
 func executeWorkflow(state models.StateData) (err error) {
-	log := logger.Log()
+	var log = logger.Log()
 
 	// Progress Bar
-	bar := dialogs.CreateProgressBar("Installing...", installactions.CalculateBarCounter(state))
+	var bar = dialogs.CreateProgressBar("Installing...", installactions.CalculateBarCounter(state))
 
 	// it is not a dry-run -> install required stuff
-	if !models.GetConfiguration().K8sManagement.DryRunOnly {
+	if !configuration.GetConfiguration().K8SManagement.DryRunOnly {
 		// check if namespace is available or create a new one if not
 		bar.Describe("Check and create namespace if necessary...")
 		err = namespaceactions.ProcessNamespaceCreation(state)

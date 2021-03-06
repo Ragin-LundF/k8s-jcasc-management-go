@@ -2,7 +2,7 @@ package main
 
 import (
 	"k8s-management-go/app"
-	"k8s-management-go/app/models"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/utils/setup"
 	"k8s-management-go/app/utils/version"
 )
@@ -28,7 +28,7 @@ func checkVersion() string {
 }
 
 func startApp(info string) {
-	if models.GetConfiguration().CliOnly {
+	if configuration.GetConfiguration().K8SManagement.CliOnly {
 		// cli
 		app.StartCli(info)
 	} else {

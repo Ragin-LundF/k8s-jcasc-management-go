@@ -1,6 +1,7 @@
 package project
 
 import (
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/events"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/config"
@@ -85,7 +86,7 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig, callback fun
 }
 
 func createNamespaceEvent(namespace string) {
-	if !models.GetConfiguration().CliOnly {
+	if !configuration.GetConfiguration().K8SManagement.CliOnly {
 		events.NamespaceCreated.Trigger(events.NamespaceCreatedPayload{
 			Namespace: namespace,
 			Time:      time.Now(),

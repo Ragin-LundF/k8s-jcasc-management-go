@@ -2,8 +2,8 @@ package uninstallactions
 
 import (
 	"fmt"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/helm"
 	"k8s-management-go/app/utils/loggingstate"
 )
@@ -17,7 +17,7 @@ func ActionHelmUninstallJenkins(namespace string, deploymentName string) (err er
 		"-n", namespace,
 	}
 	// add dry-run flags if necessary
-	if models.GetConfiguration().K8sManagement.DryRunOnly {
+	if configuration.GetConfiguration().K8SManagement.DryRunOnly {
 		helmCmdArgs = append(helmCmdArgs, "--dry-run", "--debug")
 	}
 	// execute Helm command

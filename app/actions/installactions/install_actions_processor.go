@@ -3,6 +3,7 @@ package installactions
 import (
 	"fmt"
 	"k8s-management-go/app/cli/secrets"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
@@ -71,7 +72,7 @@ func ProcessNginxController(helmCommand string, state models.StateData) (err err
 
 // ProcessScripts processes the scripts execution
 func ProcessScripts(state models.StateData) (err error) {
-	if !models.GetConfiguration().K8sManagement.DryRunOnly {
+	if !configuration.GetConfiguration().K8SManagement.DryRunOnly {
 		// install scripts
 		// try to install scripts
 		loggingstate.AddInfoEntry(fmt.Sprintf("-> Try to execute install scripts on [%s]...", state.Namespace))
@@ -88,7 +89,7 @@ func CalculateBarCounter(state models.StateData) int {
 	var dryRunOnly = 0
 	var notDryRunOnly = 0
 	var jenkinsInstallation = 0
-	if models.GetConfiguration().K8sManagement.DryRunOnly {
+	if configuration.GetConfiguration().K8SManagement.DryRunOnly {
 		// only dry-run
 		dryRunOnly = 2
 	} else {

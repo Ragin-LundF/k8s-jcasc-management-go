@@ -4,6 +4,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/dialog"
 	"k8s-management-go/app/actions/uninstallactions"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/loggingstate"
 )
@@ -11,9 +12,9 @@ import (
 // ExecuteUninstallWorkflow executes the workflow
 func ExecuteUninstallWorkflow(window fyne.Window, state models.StateData) (err error) {
 	// Progress Bar
-	progressCnt := 1
-	progressMaxCnt := 4
-	bar := dialog.NewProgress(state.HelmCommand, "Uninstalling on namespace "+state.Namespace, window)
+	var progressCnt = 1
+	var progressMaxCnt = 4
+	var bar = dialog.NewProgress(state.HelmCommand, "Uninstalling on namespace "+state.Namespace, window)
 	bar.Show()
 
 	// uninstall Jenkins if exists
@@ -38,7 +39,7 @@ func ExecuteUninstallWorkflow(window fyne.Window, state models.StateData) (err e
 	}
 
 	// in dry-run we do not want to uninstall the scripts
-	if !models.GetConfiguration().K8sManagement.DryRunOnly {
+	if !configuration.GetConfiguration().K8SManagement.DryRunOnly {
 		uninstallactions.ProcessScriptsUninstallIfExists(state)
 		bar.SetValue(float64(1) / float64(progressMaxCnt) * float64(progressCnt))
 		progressCnt++

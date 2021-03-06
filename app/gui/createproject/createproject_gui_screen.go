@@ -5,6 +5,7 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 	"k8s-management-go/app/actions/project"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/gui/uielements"
 	"k8s-management-go/app/models"
@@ -18,40 +19,40 @@ func ScreenCreateFullProject(window fyne.Window) *widget.Form {
 	projectConfig.CreateDeploymentOnlyProject = false
 
 	// Namespace
-	namespaceErrorLabel := widget.NewLabel("")
-	namespaceEntry := widget.NewEntry()
+	var namespaceErrorLabel = widget.NewLabel("")
+	var namespaceEntry = widget.NewEntry()
 	namespaceEntry.PlaceHolder = "my-namespace"
 
 	// IP address
-	ipAddressErrorLabel := widget.NewLabel("")
-	ipAddressEntry := widget.NewEntry()
+	var ipAddressErrorLabel = widget.NewLabel("")
+	var ipAddressEntry = widget.NewEntry()
 	ipAddressEntry.PlaceHolder = "0.0.0.0 or mydomain.tld"
 
 	// Domain for Jenkins
-	jenkinsUrlErrorLabel := widget.NewLabel("")
-	jenkinsUrlEntry := widget.NewEntry()
+	var jenkinsUrlErrorLabel = widget.NewLabel("")
+	var jenkinsUrlEntry = widget.NewEntry()
 	jenkinsUrlEntry.PlaceHolder = "domain.tld (or leave empty to use <namespace>.<configured nginx domain>)"
 
 	// Jenkins system message
-	jenkinsSysMsgErrorLabel := widget.NewLabel("")
-	jenkinsSysMsgEntry := widget.NewEntry()
+	var jenkinsSysMsgErrorLabel = widget.NewLabel("")
+	var jenkinsSysMsgEntry = widget.NewEntry()
 	jenkinsSysMsgEntry.PlaceHolder = constants.CommonJenkinsSystemMessage
 
 	// Jenkins jobs config repository
-	jenkinsJobsCfgErrorLabel := widget.NewLabel("")
-	jenkinsJobsCfgEntry := widget.NewEntry()
+	var jenkinsJobsCfgErrorLabel = widget.NewLabel("")
+	var jenkinsJobsCfgEntry = widget.NewEntry()
 	jenkinsJobsCfgEntry.PlaceHolder = "http://vcs.domain.tld/project/repo/jenkins-jobs.git"
 
 	// Cloud templates
-	cloudTemplatesCheckBoxes := createCloudTemplates()
-	cloudBox := createCloudTemplatesCheckboxes(cloudTemplatesCheckBoxes)
+	var cloudTemplatesCheckBoxes = createCloudTemplates()
+	var cloudBox = createCloudTemplatesCheckboxes(cloudTemplatesCheckBoxes)
 
 	// Existing PVC
-	jenkinsExistingPvcErrorLabel := widget.NewLabel("")
-	jenkinsExistingPvcEntry := widget.NewEntry()
+	var jenkinsExistingPvcErrorLabel = widget.NewLabel("")
+	var jenkinsExistingPvcEntry = widget.NewEntry()
 	jenkinsExistingPvcEntry.PlaceHolder = "pvc-jenkins"
 
-	form := &widget.Form{
+	var form = &widget.Form{
 		Items: []*widget.FormItem{
 			{Text: "Namespace", Widget: namespaceEntry},
 			{Text: "", Widget: namespaceErrorLabel},
@@ -79,7 +80,7 @@ func ScreenCreateFullProject(window fyne.Window) *widget.Form {
 			hasErrors := false
 
 			// validate namespace
-			err := validator.ValidateNewNamespace(projectConfig.Namespace)
+			var err = validator.ValidateNewNamespace(projectConfig.Namespace)
 			if err != nil {
 				namespaceErrorLabel.SetText(err.Error())
 				hasErrors = true
@@ -93,8 +94,8 @@ func ScreenCreateFullProject(window fyne.Window) *widget.Form {
 			}
 
 			// validate Jenkins domain
-			if projectConfig.JenkinsDomain == "" && models.GetConfiguration().LoadBalancer.Annotations.ExtDNS.Hostname != "" {
-				projectConfig.JenkinsDomain = projectConfig.Namespace + models.GetConfiguration().LoadBalancer.Annotations.ExtDNS.Hostname
+			if projectConfig.JenkinsDomain == "" && configuration.GetConfiguration().Nginx.Loadbalancer.ExternalDNS.HostName != "" {
+				projectConfig.JenkinsDomain = projectConfig.Namespace + configuration.GetConfiguration().Nginx.Loadbalancer.ExternalDNS.HostName
 			} else {
 				err = validator.ValidateIP(projectConfig.JenkinsDomain)
 				if err != nil {
@@ -109,7 +110,7 @@ func ScreenCreateFullProject(window fyne.Window) *widget.Form {
 			}
 
 			// without annotations enabled an IP address is required
-			if !models.GetConfiguration().LoadBalancer.Annotations.Enabled && projectConfig.IPAddress == "" {
+			if !configuration.GetConfiguration().Nginx.Loadbalancer.Annotations.Enabled && projectConfig.IPAddress == "" {
 				ipAddressErrorLabel.SetText("If NGINX_LOADBALANCER_ANNOTATIONS_ENABLED is set to false, an IP address is required ")
 				hasErrors = true
 			}
@@ -137,7 +138,7 @@ func ScreenCreateFullProject(window fyne.Window) *widget.Form {
 
 			// process project creation if no error was found
 			if !hasErrors {
-				bar := uielements.ProgressBar{
+				var bar = uielements.ProgressBar{
 					Bar:        widget.NewProgressBar(), //("Create project...", "Progress", window),
 					CurrentCnt: 0,
 					MaxCount:   project.CountCreateProjectWorkflow,
@@ -161,21 +162,21 @@ func ScreenCreateDeployOnlyProject(window fyne.Window) *widget.Form {
 	projectConfig.CreateDeploymentOnlyProject = true
 
 	// Namespace
-	namespaceErrorLabel := widget.NewLabel("")
-	namespaceEntry := widget.NewEntry()
+	var namespaceErrorLabel = widget.NewLabel("")
+	var namespaceEntry = widget.NewEntry()
 	namespaceEntry.PlaceHolder = "my-namespace"
 
 	// IP address
-	ipAddressErrorLabel := widget.NewLabel("")
-	ipAddressEntry := widget.NewEntry()
+	var ipAddressErrorLabel = widget.NewLabel("")
+	var ipAddressEntry = widget.NewEntry()
 	ipAddressEntry.PlaceHolder = "0.0.0.0"
 
 	// Domain for Jenkins
-	jenkinsUrlErrorLabel := widget.NewLabel("")
-	jenkinsUrlEntry := widget.NewEntry()
+	var jenkinsUrlErrorLabel = widget.NewLabel("")
+	var jenkinsUrlEntry = widget.NewEntry()
 	jenkinsUrlEntry.PlaceHolder = "domain.tld (or leave empty to use <namespace>.<configured nginx domain>)"
 
-	form := &widget.Form{
+	var form = &widget.Form{
 		Items: []*widget.FormItem{
 			{Text: "Namespace", Widget: namespaceEntry},
 			{Text: "", Widget: namespaceErrorLabel},
@@ -192,7 +193,7 @@ func ScreenCreateDeployOnlyProject(window fyne.Window) *widget.Form {
 			hasError := false
 
 			// validate namespace
-			err := validator.ValidateNewNamespace(projectConfig.Namespace)
+			var err = validator.ValidateNewNamespace(projectConfig.Namespace)
 			if err != nil {
 				namespaceErrorLabel.SetText(err.Error())
 				hasError = true
@@ -206,8 +207,8 @@ func ScreenCreateDeployOnlyProject(window fyne.Window) *widget.Form {
 			}
 
 			// validate Jenkins domain
-			if projectConfig.JenkinsDomain == "" && models.GetConfiguration().LoadBalancer.Annotations.ExtDNS.Hostname != "" {
-				projectConfig.JenkinsDomain = projectConfig.Namespace + models.GetConfiguration().LoadBalancer.Annotations.ExtDNS.Hostname
+			if projectConfig.JenkinsDomain == "" && configuration.GetConfiguration().Nginx.Loadbalancer.ExternalDNS.HostName != "" {
+				projectConfig.JenkinsDomain = projectConfig.Namespace + configuration.GetConfiguration().Nginx.Loadbalancer.ExternalDNS.HostName
 			} else {
 				err = validator.ValidateIP(projectConfig.JenkinsDomain)
 				if err != nil {
@@ -223,7 +224,7 @@ func ScreenCreateDeployOnlyProject(window fyne.Window) *widget.Form {
 
 			if !hasError {
 				// process project creation
-				bar := uielements.ProgressBar{
+				var bar = uielements.ProgressBar{
 					Bar:        widget.NewProgressBar(), // ("Create project...", "Progress", window),
 					CurrentCnt: 0,
 					MaxCount:   project.CountCreateProjectWorkflow,

@@ -7,6 +7,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 	"k8s-management-go/app/actions/kubernetesactions"
 	"k8s-management-go/app/actions/namespaceactions"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/loggingstate"
@@ -67,8 +68,8 @@ func CreateDeploymentNameEntry() (deploymentNameEntry *widget.Entry) {
 	// Deployment name
 	deploymentNameEntry = widget.NewEntry()
 	deploymentNameEntry.SetPlaceHolder("Deployment name")
-	if models.GetConfiguration().Jenkins.Helm.Master.DeploymentName != "" {
-		deploymentNameEntry.Text = models.GetConfiguration().Jenkins.Helm.Master.DeploymentName
+	if configuration.GetConfiguration().Jenkins.Controller.DeploymentName != "" {
+		deploymentNameEntry.Text = configuration.GetConfiguration().Jenkins.Controller.DeploymentName
 		deploymentNameEntry.Disable()
 	}
 	return deploymentNameEntry

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"k8s-management-go/app/models"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/loggingstate"
 	"os"
@@ -44,11 +44,9 @@ func NewProject() Project {
 
 // JenkinsURL : If load balancer annotations are enabled it returns a domain. Else the IP address.
 func (base *base) JenkinsURL() string {
-	var configuration = models.GetConfiguration()
-
-	if configuration.LoadBalancer.Annotations.Enabled {
+	if configuration.GetConfiguration().Nginx.Loadbalancer.Annotations.Enabled {
 		if base.Domain == "" {
-			return fmt.Sprintf("%v.%v", base.Namespace, configuration.LoadBalancer.Annotations.ExtDNS.Hostname)
+			return fmt.Sprintf("%v.%v", base.Namespace, configuration.GetConfiguration().Nginx.Loadbalancer.ExternalDNS.HostName)
 		} else {
 			return base.Domain
 		}
@@ -183,13 +181,11 @@ func processWithTemplateEngine(filename string, project Project) (err error) {
 
 // newBase : Base Jenkins setup
 func newBase() *base {
-	var configuration = models.GetConfiguration()
-
 	return &base{
-		DeploymentName:      configuration.Jenkins.Helm.Master.DeploymentName,
+		DeploymentName:      configuration.GetConfiguration().Jenkins.Controller.DeploymentName,
 		Domain:              "",
 		ExistingVolumeClaim: "",
-		JenkinsUriPrefix:    configuration.Jenkins.Helm.Master.DefaultURIPrefix,
+		JenkinsUriPrefix:    configuration.GetConfiguration().Jenkins.Controller.DefaultURIPrefix,
 		IPAddress:           "",
 		Namespace:           "",
 	}
@@ -197,12 +193,11 @@ func newBase() *base {
 
 // validateProject : Validate the project that it can be processed
 func (project *Project) validateProject() (err error) {
-	var configuration = models.GetConfiguration()
 	if project.Base.Namespace == "" {
 		return errors.New("Error: No namespace available ")
 	}
 
-	if !configuration.LoadBalancer.Annotations.Enabled && project.Base.IPAddress == "" {
+	if !configuration.GetConfiguration().Nginx.Loadbalancer.Annotations.Enabled && project.Base.IPAddress == "" {
 		return errors.New("Error: If NGINX_LOADBALANCER_ANNOTATIONS_ENABLED is set to false, an IP address is required ")
 	}
 

@@ -3,6 +3,7 @@ package installactions
 import (
 	"errors"
 	"fmt"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
@@ -31,7 +32,7 @@ func ActionHelmInstallJenkins(command string, namespace string, deploymentName s
 			deploymentName,
 			helmChartsJenkinsDirectory,
 		}
-		if models.GetConfiguration().K8sManagement.DryRunOnly {
+		if configuration.GetConfiguration().K8SManagement.DryRunOnly {
 			argsForCommand = append(argsForCommand, "--dry-run", "--debug")
 		}
 		argsForCommand = append(argsForCommand, "-n", namespace, "-f", helmChartsJenkinsValuesFile)

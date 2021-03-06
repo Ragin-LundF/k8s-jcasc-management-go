@@ -1,7 +1,7 @@
 package project
 
 import (
-	"k8s-management-go/app/models"
+	"k8s-management-go/app/configuration"
 )
 
 // ----- Structures
@@ -57,21 +57,19 @@ func NewNginx() *nginx {
 // ----- internal methods
 // newDefaultMetadata : create a new default ingress structure
 func newDefaultIngress() ingress {
-	var configuration = models.GetConfiguration()
 	return ingress{
-		AnnotationIngressClass:       configuration.Nginx.Ingress.AnnotationClass,
-		DeploymentName:               configuration.Nginx.Ingress.Controller.DeploymentName,
-		ContainerImage:               configuration.Nginx.Ingress.Controller.Container.Name,
-		ImagePullSecrets:             configuration.Nginx.Ingress.Controller.Container.PullSecret,
-		EnableControllerForNamespace: configuration.Nginx.Ingress.Controller.Container.Namespace,
+		AnnotationIngressClass:       configuration.GetConfiguration().Nginx.Ingress.Annotationclass,
+		DeploymentName:               configuration.GetConfiguration().Nginx.Ingress.Deployment.DeploymentName,
+		ContainerImage:               configuration.GetConfiguration().Nginx.Ingress.Container.Image,
+		ImagePullSecrets:             configuration.GetConfiguration().Nginx.Ingress.Container.PullSecret,
+		EnableControllerForNamespace: configuration.GetConfiguration().Nginx.Ingress.Deployment.ForEachNamespace,
 	}
 }
 
 // newDefaultLoadBalancer : create a new default loadBalancer structure
 func newDefaultLoadBalancer() loadBalancer {
-	var configuration = models.GetConfiguration()
 	return loadBalancer{
-		Enabled:     configuration.LoadBalancer.Enabled,
+		Enabled:     configuration.GetConfiguration().Nginx.Loadbalancer.Enabled,
 		Annotations: newDefaultLoadBalancerAnnotations(),
 		Ports:       newDefaultLoadBalancerPorts(),
 	}
@@ -79,12 +77,10 @@ func newDefaultLoadBalancer() loadBalancer {
 
 // newDefaultLoadBalancerAnnotations : create a new default loadBalancerAnnotations structure
 func newDefaultLoadBalancerAnnotations() loadBalancerAnnotations {
-	var configuration = models.GetConfiguration()
-
 	return loadBalancerAnnotations{
-		Enabled:             configuration.LoadBalancer.Annotations.Enabled,
-		ExternalDnsHostname: configuration.LoadBalancer.Annotations.ExtDNS.Hostname,
-		ExternalDnsTtl:      configuration.LoadBalancer.Annotations.ExtDNS.Ttl,
+		Enabled:             configuration.GetConfiguration().Nginx.Loadbalancer.Annotations.Enabled,
+		ExternalDnsHostname: configuration.GetConfiguration().Nginx.Loadbalancer.ExternalDNS.HostName,
+		ExternalDnsTtl:      configuration.GetConfiguration().Nginx.Loadbalancer.ExternalDNS.TTL,
 	}
 }
 
@@ -98,18 +94,16 @@ func newDefaultLoadBalancerPorts() loadBalancerPorts {
 
 // newDefaultLoadBalancerPortsHTTP : create a new default loadBalancerPortsHTTP structure for HTTP
 func newDefaultLoadBalancerPortsHTTP() loadBalancerPortsHTTP {
-	var configuration = models.GetConfiguration()
 	return loadBalancerPortsHTTP{
-		Port:       configuration.LoadBalancer.Port.HTTP,
-		TargetPort: configuration.LoadBalancer.Port.HTTPTarget,
+		Port:       configuration.GetConfiguration().Nginx.Loadbalancer.Ports.HTTP,
+		TargetPort: configuration.GetConfiguration().Nginx.Loadbalancer.Ports.HTTPTarget,
 	}
 }
 
 // newDefaultLoadBalancerPortsHTTPS : create a new default loadBalancerPortsHTTP structure for HTTPS
 func newDefaultLoadBalancerPortsHTTPS() loadBalancerPortsHTTP {
-	var configuration = models.GetConfiguration()
 	return loadBalancerPortsHTTP{
-		Port:       configuration.LoadBalancer.Port.HTTPS,
-		TargetPort: configuration.LoadBalancer.Port.HTTPSTarget,
+		Port:       configuration.GetConfiguration().Nginx.Loadbalancer.Ports.HTTPS,
+		TargetPort: configuration.GetConfiguration().Nginx.Loadbalancer.Ports.HTTPSTarget,
 	}
 }

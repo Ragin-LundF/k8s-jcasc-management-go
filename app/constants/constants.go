@@ -37,6 +37,9 @@ const FilenameConfigurationYaml = "k8s_jcasc_mgmt.yaml"
 // FilenameConfigurationCustom : filename of the custom configuration file for overwrites
 const FilenameConfigurationCustom = "k8s_jcasc_custom.cnf"
 
+// FilenameConfigurationCustomYaml : filename of the custom configuration file for overwrites
+const FilenameConfigurationCustomYaml = "k8s_jcasc_custom.yaml"
+
 // FilenameJenkinsConfigurationAsCode : filename of the Jenkins Configuration-as-Code Helm Values file
 const FilenameJenkinsConfigurationAsCode = "jcasc_config.yaml"
 

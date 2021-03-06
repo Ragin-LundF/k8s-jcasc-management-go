@@ -2,7 +2,7 @@ package project
 
 import (
 	"k8s-management-go/app/actions/kubernetesactions"
-	"k8s-management-go/app/models"
+	"k8s-management-go/app/configuration"
 	"strings"
 )
 
@@ -58,12 +58,11 @@ type kubernetesTemplates struct {
 
 // NewJCascConfig : Create new Jenkins Helm values structure
 func NewJCascConfig() *jcascConfig {
-	var configuration = models.GetConfiguration()
 	return &jcascConfig{
 		CredentialIDs: newCredentialIDs(),
 		Clouds:        newClouds(),
 		JobsConfig: jobsConfig{
-			JobsSeedRepository:       configuration.Jenkins.JobDSL.SeedJobScriptURL,
+			JobsSeedRepository:       configuration.GetConfiguration().Jenkins.Jcasc.SeedJobURL,
 			JobsDefinitionRepository: "",
 		},
 		SecurityRealm: securityRealm{
@@ -114,27 +113,26 @@ func (jobsConfig *jobsConfig) JobsAvailable() bool {
 
 // ServerCertificate : Get the server certificate for the current context
 func (kubernetes *kubernetes) ServerCertificate() string {
-	var context = strings.ToUpper(kubernetesactions.GetKubernetesConfig().CurrentContext())
-	if len(models.GetConfiguration().Kubernetes.ContextServerCertificates) > 0 {
-		for _, contextCertificate := range models.GetConfiguration().Kubernetes.ContextServerCertificates {
-			if strings.ToUpper(contextCertificate.Context) == context {
-				return contextCertificate.Certificate
+	var currentContext = strings.ToUpper(kubernetesactions.GetKubernetesConfig().CurrentContext())
+	if configuration.GetConfiguration().Kubernetes.Certificates.Contexts != nil {
+		for context, certificate := range configuration.GetConfiguration().Kubernetes.Certificates.Contexts {
+			if strings.ToUpper(currentContext) == strings.ToUpper(context) {
+				return certificate
 			}
 		}
 	}
 
-	return models.GetConfiguration().Kubernetes.ServerCertificate
+	return configuration.GetConfiguration().Kubernetes.Certificates.Default
 }
 
 // ----- internal methods
 // newCredentialIDs : create new default credential IDs
 func newCredentialIDs() credentialIDs {
-	var configuration = models.GetConfiguration()
 	return credentialIDs{
-		DockerRegistryCredentialsID:         configuration.CredentialIds.DefaultDockerRegistry,
-		MavenRepositorySecretsCredentialsID: configuration.CredentialIds.DefaultMavenRepository,
-		NpmRepositorySecretsCredentialsID:   configuration.CredentialIds.DefaultNpmRepository,
-		VcsRepositoryCredentialsID:          configuration.CredentialIds.DefaultVcsRepository,
+		DockerRegistryCredentialsID:         configuration.GetConfiguration().Jenkins.Jcasc.CredentialIDs.Docker,
+		MavenRepositorySecretsCredentialsID: configuration.GetConfiguration().Jenkins.Jcasc.CredentialIDs.Maven,
+		NpmRepositorySecretsCredentialsID:   configuration.GetConfiguration().Jenkins.Jcasc.CredentialIDs.Npm,
+		VcsRepositoryCredentialsID:          configuration.GetConfiguration().Jenkins.Jcasc.CredentialIDs.Vcs,
 	}
 }
 
@@ -161,9 +159,8 @@ func newCloudKubernetesSubTemplates() kubernetesTemplates {
 
 // newSecurityRealmLocalUsers : create a new default securityRealmLocalUsers structure
 func newSecurityRealmLocalUsers() securityRealmLocalUsers {
-	var configuration = models.GetConfiguration()
 	return securityRealmLocalUsers{
-		AdminPassword: configuration.Jenkins.Helm.Master.AdminPasswordEncrypted,
-		UserPassword:  configuration.Jenkins.Helm.Master.DefaultProjectUserPasswordEncrypted,
+		AdminPassword: configuration.GetConfiguration().Jenkins.Controller.Passwords.AdminUserEncrypted,
+		UserPassword:  configuration.GetConfiguration().Jenkins.Controller.Passwords.DefaultUserEncrypted,
 	}
 }

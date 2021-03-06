@@ -2,6 +2,7 @@ package project
 
 import (
 	"fmt"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
@@ -39,7 +40,7 @@ func ActionCopyTemplatesToNewDirectory(projectDirectory string, copyPersistentVo
 			fileNamesToCopy = append(fileNamesToCopy, constants.FilenamePvcClaim)
 		}
 		// copy secrets to project
-		if models.GetConfiguration().GlobalSecretsFile == "" {
+		if configuration.GetConfiguration().K8SManagement.Project.SecretFiles == "" {
 			fileNamesToCopy = append(fileNamesToCopy, constants.FilenameSecrets)
 		}
 	}

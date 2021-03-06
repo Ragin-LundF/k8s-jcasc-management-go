@@ -1,6 +1,9 @@
 package project
 
-import "k8s-management-go/app/models"
+import (
+	"k8s-management-go/app/configuration"
+	"strconv"
+)
 
 // ----- Structures
 // jenkinsHelm : Model which describes the jenkins helm values
@@ -39,24 +42,22 @@ func NewJenkinsHelmValues() *jenkinsHelmValues {
 // ----- internal methods
 // newDefaultJenkinsHelmMaster : create a new default jenkinsHelmMaster structure
 func newDefaultJenkinsHelmMaster() jenkinsHelmMaster {
-	var configuration = models.GetConfiguration()
 	return jenkinsHelmMaster{
-		Image:                          configuration.Jenkins.Helm.Master.Container.Image,
-		Tag:                            configuration.Jenkins.Helm.Master.Container.ImageTag,
-		ImagePullPolicy:                configuration.Jenkins.Helm.Master.Container.PullPolicy,
-		ImagePullSecretName:            configuration.Jenkins.Helm.Master.Container.PullSecretName,
-		CustomJenkinsLabels:            configuration.Jenkins.Helm.Master.Label,
-		AdminPassword:                  configuration.Jenkins.Helm.Master.AdminPassword,
-		SidecarsConfigAutoReloadFolder: configuration.Jenkins.JCasC.ConfigurationURL,
-		AuthorizationStrategyDenyAnonymousReadAccess: configuration.Jenkins.Helm.Master.DenyAnonymousReadAccess,
+		Image:                          configuration.GetConfiguration().Jenkins.Container.Image,
+		Tag:                            configuration.GetConfiguration().Jenkins.Container.Tag,
+		ImagePullPolicy:                configuration.GetConfiguration().Jenkins.Container.PullPolicy,
+		ImagePullSecretName:            configuration.GetConfiguration().Jenkins.Container.PullSecret,
+		CustomJenkinsLabels:            configuration.GetConfiguration().Jenkins.Controller.CustomJenkinsLabel,
+		AdminPassword:                  configuration.GetConfiguration().Jenkins.Controller.Passwords.AdminUser,
+		SidecarsConfigAutoReloadFolder: configuration.GetConfiguration().Jenkins.Jcasc.ConfigurationURL,
+		AuthorizationStrategyDenyAnonymousReadAccess: strconv.FormatBool(!configuration.GetConfiguration().Jenkins.Jcasc.AuthorizationStrategy.AllowAnonymousRead),
 	}
 }
 
 func newDefaultJenkinsHelmPersistence() jenkinsHelmPersistence {
-	var configuration = models.GetConfiguration()
 	return jenkinsHelmPersistence{
-		StorageClass: configuration.Jenkins.Helm.Master.Persistence.StorageClass,
-		AccessMode:   configuration.Jenkins.Helm.Master.Persistence.AccessMode,
-		Size:         configuration.Jenkins.Helm.Master.Persistence.Size,
+		StorageClass: configuration.GetConfiguration().Jenkins.Persistence.StorageClass,
+		AccessMode:   configuration.GetConfiguration().Jenkins.Persistence.AccessMode,
+		Size:         configuration.GetConfiguration().Jenkins.Persistence.StorageSize,
 	}
 }

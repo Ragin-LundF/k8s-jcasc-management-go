@@ -1,7 +1,7 @@
 package project
 
 import (
-	"k8s-management-go/app/models"
+	"k8s-management-go/app/configuration"
 )
 
 // ----- Structures
@@ -33,18 +33,16 @@ func NewPersistentVolumeClaim() *persistentVolumeClaim {
 
 // newDefaultSpec : create new default spec for PVC
 func newDefaultSpec() pvcSpec {
-	var configuration = models.GetConfiguration()
 	return pvcSpec{
-		AccessMode:       configuration.Jenkins.Helm.Master.Persistence.AccessMode,
-		StorageClassName: configuration.Jenkins.Helm.Master.Persistence.StorageClass,
+		AccessMode:       configuration.GetConfiguration().Jenkins.Persistence.AccessMode,
+		StorageClassName: configuration.GetConfiguration().Jenkins.Persistence.StorageClass,
 		Resources:        newDefaultSpecResources(),
 	}
 }
 
 // newDefaultSpecResources : create new default spec resources for PVC
 func newDefaultSpecResources() pvcSpecResources {
-	var configuration = models.GetConfiguration()
 	return pvcSpecResources{
-		StorageSize: configuration.Jenkins.Helm.Master.Persistence.Size,
+		StorageSize: configuration.GetConfiguration().Jenkins.Persistence.StorageSize,
 	}
 }

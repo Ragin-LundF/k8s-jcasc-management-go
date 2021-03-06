@@ -9,6 +9,7 @@ require (
 	github.com/goccy/go-yaml v1.8.8
 	github.com/goware/prefixer v0.0.0-20160118172347-395022866408
 	github.com/hashicorp/go-version v1.2.1
+	github.com/imdario/mergo v0.3.11 // indirect
 	github.com/inancgumus/screen v0.0.0-20190314163918-06e984b86ed3
 	github.com/lunixbochs/vtclean v1.0.0 // indirect
 	github.com/manifoldco/promptui v0.8.0

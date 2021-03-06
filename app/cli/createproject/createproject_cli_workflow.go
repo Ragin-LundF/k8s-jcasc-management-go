@@ -3,6 +3,7 @@ package createproject
 import (
 	"k8s-management-go/app/actions/project"
 	"k8s-management-go/app/cli/dialogs"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/loggingstate"
@@ -38,8 +39,8 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 	if err != nil {
 		return err
 	}
-	if projectConfig.JenkinsDomain == "" && models.GetConfiguration().LoadBalancer.Annotations.ExtDNS.Hostname != "" {
-		projectConfig.JenkinsDomain = projectConfig.Namespace + models.GetConfiguration().LoadBalancer.Annotations.ExtDNS.Hostname
+	if projectConfig.JenkinsDomain == "" && configuration.GetConfiguration().Nginx.Loadbalancer.ExternalDNS.HostName != "" {
+		projectConfig.JenkinsDomain = projectConfig.Namespace + configuration.GetConfiguration().Nginx.Loadbalancer.ExternalDNS.HostName
 	}
 	loggingstate.AddInfoEntry(constants.LogAskForJenkinsUrlDone)
 
