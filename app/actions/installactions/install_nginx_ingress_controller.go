@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/helm"
 	"k8s-management-go/app/utils/loggingstate"
@@ -18,7 +17,7 @@ func ActionHelmInstallNginxIngressController(command string, namespace string, j
 	// create var with path to ingress controller helm values
 	helmChartsNginxIngressCtrlValuesFile := files.AppendPath(
 		files.AppendPath(
-			models.GetProjectBaseDirectory(),
+			configuration.GetConfiguration().GetProjectBaseDirectory(),
 			namespace,
 		),
 		constants.FilenameNginxIngressControllerHelmValues,
@@ -31,7 +30,7 @@ func ActionHelmInstallNginxIngressController(command string, namespace string, j
 		// check if command is ok
 		if command == constants.HelmCommandInstall || command == constants.HelmCommandUpgrade {
 			// prepare files and directories
-			helmChartsNginxIngressCtrlDirectory := models.FilePathWithBasePath(constants.DirHelmNginxIngressCtrl)
+			helmChartsNginxIngressCtrlDirectory := configuration.GetConfiguration().FilePathWithBasePath(constants.DirHelmNginxIngressCtrl)
 			// execute Helm command
 			nginxIngressCtrlDeploymentName := configuration.GetConfiguration().Nginx.Ingress.Deployment.DeploymentName
 

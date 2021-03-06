@@ -15,12 +15,12 @@ import (
 // ReadIPConfig reads the IP configuration file
 func ReadIPConfig() {
 	// if IP config file does not exist, create it
-	if !files.FileOrDirectoryExists(models.GetIPConfigurationFile()) {
-		os.Create(models.GetIPConfigurationFile())
+	if !files.FileOrDirectoryExists(configuration.GetConfiguration().GetIPConfigurationFile()) {
+		_, _ = os.Create(configuration.GetConfiguration().GetIPConfigurationFile())
 	}
 
 	// read configuration file. Replace unneeded double quotes if needed.
-	data, err := os.Open(models.GetIPConfigurationFile())
+	data, err := os.Open(configuration.GetConfiguration().GetIPConfigurationFile())
 	defer data.Close()
 
 	// check for error
@@ -82,17 +82,17 @@ func optimizeNamespaces(namespace string) string {
 // AddToIPConfigFile adds an IP to the IP config file
 func AddToIPConfigFile(namespace string, ip string) (success bool, err error) {
 	log := logger.Log()
-	ipconfigFile, err := os.OpenFile(models.GetIPConfigurationFile(), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	ipconfigFile, err := os.OpenFile(configuration.GetConfiguration().GetIPConfigurationFile(), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
-		loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Unable to open IP config file [%s]", models.GetIPConfigurationFile()), err.Error())
-		log.Errorf("[AddToIPConfigFile] Unable to open IP config file [%s]. \n%s", models.GetIPConfigurationFile(), err.Error())
+		loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Unable to open IP config file [%s]", configuration.GetConfiguration().GetIPConfigurationFile()), err.Error())
+		log.Errorf("[AddToIPConfigFile] Unable to open IP config file [%s]. \n%s", configuration.GetConfiguration().GetIPConfigurationFile(), err.Error())
 		return false, err
 	}
 	defer ipconfigFile.Close()
 
 	if _, err := ipconfigFile.WriteString(namespace + " " + ip + "\n"); err != nil {
-		loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Unable to add new IP and namespace to file [%s]", models.GetIPConfigurationFile()), err.Error())
-		log.Errorf("[AddToIPConfigFile] Unable to add new IP and namespace to file [%s]. \n%s", models.GetIPConfigurationFile(), err.Error())
+		loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Unable to add new IP and namespace to file [%s]", configuration.GetConfiguration().GetIPConfigurationFile()), err.Error())
+		log.Errorf("[AddToIPConfigFile] Unable to add new IP and namespace to file [%s]. \n%s", configuration.GetConfiguration().GetIPConfigurationFile(), err.Error())
 		return false, err
 	}
 	return true, err

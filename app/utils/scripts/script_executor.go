@@ -2,8 +2,8 @@ package scripts
 
 import (
 	"fmt"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/cmdexecutor"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/logger"
@@ -17,7 +17,7 @@ func ExecuteScriptsInstallScriptsForNamespace(namespace string, filePrefix strin
 	// calculate path to script folder
 	var scriptFolder = files.AppendPath(
 		files.AppendPath(
-			models.GetProjectBaseDirectory(),
+			configuration.GetConfiguration().GetProjectBaseDirectory(),
 			namespace,
 		),
 		constants.DirProjectScripts,

@@ -2,7 +2,7 @@ package secretsactions
 
 import (
 	"fmt"
-	"k8s-management-go/app/models"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/utils/encryption"
 	"k8s-management-go/app/utils/loggingstate"
 	"os"
@@ -10,7 +10,7 @@ import (
 
 // ActionEncryptSecretsFileByName encrypts the given secrets file
 func ActionEncryptSecretsFile(password string, secretsFileName string) (err error) {
-	var secretsFilePath = models.GetGlobalSecretsPath() + secretsFileName
+	var secretsFilePath = configuration.GetConfiguration().GetGlobalSecretsPath() + secretsFileName
 	err = encryption.GpgEncryptSecrets(secretsFilePath, password)
 
 	if err != nil {

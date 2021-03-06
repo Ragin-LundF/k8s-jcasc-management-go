@@ -7,6 +7,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 	"k8s-management-go/app/actions/installactions"
 	"k8s-management-go/app/actions/namespaceactions"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/events"
 	"k8s-management-go/app/gui/uielements"
@@ -48,9 +49,9 @@ func ScreenUninstall(window fyne.Window) fyne.CanvasObject {
 			deploymentName = deploymentNameEntry.Text
 			dryRunOption = dryRunRadio.Selected
 			if dryRunOption == constants.InstallDryRunActive {
-				models.AssignDryRun(true)
+				configuration.GetConfiguration().SetDryRun(true)
 			} else {
-				models.AssignDryRun(false)
+				configuration.GetConfiguration().SetDryRun(false)
 			}
 			if !validator.ValidateNamespaceAvailableInConfig(namespace) {
 				namespaceErrorLabel.SetText("Error: namespace is unknown!")

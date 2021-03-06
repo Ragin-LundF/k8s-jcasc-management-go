@@ -1,11 +1,6 @@
 package models
 
 import (
-	"fmt"
-	"k8s-management-go/app/utils/files"
-	"k8s-management-go/app/utils/loggingstate"
-	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -132,110 +127,6 @@ type Configuration struct {
 // GetConfiguration returns the current configuration
 func GetConfiguration() Configuration {
 	return configuration
-}
-
-// GetIPConfigurationFile is a helper method for IP configuration file
-func GetIPConfigurationFile() string {
-	return FilePathWithBasePath(GetConfiguration().IPConfig.IPConfigFile)
-}
-
-// GetGlobalSecretsFile is a helper method for secrets file
-func GetGlobalSecretsFile() string {
-	var globalSecretsFile = GetConfiguration().GlobalSecretsFile
-	if globalSecretsFile == "" {
-		panic("The configured secrets file is not a file!")
-	}
-	return FilePathWithBasePath(globalSecretsFile)
-}
-
-func GetGlobalSecretsPath() (secretsFilePath string) {
-	var globalSecretsFile = GetGlobalSecretsFile()
-	var fileName = filepath.Base(globalSecretsFile)
-	return strings.Replace(globalSecretsFile, fileName, "", -1)
-	// return fmt.Sprintf("%s%s", secretsFilePath, string(os.PathSeparator))
-}
-
-// GetSecretsFiles returns a list of secret files to support different environments
-func GetSecretsFiles() []string {
-	secretsFilePath := GetGlobalSecretsPath()
-
-	if secretsFilePath != "" {
-		var filePrefix = "secrets_"
-		var fileFilter = files.FileFilter{
-			Prefix: &filePrefix,
-		}
-		var secretFilesWithoutPath, err = files.ListFilesOfDirectoryWithFilter(secretsFilePath, &fileFilter)
-		if err != nil {
-			loggingstate.AddErrorEntryAndDetails(
-				"Unable to filter for secrets files",
-				fmt.Sprintf("SearchDirectory: [%s]", secretsFilePath))
-		}
-		var secretFilesWithPath []string
-		if secretFilesWithoutPath != nil && len(*secretFilesWithoutPath) > 0 {
-			for _, secretFileOfFilter := range *secretFilesWithoutPath {
-				secretFilesWithPath = append(secretFilesWithPath, GetGlobalSecretsPath()+secretFileOfFilter)
-			}
-		}
-
-		var secretFiles []string
-
-		secretFiles = appendUnique(secretFiles, strings.Replace(GetGlobalSecretsFile(), secretsFilePath, "", -1))
-		if secretFilesWithPath != nil && len(secretFilesWithPath) > 0 {
-			for _, secretFile := range secretFilesWithPath {
-				secretFile = strings.Replace(secretFile, secretsFilePath, "", -1)
-				secretFile = strings.Replace(secretFile, ".gpg", "", -1)
-
-				secretFiles = appendUnique(secretFiles, secretFile)
-			}
-		}
-
-		return secretFiles
-	}
-	return nil
-}
-
-// GetProjectBaseDirectory : Get project base directory with full path
-func GetProjectBaseDirectory() string {
-	return calculateFullDirectoryPath(configuration.Directories.ProjectsBaseDirectory)
-}
-
-// GetProjectTemplateDirectory : Get project template directory with full path
-func GetProjectTemplateDirectory() string {
-	return calculateFullDirectoryPath(configuration.Directories.TemplatesBaseDirectory)
-}
-
-// calculate full directory path
-func calculateFullDirectoryPath(targetDir string) string {
-	if strings.HasPrefix(targetDir, "./") {
-		// if it starts with current directory add base path
-		return FilePathWithBasePath(targetDir)
-	} else if strings.HasPrefix(targetDir, "../") {
-		// if it starts with subdirectory add base path
-		return FilePathWithBasePath(targetDir)
-	} else {
-		// it seems to be an absolute path, use only the project directory
-		return targetDir
-	}
-}
-
-// FilePathWithBasePath is a helper method to calculate the correct filepath
-func FilePathWithBasePath(configurationFilePath string) string {
-	var resultConfigurationFilePath = configurationFilePath
-	if configuration.BasePath != "" {
-		resultConfigurationFilePath = files.AppendPath(configuration.BasePath, configurationFilePath)
-	}
-
-	// check if path exists. else try to check if the path was related to current path.
-	// this helps to support to read configuration from other paths and templates from
-	// this project path
-	if !files.FileOrDirectoryExists(resultConfigurationFilePath) {
-		currentDirectory, _ := os.Getwd()
-		currentDirFilePath := files.AppendPath(currentDirectory, configurationFilePath)
-		if files.FileOrDirectoryExists(currentDirFilePath) {
-			resultConfigurationFilePath = currentDirFilePath
-		}
-	}
-	return resultConfigurationFilePath
 }
 
 // AssignDryRun is a helper method for the dry-run flag
@@ -527,15 +418,6 @@ func addK8sManagementConfig(key string, value string) (success bool) {
 	}
 
 	return success
-}
-
-func appendUnique(slice []string, element string) []string {
-	for _, sliceElement := range slice {
-		if sliceElement == element {
-			return slice
-		}
-	}
-	return append(slice, element)
 }
 
 func replaceUnneededChars(value string) string {

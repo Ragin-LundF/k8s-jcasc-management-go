@@ -17,7 +17,7 @@ const CountCreateProjectWorkflow = 13
 // ActionProcessProjectCreate is processing the project creation. This method controls all required actions
 func ActionProcessProjectCreate(projectConfig models.ProjectConfig, callback func()) (err error) {
 	// calculate the target directory
-	newProjectDir := files.AppendPath(models.GetProjectBaseDirectory(), projectConfig.Namespace)
+	newProjectDir := files.AppendPath(configuration.GetConfiguration().GetProjectBaseDirectory(), projectConfig.Namespace)
 	callback()
 
 	// create new project directory

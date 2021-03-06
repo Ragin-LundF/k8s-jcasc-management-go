@@ -170,7 +170,7 @@ func DialogAskForNamespace() (namespace string, err error) {
 func DialogAskForSecretsFile() (secretsFile string, err error) {
 	log := logger.Log()
 	ClearScreen()
-	var secretFilesArray = models.GetSecretsFiles()
+	var secretFilesArray = configuration.GetConfiguration().GetSecretsFiles()
 
 	// Template for displaying menu
 	templates := &promptui.SelectTemplates{

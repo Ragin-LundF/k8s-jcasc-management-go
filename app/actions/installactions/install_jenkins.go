@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/helm"
 	"k8s-management-go/app/utils/loggingstate"
@@ -18,10 +17,10 @@ func ActionHelmInstallJenkins(command string, namespace string, deploymentName s
 	// check if command is ok
 	if command == constants.HelmCommandInstall || command == constants.HelmCommandUpgrade {
 		// prepare files and directories
-		helmChartsJenkinsDirectory := models.FilePathWithBasePath(constants.DirHelmJenkinsMaster)
+		helmChartsJenkinsDirectory := configuration.GetConfiguration().FilePathWithBasePath(constants.DirHelmJenkinsMaster)
 		helmChartsJenkinsValuesFile := files.AppendPath(
 			files.AppendPath(
-				models.GetProjectBaseDirectory(),
+				configuration.GetConfiguration().GetProjectBaseDirectory(),
 				namespace,
 			),
 			constants.FilenameJenkinsHelmValues,

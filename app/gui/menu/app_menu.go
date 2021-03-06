@@ -8,6 +8,7 @@ import (
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"k8s-management-go/app/actions/migration"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/gui/uiconstants"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/logger"
@@ -16,19 +17,19 @@ import (
 // CreateMainMenu creates the main menu
 func CreateMainMenu(app fyne.App, window fyne.Window) *fyne.MainMenu {
 	// K8S Management Menu
-	settingsItem := fyne.NewMenuItem("Configuration", func() { printConfiguration(window) })
-	toolsItem := fyne.NewMenuItem("Migrate templates v2 -> v3", func() { migrateTemplatesV2(window) })
-	quitItem := fyne.NewMenuItem("Quit", func() { app.Quit() })
-	darkThemeItem := fyne.NewMenuItem("Dark Theme", func() {
+	var settingsItem = fyne.NewMenuItem("Configuration", func() { printConfiguration(window) })
+	var toolsItem = fyne.NewMenuItem("Migrate templates v2 -> v3", func() { migrateTemplatesV2(window) })
+	var quitItem = fyne.NewMenuItem("Quit", func() { app.Quit() })
+	var darkThemeItem = fyne.NewMenuItem("Dark Theme", func() {
 		app.Settings().SetTheme(theme.DarkTheme())
 		app.Preferences().SetString(uiconstants.PreferencesTheme, uiconstants.PreferencesThemeDark)
 	})
-	lightThemeItem := fyne.NewMenuItem("Light Theme", func() {
+	var lightThemeItem = fyne.NewMenuItem("Light Theme", func() {
 		app.Settings().SetTheme(theme.LightTheme())
 		app.Preferences().SetString(uiconstants.PreferencesTheme, uiconstants.PreferencesThemeLight)
 	})
 
-	mainMenu := fyne.NewMainMenu(
+	var mainMenu = fyne.NewMainMenu(
 		// a quit item will be appended to our first menu
 		fyne.NewMenu("K8S Management", fyne.NewMenuItemSeparator(), settingsItem, fyne.NewMenuItemSeparator(), quitItem),
 		fyne.NewMenu("Theme", darkThemeItem, lightThemeItem),
@@ -55,19 +56,18 @@ func migrateTemplatesV2(window fyne.Window) {
 
 func printConfiguration(window fyne.Window) {
 	// System config
-	configSystem := models.GetConfiguration()
-	configSystemAsJSON, _ := json.MarshalIndent(configSystem, "", "\t")
+	var configSystemAsJSON, _ = json.MarshalIndent(configuration.GetConfiguration(), "", "\t")
 
 	// textgrid for system config
-	textGridSystemConfig := widget.NewTextGrid()
+	var textGridSystemConfig = widget.NewTextGrid()
 	textGridSystemConfig.SetText(string(configSystemAsJSON))
 
 	// IP config
-	configIP := models.GetIPConfiguration()
-	configIPAsJSON, _ := json.MarshalIndent(configIP, "", "\t")
+	var configIP = models.GetIPConfiguration()
+	var configIPAsJSON, _ = json.MarshalIndent(configIP, "", "\t")
 
 	// writing into log
-	log := logger.Log()
+	var log = logger.Log()
 	log.Info("---- Printing system configuration start -----")
 	log.Info("\n" + string(configSystemAsJSON))
 	log.Info("---- Printing system configuration end   -----")

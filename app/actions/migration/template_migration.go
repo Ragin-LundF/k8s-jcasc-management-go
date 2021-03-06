@@ -2,8 +2,8 @@ package migration
 
 import (
 	"fmt"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/loggingstate"
 )
@@ -12,11 +12,11 @@ import (
 func MigrateTemplatesToV3() string {
 	var errors []string
 	var placeholdersToMigrate = createMigrationPlaceholderMap()
-	var cloudTemplateDirectory = files.AppendPath(models.GetProjectTemplateDirectory(), constants.DirProjectTemplateCloudTemplates)
+	var cloudTemplateDirectory = files.AppendPath(configuration.GetConfiguration().GetProjectTemplateDirectory(), constants.DirProjectTemplateCloudTemplates)
 
 	for oldPlaceholder, newPlaceholder := range placeholdersToMigrate {
 		// replace in main templates
-		err := replacePlaceholderInTemplates(models.GetProjectTemplateDirectory(), oldPlaceholder, newPlaceholder)
+		err := replacePlaceholderInTemplates(configuration.GetConfiguration().GetProjectTemplateDirectory(), oldPlaceholder, newPlaceholder)
 		if err != nil {
 			errors = append(errors, err.Error())
 		}

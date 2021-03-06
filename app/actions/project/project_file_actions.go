@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/loggingstate"
 	"os"
@@ -53,7 +52,7 @@ func copyTemplates(fileNames []string, projectDirectory string) (err error) {
 	for _, fileName := range fileNames {
 		loggingstate.AddInfoEntry(fmt.Sprintf("  -> Copy [%s]...", fileName))
 		_, err = files.CopyFile(
-			files.AppendPath(models.GetProjectTemplateDirectory(), fileName),
+			files.AppendPath(configuration.GetConfiguration().GetProjectTemplateDirectory(), fileName),
 			files.AppendPath(projectDirectory, fileName),
 		)
 		if err != nil {

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/goware/prefixer"
 	"io/ioutil"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/loggingstate"
 	"strings"
@@ -14,7 +14,7 @@ import (
 // ActionReadCloudTemplates reads cloud templates and return list
 func ActionReadCloudTemplates() (cloudTemplates []string) {
 	// look if cloud templates are available
-	var cloudTemplatePath = files.AppendPath(models.GetProjectTemplateDirectory(), constants.DirProjectTemplateCloudTemplates)
+	var cloudTemplatePath = files.AppendPath(configuration.GetConfiguration().GetProjectTemplateDirectory(), constants.DirProjectTemplateCloudTemplates)
 	if !files.FileOrDirectoryExists(cloudTemplatePath) {
 		loggingstate.AddInfoEntry("  -> No cloud template directory found. Skip this step.")
 
@@ -34,7 +34,7 @@ func ActionReadCloudTemplates() (cloudTemplates []string) {
 // ActionReadCloudTemplatesAsString : Rad cloud templates as string for further processing
 func ActionReadCloudTemplatesAsString(cloudTemplateFiles []string) (cloudTemplateContent string, err error) {
 	// prepare vars and directory
-	var cloudTemplatePath = files.AppendPath(models.GetProjectTemplateDirectory(), constants.DirProjectTemplateCloudTemplates)
+	var cloudTemplatePath = files.AppendPath(configuration.GetConfiguration().GetProjectTemplateDirectory(), constants.DirProjectTemplateCloudTemplates)
 
 	// first read every template into a variable
 	for _, cloudTemplate := range cloudTemplateFiles {

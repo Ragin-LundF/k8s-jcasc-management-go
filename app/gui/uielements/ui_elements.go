@@ -9,7 +9,6 @@ import (
 	"k8s-management-go/app/actions/namespaceactions"
 	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/loggingstate"
 	"strings"
 )
@@ -78,7 +77,7 @@ func CreateDeploymentNameEntry() (deploymentNameEntry *widget.Entry) {
 // CreateSecretsFileEntry creates a dropdown which contains a selection of secret files
 func CreateSecretsFileEntry() (secretsFileEntry *widget.Select) {
 	var secretFiles []string
-	var alternativeSecretFiles = models.GetSecretsFiles()
+	var alternativeSecretFiles = configuration.GetConfiguration().GetSecretsFiles()
 	if len(alternativeSecretFiles) > 0 {
 		secretFiles = append(secretFiles, alternativeSecretFiles...)
 	}

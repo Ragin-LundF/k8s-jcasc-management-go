@@ -1,12 +1,17 @@
 package configuration
 
 import (
+	"fmt"
 	"github.com/imdario/mergo"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/utils/files"
+	"k8s-management-go/app/utils/loggingstate"
 	"log"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 // baseCustomConfig represents the base custom configuration to setup alternative project path and config file.
@@ -124,6 +129,116 @@ func GetConfiguration() *config {
 	return conf
 }
 
+// GetProjectBaseDirectory : Get project base directory with full path
+func (conf *config) GetProjectBaseDirectory() string {
+	return conf.calculateFullDirectoryPath(conf.K8SManagement.Project.BaseDirectory)
+}
+
+// GetProjectTemplateDirectory : Get project template directory with full path
+func (conf *config) GetProjectTemplateDirectory() string {
+	return conf.calculateFullDirectoryPath(conf.K8SManagement.Project.TemplateDirectory)
+}
+
+// GetIPConfigurationFile is a helper method for IP configuration file
+func (conf *config) GetIPConfigurationFile() string {
+	return conf.FilePathWithBasePath(conf.K8SManagement.Ipconfig.File)
+}
+
+// calculateFullDirectoryPath calculates full directory path
+func (conf *config) calculateFullDirectoryPath(targetDir string) string {
+	if strings.HasPrefix(targetDir, "./") {
+		// if it starts with current directory add base path
+		return conf.FilePathWithBasePath(targetDir)
+	} else if strings.HasPrefix(targetDir, "../") {
+		// if it starts with subdirectory add base path
+		return conf.FilePathWithBasePath(targetDir)
+	} else {
+		// it seems to be an absolute path, use only the project directory
+		return targetDir
+	}
+}
+
+// GetGlobalSecretsPath returns the path for the global secrets files.
+func (conf *config) GetGlobalSecretsPath() (secretsFilePath string) {
+	var globalSecretsFile = conf.getGlobalSecretsFile()
+	var fileName = filepath.Base(globalSecretsFile)
+	return strings.Replace(globalSecretsFile, fileName, "", -1)
+	// return fmt.Sprintf("%s%s", secretsFilePath, string(os.PathSeparator))
+}
+
+// GetSecretsFiles returns a list of secret files to support different environments
+func (conf *config) GetSecretsFiles() []string {
+	secretsFilePath := conf.GetGlobalSecretsPath()
+
+	if secretsFilePath != "" {
+		var filePrefix = "secrets_"
+		var fileFilter = files.FileFilter{
+			Prefix: &filePrefix,
+		}
+		var secretFilesWithoutPath, err = files.ListFilesOfDirectoryWithFilter(secretsFilePath, &fileFilter)
+		if err != nil {
+			loggingstate.AddErrorEntryAndDetails(
+				"Unable to filter for secrets files",
+				fmt.Sprintf("SearchDirectory: [%s]", secretsFilePath))
+		}
+		var secretFilesWithPath []string
+		if secretFilesWithoutPath != nil && len(*secretFilesWithoutPath) > 0 {
+			for _, secretFileOfFilter := range *secretFilesWithoutPath {
+				secretFilesWithPath = append(secretFilesWithPath, conf.GetGlobalSecretsPath()+secretFileOfFilter)
+			}
+		}
+
+		var secretFiles []string
+
+		secretFiles = appendUnique(secretFiles, strings.Replace(conf.getGlobalSecretsFile(), secretsFilePath, "", -1))
+		if secretFilesWithPath != nil && len(secretFilesWithPath) > 0 {
+			for _, secretFile := range secretFilesWithPath {
+				secretFile = strings.Replace(secretFile, secretsFilePath, "", -1)
+				secretFile = strings.Replace(secretFile, ".gpg", "", -1)
+
+				secretFiles = appendUnique(secretFiles, secretFile)
+			}
+		}
+
+		return secretFiles
+	}
+	return nil
+}
+
+// GetGlobalSecretsFile is a helper method for secrets file
+func (conf *config) getGlobalSecretsFile() string {
+	var globalSecretsFile = conf.K8SManagement.Project.SecretFiles
+	if globalSecretsFile == "" {
+		panic("The configured secrets file is not a file!")
+	}
+	return conf.FilePathWithBasePath(globalSecretsFile)
+}
+
+// SetDryRun set the dry run option
+func (conf *config) SetDryRun(dryRun bool) {
+	conf.K8SManagement.DryRunOnly = dryRun
+}
+
+// FilePathWithBasePath is a helper method to calculate the correct filepath
+func (conf *config) FilePathWithBasePath(configurationFilePath string) string {
+	var resultConfigurationFilePath = configurationFilePath
+	if conf.K8SManagement.Project.BaseDirectory != "" {
+		resultConfigurationFilePath = files.AppendPath(conf.K8SManagement.Project.BaseDirectory, configurationFilePath)
+	}
+
+	// check if path exists. else try to check if the path was related to current path.
+	// this helps to support to read configuration from other paths and templates from
+	// this project path
+	if !files.FileOrDirectoryExists(resultConfigurationFilePath) {
+		currentDirectory, _ := os.Getwd()
+		var currentDirFilePath = files.AppendPath(currentDirectory, configurationFilePath)
+		if files.FileOrDirectoryExists(currentDirFilePath) {
+			resultConfigurationFilePath = currentDirFilePath
+		}
+	}
+	return resultConfigurationFilePath
+}
+
 // LoadConfiguration loads the base configuration and merges it with alternative configurations if defined.
 func LoadConfiguration(basePath string, dryRunDebug bool, cliOnly bool) {
 	conf = &config{}
@@ -151,6 +266,7 @@ func (conf *config) initBaseConfig(basePath string) {
 		if conf.CustomConfig.K8SManagement.BasePath == "" {
 			conf.CustomConfig.K8SManagement.BasePath = basePath
 		}
+		conf.K8SManagement.Project.BaseDirectory = conf.CustomConfig.K8SManagement.BasePath
 	}
 
 	// load custom configuration if found.
@@ -180,4 +296,13 @@ func readConfigFromYAMLFile(file string, target interface{}) error {
 		return err
 	}
 	return nil
+}
+
+func appendUnique(slice []string, element string) []string {
+	for _, sliceElement := range slice {
+		if sliceElement == element {
+			return slice
+		}
+	}
+	return append(slice, element)
 }

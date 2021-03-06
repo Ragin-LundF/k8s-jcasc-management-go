@@ -107,7 +107,7 @@ func CalculateDirectoriesForInstall(state models.StateData, namespace string) (s
 	loggingstate.AddInfoEntry("-> Checking existing directories...")
 	state.Namespace = namespace
 	state.ProjectPath = files.AppendPath(
-		models.GetProjectBaseDirectory(),
+		configuration.GetConfiguration().GetProjectBaseDirectory(),
 		namespace,
 	)
 	// validate that project is existing

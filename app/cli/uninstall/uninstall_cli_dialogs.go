@@ -2,6 +2,7 @@ package uninstall
 
 import (
 	"k8s-management-go/app/cli/dialogs"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
@@ -30,7 +31,7 @@ func ShowUninstallDialogs() (state models.StateData, err error) {
 	// start uninstalling Jenkins
 	jenkinsHelmValuesFile := files.AppendPath(
 		files.AppendPath(
-			models.GetProjectBaseDirectory(),
+			configuration.GetConfiguration().GetProjectBaseDirectory(),
 			state.Namespace,
 		),
 		constants.FilenameJenkinsHelmValues,
