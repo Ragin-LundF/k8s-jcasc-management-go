@@ -5,10 +5,12 @@ import (
 	"fyne.io/fyne/v2/test"
 	"fyne.io/fyne/v2/widget"
 	"github.com/stretchr/testify/assert"
+	"k8s-management-go/app/configuration"
 	"testing"
 )
 
 func TestScreenCreateFullProject(t *testing.T) {
+	configuration.LoadConfiguration("../../../", false, false)
 	var deployOnlyPrjForm = ScreenCreateFullProject(test.NewApp().NewWindow("test"))
 	var i = 0
 
