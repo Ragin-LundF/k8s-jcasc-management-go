@@ -2,18 +2,18 @@ package namespaceactions
 
 import (
 	"github.com/stretchr/testify/assert"
-	"k8s-management-go/app/models"
+	"k8s-management-go/app/actions/migration"
 	"testing"
 )
 
 func init() {
-	models.ResetIPAndNamespaces()
-	models.AddIPAndNamespaceToConfiguration("namespace-a", "1.2.3.4")
-	models.AddIPAndNamespaceToConfiguration("stage-alpha", "1.2.3.5")
-	models.AddIPAndNamespaceToConfiguration("projectA", "1.2.3.6")
-	models.AddIPAndNamespaceToConfiguration("projectB", "1.2.3.7")
-	models.AddIPAndNamespaceToConfiguration("beta-stage", "1.2.3.8")
-	models.AddIPAndNamespaceToConfiguration("production-stage", "1.2.3.9")
+	migration.ResetIPAndNamespaces()
+	migration.AddIPAndNamespaceToConfiguration("namespace-a", "1.2.3.4")
+	migration.AddIPAndNamespaceToConfiguration("stage-alpha", "1.2.3.5")
+	migration.AddIPAndNamespaceToConfiguration("projectA", "1.2.3.6")
+	migration.AddIPAndNamespaceToConfiguration("projectB", "1.2.3.7")
+	migration.AddIPAndNamespaceToConfiguration("beta-stage", "1.2.3.8")
+	migration.AddIPAndNamespaceToConfiguration("production-stage", "1.2.3.9")
 }
 
 func TestActionReadNamespaceWithFilterNil(t *testing.T) {

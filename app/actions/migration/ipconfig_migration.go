@@ -1,16 +1,35 @@
-package config
+package migration
 
 import (
 	"bufio"
-	"fmt"
 	"k8s-management-go/app/configuration"
-	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
-	"k8s-management-go/app/utils/logger"
-	"k8s-management-go/app/utils/loggingstate"
 	"os"
 	"strings"
 )
+
+// IP is the basic IP structure
+type IP struct {
+	Namespace string
+	IP        string
+}
+
+// IPConfiguration contains a list of IPs
+type IPConfiguration struct {
+	IPs []IP
+}
+
+var ipConfig IPConfiguration
+
+// AddIPAndNamespaceToConfiguration adds IP and namespace to the IP configuration
+func AddIPAndNamespaceToConfiguration(namespace string, ip string) {
+	ipConfig.IPs = append(ipConfig.IPs, IP{namespace, ip})
+}
+
+// ResetIPAndNamespaces will reset the configured IPs
+func ResetIPAndNamespaces() {
+	ipConfig.IPs = nil
+}
 
 // ReadIPConfig reads the IP configuration file
 func ReadIPConfig() {
@@ -36,9 +55,9 @@ func ReadIPConfig() {
 			// trim the line to avoid problems
 			line := strings.TrimSpace(scanner.Text())
 			// if line is not a comment (marker: "#") parse the configuration and assign it to the config
-			if line != "" && !strings.HasPrefix(line, "#") && !strings.HasPrefix(line, configuration.GetConfiguration().K8SManagement.Ipconfig.DummyPrefix) {
+			if line != "" && !strings.HasPrefix(line, "#") && !strings.HasPrefix(line, configuration.GetConfiguration().K8SManagement.IPConfig.DummyPrefix) {
 				namespace, ip := parseIPConfigurationLine(line)
-				models.AddIPAndNamespaceToConfiguration(namespace, ip)
+				AddIPAndNamespaceToConfiguration(namespace, ip)
 			}
 		}
 	}
@@ -77,23 +96,4 @@ func optimizeNamespaces(namespace string) string {
 	}
 
 	return strings.TrimSpace(namespace)
-}
-
-// AddToIPConfigFile adds an IP to the IP config file
-func AddToIPConfigFile(namespace string, ip string) (success bool, err error) {
-	log := logger.Log()
-	ipconfigFile, err := os.OpenFile(configuration.GetConfiguration().GetIPConfigurationFile(), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	if err != nil {
-		loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Unable to open IP config file [%s]", configuration.GetConfiguration().GetIPConfigurationFile()), err.Error())
-		log.Errorf("[AddToIPConfigFile] Unable to open IP config file [%s]. \n%s", configuration.GetConfiguration().GetIPConfigurationFile(), err.Error())
-		return false, err
-	}
-	defer ipconfigFile.Close()
-
-	if _, err := ipconfigFile.WriteString(namespace + " " + ip + "\n"); err != nil {
-		loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Unable to add new IP and namespace to file [%s]", configuration.GetConfiguration().GetIPConfigurationFile()), err.Error())
-		log.Errorf("[AddToIPConfigFile] Unable to add new IP and namespace to file [%s]. \n%s", configuration.GetConfiguration().GetIPConfigurationFile(), err.Error())
-		return false, err
-	}
-	return true, err
 }

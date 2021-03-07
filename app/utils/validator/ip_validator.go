@@ -2,7 +2,7 @@ package validator
 
 import (
 	"errors"
-	"k8s-management-go/app/models"
+	"k8s-management-go/app/configuration"
 	"regexp"
 	"strings"
 )
@@ -19,8 +19,8 @@ func ValidateIP(input string) error {
 			return errors.New("IP address or domain is not valid! ")
 		}
 		// check, that ip address was not already used
-		for _, ipConfig := range models.GetIPConfiguration().IPs {
-			if strings.ToLower(ipConfig.IP) == strings.ToLower(input) {
+		for _, ipConfig := range configuration.GetConfiguration().K8SManagement.IPConfig.Deployments {
+			if strings.ToLower(ipConfig.IPAddress) == strings.ToLower(input) {
 				return errors.New("IP address or domain already in use! ")
 			}
 		}

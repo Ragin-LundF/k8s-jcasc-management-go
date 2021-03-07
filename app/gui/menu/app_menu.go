@@ -10,7 +10,6 @@ import (
 	"k8s-management-go/app/actions/migration"
 	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/gui/uiconstants"
-	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/logger"
 )
 
@@ -79,7 +78,7 @@ func printConfiguration(window fyne.Window) {
 	textGridSystemConfig.SetText(string(configSystemAsJSON))
 
 	// IP config
-	var configIP = models.GetIPConfiguration()
+	var configIP = configuration.GetConfiguration().K8SManagement.IPConfig.Deployments
 	var configIPAsJSON, _ = json.MarshalIndent(configIP, "", "\t")
 
 	// writing into log

@@ -7,7 +7,6 @@ import (
 	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/server"
 	"k8s-management-go/app/utils/cmdexecutor"
-	"k8s-management-go/app/utils/config"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/logger"
 	"os"
@@ -91,8 +90,6 @@ func configure(basePath string, dryRunDebug bool, cliOnly bool) {
 	if configYaml == nil {
 		os.Exit(1)
 	}
-	// read configuration
-	config.ReadIPConfig()
 
 	// overwrite logging
 	if logger.LogEncoding == "" && configuration.GetConfiguration().K8SManagement.Log.Encoding != "" {

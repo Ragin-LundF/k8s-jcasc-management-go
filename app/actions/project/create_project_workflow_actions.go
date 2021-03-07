@@ -4,7 +4,6 @@ import (
 	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/events"
 	"k8s-management-go/app/models"
-	"k8s-management-go/app/utils/config"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/loggingstate"
 	"os"
@@ -41,7 +40,7 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig, callback fun
 
 	// add IP and namespace to IP configuration
 	loggingstate.AddInfoEntry("-> Start adding IP address to ipconfig file...")
-	success, err := config.AddToIPConfigFile(projectConfig.Namespace, projectConfig.IPAddress)
+	success, err := configuration.GetConfiguration().AddToIPConfigFile(projectConfig.Namespace, projectConfig.IPAddress, projectConfig.JenkinsDomain)
 	if !success || err != nil {
 		_ = os.RemoveAll(newProjectDir)
 		return err
@@ -74,10 +73,6 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig, callback fun
 	}
 	loggingstate.AddInfoEntry("-> Start template processing...done")
 	callback()
-
-	// reload config
-	models.ResetIPAndNamespaces()
-	config.ReadIPConfig()
 
 	// send event that new namespace was created
 	createNamespaceEvent(projectConfig.Namespace)

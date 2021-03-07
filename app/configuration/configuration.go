@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/utils/files"
+	"k8s-management-go/app/utils/logger"
 	"k8s-management-go/app/utils/loggingstate"
 	"log"
 	"os"
@@ -22,6 +23,22 @@ type baseCustomConfig struct {
 	} `yaml:"k8sManagement,omitempty"`
 }
 
+// DeploymentYAMLConfig contains the structure for the IP/namespace configuration files
+type DeploymentYAMLConfig struct {
+	K8SManagement struct {
+		IPConfig struct {
+			Deployments []DeploymentStruct `yaml:"deployments,omitempty"`
+		} `yaml:"ipconfig,omitempty"`
+	} `yaml:"k8sManagement,omitempty"`
+}
+
+// DeploymentStruct contains IP addresses and/or namespaces.
+type DeploymentStruct struct {
+	IPAddress string `yaml:"ipAddress,omitempty"`
+	Namespace string `yaml:"namespace,omitempty"`
+	Domain    string `yaml:"domain,omitempty"`
+}
+
 // config represents the configuration files
 type config struct {
 	K8SManagement struct {
@@ -31,9 +48,10 @@ type config struct {
 			Encoding           string `yaml:"encoding,omitempty"`
 			OverwriteOnRestart bool   `yaml:"overwriteOnRestart,omitempty"`
 		} `yaml:"log,omitempty"`
-		Ipconfig struct {
-			File        string `yaml:"file,omitempty"`
-			DummyPrefix string `yaml:"dummyPrefix,omitempty"`
+		IPConfig struct {
+			File        string             `yaml:"file,omitempty"`
+			DummyPrefix string             `yaml:"dummyPrefix,omitempty"`
+			Deployments []DeploymentStruct `yaml:"-"`
 		} `yaml:"ipconfig,omitempty"`
 		Project struct {
 			BaseDirectory     string `yaml:"baseDirectory,omitempty"`
@@ -146,7 +164,7 @@ func (conf *config) GetProjectTemplateDirectory() string {
 
 // GetIPConfigurationFile is a helper method for IP configuration file
 func (conf *config) GetIPConfigurationFile() string {
-	return conf.FilePathWithBasePath(conf.K8SManagement.Ipconfig.File)
+	return conf.FilePathWithBasePath(conf.K8SManagement.IPConfig.File)
 }
 
 // calculateFullDirectoryPath calculates full directory path
@@ -244,17 +262,59 @@ func (conf *config) FilePathWithBasePath(configurationFilePath string) string {
 	return resultConfigurationFilePath
 }
 
+// AddToIPConfigFile adds an IP to the IP config file
+func (conf *config) AddToIPConfigFile(namespace string, ip string, domain string) (success bool, err error) {
+	log := logger.Log()
+	// add new namespace and IP address to configuration
+	var newIpAndNamespace = DeploymentStruct{
+		IPAddress: ip,
+		Namespace: namespace,
+		Domain:    domain,
+	}
+	conf.K8SManagement.IPConfig.Deployments = append(conf.K8SManagement.IPConfig.Deployments, newIpAndNamespace)
+
+	// open file
+	ipConfigFile, err := os.OpenFile(conf.GetIPConfigurationFile(), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
+	if err != nil {
+		loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Unable to open IP config file [%s]", conf.GetIPConfigurationFile()), err.Error())
+		log.Errorf("[AddToIPConfigFile] Unable to open IP config file [%s]. \n%s", conf.GetIPConfigurationFile(), err.Error())
+		return false, err
+	}
+	defer ipConfigFile.Close()
+
+	// assign current IP configuration to smaller file structure
+	var yamlIPConfig = DeploymentYAMLConfig{}
+	yamlIPConfig.K8SManagement.IPConfig.Deployments = conf.K8SManagement.IPConfig.Deployments
+
+	// marshall YAML
+	yamlFileOutput, err := yaml.Marshal(yamlIPConfig)
+	if err != nil {
+		loggingstate.AddErrorEntryAndDetails("Unable to marshall yaml IP deployment configuration.", err.Error())
+		log.Error("Unable to marshall yaml IP deployment configuration.", err.Error())
+		return false, err
+	}
+
+	// write file
+	if _, err := ipConfigFile.Write(yamlFileOutput); err != nil {
+		loggingstate.AddErrorEntryAndDetails("Unable to write YAML IP deployment configuration.", err.Error())
+		log.Error("Unable to write YAML IP deployment configuration.", err.Error())
+		return false, err
+	}
+	return true, err
+}
+
 // LoadConfiguration loads the base configuration and merges it with alternative configurations if defined.
 func LoadConfiguration(basePath string, dryRunDebug bool, cliOnly bool) {
 	conf = &config{}
 	conf.initBaseConfig(basePath)
 	conf.K8SManagement.DryRunOnly = dryRunDebug
 	conf.K8SManagement.CliOnly = cliOnly
+	conf.readDeploymentConfigurationFromYamlFile()
 }
 
 func (conf *config) initBaseConfig(basePath string) {
 	// read main configuration
-	if err := readConfigFromYAMLFile(files.AppendPath(files.AppendPath(basePath, constants.DirConfig), constants.FilenameConfigurationYaml), conf); err != nil {
+	if err := conf.readConfigFromYAMLFile(files.AppendPath(files.AppendPath(basePath, constants.DirConfig), constants.FilenameConfigurationYaml), conf); err != nil {
 		log.Panicf("Unable to load base configuration: %v", err.Error())
 	}
 
@@ -262,7 +322,7 @@ func (conf *config) initBaseConfig(basePath string) {
 	var baseCfg = baseCustomConfig{}
 	var alternativeFile = files.AppendPath(files.AppendPath(basePath, constants.DirConfig), constants.FilenameConfigurationCustomYaml)
 	if files.FileOrDirectoryExists(alternativeFile) {
-		if err := readConfigFromYAMLFile(alternativeFile, &baseCfg); err != nil {
+		if err := conf.readConfigFromYAMLFile(alternativeFile, &baseCfg); err != nil {
 			log.Panicf("Unable to load alternative base configuration: %v", err.Error())
 		}
 		conf.CustomConfig = baseCfg
@@ -279,7 +339,7 @@ func (conf *config) initBaseConfig(basePath string) {
 		var customConfig = files.AppendPath(conf.CustomConfig.K8SManagement.BasePath, conf.CustomConfig.K8SManagement.ConfigFile)
 		if files.FileOrDirectoryExists(customConfig) {
 			var customCfg = config{}
-			if err := readConfigFromYAMLFile(customConfig, &customCfg); err != nil {
+			if err := conf.readConfigFromYAMLFile(customConfig, &customCfg); err != nil {
 				log.Panicf("Unable to load custom configuration: %v", err.Error())
 			}
 			if err := mergo.Merge(conf, customCfg, mergo.WithOverride); err != nil {
@@ -291,7 +351,7 @@ func (conf *config) initBaseConfig(basePath string) {
 	}
 }
 
-func readConfigFromYAMLFile(file string, target interface{}) error {
+func (conf *config) readConfigFromYAMLFile(file string, target interface{}) error {
 	yamlFile, err := ioutil.ReadFile(file)
 	if err != nil {
 		return err
@@ -301,6 +361,26 @@ func readConfigFromYAMLFile(file string, target interface{}) error {
 		return err
 	}
 	return nil
+}
+
+func (conf *config) readDeploymentConfigurationFromYamlFile() {
+	if files.FileOrDirectoryExists(conf.K8SManagement.IPConfig.File) {
+		var yamlDeploymentConfig, err = ioutil.ReadFile(conf.K8SManagement.IPConfig.File)
+		if err != nil {
+			loggingstate.AddErrorEntryAndDetails("Unable to read IP deployment config file", err.Error())
+			loggingstate.ClearLoggingState()
+			log.Panicf("Unable to load IP deployment configuration [%v]\n%v", err.Error(), conf.K8SManagement.IPConfig.File)
+		}
+
+		var deploymentConfig = DeploymentYAMLConfig{}
+		err = yaml.Unmarshal(yamlDeploymentConfig, &deploymentConfig)
+		if err != nil {
+			loggingstate.AddErrorEntryAndDetails("Unable to unmarshal IP config file", err.Error())
+			loggingstate.ClearLoggingState()
+			log.Panicf("Unable to unmarshal IP Deployment configuration [%v]", err.Error())
+		}
+		conf.K8SManagement.IPConfig.Deployments = deploymentConfig.K8SManagement.IPConfig.Deployments
+	}
 }
 
 func appendUnique(slice []string, element string) []string {

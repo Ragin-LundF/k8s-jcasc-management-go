@@ -14,27 +14,9 @@ import (
 	"strings"
 )
 
-var cfg config
 var yamlCfg = configuration.EmptyConfiguration()
 
-type contextServerCertificate struct {
-	Context     string
-	Certificate string
-}
-
-// config represents the configuration files
-type config struct {
-	IPConfig struct {
-		IPConfigFile            string
-		IPConfigFileDummyPrefix string
-	}
-	// Kubernetes relevant data
-	Kubernetes struct {
-		ServerCertificate         string
-		ContextServerCertificates []contextServerCertificate
-	}
-}
-
+// MigrateConfigurationV3 starts configuration migration
 func MigrateConfigurationV3() string {
 	readConfiguration(configuration.GetConfiguration().K8SManagement.Project.BaseDirectory)
 	var status = migrateFromCnfToYaml()
@@ -153,13 +135,12 @@ func addKubernetesCertificate(key string, value string) (success bool) {
 		yamlCfg.Kubernetes.Certificates.Default = value
 		success = true
 	} else if strings.HasPrefix(key, "KUBERNETES_SERVER_CERTIFICATE_") {
-		// TODO
 		context := strings.TrimPrefix(key, "KUBERNETES_SERVER_CERTIFICATE_")
-		ctxCertificate := contextServerCertificate{
-			Context:     context,
-			Certificate: value,
+		// assign to old config
+		if yamlCfg.Kubernetes.Certificates.Contexts == nil {
+			yamlCfg.Kubernetes.Certificates.Contexts = make(map[string]string)
 		}
-		cfg.Kubernetes.ContextServerCertificates = append(cfg.Kubernetes.ContextServerCertificates, ctxCertificate)
+		yamlCfg.Kubernetes.Certificates.Contexts[context] = value
 	}
 	return success
 }
@@ -341,11 +322,11 @@ func addCommonConfig(key string, value string) (success bool) {
 		success = true
 		break
 	case "IP_CONFIG_FILE":
-		yamlCfg.K8SManagement.Ipconfig.File = value
+		yamlCfg.K8SManagement.IPConfig.File = value
 		success = true
 		break
 	case "IP_CONFIG_FILE_DUMMY_PREFIX":
-		yamlCfg.K8SManagement.Ipconfig.DummyPrefix = value
+		yamlCfg.K8SManagement.IPConfig.DummyPrefix = value
 		success = true
 		break
 	case "PROJECTS_BASE_DIRECTORY":
@@ -404,10 +385,10 @@ func migrateFromCnfToYaml() string {
 	var yamlConfig = string(yamlOutByte)
 	loggingstate.AddInfoEntryAndDetails("New custom configuration", yamlConfig)
 
-	var configFile = configuration.GetConfiguration().CustomConfig.K8SManagement.ConfigFile
-	if files.FileOrDirectoryExists(configFile) {
-		return "FAILED - Config already exists"
-	}
+	var configFile = configuration.GetConfiguration().CustomConfig.K8SManagement.ConfigFile + "2"
+	//if files.FileOrDirectoryExists(configFile) {
+	//	return "FAILED - Config already exists"
+	//}
 	_ = ioutil.WriteFile(configFile, yamlOutByte, 0644)
 	return "SUCCESS"
 }

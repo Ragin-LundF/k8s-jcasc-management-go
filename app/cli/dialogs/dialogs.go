@@ -5,7 +5,6 @@ import (
 	"github.com/manifoldco/promptui"
 	"github.com/schollz/progressbar/v3"
 	"k8s-management-go/app/configuration"
-	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/arrays"
 	"k8s-management-go/app/utils/logger"
 	"k8s-management-go/app/utils/loggingstate"
@@ -140,7 +139,7 @@ func DialogAskForNamespace() (namespace string, err error) {
 
 	// searcher (with "/")
 	searcher := func(input string, index int) bool {
-		namespaceItem := models.GetIPConfiguration().IPs[index]
+		namespaceItem := configuration.GetConfiguration().K8SManagement.IPConfig.Deployments[index]
 		name := strings.Replace(strings.ToLower(namespaceItem.Namespace), " ", "", -1)
 		input = strings.Replace(strings.ToLower(input), " ", "", -1)
 
@@ -149,7 +148,7 @@ func DialogAskForNamespace() (namespace string, err error) {
 
 	prompt := promptui.Select{
 		Label:     "Please select the namespace to which the secrets should be applied",
-		Items:     models.GetIPConfiguration().IPs,
+		Items:     configuration.GetConfiguration().K8SManagement.IPConfig.Deployments,
 		Templates: templates,
 		Size:      12,
 		Searcher:  searcher,
@@ -160,7 +159,7 @@ func DialogAskForNamespace() (namespace string, err error) {
 	if err != nil {
 		log.Errorf("[DialogAskForNamespace] Prompt ask for namespace failed %s\n", err.Error())
 	} else {
-		namespace = models.GetIPConfiguration().IPs[i].Namespace
+		namespace = configuration.GetConfiguration().K8SManagement.IPConfig.Deployments[i].Namespace
 	}
 
 	return namespace, err

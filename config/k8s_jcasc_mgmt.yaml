@@ -11,7 +11,7 @@ k8sManagement:
 
   ipconfig:
     # defines the file, in which the ip addresses for each namespace should be stored
-    file: "./config/ip_config.cnf"
+    file: "./config/ip_config.yaml"
     # Dummy prefix for reserved IPs.
     # If a namespace was prefixed with this, it will not be used for actions that are working with the {{ ipconfig.file }} (like global update of credentials)
     dummyPrefix: "dummy"

@@ -2,15 +2,15 @@ package validator
 
 import (
 	"github.com/stretchr/testify/assert"
-	"k8s-management-go/app/models"
+	"k8s-management-go/app/actions/migration"
 	"testing"
 )
 
 func init() {
-	models.ResetIPAndNamespaces()
-	models.AddIPAndNamespaceToConfiguration("existing-namespace", "1.2.3.4")
-	models.AddIPAndNamespaceToConfiguration("valid-namespace", "1.2.3.5")
-	models.AddIPAndNamespaceToConfiguration("product-dev", "1.2.3.6")
+	migration.ResetIPAndNamespaces()
+	migration.AddIPAndNamespaceToConfiguration("existing-namespace", "1.2.3.4")
+	migration.AddIPAndNamespaceToConfiguration("valid-namespace", "1.2.3.5")
+	migration.AddIPAndNamespaceToConfiguration("product-dev", "1.2.3.6")
 }
 
 func TestValidateNamespaceAvailableInConfig(t *testing.T) {

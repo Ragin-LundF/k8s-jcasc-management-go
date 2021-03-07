@@ -2,7 +2,6 @@ package secretsactions
 
 import (
 	"k8s-management-go/app/configuration"
-	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/loggingstate"
 	"os"
 	"os/exec"
@@ -26,7 +25,7 @@ func ActionApplySecretsToNamespace(namespace string, secretsFileName string) (er
 func ActionApplySecretsToAllNamespaces(secretsFileName string, callback func()) (err error) {
 	secretsFilePath := configuration.GetConfiguration().GetGlobalSecretsPath() + secretsFileName
 	// apply secret to namespaces
-	for _, ip := range models.GetIPConfiguration().IPs {
+	for _, ip := range configuration.GetConfiguration().K8SManagement.IPConfig.Deployments {
 		if err = executingSecretsFile(secretsFilePath, ip.Namespace); err != nil {
 			_ = removeDecryptedSecretsFile(secretsFilePath)
 			return err

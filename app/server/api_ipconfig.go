@@ -2,7 +2,7 @@ package server
 
 import (
 	"encoding/json"
-	"k8s-management-go/app/models"
+	"k8s-management-go/app/configuration"
 	"net/http"
 )
 
@@ -11,12 +11,12 @@ func IPConfigurationAPI(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	switch r.Method {
 	case "GET":
-		ipConfiguration := models.GetIPConfiguration()
+		ipConfiguration := configuration.GetConfiguration().K8SManagement.IPConfig.Deployments
 		ipConfigurationAsJSON, _ := json.MarshalIndent(ipConfiguration, "", "\t")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(ipConfigurationAsJSON))
+		_, _ = w.Write([]byte(ipConfigurationAsJSON))
 	default:
 		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte(`{"message": "not found"}`))
+		_, _ = w.Write([]byte(`{"message": "not found"}`))
 	}
 }
