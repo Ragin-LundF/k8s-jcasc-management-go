@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"gopkg.in/yaml.v3"
+	"io/ioutil"
 	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/logger"
@@ -36,19 +37,9 @@ type config struct {
 
 func MigrateConfigurationV3() string {
 	readConfiguration(configuration.GetConfiguration().K8SManagement.Project.BaseDirectory)
-	var errors = migrateFromCnfToYaml()
-	var status string
-	var errorMessages = ""
-	if len(errors) == 0 {
-		status = "SUCCESS"
-	} else {
-		status = "FAILED"
-		for _, errorMessage := range errors {
-			errorMessages = fmt.Sprintf("%v\n\n%v", errorMessages, errorMessage)
-		}
-	}
+	var status = migrateFromCnfToYaml()
 
-	return fmt.Sprintf("Status config migration: %v\n\n%v", status, errorMessages)
+	return fmt.Sprintf("Status config migration: %v", status)
 }
 
 // readConfiguration reads the configuration of k8s-management
@@ -410,6 +401,13 @@ func migrateFromCnfToYaml() string {
 		loggingstate.AddErrorEntryAndDetails("Unable to create YAML file", err.Error())
 		return "Unable to create YAML file"
 	}
-	println(string(yamlOutByte))
-	return ""
+	var yamlConfig = string(yamlOutByte)
+	loggingstate.AddInfoEntryAndDetails("New custom configuration", yamlConfig)
+
+	var configFile = configuration.GetConfiguration().CustomConfig.K8SManagement.ConfigFile
+	if files.FileOrDirectoryExists(configFile) {
+		return "FAILED - Config already exists"
+	}
+	_ = ioutil.WriteFile(configFile, yamlOutByte, 0644)
+	return "SUCCESS"
 }
