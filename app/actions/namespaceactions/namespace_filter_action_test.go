@@ -2,18 +2,44 @@ package namespaceactions
 
 import (
 	"github.com/stretchr/testify/assert"
-	"k8s-management-go/app/actions/migration"
+	"k8s-management-go/app/configuration"
 	"testing"
 )
 
 func init() {
-	migration.ResetIPAndNamespaces()
-	migration.AddIPAndNamespaceToConfiguration("namespace-a", "1.2.3.4")
-	migration.AddIPAndNamespaceToConfiguration("stage-alpha", "1.2.3.5")
-	migration.AddIPAndNamespaceToConfiguration("projectA", "1.2.3.6")
-	migration.AddIPAndNamespaceToConfiguration("projectB", "1.2.3.7")
-	migration.AddIPAndNamespaceToConfiguration("beta-stage", "1.2.3.8")
-	migration.AddIPAndNamespaceToConfiguration("production-stage", "1.2.3.9")
+	configuration.LoadConfiguration("../../../", false, false)
+	configuration.GetConfiguration().K8SManagement.IPConfig.Deployments = nil
+
+	var newIpAndNamespace = configuration.DeploymentStruct{
+		IPAddress: "1.2.3.4",
+		Namespace: "namespace-a",
+	}
+	configuration.GetConfiguration().K8SManagement.IPConfig.Deployments = append(configuration.GetConfiguration().K8SManagement.IPConfig.Deployments, newIpAndNamespace)
+	newIpAndNamespace = configuration.DeploymentStruct{
+		IPAddress: "1.2.3.5",
+		Namespace: "stage-alpha",
+	}
+	configuration.GetConfiguration().K8SManagement.IPConfig.Deployments = append(configuration.GetConfiguration().K8SManagement.IPConfig.Deployments, newIpAndNamespace)
+	newIpAndNamespace = configuration.DeploymentStruct{
+		IPAddress: "1.2.3.6",
+		Namespace: "projectA",
+	}
+	configuration.GetConfiguration().K8SManagement.IPConfig.Deployments = append(configuration.GetConfiguration().K8SManagement.IPConfig.Deployments, newIpAndNamespace)
+	newIpAndNamespace = configuration.DeploymentStruct{
+		IPAddress: "1.2.3.7",
+		Namespace: "projectB",
+	}
+	configuration.GetConfiguration().K8SManagement.IPConfig.Deployments = append(configuration.GetConfiguration().K8SManagement.IPConfig.Deployments, newIpAndNamespace)
+	newIpAndNamespace = configuration.DeploymentStruct{
+		IPAddress: "1.2.3.8",
+		Namespace: "beta-stage",
+	}
+	configuration.GetConfiguration().K8SManagement.IPConfig.Deployments = append(configuration.GetConfiguration().K8SManagement.IPConfig.Deployments, newIpAndNamespace)
+	newIpAndNamespace = configuration.DeploymentStruct{
+		IPAddress: "1.2.3.9",
+		Namespace: "production-stage",
+	}
+	configuration.GetConfiguration().K8SManagement.IPConfig.Deployments = append(configuration.GetConfiguration().K8SManagement.IPConfig.Deployments, newIpAndNamespace)
 }
 
 func TestActionReadNamespaceWithFilterNil(t *testing.T) {
