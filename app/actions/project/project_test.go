@@ -3,7 +3,7 @@ package project
 import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
-	"k8s-management-go/app/models"
+	"k8s-management-go/app/configuration"
 	"os"
 	"strings"
 	"testing"
@@ -26,17 +26,17 @@ const testNginxIngressAnnotationClass = "nginx"
 const testNginxIngressDeploymentName = "nginx-ingress"
 const testNginxIngressControllerContainerImage = "bitnami/nginx-ingress-controller:latest"
 const testNginxIngressControllerContainerPullSecrets = "mypullsecret"
-const testNginxIngressControllerForNamespace = "true"
+const testNginxIngressControllerForNamespace = true
 
-const testNginxLoadBalancerEnabled = "true"
-const testNginxLoadBalancerHttpPort = "80"
-const testNginxLoadBalancerHttpTargetPort = "8080"
-const testNginxLoadBalancerHttpsPort = "443"
-const testNginxLoadBalancerHttpsTargetPort = "8443"
+const testNginxLoadBalancerEnabled = true
+const testNginxLoadBalancerHttpPort = uint64(80)
+const testNginxLoadBalancerHttpTargetPort = uint64(8080)
+const testNginxLoadBalancerHttpsPort = uint64(443)
+const testNginxLoadBalancerHttpsTargetPort = uint64(8443)
 
-const testNginxLoadBalancerAnnotationsEnabled = "true"
+const testNginxLoadBalancerAnnotationsEnabled = true
 const testNginxLoadBalancerAnnotationsExtDnsHostname = "domain.tld"
-const testNginxLoadBalancerAnnotationsExtDnsTtl = "3600"
+const testNginxLoadBalancerAnnotationsExtDnsTtl = uint64(3600)
 
 const testJenkinsHelmMasterImage = "jenkins/jenkins"
 const testJenkinsHelmMasterImageTag = "latest"
@@ -45,7 +45,7 @@ const testJenkinsHelmMasterPullSecret = "my-secret"
 
 const testJenkinsHelmMasterDefaultLabel = "jenkins-master-for-seed"
 
-const testJenkinsHelmMasterDenyAnonymousReadAccess = "true"
+const testJenkinsHelmMasterDenyAnonymousReadAccess = false
 const testJenkinsHelmMasterAdminPassword = "admin"
 const testJenkinsHelmMasterAdminPasswordEncrypted = "$2a$04$UNxiNvJN6R3me9vybVQr/OzpMhgobih8qbxDpGy3lZmmmwc6t48ty"
 const testJenkinsHelmMasterUserPasswordEncrypted = "$2a$04$BFPq6fSa9KGKrlIktz/C8eSFrrG/gglnW1eXWMSjgtCSx36mMOSNm"
@@ -85,7 +85,7 @@ func TestProjectTemplates(t *testing.T) {
 
 func TestProjectValidationErrorWithEmptyIP(t *testing.T) {
 	testDefaultProjectConfiguration(t, false)
-	models.AssignToConfiguration("NGINX_LOADBALANCER_ANNOTATIONS_ENABLED", "false")
+	configuration.GetConfiguration().Nginx.Loadbalancer.Annotations.Enabled = false
 
 	var project = NewProject()
 	project.SetNamespace(testNamespace)
@@ -105,53 +105,54 @@ func TestProjectValidationErrorWithEmptyNamespace(t *testing.T) {
 }
 
 func testDefaultProjectConfiguration(t *testing.T, setupTestProject bool) {
-	models.AssignToConfiguration("TEMPLATES_BASE_DIRECTORY", testRootDirectory+"templates/")
+	configuration.LoadConfiguration("../../../", false, false)
 
-	models.AssignToConfiguration("JENKINS_MASTER_DEPLOYMENT_NAME", testConfigJenkinsMasterDeploymentName)
-	models.AssignToConfiguration("JENKINS_MASTER_DEFAULT_URI_PREFIX", testConfigJenkinsMasterDefaultUriPrefix)
+	var cfg = configuration.GetConfiguration()
+	cfg.K8SManagement.Project.TemplateDirectory = testRootDirectory + "templates/"
 
-	models.AssignToConfiguration("JENKINS_MASTER_PERSISTENCE_ACCESS_MODE", testConfigJenkinsMasterPvcAccessMode)
-	models.AssignToConfiguration("JENKINS_MASTER_PERSISTENCE_STORAGE_SIZE", testConfigJenkinsMasterPvcSize)
-	models.AssignToConfiguration("JENKINS_MASTER_PERSISTENCE_STORAGE_CLASS", testConfigJenkinsMasterPvcStorageClassName)
+	cfg.Jenkins.Controller.DeploymentName = testConfigJenkinsMasterDeploymentName
+	cfg.Jenkins.Controller.DefaultURIPrefix = testConfigJenkinsMasterDefaultUriPrefix
 
-	models.AssignToConfiguration("NGINX_INGRESS_ANNOTATION_CLASS", testNginxIngressAnnotationClass)
-	models.AssignToConfiguration("NGINX_INGRESS_DEPLOYMENT_NAME", testNginxIngressDeploymentName)
+	cfg.Jenkins.Persistence.AccessMode = testConfigJenkinsMasterPvcAccessMode
+	cfg.Jenkins.Persistence.StorageSize = testConfigJenkinsMasterPvcSize
+	cfg.Jenkins.Persistence.StorageClass = testConfigJenkinsMasterPvcStorageClassName
 
-	models.AssignToConfiguration("NGINX_INGRESS_CONTROLLER_CONTAINER_IMAGE", testNginxIngressControllerContainerImage)
-	models.AssignToConfiguration("NGINX_INGRESS_CONTROLLER_CONTAINER_PULL_SECRETS", testNginxIngressControllerContainerPullSecrets)
-	models.AssignToConfiguration("NGINX_INGRESS_CONTROLLER_FOR_NAMESPACE", testNginxIngressControllerForNamespace)
+	cfg.Nginx.Ingress.Annotationclass = testNginxIngressAnnotationClass
+	cfg.Nginx.Ingress.Container.Image = testNginxIngressControllerContainerImage
+	cfg.Nginx.Ingress.Container.PullSecret = testNginxIngressControllerContainerPullSecrets
+	cfg.Nginx.Ingress.Deployment.DeploymentName = testNginxIngressDeploymentName
+	cfg.Nginx.Ingress.Deployment.ForEachNamespace = testNginxIngressControllerForNamespace
 
-	models.AssignToConfiguration("NGINX_LOADBALANCER_ENABLED", testNginxLoadBalancerEnabled)
-	models.AssignToConfiguration("NGINX_LOADBALANCER_HTTP_PORT", testNginxLoadBalancerHttpPort)
-	models.AssignToConfiguration("NGINX_LOADBALANCER_HTTP_TARGETPORT", testNginxLoadBalancerHttpTargetPort)
-	models.AssignToConfiguration("NGINX_LOADBALANCER_HTTPS_PORT", testNginxLoadBalancerHttpsPort)
-	models.AssignToConfiguration("NGINX_LOADBALANCER_HTTPS_TARGETPORT", testNginxLoadBalancerHttpsTargetPort)
+	cfg.Nginx.Loadbalancer.Enabled = testNginxLoadBalancerEnabled
+	cfg.Nginx.Loadbalancer.Ports.HTTP = testNginxLoadBalancerHttpPort
+	cfg.Nginx.Loadbalancer.Ports.HTTPTarget = testNginxLoadBalancerHttpTargetPort
+	cfg.Nginx.Loadbalancer.Ports.HTTPS = testNginxLoadBalancerHttpsPort
+	cfg.Nginx.Loadbalancer.Ports.HTTPSTarget = testNginxLoadBalancerHttpsTargetPort
+	cfg.Nginx.Loadbalancer.Annotations.Enabled = testNginxLoadBalancerAnnotationsEnabled
+	cfg.Nginx.Loadbalancer.ExternalDNS.HostName = testNginxLoadBalancerAnnotationsExtDnsHostname
+	cfg.Nginx.Loadbalancer.ExternalDNS.TTL = testNginxLoadBalancerAnnotationsExtDnsTtl
 
-	models.AssignToConfiguration("NGINX_LOADBALANCER_ANNOTATIONS_ENABLED", testNginxLoadBalancerAnnotationsEnabled)
-	models.AssignToConfiguration("NGINX_LOADBALANCER_ANNOTATIONS_EXT_DNS_HOSTNAME", testNginxLoadBalancerAnnotationsExtDnsHostname)
-	models.AssignToConfiguration("NGINX_LOADBALANCER_ANNOTATIONS_EXT_DNS_TTL", testNginxLoadBalancerAnnotationsExtDnsTtl)
+	cfg.Jenkins.Container.Image = testJenkinsHelmMasterImage
+	cfg.Jenkins.Container.Tag = testJenkinsHelmMasterImageTag
+	cfg.Jenkins.Container.PullPolicy = testJenkinsHelmMasterPullPolicy
+	cfg.Jenkins.Container.PullSecret = testJenkinsHelmMasterPullSecret
 
-	models.AssignToConfiguration("JENKINS_MASTER_CONTAINER_IMAGE", testJenkinsHelmMasterImage)
-	models.AssignToConfiguration("JENKINS_MASTER_CONTAINER_IMAGE_TAG", testJenkinsHelmMasterImageTag)
-	models.AssignToConfiguration("JENKINS_MASTER_CONTAINER_PULL_POLICY", testJenkinsHelmMasterPullPolicy)
-	models.AssignToConfiguration("JENKINS_MASTER_CONTAINER_IMAGE_PULL_SECRET_NAME", testJenkinsHelmMasterPullSecret)
+	cfg.Jenkins.Controller.CustomJenkinsLabel = testJenkinsHelmMasterDefaultLabel
 
-	models.AssignToConfiguration("JENKINS_MASTER_DEFAULT_LABEL", testJenkinsHelmMasterDefaultLabel)
+	cfg.Jenkins.Jcasc.AuthorizationStrategy.AllowAnonymousRead = testJenkinsHelmMasterDenyAnonymousReadAccess
+	cfg.Jenkins.Jcasc.ConfigurationURL = testJenkinsHelmMasterJcascConfigUrl
+	cfg.Jenkins.Controller.Passwords.AdminUser = testJenkinsHelmMasterAdminPassword
+	cfg.Jenkins.Controller.Passwords.AdminUserEncrypted = testJenkinsHelmMasterAdminPasswordEncrypted
+	cfg.Jenkins.Controller.Passwords.DefaultUserEncrypted = testJenkinsHelmMasterUserPasswordEncrypted
 
-	models.AssignToConfiguration("JENKINS_MASTER_DENY_ANONYMOUS_READ_ACCESS", testJenkinsHelmMasterDenyAnonymousReadAccess)
-	models.AssignToConfiguration("JENKINS_MASTER_ADMIN_PASSWORD", testJenkinsHelmMasterAdminPassword)
-	models.AssignToConfiguration("JENKINS_JCASC_CONFIGURATION_URL", testJenkinsHelmMasterJcascConfigUrl)
-	models.AssignToConfiguration("JENKINS_MASTER_ADMIN_PASSWORD_ENCRYPTED", testJenkinsHelmMasterAdminPasswordEncrypted)
-	models.AssignToConfiguration("JENKINS_MASTER_PROJECT_USER_PASSWORD_ENCRYPTED", testJenkinsHelmMasterUserPasswordEncrypted)
+	cfg.Jenkins.Jcasc.CredentialIDs.Docker = testJcascDockerCredentialsId
+	cfg.Jenkins.Jcasc.CredentialIDs.Maven = testJcascMavenCredentialsId
+	cfg.Jenkins.Jcasc.CredentialIDs.Npm = testJcascNpmCredentialsId
+	cfg.Jenkins.Jcasc.CredentialIDs.Vcs = testJcascVcsCredentialsId
 
-	models.AssignToConfiguration("KUBERNETES_DOCKER_REGISTRY_CREDENTIALS_ID", testJcascDockerCredentialsId)
-	models.AssignToConfiguration("MAVEN_REPOSITORY_SECRETS_CREDENTIALS_ID", testJcascMavenCredentialsId)
-	models.AssignToConfiguration("NPM_REPOSITORY_SECRETS_CREDENTIALS_ID", testJcascNpmCredentialsId)
-	models.AssignToConfiguration("VCS_REPOSITORY_SECRETS_CREDENTIALS_ID", testJcascVcsCredentialsId)
+	cfg.Jenkins.Jcasc.SeedJobURL = testJenkinsHelmMasterJcascConfigSeedUrl
 
-	models.AssignToConfiguration("JENKINS_JOBDSL_SEED_JOB_SCRIPT_URL", testJenkinsHelmMasterJcascConfigSeedUrl)
-
-	models.AssignToConfiguration("KUBERNETES_SERVER_CERTIFICATE", testJcascKubernetesCertificate)
+	cfg.Kubernetes.Certificates.Default = testJcascKubernetesCertificate
 
 	if setupTestProject {
 		var err = ActionCreateNewProjectDirectory(testProjectName)

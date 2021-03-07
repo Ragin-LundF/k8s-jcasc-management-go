@@ -28,9 +28,6 @@ const DirHelmJenkinsMaster = "/charts/jenkins-master"
 // DirHelmNginxIngressCtrl : directory of the Nginx Ingress Controller Helm Charts
 const DirHelmNginxIngressCtrl = "/charts/nginx-ingress-controller"
 
-// FilenameConfiguration : filename of the configuration file
-const FilenameConfiguration = "k8s_jcasc_mgmt.cnf"
-
 // FilenameConfigurationYaml : filename of the yaml configuration file
 const FilenameConfigurationYaml = "k8s_jcasc_mgmt.yaml"
 

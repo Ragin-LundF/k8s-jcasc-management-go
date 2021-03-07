@@ -17,112 +17,117 @@ import (
 // baseCustomConfig represents the base custom configuration to setup alternative project path and config file.
 type baseCustomConfig struct {
 	K8SManagement struct {
-		ConfigFile string `yaml:"configFile"`
-		BasePath   string `yaml:"basePath"`
-	} `yaml:"k8sManagement"`
+		ConfigFile string `yaml:"configFile,omitempty"`
+		BasePath   string `yaml:"basePath,omitempty"`
+	} `yaml:"k8sManagement,omitempty"`
 }
 
 // config represents the configuration files
 type config struct {
 	K8SManagement struct {
 		Log struct {
-			Level              string `yaml:"level"`
-			File               string `yaml:"file"`
-			Encoding           string `yaml:"encoding"`
-			OverwriteOnRestart bool   `yaml:"overwriteOnRestart"`
-		} `yaml:"log"`
+			Level              string `yaml:"level,omitempty"`
+			File               string `yaml:"file,omitempty"`
+			Encoding           string `yaml:"encoding,omitempty"`
+			OverwriteOnRestart bool   `yaml:"overwriteOnRestart,omitempty"`
+		} `yaml:"log,omitempty"`
 		Ipconfig struct {
-			File        string `yaml:"file"`
-			DummyPrefix string `yaml:"dummyPrefix"`
-		} `yaml:"ipconfig"`
+			File        string `yaml:"file,omitempty"`
+			DummyPrefix string `yaml:"dummyPrefix,omitempty"`
+		} `yaml:"ipconfig,omitempty"`
 		Project struct {
-			BaseDirectory     string `yaml:"baseDirectory"`
-			TemplateDirectory string `yaml:"templateDirectory"`
-			SecretFiles       string `yaml:"secretFiles"`
-		} `yaml:"project"`
-		VersionCheck bool `yaml:"versionCheck"`
-		DryRunOnly   bool
-		CliOnly      bool
-	} `yaml:"k8sManagement"`
+			BaseDirectory     string `yaml:"baseDirectory,omitempty"`
+			TemplateDirectory string `yaml:"templateDirectory,omitempty"`
+			SecretFiles       string `yaml:"secretFiles,omitempty"`
+		} `yaml:"project,omitempty"`
+		VersionCheck bool `yaml:"versionCheck,omitempty"`
+		DryRunOnly   bool `yaml:"-"`
+		CliOnly      bool `yaml:"-"`
+	} `yaml:"k8sManagement,omitempty"`
 	Jenkins struct {
 		Jcasc struct {
-			ConfigurationURL      string `yaml:"configurationUrl"`
+			ConfigurationURL      string `yaml:"configurationUrl,omitempty"`
 			AuthorizationStrategy struct {
-				AllowAnonymousRead bool `yaml:"allowAnonymousRead"`
-			} `yaml:"authorizationStrategy"`
+				AllowAnonymousRead bool `yaml:"allowAnonymousRead,omitempty"`
+			} `yaml:"authorizationStrategy,omitempty"`
 			CredentialIDs struct {
-				Docker string `yaml:"docker"`
-				Maven  string `yaml:"maven"`
-				Npm    string `yaml:"npm"`
-				Vcs    string `yaml:"vcs"`
-			} `yaml:"credentialIDs"`
-			SeedJobURL string `yaml:"seedJobURL"`
-		} `yaml:"jcasc"`
+				Docker string `yaml:"docker,omitempty"`
+				Maven  string `yaml:"maven,omitempty"`
+				Npm    string `yaml:"npm,omitempty"`
+				Vcs    string `yaml:"vcs,omitempty"`
+			} `yaml:"credentialIDs,omitempty"`
+			SeedJobURL string `yaml:"seedJobURL,omitempty"`
+		} `yaml:"jcasc,omitempty"`
 		JobDSL struct {
-			BaseURL             string `yaml:"baseURL"`
-			RepoValidatePattern string `yaml:"repoValidatePattern"`
-		} `yaml:"jobDSL"`
+			BaseURL             string `yaml:"baseURL,omitempty"`
+			RepoValidatePattern string `yaml:"repoValidatePattern,omitempty"`
+		} `yaml:"jobDSL,omitempty"`
 		Controller struct {
 			Passwords struct {
-				AdminUser            string `yaml:"adminUser"`
-				AdminUserEncrypted   string `yaml:"adminUserEncrypted"`
-				DefaultUserEncrypted string `yaml:"defaultUserEncrypted"`
-			} `yaml:"passwords"`
-			CustomJenkinsLabel string `yaml:"customJenkinsLabel"`
-			DeploymentName     string `yaml:"deploymentName"`
-			DefaultURIPrefix   string `yaml:"defaultURIPrefix"`
-		} `yaml:"controller"`
+				AdminUser            string `yaml:"adminUser,omitempty"`
+				AdminUserEncrypted   string `yaml:"adminUserEncrypted,omitempty"`
+				DefaultUserEncrypted string `yaml:"defaultUserEncrypted,omitempty"`
+			} `yaml:"passwords,omitempty"`
+			CustomJenkinsLabel string `yaml:"customJenkinsLabel,omitempty"`
+			DeploymentName     string `yaml:"deploymentName,omitempty"`
+			DefaultURIPrefix   string `yaml:"defaultURIPrefix,omitempty"`
+		} `yaml:"controller,omitempty"`
 		Persistence struct {
-			AccessMode   string `yaml:"accessMode"`
-			StorageClass string `yaml:"storageClass"`
-			StorageSize  string `yaml:"storageSize"`
-		} `yaml:"persistence"`
+			AccessMode   string `yaml:"accessMode,omitempty"`
+			StorageClass string `yaml:"storageClass,omitempty"`
+			StorageSize  string `yaml:"storageSize,omitempty"`
+		} `yaml:"persistence,omitempty"`
 		Container struct {
-			Image      string `yaml:"image"`
-			Tag        string `yaml:"tag"`
-			PullPolicy string `yaml:"pullPolicy"`
-			PullSecret string `yaml:"pullSecret"`
-		} `yaml:"container"`
-	} `yaml:"jenkins"`
+			Image      string `yaml:"image,omitempty"`
+			Tag        string `yaml:"tag,omitempty"`
+			PullPolicy string `yaml:"pullPolicy,omitempty"`
+			PullSecret string `yaml:"pullSecret,omitempty"`
+		} `yaml:"container,omitempty"`
+	} `yaml:"jenkins,omitempty"`
 	Nginx struct {
 		Ingress struct {
 			Container struct {
-				Image      string `yaml:"image"`
-				PullSecret string `yaml:"pullSecret"`
-			} `yaml:"container"`
+				Image      string `yaml:"image,omitempty"`
+				PullSecret string `yaml:"pullSecret,omitempty"`
+			} `yaml:"container,omitempty"`
 			Deployment struct {
-				ForEachNamespace bool   `yaml:"forEachNamespace"`
-				DeploymentName   string `yaml:"deploymentName"`
-			} `yaml:"deployment"`
-			Annotationclass string `yaml:"annotationclass"`
-		} `yaml:"ingress"`
+				ForEachNamespace bool   `yaml:"forEachNamespace,omitempty"`
+				DeploymentName   string `yaml:"deploymentName,omitempty"`
+			} `yaml:"deployment,omitempty"`
+			Annotationclass string `yaml:"annotationclass,omitempty"`
+		} `yaml:"ingress,omitempty"`
 		Loadbalancer struct {
-			Enabled bool `yaml:"enabled"`
+			Enabled bool `yaml:"enabled,omitempty"`
 			Ports   struct {
-				HTTP        uint64 `yaml:"http"`
-				HTTPTarget  uint64 `yaml:"httpTarget"`
-				HTTPS       uint64 `yaml:"https"`
-				HTTPSTarget uint64 `yaml:"httpsTarget"`
-			} `yaml:"ports"`
+				HTTP        uint64 `yaml:"http,omitempty"`
+				HTTPTarget  uint64 `yaml:"httpTarget,omitempty"`
+				HTTPS       uint64 `yaml:"https,omitempty"`
+				HTTPSTarget uint64 `yaml:"httpsTarget,omitempty"`
+			} `yaml:"ports,omitempty"`
 			Annotations struct {
-				Enabled bool `yaml:"enabled"`
-			} `yaml:"annotations"`
+				Enabled bool `yaml:"enabled,omitempty"`
+			} `yaml:"annotations,omitempty"`
 			ExternalDNS struct {
-				HostName string `yaml:"hostName"`
-				TTL      uint64 `yaml:"ttl"`
-			} `yaml:"externalDNS"`
-		} `yaml:"loadbalancer"`
-	} `yaml:"nginx"`
+				HostName string `yaml:"hostName,omitempty"`
+				TTL      uint64 `yaml:"ttl,omitempty"`
+			} `yaml:"externalDNS,omitempty"`
+		} `yaml:"loadbalancer,omitempty"`
+	} `yaml:"nginx,omitempty"`
 	Kubernetes struct {
 		Certificates struct {
-			Default  string            `yaml:"default"`
+			Default  string            `yaml:"default,omitempty"`
 			Contexts map[string]string `yaml:"contexts,omitempty"`
-		} `yaml:"certificates"`
-	} `yaml:"kubernetes"`
-	CustomConfig baseCustomConfig
+		} `yaml:"certificates,omitempty"`
+	} `yaml:"kubernetes,omitempty"`
+	CustomConfig baseCustomConfig `yaml:"-"`
 }
 
 var conf *config
+
+// EmptyConfiguration returns an empty instance of config. This should only be used for migration.
+func EmptyConfiguration() config {
+	return config{}
+}
 
 // GetConfiguration returns the current configuration.
 func GetConfiguration() *config {

@@ -18,7 +18,8 @@ import (
 func CreateMainMenu(app fyne.App, window fyne.Window) *fyne.MainMenu {
 	// K8S Management Menu
 	var settingsItem = fyne.NewMenuItem("Configuration", func() { printConfiguration(window) })
-	var toolsItem = fyne.NewMenuItem("Migrate templates v2 -> v3", func() { migrateTemplatesV2(window) })
+	var toolsItemMigrateConfig = fyne.NewMenuItem("Migrate config v2 -> v3", func() { migrateConfigV2(window) })
+	var toolsItemMigrateTemplates = fyne.NewMenuItem("Migrate templates v2 -> v3", func() { migrateTemplatesV2(window) })
 	var quitItem = fyne.NewMenuItem("Quit", func() { app.Quit() })
 	var darkThemeItem = fyne.NewMenuItem("Dark Theme", func() {
 		app.Settings().SetTheme(theme.DarkTheme())
@@ -33,16 +34,31 @@ func CreateMainMenu(app fyne.App, window fyne.Window) *fyne.MainMenu {
 		// a quit item will be appended to our first menu
 		fyne.NewMenu("K8S Management", fyne.NewMenuItemSeparator(), settingsItem, fyne.NewMenuItemSeparator(), quitItem),
 		fyne.NewMenu("Theme", darkThemeItem, lightThemeItem),
-		fyne.NewMenu("Tools", toolsItem),
+		fyne.NewMenu("Tools", toolsItemMigrateConfig, toolsItemMigrateTemplates),
 	)
 
 	return mainMenu
 }
 
+func migrateConfigV2(window fyne.Window) {
+	var progressBar = widget.NewProgressBarInfinite()
+	var progressBox = container.NewVBox(progressBar)
+	var migrationDialog = dialog.NewCustom("Migration of configuration", "Please wait...", progressBox, window)
+	progressBar.Show()
+	progressBar.Start()
+	migrationDialog.Show()
+	var information = migration.MigrateConfigurationV3()
+	migrationDialog.Hide()
+	progressBar.Stop()
+	progressBar.Hide()
+
+	dialog.ShowInformation("Migration of configuration", information, window)
+}
+
 func migrateTemplatesV2(window fyne.Window) {
 	var progressBar = widget.NewProgressBarInfinite()
 	var progressBox = container.NewVBox(progressBar)
-	var migrationDialog = dialog.NewCustom("Migration", "Please wait...", progressBox, window)
+	var migrationDialog = dialog.NewCustom("Migration of templates", "Please wait...", progressBox, window)
 	progressBar.Show()
 	progressBar.Start()
 	migrationDialog.Show()
@@ -51,7 +67,7 @@ func migrateTemplatesV2(window fyne.Window) {
 	progressBar.Stop()
 	progressBar.Hide()
 
-	dialog.ShowInformation("Migration", information, window)
+	dialog.ShowInformation("Migration of templates", information, window)
 }
 
 func printConfiguration(window fyne.Window) {

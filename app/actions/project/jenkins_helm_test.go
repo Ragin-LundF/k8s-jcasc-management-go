@@ -2,6 +2,7 @@ package project
 
 import (
 	"github.com/stretchr/testify/assert"
+	"strconv"
 	"testing"
 )
 
@@ -21,7 +22,7 @@ func assertDefaultJenkinsHelmValues(jenkinsHelmValues *jenkinsHelmValues, t *tes
 	assert.Equal(t, testJenkinsHelmMasterDefaultLabel, jenkinsHelmValues.Master.CustomJenkinsLabels)
 	assert.Equal(t, testJenkinsHelmMasterAdminPassword, jenkinsHelmValues.Master.AdminPassword)
 	assert.Equal(t, testJenkinsHelmMasterJcascConfigUrl, jenkinsHelmValues.Master.SidecarsConfigAutoReloadFolder)
-	assert.Equal(t, testJenkinsHelmMasterDenyAnonymousReadAccess, jenkinsHelmValues.Master.AuthorizationStrategyDenyAnonymousReadAccess)
+	assert.Equal(t, strconv.FormatBool(!testJenkinsHelmMasterDenyAnonymousReadAccess), jenkinsHelmValues.Master.AuthorizationStrategyDenyAnonymousReadAccess)
 	assert.Equal(t, testConfigJenkinsMasterPvcStorageClassName, jenkinsHelmValues.Persistence.StorageClass)
 	assert.Equal(t, testConfigJenkinsMasterPvcAccessMode, jenkinsHelmValues.Persistence.AccessMode)
 	assert.Equal(t, testConfigJenkinsMasterPvcSize, jenkinsHelmValues.Persistence.Size)

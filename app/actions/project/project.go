@@ -197,7 +197,8 @@ func (project *Project) validateProject() (err error) {
 		return errors.New("Error: No namespace available ")
 	}
 
-	if !configuration.GetConfiguration().Nginx.Loadbalancer.Annotations.Enabled && project.Base.IPAddress == "" {
+	var enabledAnnotations = configuration.GetConfiguration().Nginx.Loadbalancer.Annotations.Enabled
+	if !enabledAnnotations && project.Base.IPAddress == "" {
 		return errors.New("Error: If NGINX_LOADBALANCER_ANNOTATIONS_ENABLED is set to false, an IP address is required ")
 	}
 

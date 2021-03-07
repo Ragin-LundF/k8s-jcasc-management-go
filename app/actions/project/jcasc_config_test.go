@@ -3,7 +3,7 @@ package project
 import (
 	"github.com/stretchr/testify/assert"
 	"k8s-management-go/app/actions/kubernetesactions"
-	"k8s-management-go/app/models"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/utils/cmdexecutor"
 	"strings"
 	"testing"
@@ -34,12 +34,16 @@ func TestCreateJCascConfig(t *testing.T) {
 
 func TestCreateJCascConfigCloudsContextCertificate(t *testing.T) {
 	// set custom context
+	testDefaultProjectConfiguration(t, false)
+
 	var customCertificate = testJcascKubernetesCertificate + "-custom"
 	cmdexecutor.Executor = TestCommandExecCustomContext{}
 	kubernetesactions.ReloadKubernetesContext()
 
-	testDefaultProjectConfiguration(t, false)
-	models.AssignToConfiguration("KUBERNETES_SERVER_CERTIFICATE_custom-k8s", customCertificate)
+	var cfg = configuration.GetConfiguration()
+	cfg.Kubernetes.Certificates.Contexts = map[string]string{
+		"custom-k8s": customCertificate,
+	}
 
 	var jcascConfig = NewJCascConfig()
 

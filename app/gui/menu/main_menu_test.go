@@ -3,15 +3,16 @@ package menu
 import (
 	"fyne.io/fyne/v2/test"
 	"github.com/stretchr/testify/assert"
-	"k8s-management-go/app/models"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/utils/cmdexecutor"
 	"strings"
 	"testing"
 )
 
 func TestCreateTabMenu(t *testing.T) {
-	models.AssignToConfiguration("K8S_MGMT_BASE_PATH", "./")
-	models.AssignToConfiguration("GLOBAL_SECRETS_FILE", "./secrets.sh")
+	configuration.LoadConfiguration("../../../", false, false)
+	configuration.GetConfiguration().K8SManagement.Project.BaseDirectory = "./"
+	configuration.GetConfiguration().K8SManagement.Project.SecretFiles = "./secrets.sh"
 
 	cmdexecutor.Executor = TestCommandExecKubectl{}
 	app := test.NewApp()

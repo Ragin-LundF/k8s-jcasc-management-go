@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"k8s-management-go/app/actions/migration"
 	"k8s-management-go/app/configuration"
-	"k8s-management-go/app/models"
 	"k8s-management-go/app/server"
 	"k8s-management-go/app/utils/cmdexecutor"
 	"k8s-management-go/app/utils/config"
@@ -93,17 +92,16 @@ func configure(basePath string, dryRunDebug bool, cliOnly bool) {
 		os.Exit(1)
 	}
 	// read configuration
-	config.ReadConfiguration(basePath, dryRunDebug, cliOnly)
 	config.ReadIPConfig()
 
 	// overwrite logging
-	if logger.LogEncoding == "" && models.GetConfiguration().K8sManagement.Logging.LogEncoding != "" {
-		logger.LogEncoding = models.GetConfiguration().K8sManagement.Logging.LogEncoding
+	if logger.LogEncoding == "" && configuration.GetConfiguration().K8SManagement.Log.Encoding != "" {
+		logger.LogEncoding = configuration.GetConfiguration().K8SManagement.Log.Encoding
 	}
-	if logger.LogFilePath == "" && models.GetConfiguration().K8sManagement.Logging.LogFile != "" {
-		logger.LogFilePath = models.GetConfiguration().K8sManagement.Logging.LogFile
+	if logger.LogFilePath == "" && configuration.GetConfiguration().K8SManagement.Log.File != "" {
+		logger.LogFilePath = configuration.GetConfiguration().K8SManagement.Log.File
 	}
-	if logger.LogFilePath != "" && models.GetConfiguration().K8sManagement.Logging.LogOverwriteOnStart {
+	if logger.LogFilePath != "" && configuration.GetConfiguration().K8SManagement.Log.OverwriteOnRestart {
 		if files.FileOrDirectoryExists(logger.LogFilePath) {
 			_ = os.Rename(logger.LogFilePath, logger.LogFilePath+".1")
 		}

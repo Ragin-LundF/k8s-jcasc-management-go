@@ -8,6 +8,10 @@ import (
 	"testing"
 )
 
+func Init() config {
+	return config{}
+}
+
 func TestGetAlternativeSecretsFilesEmpty(t *testing.T) {
 	var conf = config{}
 	conf.K8SManagement.Project.BaseDirectory = "./"
