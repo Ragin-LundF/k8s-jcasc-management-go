@@ -11,7 +11,7 @@ import (
 
 func TestCreateTabMenu(t *testing.T) {
 	configuration.LoadConfiguration("../../../", false, false)
-	configuration.GetConfiguration().K8SManagement.Project.BaseDirectory = "./"
+	configuration.GetConfiguration().K8SManagement.BasePath = "./"
 	configuration.GetConfiguration().K8SManagement.Project.SecretFiles = "./secrets.sh"
 
 	cmdexecutor.Executor = TestCommandExecKubectl{}

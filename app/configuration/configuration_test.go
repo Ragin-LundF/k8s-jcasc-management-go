@@ -14,7 +14,7 @@ func Init() config {
 
 func TestGetAlternativeSecretsFilesEmpty(t *testing.T) {
 	var conf = config{}
-	conf.K8SManagement.Project.BaseDirectory = "./"
+	conf.K8SManagement.BasePath = "./"
 	conf.K8SManagement.Project.SecretFiles = "./secrets.sh"
 
 	assert.True(t, len(conf.GetSecretsFiles()) == 1)
@@ -22,7 +22,7 @@ func TestGetAlternativeSecretsFilesEmpty(t *testing.T) {
 
 func TestGetAlternativeSecretsFilesWithDifferentBasePath(t *testing.T) {
 	var conf = config{}
-	conf.K8SManagement.Project.BaseDirectory = "../"
+	conf.K8SManagement.BasePath = "../"
 	conf.K8SManagement.Project.SecretFiles = "./secrets.sh"
 
 	_ = ioutil.WriteFile("../secrets.sh", []byte(""), 0644)

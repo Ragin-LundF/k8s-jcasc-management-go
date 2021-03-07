@@ -59,9 +59,10 @@ type config struct {
 			TemplateDirectory string `yaml:"templateDirectory,omitempty"`
 			SecretFiles       string `yaml:"secretFiles,omitempty"`
 		} `yaml:"project,omitempty"`
-		VersionCheck bool `yaml:"versionCheck,omitempty"`
-		DryRunOnly   bool `yaml:"-"`
-		CliOnly      bool `yaml:"-"`
+		VersionCheck bool   `yaml:"versionCheck,omitempty"`
+		DryRunOnly   bool   `yaml:"-"`
+		CliOnly      bool   `yaml:"-"`
+		BasePath     string `yaml:"-"`
 	} `yaml:"k8sManagement,omitempty"`
 	Jenkins struct {
 		Jcasc struct {
@@ -246,8 +247,8 @@ func (conf *config) SetDryRun(dryRun bool) {
 // FilePathWithBasePath is a helper method to calculate the correct filepath
 func (conf *config) FilePathWithBasePath(configurationFilePath string) string {
 	var resultConfigurationFilePath = configurationFilePath
-	if conf.K8SManagement.Project.BaseDirectory != "" {
-		resultConfigurationFilePath = files.AppendPath(conf.K8SManagement.Project.BaseDirectory, configurationFilePath)
+	if conf.K8SManagement.BasePath != "" {
+		resultConfigurationFilePath = files.AppendPath(conf.K8SManagement.BasePath, configurationFilePath)
 	}
 
 	// check if path exists. else try to check if the path was related to current path.
@@ -332,7 +333,7 @@ func (conf *config) initBaseConfig(basePath string) {
 		if conf.CustomConfig.K8SManagement.BasePath == "" {
 			conf.CustomConfig.K8SManagement.BasePath = basePath
 		}
-		conf.K8SManagement.Project.BaseDirectory = conf.CustomConfig.K8SManagement.BasePath
+		conf.K8SManagement.BasePath = conf.CustomConfig.K8SManagement.BasePath
 	}
 
 	// load custom configuration if found.

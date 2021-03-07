@@ -18,7 +18,7 @@ var yamlCfg = configuration.EmptyConfiguration()
 
 // MigrateConfigurationV3 starts configuration migration
 func MigrateConfigurationV3() string {
-	readConfiguration(configuration.GetConfiguration().K8SManagement.Project.BaseDirectory)
+	readConfiguration(configuration.GetConfiguration().K8SManagement.BasePath)
 	var status, successful = migrateFromCnfToYaml()
 
 	if successful {
