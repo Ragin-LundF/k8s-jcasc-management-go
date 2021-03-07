@@ -19,7 +19,11 @@ var yamlCfg = configuration.EmptyConfiguration()
 // MigrateConfigurationV3 starts configuration migration
 func MigrateConfigurationV3() string {
 	readConfiguration(configuration.GetConfiguration().K8SManagement.Project.BaseDirectory)
-	var status = migrateFromCnfToYaml()
+	var status, successful = migrateFromCnfToYaml()
+
+	if successful {
+		status = MigrateDeploymentIPConfigurationV3()
+	}
 
 	return fmt.Sprintf("Status config migration: %v", status)
 }
@@ -375,20 +379,23 @@ func replaceUnneededChars(value string) string {
 	return value
 }
 
-func migrateFromCnfToYaml() string {
+func migrateFromCnfToYaml() (string, bool) {
 	var yamlOutByte []byte
 	yamlOutByte, err := yaml.Marshal(yamlCfg)
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("Unable to create YAML file", err.Error())
-		return "Unable to create YAML file"
+		return "FAILED - Unable to create YAML file", false
 	}
 	var yamlConfig = string(yamlOutByte)
 	loggingstate.AddInfoEntryAndDetails("New custom configuration", yamlConfig)
 
-	var configFile = configuration.GetConfiguration().CustomConfig.K8SManagement.ConfigFile + "2"
-	//if files.FileOrDirectoryExists(configFile) {
-	//	return "FAILED - Config already exists"
-	//}
-	_ = ioutil.WriteFile(configFile, yamlOutByte, 0644)
-	return "SUCCESS"
+	var configFile = configuration.GetConfiguration().CustomConfig.K8SManagement.ConfigFile
+	if files.FileOrDirectoryExists(configFile) {
+		return "FAILED - Config already exists", false
+	}
+	err = ioutil.WriteFile(configFile, yamlOutByte, 0644)
+	if err != nil {
+		return "FAILED - Unable to write new IP config", false
+	}
+	return "SUCCESS", true
 }

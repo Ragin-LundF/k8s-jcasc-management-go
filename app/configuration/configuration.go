@@ -37,6 +37,7 @@ type DeploymentStruct struct {
 	IPAddress string `yaml:"ipAddress,omitempty"`
 	Namespace string `yaml:"namespace,omitempty"`
 	Domain    string `yaml:"domain,omitempty"`
+	Dummy     string `yaml:"dummy,omitempty"`
 }
 
 // config represents the configuration files

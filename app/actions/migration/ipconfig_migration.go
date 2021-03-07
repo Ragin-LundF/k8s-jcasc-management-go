@@ -2,65 +2,65 @@ package migration
 
 import (
 	"bufio"
+	"gopkg.in/yaml.v3"
+	"io/ioutil"
 	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/utils/files"
+	"k8s-management-go/app/utils/loggingstate"
 	"os"
 	"strings"
 )
 
-// IP is the basic IP structure
-type IP struct {
-	Namespace string
-	IP        string
+// MigrateDeploymentIPConfigurationV3 starts deployment IP configuration migration
+func MigrateDeploymentIPConfigurationV3() string {
+	return migrateIpConfigFromCnfToYaml()
 }
 
-// IPConfiguration contains a list of IPs
-type IPConfiguration struct {
-	IPs []IP
-}
-
-var ipConfig IPConfiguration
-
-// AddIPAndNamespaceToConfiguration adds IP and namespace to the IP configuration
-func AddIPAndNamespaceToConfiguration(namespace string, ip string) {
-	ipConfig.IPs = append(ipConfig.IPs, IP{namespace, ip})
-}
-
-// ResetIPAndNamespaces will reset the configured IPs
-func ResetIPAndNamespaces() {
-	ipConfig.IPs = nil
-}
-
-// ReadIPConfig reads the IP configuration file
-func ReadIPConfig() {
-	// if IP config file does not exist, create it
-	if !files.FileOrDirectoryExists(configuration.GetConfiguration().GetIPConfigurationFile()) {
-		_, _ = os.Create(configuration.GetConfiguration().GetIPConfigurationFile())
+// readIPConfig reads the IP configuration file
+func readIPConfig() *configuration.DeploymentYAMLConfig {
+	var ipDeploymentCfgFile = configuration.GetConfiguration().GetIPConfigurationFile()
+	if strings.HasSuffix(ipDeploymentCfgFile, ".yaml") {
+		ipDeploymentCfgFile = strings.Replace(ipDeploymentCfgFile, ".yaml", ".cnf", -1)
 	}
+	// if IP config file does not exist, create it
+	if files.FileOrDirectoryExists(ipDeploymentCfgFile) {
+		// read configuration file. Replace unneeded double quotes if needed.
+		data, err := os.Open(ipDeploymentCfgFile)
+		defer data.Close()
 
-	// read configuration file. Replace unneeded double quotes if needed.
-	data, err := os.Open(configuration.GetConfiguration().GetIPConfigurationFile())
-	defer data.Close()
+		// check for error
+		if err != nil {
+			panic(err)
+		} else {
+			// everything seems to be ok. Read data with line scanner
+			scanner := bufio.NewScanner(data)
+			scanner.Split(bufio.ScanLines)
 
-	// check for error
-	if err != nil {
-		panic(err)
-	} else {
-		// everything seems to be ok. Read data with line scanner
-		scanner := bufio.NewScanner(data)
-		scanner.Split(bufio.ScanLines)
+			var deploymentYaml = configuration.DeploymentYAMLConfig{}
 
-		// iterate over every line
-		for scanner.Scan() {
-			// trim the line to avoid problems
-			line := strings.TrimSpace(scanner.Text())
-			// if line is not a comment (marker: "#") parse the configuration and assign it to the config
-			if line != "" && !strings.HasPrefix(line, "#") && !strings.HasPrefix(line, configuration.GetConfiguration().K8SManagement.IPConfig.DummyPrefix) {
-				namespace, ip := parseIPConfigurationLine(line)
-				AddIPAndNamespaceToConfiguration(namespace, ip)
+			// iterate over every line
+			for scanner.Scan() {
+				var deploymentIpConfig = configuration.DeploymentStruct{}
+				// trim the line to avoid problems
+				line := strings.TrimSpace(scanner.Text())
+				// if line is not a comment (marker: "#") parse the configuration and assign it to the config
+				if line != "" && !strings.HasPrefix(line, "#") {
+					namespace, ip := parseIPConfigurationLine(line)
+					if !strings.HasPrefix(line, configuration.GetConfiguration().K8SManagement.IPConfig.DummyPrefix) {
+						deploymentIpConfig.Dummy = ""
+					} else {
+						deploymentIpConfig.Dummy = "true"
+					}
+					deploymentIpConfig.IPAddress = ip
+					deploymentIpConfig.Namespace = namespace
+
+					deploymentYaml.K8SManagement.IPConfig.Deployments = append(deploymentYaml.K8SManagement.IPConfig.Deployments, deploymentIpConfig)
+				}
 			}
+			return &deploymentYaml
 		}
 	}
+	return nil
 }
 
 // parse line of configuration and split it into key/value
@@ -96,4 +96,29 @@ func optimizeNamespaces(namespace string) string {
 	}
 
 	return strings.TrimSpace(namespace)
+}
+
+func migrateIpConfigFromCnfToYaml() string {
+	var deploymentYaml = readIPConfig()
+
+	if deploymentYaml != nil {
+		var deployYamlOutByte []byte
+		deployYamlOutByte, err := yaml.Marshal(deploymentYaml)
+		if err != nil {
+			loggingstate.AddErrorEntryAndDetails("Unable to create IP deployment YAML file", err.Error())
+			return "FAILED - Unable to create IP deployment YAML file"
+		}
+		var yamlConfig = string(deployYamlOutByte)
+		loggingstate.AddInfoEntryAndDetails("New custom IP deployment configuration", yamlConfig)
+
+		var configFile = configuration.GetConfiguration().GetIPConfigurationFile()
+		if files.FileOrDirectoryExists(configFile) {
+			return "FAILED - Config already exists"
+		}
+		err = ioutil.WriteFile(configFile, deployYamlOutByte, 0644)
+		if err != nil {
+			return "FAILED - Unable to write new IP config"
+		}
+	}
+	return "SUCCESS"
 }
