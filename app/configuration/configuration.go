@@ -365,12 +365,12 @@ func (conf *config) readConfigFromYAMLFile(file string, target interface{}) erro
 }
 
 func (conf *config) readDeploymentConfigurationFromYamlFile() {
-	if files.FileOrDirectoryExists(conf.K8SManagement.IPConfig.File) {
-		var yamlDeploymentConfig, err = ioutil.ReadFile(conf.K8SManagement.IPConfig.File)
+	if files.FileOrDirectoryExists(conf.GetIPConfigurationFile()) {
+		var yamlDeploymentConfig, err = ioutil.ReadFile(conf.GetIPConfigurationFile())
 		if err != nil {
 			loggingstate.AddErrorEntryAndDetails("Unable to read IP deployment config file", err.Error())
 			loggingstate.ClearLoggingState()
-			log.Panicf("Unable to load IP deployment configuration [%v]\n%v", err.Error(), conf.K8SManagement.IPConfig.File)
+			log.Panicf("Unable to load IP deployment configuration [%v]\n%v", err.Error(), conf.GetIPConfigurationFile())
 		}
 
 		var deploymentConfig = DeploymentYAMLConfig{}
