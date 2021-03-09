@@ -14,11 +14,6 @@ controller:
   customJenkinsLabels: [
     "{{ .JenkinsHelmValues.Controller.CustomJenkinsLabels }}"
   ]
-  JCasC:
-    # Define, if we want to allow anonymous read access
-    authorizationStrategy: |-
-      loggedInUsersCanDoAnything:
-        allowAnonymousRead: {{ .JenkinsHelmValues.Controller.AuthorizationStrategyAllowAnonymousRead }}
   # Define a admin password here. Normally it does not matter who has access, because settings can be reloaded from the repository.
   # But for security reasons try to use a password, that is not easy and avoid to give anonymous read access to the project where Jenkins is located.
   adminPassword: "{{ .JenkinsHelmValues.Controller.AdminPassword }}"
@@ -56,6 +51,10 @@ controller:
   ]
   JCasC:
     enabled: true
+    # Define, if we want to allow anonymous read access
+    authorizationStrategy: |-
+      loggedInUsersCanDoAnything:
+        allowAnonymousRead: {{ .JenkinsHelmValues.Controller.AuthorizationStrategyAllowAnonymousRead }}
   sidecars:
     configAutoReload:
       # folder in the pod that should hold the collected dashboards:
