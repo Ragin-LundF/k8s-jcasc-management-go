@@ -14,7 +14,7 @@ metadata:
     "helm.sh/chart": "{{ $root.Chart.Name }}-{{ $root.Chart.Version }}"
     "app.kubernetes.io/managed-by": "{{ $root.Release.Service }}"
     "app.kubernetes.io/instance": "{{ $root.Release.Name }}"
-    "app.kubernetes.io/component": "{{ $root.Values.master.componentName }}"
+    "app.kubernetes.io/component": "{{ $root.Values.controller.componentName }}"
 rules:
   - apiGroups: ["", "apps"]
     resources: ["configmaps", "services", "deployments", "replicasets", "pods", "statefulsets", "secrets", "persistentvolumeclaims"]
@@ -34,7 +34,7 @@ metadata:
     "helm.sh/chart": "{{ $root.Chart.Name }}-{{ $root.Chart.Version }}"
     "app.kubernetes.io/managed-by": "{{ $root.Release.Service }}"
     "app.kubernetes.io/instance": "{{ $root.Release.Name }}"
-    "app.kubernetes.io/component": "{{ $root.Values.master.componentName }}"
+    "app.kubernetes.io/component": "{{ $root.Values.controller.componentName }}"
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role

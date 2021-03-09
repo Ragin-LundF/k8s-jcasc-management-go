@@ -89,6 +89,7 @@ func createMigrationPlaceholderMap() map[string]string {
 		"##NGINX_LOADBALANCER_ANNOTATIONS_EXT_DNS_TTL##":      "{{ .Nginx.LoadBalancer.Annotations.ExternalDnsTtl }}",
 
 		"##K8S_MGMT_PERSISTENCE_VOLUME_CLAIM_NAME##": "{{ .Base.ExistingVolumeClaim }}",
+		"##PROJECT_DIRECTORY##":                      "{{ .Base.Namespace }}",
 	}
 }
 

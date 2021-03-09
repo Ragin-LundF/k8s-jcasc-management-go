@@ -33,7 +33,7 @@ jenkins:
   jcasc:
     # This variable configures the URL, where the Jenkins configuration was checked in. This URL must have public access!
     # You can use the '##PROJECT_DIRECTORY##' template variable here to
-    configurationUrl: "https://raw.githubusercontent.com/Ragin-LundF/k8s-jcasc-project-config/master/##PROJECT_DIRECTORY##/jcasc_config.yaml"
+    configurationUrl: "https://raw.githubusercontent.com/Ragin-LundF/k8s-jcasc-project-config/master/{{ .Base.Namespace }}/jcasc_config.yaml"
     authorizationStrategy:
       # Deny or allow anonymous read access to the Jenkins master
       allowAnonymousRead: true
