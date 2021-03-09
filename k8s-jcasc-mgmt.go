@@ -11,7 +11,7 @@ func main() {
 	// setup the system and read config
 	setup.Setup()
 	// check version
-	info := checkVersion()
+	var info = checkVersion()
 
 	// start app
 	startApp(info)
@@ -19,7 +19,7 @@ func main() {
 
 func checkVersion() string {
 	newVersionAvailable := version.CheckVersion()
-	info := ""
+	var info = ""
 	if newVersionAvailable {
 		info = "A new version is available!"
 	}

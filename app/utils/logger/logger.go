@@ -12,7 +12,7 @@ var LogEncoding string
 
 // Log returns an instance of SugaredLogger to log into a logfile
 func Log() *zap.SugaredLogger {
-	logConfig := zap.NewProductionConfig()
+	var logConfig = zap.NewProductionConfig()
 	if LogFilePath != "" {
 		logConfig.OutputPaths = []string{
 			LogFilePath,
@@ -22,7 +22,7 @@ func Log() *zap.SugaredLogger {
 		}
 	}
 
-	logger, _ := logConfig.Build()
+	var logger, _ = logConfig.Build()
 	defer logger.Sync()
 	return logger.Sugar()
 }

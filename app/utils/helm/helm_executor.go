@@ -10,7 +10,7 @@ import (
 // ExecutorHelm executes Helm commands
 func ExecutorHelm(command string, args []string) (err error) {
 	// create args
-	argsForCommand := []string{
+	var argsForCommand = []string{
 		command,
 	}
 

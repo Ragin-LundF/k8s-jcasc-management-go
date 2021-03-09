@@ -193,7 +193,7 @@ func (conf *config) GetGlobalSecretsPath() (secretsFilePath string) {
 
 // GetSecretsFiles returns a list of secret files to support different environments
 func (conf *config) GetSecretsFiles() []string {
-	secretsFilePath := conf.GetGlobalSecretsPath()
+	var secretsFilePath = conf.GetGlobalSecretsPath()
 
 	if secretsFilePath != "" {
 		var filePrefix = "secrets_"
@@ -255,7 +255,7 @@ func (conf *config) FilePathWithBasePath(configurationFilePath string) string {
 	// this helps to support to read configuration from other paths and templates from
 	// this project path
 	if !files.FileOrDirectoryExists(resultConfigurationFilePath) {
-		currentDirectory, _ := os.Getwd()
+		var currentDirectory, _ = os.Getwd()
 		var currentDirFilePath = files.AppendPath(currentDirectory, configurationFilePath)
 		if files.FileOrDirectoryExists(currentDirFilePath) {
 			resultConfigurationFilePath = currentDirFilePath
@@ -266,7 +266,7 @@ func (conf *config) FilePathWithBasePath(configurationFilePath string) string {
 
 // AddToIPConfigFile adds an IP to the IP config file
 func (conf *config) AddToIPConfigFile(namespace string, ip string, domain string) (success bool, err error) {
-	log := logger.Log()
+	var logging = logger.Log()
 	// add new namespace and IP address to configuration
 	var newIpAndNamespace = DeploymentStruct{
 		IPAddress: ip,
@@ -279,7 +279,7 @@ func (conf *config) AddToIPConfigFile(namespace string, ip string, domain string
 	ipConfigFile, err := os.OpenFile(conf.GetIPConfigurationFile(), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Unable to open IP config file [%s]", conf.GetIPConfigurationFile()), err.Error())
-		log.Errorf("[AddToIPConfigFile] Unable to open IP config file [%s]. \n%s", conf.GetIPConfigurationFile(), err.Error())
+		logging.Errorf("[AddToIPConfigFile] Unable to open IP config file [%s]. \n%s", conf.GetIPConfigurationFile(), err.Error())
 		return false, err
 	}
 	defer ipConfigFile.Close()
@@ -292,14 +292,14 @@ func (conf *config) AddToIPConfigFile(namespace string, ip string, domain string
 	yamlFileOutput, err := yaml.Marshal(yamlIPConfig)
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("Unable to marshall yaml IP deployment configuration.", err.Error())
-		log.Error("Unable to marshall yaml IP deployment configuration.", err.Error())
+		logging.Error("Unable to marshall yaml IP deployment configuration.", err.Error())
 		return false, err
 	}
 
 	// write file
 	if _, err := ipConfigFile.Write(yamlFileOutput); err != nil {
 		loggingstate.AddErrorEntryAndDetails("Unable to write YAML IP deployment configuration.", err.Error())
-		log.Error("Unable to write YAML IP deployment configuration.", err.Error())
+		logging.Error("Unable to write YAML IP deployment configuration.", err.Error())
 		return false, err
 	}
 	return true, err
@@ -354,7 +354,7 @@ func (conf *config) initBaseConfig(basePath string) {
 }
 
 func (conf *config) readConfigFromYAMLFile(file string, target interface{}) error {
-	yamlFile, err := ioutil.ReadFile(file)
+	var yamlFile, err = ioutil.ReadFile(file)
 	if err != nil {
 		return err
 	}

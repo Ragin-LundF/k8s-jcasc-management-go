@@ -16,7 +16,7 @@ import (
 
 // Workflow entrypoint
 func Workflow(info string, err error) {
-	selectedCommand := menu.Menu(info, err)
+	var selectedCommand = menu.Menu(info, err)
 	err = startCommandAction(selectedCommand)
 	// show output
 	dialogs.DialogShowLogging(loggingstate.GetLoggingStateEntries(), err)

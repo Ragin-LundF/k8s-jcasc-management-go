@@ -18,7 +18,7 @@ type FileFilter struct {
 
 // FileOrDirectoryExists checks if file exists
 func FileOrDirectoryExists(fileNameWithPath string) bool {
-	log := logger.Log()
+	var log = logger.Log()
 	_, err := os.Stat(fileNameWithPath)
 	if os.IsNotExist(err) {
 		log.Infof("[File Utils] Unable to find file [%s]", fileNameWithPath)
@@ -35,7 +35,7 @@ func ListFilesOfDirectory(directory string) (files *[]string, err error) {
 
 // ListFilesOfDirectoryWithFilter lists files of a directory if it exists with a filter
 func ListFilesOfDirectoryWithFilter(directory string, filter *FileFilter) (files *[]string, err error) {
-	log := logger.Log()
+	var log = logger.Log()
 	// check if the directory exists before reading from directory
 	directoryExists := FileOrDirectoryExists(directory)
 	if directoryExists {
@@ -58,7 +58,7 @@ func ListFilesOfDirectoryWithFilter(directory string, filter *FileFilter) (files
 
 // filter by filename and filter
 func filterFilename(filename string, filter *FileFilter) bool {
-	fileIsOk := true
+	var fileIsOk = true
 	// no filter -> everything is ok
 	if filter != nil {
 		// filter prefix
@@ -153,7 +153,7 @@ func LoadTemplateFilesOfDirectory(directory string) ([]string, error) {
 
 // ReplaceStringInFile replaces content in file
 func ReplaceStringInFile(filePath string, stringToReplace string, newString string) (success bool, err error) {
-	log := logger.Log()
+	var log = logger.Log()
 
 	// read file
 	read, err := ioutil.ReadFile(filePath)
@@ -163,7 +163,7 @@ func ReplaceStringInFile(filePath string, stringToReplace string, newString stri
 	}
 
 	// replace content
-	newContents := strings.Replace(string(read), stringToReplace, newString, -1)
+	var newContents = strings.Replace(string(read), stringToReplace, newString, -1)
 
 	// write changes
 	err = ioutil.WriteFile(filePath, []byte(newContents), 0)

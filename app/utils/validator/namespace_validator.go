@@ -24,7 +24,7 @@ func ValidateNewNamespace(input string) error {
 		return errors.New("Namespace name is too long! You can only use max. 63 characters. ")
 	}
 	// Regex to have DNS compatible string
-	regex := regexp.MustCompile(`^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$`)
+	var regex = regexp.MustCompile(`^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$`)
 	if !regex.Match([]byte(input)) {
 		return errors.New("Namespace is not valid! It must fit to DNS specification! ")
 	}

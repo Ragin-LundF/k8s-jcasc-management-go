@@ -10,9 +10,9 @@ import (
 
 // CheckVersion checks the version if there is a new one available
 func CheckVersion() bool {
-	log := logger.Log()
+	var log = logger.Log()
 
-	remoteVersion, err := receiveVersionFromGit()
+	var remoteVersion, err = receiveVersionFromGit()
 	if err != nil {
 		log.Error(err)
 		return false
@@ -31,8 +31,8 @@ func CheckVersion() bool {
 }
 
 func compareVersions(localVersion string, remoteVersion string) bool {
-	semVerRemote, _ := version.NewSemver(remoteVersion)
-	semVerLocal, _ := version.NewSemver(localVersion)
+	var semVerRemote, _ = version.NewSemver(remoteVersion)
+	var semVerLocal, _ = version.NewSemver(localVersion)
 
 	if semVerLocal.LessThan(semVerRemote) {
 		return true
@@ -56,7 +56,7 @@ func receiveVersionFromGit() (version string, err error) {
 	}
 	defer resp.Body.Close()
 
-	buffer := new(bytes.Buffer)
+	var buffer = new(bytes.Buffer)
 	_, err = buffer.ReadFrom(resp.Body)
 	if err != nil {
 		return "", err

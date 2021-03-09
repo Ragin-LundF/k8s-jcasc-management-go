@@ -12,7 +12,7 @@ import (
 
 // ExecuteScriptsInstallScriptsForNamespace executes install scripts, which have the prefix for the given namespace
 func ExecuteScriptsInstallScriptsForNamespace(namespace string, filePrefix string) (err error) {
-	log := logger.Log()
+	var log = logger.Log()
 	log.Infof("[Execute Scripts] Try to execute scripts for namespace [%s]...", namespace)
 	// calculate path to script folder
 	var scriptFolder = files.AppendPath(
@@ -28,7 +28,7 @@ func ExecuteScriptsInstallScriptsForNamespace(namespace string, filePrefix strin
 	if isScriptsDirectoryAvailable {
 		log.Infof("[Execute Scripts] Script directory is available for namespace [%s]...", namespace)
 		// prepare file filter for install
-		scriptFileEnding := constants.ScriptsFileEnding
+		var scriptFileEnding = constants.ScriptsFileEnding
 		var fileFilter = files.FileFilter{
 			Prefix: &filePrefix,
 			Suffix: &scriptFileEnding,
@@ -44,7 +44,7 @@ func ExecuteScriptsInstallScriptsForNamespace(namespace string, filePrefix strin
 		if len(*fileArray) > 0 {
 			// iterate over filtered file array and execute scripts
 			for _, file := range *fileArray {
-				scriptWithPath := files.AppendPath(scriptFolder, file)
+				var scriptWithPath = files.AppendPath(scriptFolder, file)
 				log.Infof("[Execute Scripts] Trying to execute script [%s]", scriptWithPath)
 				loggingstate.AddInfoEntryAndDetails(fmt.Sprintf("  -> Try to execute script [%s]...", file), scriptWithPath)
 

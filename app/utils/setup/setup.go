@@ -16,22 +16,23 @@ import (
 // Setup is the initial setup and reads the configuration
 func Setup() {
 	// configure flags
-	logFileFlag := flag.String("logfile", "", "Logging output file. If empty it logs to console.")
-	logEncoding := flag.String("logencoding", "", "Logging output encoding. If empty it logs as json.")
-	basePathFlag := flag.String("basepath", "", "base path to k8s-jcasc-management")
-	serverStartFlag := flag.Bool("server", false, "start k8s-jcasc-management-go as a server")
-	dryRunFlag := flag.Bool("dry-run", false, "execute helm charts with --dry-run --debug flags")
-	cliOnly := flag.Bool("cli", false, "Start in CLI mode")
-	migrateTemplates := flag.Bool("migrate-templates-v2", false, "Migrate templates from v2 to v3")
-	helpFlag := flag.Bool("help", false, "show help")
+	var logFileFlag = flag.String("logfile", "", "Logging output file. If empty it logs to console.")
+	var logEncoding = flag.String("logencoding", "", "Logging output encoding. If empty it logs as json.")
+	var basePathFlag = flag.String("basepath", "", "base path to k8s-jcasc-management")
+	var serverStartFlag = flag.Bool("server", false, "start k8s-jcasc-management-go as a server")
+	var dryRunFlag = flag.Bool("dry-run", false, "execute helm charts with --dry-run --debug flags")
+	var cliOnly = flag.Bool("cli", false, "Start in CLI mode")
+	var migrateTemplatesV2 = flag.Bool("migrate-templates-v2", false, "Migrate templates from v2 to v3")
+	var migrateConfigsV2 = flag.Bool("migrate-configs-v2", false, "Migrate configs from v2 to v3")
+	var helpFlag = flag.Bool("help", false, "show help")
 	flag.Parse()
 
 	// define main path
 	logger.LogFilePath = *logFileFlag
 	logger.LogEncoding = *logEncoding
-	basePath := ""
-	serverStart := *serverStartFlag
-	dryRunDebug := *dryRunFlag
+	var basePath = ""
+	var serverStart = *serverStartFlag
+	var dryRunDebug = *dryRunFlag
 	if os.Getenv("K8S_MGMT_BASE_PATH") != "" {
 		// base path from environment variables
 		basePath = os.Getenv("K8S_MGMT_BASE_PATH")
@@ -46,7 +47,7 @@ func Setup() {
 	}
 
 	// Logger
-	log := logger.Log()
+	var log = logger.Log()
 
 	// read configuration if base path was set, else go into panic mode
 	if basePath != "" {
@@ -68,11 +69,23 @@ func Setup() {
 	// configure (read configuration and do additional configuration)
 	configure(basePath, dryRunDebug, *cliOnly)
 
-	if *migrateTemplates {
-		println("Starting migration...")
+	var migrationStarted bool = false
+	if *migrateTemplatesV2 {
+		println("Starting template migration...")
 		var migrationStatus = migration.MigrateTemplatesToV3()
 		println(migrationStatus)
-		os.Exit(0)
+		migrationStarted = true
+	}
+	if *migrateConfigsV2 {
+		println("Starting config migration...")
+		var migrationStatus = migration.MigrateConfigurationV3()
+		println(migrationStatus)
+		migrationStarted = true
+	}
+
+	if migrationStarted {
+		println("Migration finished...")
+		os.Exit(1)
 	}
 
 	// start experimental server
@@ -123,6 +136,9 @@ func showHelp() {
 	fmt.Println("  -migrate-templates-v2")
 	fmt.Println("      * Optional *")
 	fmt.Println("      Migrate the templates from v2 to v3")
+	fmt.Println("  -migrate-configs-v2")
+	fmt.Println("      * Optional *")
+	fmt.Println("      Migrate the configs from v2 to v3")
 	fmt.Println("  -help")
 	fmt.Println("       * Optional *")
 	fmt.Println("       Show this help")
