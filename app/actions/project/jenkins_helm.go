@@ -8,20 +8,20 @@ import (
 // ----- Structures
 // jenkinsHelm : Model which describes the jenkins helm values
 type jenkinsHelmValues struct {
-	Master      jenkinsHelmMaster
+	Controller  jenkinsHelmMaster
 	Persistence jenkinsHelmPersistence
 }
 
 // jenkinsHelmMaster : Model which describes the Jenkins master section in the helm values
 type jenkinsHelmMaster struct {
-	Image                                        string
-	Tag                                          string
-	ImagePullPolicy                              string
-	ImagePullSecretName                          string
-	CustomJenkinsLabels                          string
-	AuthorizationStrategyDenyAnonymousReadAccess string
-	AdminPassword                                string
-	SidecarsConfigAutoReloadFolder               string
+	Image                                   string
+	Tag                                     string
+	ImagePullPolicy                         string
+	ImagePullSecretName                     string
+	CustomJenkinsLabels                     string
+	AuthorizationStrategyAllowAnonymousRead string
+	AdminPassword                           string
+	SidecarsConfigAutoReloadFolder          string
 }
 
 // jenkinsHelmPersistence : Model which describes the persistence section in the helm values
@@ -34,23 +34,23 @@ type jenkinsHelmPersistence struct {
 // NewJenkinsHelmValues : Create new Jenkins Helm values structure
 func NewJenkinsHelmValues() *jenkinsHelmValues {
 	return &jenkinsHelmValues{
-		Master:      newDefaultJenkinsHelmMaster(),
+		Controller:  newDefaultJenkinsHelmController(),
 		Persistence: newDefaultJenkinsHelmPersistence(),
 	}
 }
 
 // ----- internal methods
-// newDefaultJenkinsHelmMaster : create a new default jenkinsHelmMaster structure
-func newDefaultJenkinsHelmMaster() jenkinsHelmMaster {
+// newDefaultJenkinsHelmController : create a new default jenkinsHelmMaster structure
+func newDefaultJenkinsHelmController() jenkinsHelmMaster {
 	return jenkinsHelmMaster{
-		Image:                          configuration.GetConfiguration().Jenkins.Container.Image,
-		Tag:                            configuration.GetConfiguration().Jenkins.Container.Tag,
-		ImagePullPolicy:                configuration.GetConfiguration().Jenkins.Container.PullPolicy,
-		ImagePullSecretName:            configuration.GetConfiguration().Jenkins.Container.PullSecret,
-		CustomJenkinsLabels:            configuration.GetConfiguration().Jenkins.Controller.CustomJenkinsLabel,
-		AdminPassword:                  configuration.GetConfiguration().Jenkins.Controller.Passwords.AdminUser,
-		SidecarsConfigAutoReloadFolder: configuration.GetConfiguration().Jenkins.Jcasc.ConfigurationURL,
-		AuthorizationStrategyDenyAnonymousReadAccess: strconv.FormatBool(!configuration.GetConfiguration().Jenkins.Jcasc.AuthorizationStrategy.AllowAnonymousRead),
+		Image:                                   configuration.GetConfiguration().Jenkins.Container.Image,
+		Tag:                                     configuration.GetConfiguration().Jenkins.Container.Tag,
+		ImagePullPolicy:                         configuration.GetConfiguration().Jenkins.Container.PullPolicy,
+		ImagePullSecretName:                     configuration.GetConfiguration().Jenkins.Container.PullSecret,
+		CustomJenkinsLabels:                     configuration.GetConfiguration().Jenkins.Controller.CustomJenkinsLabel,
+		AdminPassword:                           configuration.GetConfiguration().Jenkins.Controller.Passwords.AdminUser,
+		SidecarsConfigAutoReloadFolder:          configuration.GetConfiguration().Jenkins.Jcasc.ConfigurationURL,
+		AuthorizationStrategyAllowAnonymousRead: strconv.FormatBool(configuration.GetConfiguration().Jenkins.Jcasc.AuthorizationStrategy.AllowAnonymousRead),
 	}
 }
 

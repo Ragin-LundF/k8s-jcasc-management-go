@@ -136,7 +136,7 @@ func (project *Project) ProcessTemplates(projectDirectory string) (err error) {
 func processWithTemplateEngine(filename string, project Project) (err error) {
 	// replace JCasC URL
 	var jcascUrl bytes.Buffer
-	jcascUrlTemplate, err := template.New("JcasC-URL").Parse(project.JenkinsHelmValues.Master.SidecarsConfigAutoReloadFolder)
+	jcascUrlTemplate, err := template.New("JcasC-URL").Parse(project.JenkinsHelmValues.Controller.SidecarsConfigAutoReloadFolder)
 	if err != nil {
 		return err
 	}
@@ -145,7 +145,7 @@ func processWithTemplateEngine(filename string, project Project) (err error) {
 	if err != nil {
 		return err
 	}
-	project.JenkinsHelmValues.Master.SidecarsConfigAutoReloadFolder = jcascUrl.String()
+	project.JenkinsHelmValues.Controller.SidecarsConfigAutoReloadFolder = jcascUrl.String()
 
 	// replace sub-templates
 	var jcascCloudsKubernetesSubTemplates bytes.Buffer

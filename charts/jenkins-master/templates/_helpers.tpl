@@ -17,9 +17,9 @@ Allow the release namespace to be overridden for multi-namespace deployments in 
   {{- end -}}
 {{- end -}}
 
-{{- define "jenkins.master.slaveKubernetesNamespace" -}}
-  {{- if .Values.master.slaveKubernetesNamespace -}}
-    {{- tpl .Values.master.slaveKubernetesNamespace . -}}
+{{- define "jenkins.agent.namespace" -}}
+  {{- if .Values.agent.namespace -}}
+    {{- tpl .Values.agent.namespace . -}}
   {{- else -}}
     {{- if .Values.namespaceOverride -}}
       {{- .Values.namespaceOverride -}}
@@ -49,20 +49,43 @@ If release name contains chart name it will be used as a full name.
 {{- end -}}
 
 {{/*
+Returns the admin password
+https://github.com/helm/charts/issues/5167#issuecomment-619137759
+*/}}
+{{- define "jenkins.password" -}}
+  {{ if .Values.controller.adminPassword -}}
+    {{- .Values.controller.adminPassword | b64enc | quote }}
+  {{- else -}}
+    {{- $secret := (lookup "v1" "Secret" .Release.Namespace (include "jenkins.fullname" .)).data -}}
+    {{- if $secret -}}
+      {{/*
+        Reusing current password since secret exists
+      */}}
+      {{- index $secret ( .Values.controller.admin.passwordKey | default "jenkins-admin-password" ) -}}
+    {{- else -}}
+      {{/*
+          Generate new password
+      */}}
+      {{- randAlphaNum 22 | b64enc | quote }}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{/*
 Returns the Jenkins URL
 */}}
 {{- define "jenkins.url" -}}
-{{- if .Values.master.jenkinsUrl }}
-  {{- .Values.master.jenkinsUrl }}
+{{- if .Values.controller.jenkinsUrl }}
+  {{- .Values.controller.jenkinsUrl }}
 {{- else }}
-  {{- if .Values.master.ingress.hostName }}
-    {{- if .Values.master.ingress.tls }}
-      {{- default "https" .Values.master.jenkinsUrlProtocol }}://{{ .Values.master.ingress.hostName }}{{ default "" .Values.master.jenkinsUriPrefix }}
+  {{- if .Values.controller.ingress.hostName }}
+    {{- if .Values.controller.ingress.tls }}
+      {{- default "https" .Values.controller.jenkinsUrlProtocol }}://{{ .Values.controller.ingress.hostName }}{{ default "" .Values.controller.jenkinsUriPrefix }}
     {{- else }}
-      {{- default "http" .Values.master.jenkinsUrlProtocol }}://{{ .Values.master.ingress.hostName }}{{ default "" .Values.master.jenkinsUriPrefix }}
+      {{- default "http" .Values.controller.jenkinsUrlProtocol }}://{{ .Values.controller.ingress.hostName }}{{ default "" .Values.controller.jenkinsUriPrefix }}
     {{- end }}
   {{- else }}
-      {{- default "http" .Values.master.jenkinsUrlProtocol }}://{{ template "jenkins.fullname" . }}:{{.Values.master.servicePort}}{{ default "" .Values.master.jenkinsUriPrefix }}
+      {{- default "http" .Values.controller.jenkinsUrlProtocol }}://{{ template "jenkins.fullname" . }}:{{.Values.controller.servicePort}}{{ default "" .Values.controller.jenkinsUriPrefix }}
   {{- end}}
 {{- end}}
 {{- end -}}
@@ -72,32 +95,57 @@ Returns configuration as code default config
 */}}
 {{- define "jenkins.casc.defaults" -}}
 jenkins:
-  disableRememberMe: false
+  {{- $configScripts := toYaml .Values.controller.JCasC.configScripts }}
+  {{- if and (.Values.controller.JCasC.authorizationStrategy) (not (contains "authorizationStrategy:" $configScripts)) }}
+  authorizationStrategy:
+    {{- tpl .Values.controller.JCasC.authorizationStrategy . | nindent 4 }}
+  {{- end }}
+  {{- if and (.Values.controller.JCasC.securityRealm) (not (contains "securityRealm:" $configScripts)) }}
+  securityRealm:
+    {{- tpl .Values.controller.JCasC.securityRealm . | nindent 4 }}
+  {{- end }}
+  disableRememberMe: {{ .Values.controller.disableRememberMe }}
   remotingSecurity:
     enabled: true
-  mode: {{ .Values.master.executorMode }}
-  numExecutors: {{ .Values.master.numExecutors }}
+  mode: {{ .Values.controller.executorMode }}
+  numExecutors: {{ .Values.controller.numExecutors }}
   projectNamingStrategy: "standard"
   markupFormatter:
-    {{- if .Values.master.enableRawHtmlMarkupFormatter }}
+    {{- if .Values.controller.enableRawHtmlMarkupFormatter }}
     rawHtml:
       disableSyntaxHighlighting: true
     {{- else }}
-      "plainText"
+    {{- toYaml .Values.controller.markupFormatter | nindent 4 }}
     {{- end }}
   clouds:
   - kubernetes:
       containerCapStr: "{{ .Values.agent.containerCap }}"
-      {{- if .Values.master.slaveKubernetesNamespace }}
-      jenkinsTunnel: "{{ template "jenkins.fullname" . }}-agent.{{ template "jenkins.namespace" . }}:{{ .Values.master.slaveListenerPort }}"
-      jenkinsUrl: "http://{{ template "jenkins.fullname" . }}.{{ template "jenkins.namespace" . }}:{{.Values.master.servicePort}}{{ default "" .Values.master.jenkinsUriPrefix }}"
+      defaultsProviderTemplate: "{{ .Values.agent.defaultsProviderTemplate }}"
+      connectTimeout: "{{ .Values.agent.kubernetesConnectTimeout }}"
+      readTimeout: "{{ .Values.agent.kubernetesReadTimeout }}"
+      {{- if .Values.agent.websocket }}
+      jenkinsUrl: "http://{{ template "jenkins.fullname" . }}.{{ template "jenkins.namespace" . }}.svc.{{.Values.clusterZone}}:{{.Values.controller.servicePort}}{{ default "" .Values.controller.jenkinsUriPrefix }}"
+      {{- else if .Values.agent.jenkinsUrl }}
+      jenkinsUrl: "{{ tpl .Values.agent.jenkinsUrl . }}"
+      {{- else if .Values.agent.namespace }}
+      jenkinsUrl: "http://{{ template "jenkins.fullname" . }}.{{ template "jenkins.namespace" . }}:{{.Values.controller.servicePort}}{{ default "" .Values.controller.jenkinsUriPrefix }}"
       {{- else }}
-      jenkinsTunnel: "{{ template "jenkins.fullname" . }}-agent:{{ .Values.master.slaveListenerPort }}"
-      jenkinsUrl: "http://{{ template "jenkins.fullname" . }}:{{.Values.master.servicePort}}{{ default "" .Values.master.jenkinsUriPrefix }}"
+      jenkinsUrl: "http://{{ template "jenkins.fullname" . }}:{{.Values.controller.servicePort}}{{ default "" .Values.controller.jenkinsUriPrefix }}"
       {{- end }}
-      maxRequestsPerHostStr: "32"
+      {{- if not .Values.agent.websocket }}
+      {{- if .Values.agent.jenkinsTunnel }}
+      jenkinsTunnel: "{{ tpl .Values.agent.jenkinsTunnel . }}"
+      {{- else if .Values.agent.namespace }}
+      jenkinsTunnel: "{{ template "jenkins.fullname" . }}-agent.{{ template "jenkins.namespace" . }}:{{ .Values.controller.agentListenerPort }}"
+      {{- else }}
+      jenkinsTunnel: "{{ template "jenkins.fullname" . }}-agent:{{ .Values.controller.agentListenerPort }}"
+      {{- end }}
+      {{- else }}
+      webSocket: true
+      {{- end }}
+      maxRequestsPerHostStr: {{ .Values.agent.maxRequestsPerHostStr | quote }}
       name: "kubernetes"
-      namespace: "{{ template "jenkins.master.slaveKubernetesNamespace" . }}"
+      namespace: "{{ template "jenkins.agent.namespace" . }}"
       serverUrl: "https://kubernetes.default"
       {{- if .Values.agent.enabled }}
       podLabels:
@@ -124,19 +172,26 @@ jenkins:
         {{- end }}
       {{- end }}
       {{- end }}
-  {{- if .Values.master.csrf.defaultCrumbIssuer.enabled }}
+  {{- if .Values.controller.csrf.defaultCrumbIssuer.enabled }}
   crumbIssuer:
     standard:
-      excludeClientIPFromCrumb: {{ if .Values.master.csrf.defaultCrumbIssuer.proxyCompatability }}true{{ else }}false{{- end }}
+      excludeClientIPFromCrumb: {{ if .Values.controller.csrf.defaultCrumbIssuer.proxyCompatability }}true{{ else }}false{{- end }}
   {{- end }}
 security:
   apiToken:
     creationOfLegacyTokenEnabled: false
     tokenGenerationOnCreationEnabled: false
     usageStatisticsEnabled: true
+{{- if .Values.controller.scriptApproval }}
+  scriptApproval:
+    approvedSignatures:
+{{- range $key, $val := .Values.controller.scriptApproval }}
+    - "{{ $val }}"
+{{- end }}
+{{- end }}
 unclassified:
   location:
-    adminAddress: {{ default "" .Values.master.jenkinsAdminEmail }}
+    adminAddress: {{ default "" .Values.controller.jenkinsAdminEmail }}
     url: {{ template "jenkins.url" . }}
 {{- end -}}
 
@@ -145,27 +200,47 @@ Returns kubernetes pod template configuration as code
 */}}
 {{- define "jenkins.casc.podTemplate" -}}
 - name: "{{ .Values.agent.podName }}"
+{{- if .Values.agent.annotations }}
+  annotations:
+  {{- range $key, $value := .Values.agent.annotations }}
+  - key: {{ $key }}
+    value: {{ $value | quote }}
+  {{- end }}
+{{- end }}
+  id: {{ sha256sum (toYaml .Values.agent) }}
   containers:
   - name: "{{ .Values.agent.sideContainerName }}"
     alwaysPullImage: {{ .Values.agent.alwaysPullImage }}
     args: "{{ .Values.agent.args | replace "$" "^$" }}"
+    {{- if .Values.agent.command }}
     command: {{ .Values.agent.command }}
-    envVars:
-    - containerEnvVar:
-        key: "JENKINS_URL"
-        value: "http://{{ template "jenkins.fullname" . }}.{{ template "jenkins.namespace" . }}.svc.{{.Values.clusterZone}}:{{.Values.master.servicePort}}{{ default "" .Values.master.jenkinsUriPrefix }}"
-    {{- if .Values.agent.imageTag }}
-    image: "{{ .Values.agent.image }}:{{ .Values.agent.imageTag }}"
-    {{- else }}
-    image: "{{ .Values.agent.image }}:{{ .Values.agent.tag }}"
     {{- end }}
+    envVars:
+      - envVar:
+          key: "JENKINS_URL"
+          {{- if .Values.agent.jenkinsUrl }}
+          value: {{ tpl .Values.agent.jenkinsUrl . }}
+          {{- else }}
+          value: "http://{{ template "jenkins.fullname" . }}.{{ template "jenkins.namespace" . }}.svc.{{.Values.clusterZone}}:{{.Values.controller.servicePort}}{{ default "/" .Values.controller.jenkinsUriPrefix }}"
+          {{- end }}
+    image: "{{ .Values.agent.image }}:{{ .Values.agent.tag }}"
     privileged: "{{- if .Values.agent.privileged }}true{{- else }}false{{- end }}"
     resourceLimitCpu: {{.Values.agent.resources.limits.cpu}}
     resourceLimitMemory: {{.Values.agent.resources.limits.memory}}
     resourceRequestCpu: {{.Values.agent.resources.requests.cpu}}
     resourceRequestMemory: {{.Values.agent.resources.requests.memory}}
+    runAsUser: {{ .Values.agent.runAsUser }}
+    runAsGroup: {{ .Values.agent.runAsGroup }}
     ttyEnabled: {{ .Values.agent.TTYEnabled }}
-    workingDir: "/home/jenkins"
+    workingDir: {{ .Values.agent.workingDir }}
+{{- if .Values.agent.envVars }}
+  envVars:
+  {{- range $index, $var := .Values.agent.envVars }}
+    - envVar:
+        key: {{ $var.name }}
+        value: {{ tpl $var.value $ }}
+  {{- end }}
+{{- end }}
   idleMinutes: {{ .Values.agent.idleMinutes }}
   instanceCap: 2147483647
   {{- if .Values.agent.imagePullSecretName }}
@@ -173,11 +248,20 @@ Returns kubernetes pod template configuration as code
   - name: {{ .Values.agent.imagePullSecretName }}
   {{- end }}
   label: "{{ .Release.Name }}-{{ .Values.agent.componentName }} {{ .Values.agent.customJenkinsLabels  | join " " }}"
+{{- if .Values.agent.nodeSelector }}
+  nodeSelector:
+  {{- $local := dict "first" true }}
+  {{- range $key, $value := .Values.agent.nodeSelector }}
+    {{- if $local.first }} {{ else }},{{ end }}
+    {{- $key }}={{ tpl $value $ }}
+    {{- $_ := set $local "first" false }}
+  {{- end }}
+{{- end }}
   nodeUsageMode: "NORMAL"
   podRetention: {{ .Values.agent.podRetention }}
   showRawYaml: true
   serviceAccount: "{{ include "jenkins.serviceAccountAgentName" . }}"
-  slaveConnectTimeoutStr: "{{ .Values.agent.slaveConnectTimeout }}"
+  slaveConnectTimeoutStr: "{{ .Values.agent.connectTimeout }}"
 {{- if .Values.agent.volumes }}
   volumes:
   {{- range $index, $volume := .Values.agent.volumes }}
@@ -196,113 +280,37 @@ Returns kubernetes pod template configuration as code
     {{- end }}
   {{- end }}
 {{- end }}
-  {{- if .Values.agent.yamlTemplate }}
-  yaml: |-
-  {{- tpl ( trim .Values.agent.yamlTemplate ) . | nindent 4 }}
-  {{- end }}
-  yamlMergeStrategy: "override"
-{{- end -}}
-
-{{/*
-Returns kubernetes pod template xml configuration
-*/}}
-{{- define "jenkins.xml.podTemplate" -}}
-<org.csanchez.jenkins.plugins.kubernetes.PodTemplate>
-  <inheritFrom></inheritFrom>
-  <name>{{ .Values.agent.podName }}</name>
-  <instanceCap>2147483647</instanceCap>
-  <idleMinutes>{{ .Values.agent.idleMinutes }}</idleMinutes>
-  {{- $tmp := join " " .Values.agent.customJenkinsLabels }}
-  {{- $labels := printf "%s-%s %s" .Release.Name .Values.agent.componentName $tmp }}
-  <label>{{ $labels | trim  }}</label>
-  <serviceAccount>{{ include "jenkins.serviceAccountAgentName" . }}</serviceAccount>
-  <nodeSelector>
-    {{- $local := dict "first" true }}
-    {{- range $key, $value := .Values.agent.nodeSelector }}
-      {{- if not $local.first }},{{- end }}
-      {{- $key }}={{ $value }}
-      {{- $_ := set $local "first" false }}
-    {{- end }}</nodeSelector>
-    <nodeUsageMode>NORMAL</nodeUsageMode>
-  <volumes>
-{{- range $index, $volume := .Values.agent.volumes }}
-  {{- if (eq $volume.type "PVC") }}
-    <org.csanchez.jenkins.plugins.kubernetes.volumes.PersistentVolumeClaim>
-  {{- else }}
-    <org.csanchez.jenkins.plugins.kubernetes.volumes.{{ $volume.type }}Volume>
-  {{- end }}
-  {{- range $key, $value := $volume }}{{- if not (eq $key "type") }}
-      <{{ $key }}>{{ $value }}</{{ $key }}>
-  {{- end }}{{- end }}
-  {{- if (eq $volume.type "PVC") }}
-    </org.csanchez.jenkins.plugins.kubernetes.volumes.PersistentVolumeClaim>
-  {{- else }}
-    </org.csanchez.jenkins.plugins.kubernetes.volumes.{{ $volume.type }}Volume>
+{{- if .Values.agent.workspaceVolume }}
+  workspaceVolume:
+    {{- if (eq .Values.agent.workspaceVolume.type "DynamicPVC") }}
+    dynamicPVC:
+    {{- else if (eq .Values.agent.workspaceVolume.type "EmptyDir") }}
+    emptyDirWorkspaceVolume:
+    {{- else if (eq .Values.agent.workspaceVolume.type "HostPath") }}
+    hostPathWorkspaceVolume:
+    {{- else if (eq .Values.agent.workspaceVolume.type "Nfs") }}
+    nfsWorkspaceVolume:
+    {{- else if (eq .Values.agent.workspaceVolume.type "PVC") }}
+    persistentVolumeClaimWorkspaceVolume:
+    {{- else }}
+    {{ .Values.agent.workspaceVolume.type }}:
+    {{- end }}
+  {{- range $key, $value := .Values.agent.workspaceVolume }}
+    {{- if not (eq $key "type") }}
+      {{ $key }}: {{ if kindIs "string" $value }}{{ tpl $value $ | quote }}{{ else }}{{ $value }}{{ end }}
+    {{- end }}
   {{- end }}
 {{- end }}
-  </volumes>
-  <containers>
-    <org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
-      <name>{{ .Values.agent.sideContainerName }}</name>
-{{- if .Values.agent.imageTag }}
-      <image>{{ .Values.agent.image }}:{{ .Values.agent.imageTag }}</image>
-{{- else }}
-      <image>{{ .Values.agent.image }}:{{ .Values.agent.tag }}</image>
-{{- end }}
-{{- if .Values.agent.privileged }}
-      <privileged>true</privileged>
-{{- else }}
-      <privileged>false</privileged>
-{{- end }}
-      <alwaysPullImage>{{ .Values.agent.alwaysPullImage }}</alwaysPullImage>
-      <workingDir>/home/jenkins</workingDir>
-      <command>{{ .Values.agent.command }}</command>
-      <args>{{ .Values.agent.args }}</args>
-      <ttyEnabled>{{ .Values.agent.TTYEnabled }}</ttyEnabled>
-      # Resources configuration is a little hacky. This was to prevent breaking
-      # changes, and should be cleanned up in the future once everybody had
-      # enough time to migrate.
-      <resourceRequestCpu>{{.Values.agent.resources.requests.cpu}}</resourceRequestCpu>
-      <resourceRequestMemory>{{.Values.agent.resources.requests.memory}}</resourceRequestMemory>
-      <resourceLimitCpu>{{.Values.agent.resources.limits.cpu}}</resourceLimitCpu>
-      <resourceLimitMemory>{{.Values.agent.resources.limits.memory}}</resourceLimitMemory>
-      <envVars>
-        <org.csanchez.jenkins.plugins.kubernetes.ContainerEnvVar>
-          <key>JENKINS_URL</key>
-          <value>http://{{ template "jenkins.fullname" . }}.{{ template "jenkins.namespace" . }}.svc.{{.Values.clusterZone}}:{{.Values.master.servicePort}}{{ default "" .Values.master.jenkinsUriPrefix }}</value>
-        </org.csanchez.jenkins.plugins.kubernetes.ContainerEnvVar>
-      </envVars>
-    </org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
-  </containers>
-  <envVars>
-{{- range $index, $var := .Values.agent.envVars }}
-    <org.csanchez.jenkins.plugins.kubernetes.PodEnvVar>
-      <key>{{ $var.name }}</key>
-      <value>{{ $var.value }}</value>
-    </org.csanchez.jenkins.plugins.kubernetes.PodEnvVar>
-{{- end }}
-  </envVars>
-  <annotations/>
-{{- if .Values.agent.imagePullSecretName }}
-  <imagePullSecrets>
-    <org.csanchez.jenkins.plugins.kubernetes.PodImagePullSecret>
-      <name>{{ .Values.agent.imagePullSecretName }}</name>
-    </org.csanchez.jenkins.plugins.kubernetes.PodImagePullSecret>
-  </imagePullSecrets>
-{{- else }}
-  <imagePullSecrets/>
-{{- end }}
-  <nodeProperties/>
 {{- if .Values.agent.yamlTemplate }}
-  <yaml>{{ tpl .Values.agent.yamlTemplate . | html | indent 4 | trim }}</yaml>
+  yaml: |-
+    {{- tpl (trim .Values.agent.yamlTemplate) . | nindent 4 }}
 {{- end }}
-  <podRetention class="org.csanchez.jenkins.plugins.kubernetes.pod.retention.Default"/>
-</org.csanchez.jenkins.plugins.kubernetes.PodTemplate>
+  yamlMergeStrategy: {{ .Values.agent.yamlMergeStrategy }}
 {{- end -}}
 
 {{- define "jenkins.kubernetes-version" -}}
-  {{- if .Values.master.installPlugins -}}
-    {{- range .Values.master.installPlugins -}}
+  {{- if .Values.controller.installPlugins -}}
+    {{- range .Values.controller.installPlugins -}}
       {{ if hasPrefix "kubernetes:" . }}
         {{- $split := splitList ":" . }}
         {{- printf "%s" (index $split 1 ) -}}

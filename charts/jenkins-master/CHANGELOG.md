@@ -1,9 +1,437 @@
 # Change Log
 
-This file documents all notable changes to Jenkins Helm Chart. The release
-numbering uses [semantic versioning](http://semver.org).
+This file documents all notable changes to the Jenkins Helm Chart.
+The release numbering uses [semantic versioning](http://semver.org).
 
-NOTE: The change log until version 1.5.7 is auto generated based on git commits. Those include a reference to the git commit to be able to get more details.
+Use the following links to reference issues, PRs, and commits prior to v2.6.0.
+
+* Issue:  `https://github.com/helm/charts/issues/[issue#]`
+* PR:     `https://github.com/helm/charts/pull/[pr#]`
+* Commit: `https://github.com/helm/charts/commit/[commit]/stable/jenkins`
+
+The change log until v1.5.7 was auto-generated based on git commits.
+Those entries include a reference to the git commit to be able to get more details.
+
+## 3.2.0
+
+Calculate consistent unique agent IDs to be used in pod templates. Fixes [https://github.com/jenkinsci/helm-charts/issues/270]
+
+## 3.1.15
+
+Fix documentation for the kubernetes probes
+
+## 3.1.14
+
+Typo in documentation
+
+## 3.1.13
+
+Update Jenkins image and appVersion to jenkins lts release version 2.263.4
+
+## 3.1.12
+
+Added GitHub action to automate the updating of LTS releases.
+
+## 3.1.11
+
+Enable setting controller.updateStrategy to change the update strategy for StatefulSet
+
+## 3.1.10
+
+Fixed issue for the AgentListener where it was not possible to attribute a NodePort
+
+## 3.1.9
+
+Upgrade kubernetes plugin t0 1.29.0 and CasC plugin to 1.47
+
+## 3.1.8
+
+Fix init scripts config map name
+
+## 3.1.7
+
+Fix missing newline when `httpsKeyStore` is enabled
+
+## 3.1.6
+
+Mount controller init scripts from ConfigMap
+
+## 3.1.5
+
+Fix `namespaceOverride` not applied when loading JCasC
+
+## 3.1.4
+
+Update Git plugin version to v4.5.2
+
+## 3.1.3
+
+Update Jenkins image and appVersion to jenkins lts release version 2.263.3
+
+## 3.1.2
+
+Enable setting maxRequestsPerHostStr to change the max concurrent connections to Kubernetes API
+
+## 3.1.1
+
+Update Jenkins image and appVersion to jenkins lts release version 2.263.2
+
+## 3.1.0
+
+* Added `.Values.controller.podSecurityContextOverride` and `.Values.backup.podSecurityContextOverride`.
+* Added simple default values tests for `jenkins-backup-cronjob.yaml`.
+
+## 3.0.14
+
+Enable to only backup job folder instead of whole jenkins
+
+## 3.0.13
+
+Improve Documentation around JCasc and Custom Image
+
+## 3.0.12
+
+Added GitHub Action testing on Kind 1.16, 1.17, 1.18, 1.19 & 1.20
+
+## 3.0.11
+
+Fixes & unit tests for Ingress resources on Kubernetes 1.19 and above
+
+## 3.0.10
+
+Ingress resources on Kubernetes 1.19 (or above) are created with the version `networking.k8s.io/v1`
+
+## 3.0.9
+
+Added support for backing up to Azure Blob Storage.
+
+## 3.0.8
+
+* Typo in documentation
+
+## 3.0.7
+
+* Add support for setting default agent workspaceVolume
+
+## 3.0.6
+
+Use 2.263.1 image
+
+## 3.0.5
+
+* Update appVersion to reflect new jenkins lts release version 2.263.1
+
+## 3.0.4
+
+* Fix documentation for additional secret mounts
+
+## 3.0.3
+
+* Update `README.md` with explanation on how to mount additional secrets
+
+## 3.0.2
+
+* Fix `.Values.controller.tolerations` and `.Values.controller.nodeSelector` variable names in templates\jenkins-backup-cronjob.yaml
+
+## 3.0.1
+
+* added 'runAsNonroot' to security context
+
+## 3.0.0
+
+* Chart uses StatefulSet instead of Deployment
+* XML configuration was removed in favor of JCasC
+* chart migrated to helm 3.0.0 (apiVersion v2)
+* offending terms have been removed
+* values have been renamed and re-ordered to make it easier to use
+* already deprecated items have been removed
+* componentName for the controller is now `jenkins-controller`
+* componentName for the agent is now `jenkins-agent`
+* container names are now
+  * `init` for the init container which downloads Jenkins plugins
+  * `jenkins` for the Jenkins controller
+  * `config-reload` for the sidecar container which automatically reloads JCasC
+* Updated UI tests to use official `bats/bats` image instead of `dduportal/bats`
+
+For migration instructions from previous versions and additional information check README.md.
+
+## 2.19.0
+
+* Use lts version 2.249.3
+* Update kubernetes, workflow-aggregator, git and configuration-as-code plugins.
+* Fail apply_config.sh script if an error occurs.
+
+## 2.18.2
+
+Fix: `master.javaOpts` issue with quoted values
+
+## 2.18.1
+
+Recommend installing plugins in custom image
+
+## 2.18.0
+
+Removed /tmp volume. Making /tmp a volume causes permission issues with jmap/jstack on certain Kubernetes clusters
+
+## 2.17.1
+
+Fix location of jenkins.war file.
+It is located in `/usr/share/jenkins/jenkins.war` and can be fonfigured via `master.jenkinsWar`.
+
+## 2.17.0
+
+Add support for plugin-installation-manager-tool
+
+## 2.16.0
+
+Added Startup probe for Jenkins pod when Kubernetes cluster is 1.16 or newer
+
+## 2.15.5
+
+scriptApproval is taken into account when enableXmlConfig is false.
+
+## 2.15.4
+
+Add Tilt support for easier helm chart development.
+
+## 2.15.3
+
+Fix error on missing `ingress.paths` value
+
+## 2.15.2
+
+Added documentation for ingress and jenkins url
+
+## 2.15.1
+
+Fix priorityClassName entry in values.yaml file
+
+## 2.15.0
+
+Added support for disabling the helm.sh/chart annotation
+
+## 2.14.0
+
+Added support for annotations in podTemplates
+
+## 2.13.2
+
+Add nodeSelector in the backup pod
+Fix tolerations in the backup pod
+
+## 2.13.1
+
+Update list of maintainers
+
+## 2.13.0
+
+Added Support for websockets in the default Jcasc config
+Added trailing slash to JENKINS_URL env var
+
+## 2.12.2
+
+Added unit tests for most resources in the Helm chart.
+
+## 2.12.1
+
+Helm chart README update
+
+## 2.12.0
+
+Add option to configure securityContext capabilities
+
+## 2.11.0
+
+Added configurable security context for jenkins backup CronJob and annotations to its serviceaccount.
+
+## 2.10.0
+
+Make activeDeadlineSeconds for backup job configurable
+
+## 2.9.0
+
+Make namespace of PrometheusRule configurable
+
+## 2.8.2
+
+Bumped configuration-as-code plugin version from 1.41 to 1.43.
+See [configuration-as-code plugin issue #1478](https://github.com/jenkinsci/configuration-as-code-plugin/issues/1478)
+
+## 2.8.1
+
+Fix indentation of JAVA_OPTS
+
+## 2.8.0
+
+Add support for helm unittest and include first tests
+
+## 2.7.2
+
+Target port of container `jenkins-sc-config` taken the value from values.yaml.
+
+## 2.7.0
+
+Add a secondary ingress template for those who want a second ingress with different labels or annotations or whatever else.
+
+Example: You want /github-webhook to be on a public ingress, while the main Jenkins intance to be on a private locked down ingress.
+
+## 2.6.5
+
+Update configScripts example
+
+## 2.6.4
+
+Add timja as a maintainer
+
+## 2.6.3
+
+Update k8s-sidecar image to 0.1.193
+
+## 2.6.2
+
+Only mount empty dir secrets-dir if either `master.enableXmlConfig` or `master.secretsFilesSecret` is set
+Fixes #19
+
+## 2.6.1 Do not render empty JCasC templates
+
+## 2.6.0 First release in jenkinsci GitHub org
+
+Updated README for new location
+
+## 2.5.2
+
+Fix as per JENKINS-47112
+
+## 2.5.1
+
+Support Jenkins Resource Root URL
+
+## 2.5.0
+
+Add an option to specify that Jenkins master should be initialized only once, during first install.
+
+## 2.4.1
+
+Reorder README parameters into sections to facilitate chart usage and maintenance
+
+## 2.4.0 Update default agent image
+
+`jenkins/jnlp-slave` is deprected and `jenkins/inbound-agent` should be used instead.
+Also updated it to newest version (4.3-4).
+
+## 2.3.3 correct templating of master.slaveJenkinsUrl
+
+Fixes #22708
+
+## 2.3.2 Fix wrong value for overwritePluginsFromImage
+
+Fixes #23003
+Fixes #22633
+
+Also fixes indentation for #23114
+
+## 2.3.1
+
+Always mount {{ .Values.master.jenkinsRef }}/secrets/ directory. Previous it
+was mounted only when `master.enableXmlConfig` was enabled.
+
+## 2.3.0
+
+Add an option to specify pod based on labels that can connect to master if NetworkPolicy is enabled
+
+## 2.2.0 increase retry for config auto reload
+
+Configure `REQ_RETRY_CONNECT` to `10` to give Jenkins more time to start up.
+<https://github.com/kiwigrid/k8s-sidecar>
+
+Value can be configured via `master.sidecars.configAutoReload.reqRetryConnect`
+
+## 2.1.2 updated README
+
+## 2.1.1 update credentials-binding plugin to 1.23
+
+## 2.1.0
+
+Add support to set `runAsUser` and `runAsGroup` for `agent`.
+
+## 2.0.1
+
+Only render authorizationStrategy and securityRealm when values are set.
+
+## 2.0.0 Configuration as Code now default + container does not run as root anymore
+
+The README contains more details for this update.
+Please note that the updated values contain breaking changes.
+
+## 1.27.0 Update plugin versions & sidecar container
+
+| plugin                | old version | new version |
+| --------------------- | ----------- | ----------- |
+| kubernetes            | 1.25.3      | 1.25.7      |
+| workflow-job          | 2.38        | 2.39        |
+| credentials-binding   | 1.21        | 1.22        |
+| configuration-as-code | 1.39        | 1.41        |
+
+configAutoReload container updated from `kiwigrid/k8s-sidecar:0.1.132` to `kiwigrid/k8s-sidecar:0.1.144`
+
+## 1.26.0
+
+Add support to override `workingDir` for default pod template
+
+## 1.25.0
+
+Add support for installing plugins in addition to the chart's default plugins via `master.additionalPlugins`
+
+## 1.24.0
+
+Allow configuration of yamlMergeStrategy via `agent.yamlMergeStrategy`
+
+## 1.23.2
+
+In the `jenkins.xml.podTemplate` helper function, allow templating of all string values under `agent.volumes` except `type` by rendering them with the `tpl` function
+
+## 1.23.1
+
+Added auto detection for Ingress API version
+
+## 1.23.0
+
+Allow to use an existing secret for the jenkins admin credentials
+
+## 1.22.0
+
+Add support for UI security in the default JCasC via `master.JCasC.securityRealm` and `master.JCasC.authorizationStrategy` which deny anonymous access by default
+
+## 1.21.3
+
+Render `agent.envVars` in kubernetes pod template JCasC
+
+## 1.21.2
+
+Cleanup `agent.yamlTemplate` rendering in kubernetes pod template XML configuration
+
+## 1.21.1
+
+Render `agent.nodeSelector` in the kubernetes pod template JCasC
+
+## 1.21.0
+
+Add support for overriding Ingress paths via `master.ingress.paths`
+
+## 1.20.0
+
+Add the following options for configuring the Kubernetes plugin.
+
+- master.slaveDefaultsProviderTemplate
+- master.slaveJenkinsUrl
+- master.slaveJenkinsTunnel
+- master.slaveConnectTimeout
+- master.slaveReadTimeout
+
+## 1.19.0
+
+Add support for disabling remember me via `master.disableRememberMe`
+Add support for using a different markup formatter via `master.markupFormatter`
 
 ## 1.18.1
 
@@ -130,7 +558,7 @@ Update docs for Helm 3
 
 Make `jenkins-home` attachable to Azure Disks without pvc
 
-```
+```yaml
  volumes:
   - name: jenkins-home
     azureDisk:
@@ -178,7 +606,7 @@ configuration-as-code | 1.27        | 1.32
 
 ## 1.9.6
 
-Enables jenkins to use keystore inorder to have native ssl support [#17790](https: https://wiki.jenkins.io/pages/viewpage.action?pageId=135468777)
+Enables jenkins to use keystore inorder to have native ssl support #17790 <https://wiki.jenkins.io/pages/viewpage.action?pageId=135468777>
 
 ## 1.9.5 Enable remoting security
 
@@ -188,7 +616,7 @@ Enables jenkins to use keystore inorder to have native ssl support [#17790](http
 
 Google application credentials are kept in a file, which has to be mounted to a pod. You can set `gcpcredentials` in `existingSecret` as follows:
 
-```
+```yaml
  existingSecret:
     jenkins-service-account:
       gcpcredentials: application_default_credentials.json
@@ -278,7 +706,7 @@ Update kubernetes-plugin to version 1.18.2 which fixes frequently encountered [J
 
 ## 1.7.1
 
-Update the default requirements for jenkins-slave to 512Mi which fixes frequently encountered [issue #3723](https://github.com/helm/charts/issues/3723)
+Update the default requirements for jenkins-agent to 512Mi which fixes frequently encountered [issue #3723](https://github.com/helm/charts/issues/3723)
 
 ## 1.7.0
 
@@ -337,7 +765,7 @@ JCasC default configuration includes:
 
 Example `values.yaml` which enables JCasC, it's default config and configAutoReload:
 
-```
+```yaml
 master:
   JCasC:
     enabled: true
@@ -607,24 +1035,24 @@ commit: 48c58a430
 helm chart best practices (#13136)
 commit: b02ae3f48
 
-### Breaking changes:
+### Breaking changes
 
 - values have been renamed to follow helm chart best practices for naming conventions so
   that all variables start with a lowercase letter and words are separated with camelcase
-  https://helm.sh/docs/chart_best_practices/#naming-conventions
+  <https://helm.sh/docs/chart_best_practices/#naming-conventions>
 - all resources are now using recommended standard labels
-  https://helm.sh/docs/chart_best_practices/#standard-labels
+  <https://helm.sh/docs/chart_best_practices/#standard-labels>
 
 As a result of the label changes also the selectors of the deployment have been updated.
 Those are immutable so trying an updated will cause an error like:
 
-```
+```text
 Error: Deployment.apps "jenkins" is invalid: spec.selector: Invalid value: v1.LabelSelector{MatchLabels:map[string]string{"app.kubernetes.io/component":"jenkins-master", "app.kubernetes.io/instance":"jenkins"}, MatchExpressions:[]v1.LabelSelectorRequirement(nil)}: field is immutable
 ```
 
 In order to upgrade, delete the Jenkins Deployment before upgrading:
 
-```
+```console
 kubectl delete deploy jenkins
 ```
 
@@ -1193,12 +1621,8 @@ commit: e3e617a0b
 Merge branch 'master' into jenkins-test-timeout
 commit: 9a230a6b1
 
-## 0.8.1
-
 Double retry count for Jenkins test
 commit: 129c8e824
-
-## 0.10.1
 
 Jenkins: Update README | Master.ServiceAnnotations (#2757)
 commit: 6571810bc
@@ -1223,8 +1647,6 @@ commit: d044f99be
 Review jenkins networkpolicy docs (#2618)
 commit: 49911e458
 
-## 0.9.2
-
 Add image pull secrets to jenkins templates (#1389)
 commit: 4dfae21fd
 
@@ -1233,22 +1655,18 @@ commit: 4dfae21fd
 Added persistent volume claim annotations (#2619)
 commit: ac9e5306e
 
-## 0.9.1
-
 Fix failing CI lint (#2758)
 commit: 26f709f0e
 
 ## 0.9.0
 
-#1785 namespace defined templates with chart name (#2140)
+namespace defined templates with chart name (#2140)
 commit: 408ae0b3f
 
 ## 0.8.9
 
 added useSecurity and adminUser to params (#1903)
 commit: 39d2a03cd
-
-## 0.8.9
 
 Use storageClassName for jenkins. (#1997)
 commit: 802f6449b
@@ -1257,8 +1675,6 @@ commit: 802f6449b
 
 Remove old plugin locks before installing plugins (#1746)
 commit: 6cd7b8ff4
-
-## 0.8.8
 
 promote initContainrs to podspec (#1740)
 commit: fecc804fc
@@ -1293,8 +1709,6 @@ commit: 0dc349b44
 Remove path from ingress specification to allow other paths (#1599)
 commit: e727f6b32
 
-## 0.8.2
-
 Update git plugin to 3.4.0 for CVE-2017-1000084 (#1505)
 commit: 03482f995
 
@@ -1302,8 +1716,6 @@ commit: 03482f995
 
 Use consistent whitespace in template placeholders (#1437)
 commit: 912f50c71
-
-## 0.8.1
 
 add configurable service annotations #1234 (#1244)
 commit: 286861ca8
@@ -1423,8 +1835,6 @@ commit: 6fc0ff242
 Changed default value of Kubernetes Cloud name to match one in kubernetes plugin (#404)
 commit: 68351304a
 
-## 0.1.10
-
 Add support for overriding the Jenkins ConfigMap (#524)
 commit: f97ca53b1
 
@@ -1438,17 +1848,11 @@ commit: d76a09588
 Change description (#553)
 commit: 91f5c24e1
 
-## 0.1.8
-
 Removed default Persistence.StorageClass: generic (#530)
 commit: c87494c10
 
-## 0.1.8
-
 Update to the recommended pvc patterns. (#448)
 commit: a7fc595aa
-
-## 0.1.8
 
 Remove helm.sh/created annotations (#505)
 commit: f380da2fb
@@ -1458,12 +1862,8 @@ commit: f380da2fb
 add support for explicit NodePort on jenkins chart (#342)
 commit: f63c188da
 
-## 0.1.7
-
 Add configurable loadBalancerSourceRanges for jenkins chart (#360)
 commit: 44007c50e
-
-## 0.1.7
 
 Update Jenkins version to current LTS (2.19.4) and Kubernetes Plugin to 0.10 (#341)
 commit: 6c8678167
@@ -1483,17 +1883,11 @@ commit: 4aa9cf5b1
 removed `*` from `jenkins/templates/NOTES.txt`
 commit: 76212230b
 
-## 0.1.4
-
 apply standard metadata labels to PVC's
 commit: 58b730836
 
-## 0.1.4
-
 specify namespace in `kubectl get svc` commands in NOTES.txt
 commit: 7d3287e81
-
-## 0.1.4
 
 Update Jenkins version to current LTS (#194)
 commit: 2c0404049
@@ -1503,22 +1897,14 @@ commit: 2c0404049
 escape fixed
 commit: 2026e1d15
 
-## 0.1.1
-
 .status.loadBalancer.ingress[0].ip is empty in AWS
 commit: 1810e37f4
-
-## 0.1.1
 
 .status.loadBalancer.ingress[0].ip is empty in AWS
 commit: 3cbd3ced6
 
-## 0.1.1
-
 Remove 'Getting Started:' from various NOTES.txt. (#181)
 commit: 2f63fd524
-
-## 0.1.1
 
 docs(\*): update READMEs to reference chart repos (#119)
 commit: c7d1bff05

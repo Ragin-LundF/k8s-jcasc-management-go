@@ -1,8 +1,10 @@
-master:
-  image: "{{ .JenkinsHelmValues.Master.Image }}"
-  tag: "{{ .JenkinsHelmValues.Master.Tag }}"
-  imagePullPolicy: "{{ .JenkinsHelmValues.Master.ImagePullPolicy }}"
-  imagePullSecretName: {{ .JenkinsHelmValues.Master.ImagePullSecretName }}
+controller:
+  # Used for label app.kubernetes.io/component
+  componentName: "{{ .Base.DeploymentName }}"
+  image: "{{ .JenkinsHelmValues.Controller.Image }}"
+  tag: "{{ .JenkinsHelmValues.Controller.Tag }}"
+  imagePullPolicy: "{{ .JenkinsHelmValues.Controller.ImagePullPolicy }}"
+  imagePullSecretName: {{ .JenkinsHelmValues.Controller.ImagePullSecretName }}
   # need 1 executor as default to execute the seed job
   numExecutors: 1
   # must be exclusive for jobs distribution
@@ -10,19 +12,16 @@ master:
 
   # give a custom label to the master instance, that the seed job can run in it
   customJenkinsLabels: [
-    "{{ .JenkinsHelmValues.Master.CustomJenkinsLabels }}"
+    "{{ .JenkinsHelmValues.Controller.CustomJenkinsLabels }}"
   ]
-  # Define, if we want to allow anonymous read access
-  authorizationStrategy: |-
-      <authorizationStrategy class="hudson.security.FullControlOnceLoggedInAuthorizationStrategy">
-        <denyAnonymousReadAccess>{{ .JenkinsHelmValues.Master.AuthorizationStrategyDenyAnonymousReadAccess }}</denyAnonymousReadAccess>
-      </authorizationStrategy>
+  JCasC:
+    # Define, if we want to allow anonymous read access
+    authorizationStrategy: |-
+      loggedInUsersCanDoAnything:
+        allowAnonymousRead: {{ .JenkinsHelmValues.Controller.AuthorizationStrategyAllowAnonymousRead }}
   # Define a admin password here. Normally it does not matter who has access, because settings can be reloaded from the repository.
   # But for security reasons try to use a password, that is not easy and avoid to give anonymous read access to the project where Jenkins is located.
-  adminPassword: "{{ .JenkinsHelmValues.Master.AdminPassword }}"
-  # We do not want to execute Jenkins as root. The Jenkins container are using 1000:1000 as jenkins:jenkins user/group
-  runAsUser: 1000
-  fsGroup: 1000
+  adminPassword: "{{ .JenkinsHelmValues.Controller.AdminPassword }}"
   # because we want to "proxy" jenkins via ingress routing, we have to set the Uri Prefix here
   jenkinsUriPrefix: "{{ .Base.JenkinsUriPrefix }}"
   installPlugins:
@@ -60,7 +59,7 @@ master:
   sidecars:
     configAutoReload:
       # folder in the pod that should hold the collected dashboards:
-      folder: "{{ .JenkinsHelmValues.Master.SidecarsConfigAutoReloadFolder }}"
+      folder: "{{ .JenkinsHelmValues.Controller.SidecarsConfigAutoReloadFolder }}"
 
 persistence:
   existingClaim: {{ .Base.ExistingVolumeClaim }}
