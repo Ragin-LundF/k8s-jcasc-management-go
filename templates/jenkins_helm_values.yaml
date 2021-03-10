@@ -24,7 +24,6 @@ controller:
     - blueocean:latest
     - blueocean-bitbucket-pipeline:latest
     - configuration-as-code:latest
-    - configuration-as-code-support:latest
     - credentials-binding:latest
     - cucumber-reports:latest
     - docker-build-step:latest
