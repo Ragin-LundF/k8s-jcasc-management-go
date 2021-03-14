@@ -37,7 +37,7 @@ func StartApp(info string) {
 
 	k8sJcascWindow.SetContent(tabs)
 	k8sJcascWindow.Resize(fyne.Size{
-		Width:  900,
+		Width:  980,
 		Height: 400,
 	})
 	k8sJcascWindow.ShowAndRun()

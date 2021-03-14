@@ -15,7 +15,7 @@ func CreateTabMenu(k8sJcascApp fyne.App, k8sJcascWindow fyne.Window, info string
 		container.NewTabItemWithIcon("Secrets", theme.WarningIcon(), SecretsScreen(k8sJcascWindow, k8sJcascApp.Preferences())),
 		container.NewTabItemWithIcon("Create Project", theme.DocumentCreateIcon(), ProjectsScreen(k8sJcascWindow, k8sJcascApp.Preferences())),
 		container.NewTabItemWithIcon("Tools", theme.SettingsIcon(), ToolsScreen(k8sJcascWindow, k8sJcascApp.Preferences())))
-	tabs.SetTabLocation(container.TabLocationTop)
+	tabs.SetTabLocation(container.TabLocationLeading)
 
 	return tabs
 }
