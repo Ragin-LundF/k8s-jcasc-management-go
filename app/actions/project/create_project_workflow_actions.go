@@ -16,7 +16,7 @@ const CountCreateProjectWorkflow = 13
 // ActionProcessProjectCreate is processing the project creation. This method controls all required actions
 func ActionProcessProjectCreate(projectConfig models.ProjectConfig, callback func()) (err error) {
 	// calculate the target directory
-	newProjectDir := files.AppendPath(configuration.GetConfiguration().GetProjectBaseDirectory(), projectConfig.Namespace)
+	var newProjectDir = files.AppendPath(configuration.GetConfiguration().GetProjectBaseDirectory(), projectConfig.Namespace)
 	callback()
 
 	// create new project directory
@@ -63,6 +63,7 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig, callback fun
 		_ = os.RemoveAll(newProjectDir)
 		return err
 	}
+	newProject.SetCloudKubernetesAdditionalTemplateFiles(projectConfig.SelectedCloudTemplates)
 	newProject.SetCloudKubernetesAdditionalTemplates(cloudTemplatesString)
 
 	err = newProject.ProcessTemplates(newProjectDir)
@@ -76,6 +77,12 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig, callback fun
 
 	// send event that new namespace was created
 	createNamespaceEvent(projectConfig.Namespace)
+
+	err = newProject.SaveProjectConfiguration(newProjectDir)
+	if err != nil {
+		loggingstate.AddErrorEntryAndDetails("-> Error while saving project configuration", err.Error())
+		return err
+	}
 
 	return nil
 }

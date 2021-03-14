@@ -8,27 +8,27 @@ import (
 // ----- Structures
 // jenkinsHelm : Model which describes the jenkins helm values
 type jenkinsHelmValues struct {
-	Controller  jenkinsHelmMaster
-	Persistence jenkinsHelmPersistence
+	Controller  jenkinsHelmMaster      `yaml:"controller,omitempty"`
+	Persistence jenkinsHelmPersistence `yaml:"persistence,omitempty"`
 }
 
 // jenkinsHelmMaster : Model which describes the Jenkins master section in the helm values
 type jenkinsHelmMaster struct {
-	Image                                   string
-	Tag                                     string
-	ImagePullPolicy                         string
-	ImagePullSecretName                     string
-	CustomJenkinsLabels                     string
-	AuthorizationStrategyAllowAnonymousRead string
-	AdminPassword                           string
-	SidecarsConfigAutoReloadFolder          string
+	Image                                   string `yaml:"image,omitempty"`
+	Tag                                     string `yaml:"tag,omitempty"`
+	ImagePullPolicy                         string `yaml:"imagePullPolicy,omitempty"`
+	ImagePullSecretName                     string `yaml:"imagePullSecretName,omitempty"`
+	CustomJenkinsLabels                     string `yaml:"customJenkinsLabel,omitempty"`
+	AuthorizationStrategyAllowAnonymousRead string `yaml:"authorizationStrategyAllowAnonymousRead,omitempty"`
+	AdminPassword                           string `yaml:"adminPassword,omitempty"`
+	SidecarsConfigAutoReloadFolder          string `yaml:"sidecarsConfigAutoReloadFolder,omitempty"`
 }
 
 // jenkinsHelmPersistence : Model which describes the persistence section in the helm values
 type jenkinsHelmPersistence struct {
-	StorageClass string
-	AccessMode   string
-	Size         string
+	AccessMode   string `yaml:"accessMode,omitempty"`
+	Size         string `yaml:"storageSize,omitempty"`
+	StorageClass string `yaml:"storageClass,omitempty"`
 }
 
 // NewJenkinsHelmValues : Create new Jenkins Helm values structure

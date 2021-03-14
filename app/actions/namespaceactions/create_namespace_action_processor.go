@@ -2,52 +2,67 @@ package namespaceactions
 
 import (
 	"fmt"
+	"k8s-management-go/app/actions/install"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/kubectl"
 	"k8s-management-go/app/utils/loggingstate"
 )
 
 // ProcessNamespaceCreation processes the namespace creation
-func ProcessNamespaceCreation(state models.StateData) (err error) {
+func ProcessNamespaceCreation(projectConfig install.ProjectConfig) (err error) {
 	loggingstate.AddInfoEntry("Start creating namespace...")
 	loggingstate.AddInfoEntry("-> Check and create namespace if necessary...")
 
 	// check if namespace is existing
-	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Check if namespace [%s] is existing...", state.Namespace))
-	nsIsAvailable, err := isNamespaceAvailable(state.Namespace)
+	loggingstate.AddInfoEntry(fmt.Sprintf(
+		"  -> Check if namespace [%s] is existing...",
+		projectConfig.Project.Base.Namespace))
+	nsIsAvailable, err := isNamespaceAvailable(projectConfig.Project.Base.Namespace)
 	if err != nil {
 		// it is ok, that the namespace is not available
-		loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Check if namespace [%s] is existing...namespace not found with error.", state.Namespace), err.Error())
+		loggingstate.AddErrorEntryAndDetails(fmt.Sprintf(
+			"  -> Check if namespace [%s] is existing...namespace not found with error.",
+			projectConfig.Project.Base.Namespace), err.Error())
 	}
-	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Check if namespace [%s] is existing...done", state.Namespace))
+	loggingstate.AddInfoEntry(fmt.Sprintf(
+		"  -> Check if namespace [%s] is existing...done",
+		projectConfig.Project.Base.Namespace))
 
 	// namespace is not available
 	if !nsIsAvailable {
 		// namespace does not exist, so create one
-		loggingstate.AddInfoEntry(fmt.Sprintf("  -> Namespace [%s] is not available. Trying to create...", state.Namespace))
+		loggingstate.AddInfoEntry(fmt.Sprintf(
+			"  -> Namespace [%s] is not available. Trying to create...",
+			projectConfig.Project.Base.Namespace))
 
 		kubectlCommandArgs := []string{
-			"namespace", state.Namespace,
+			"namespace", projectConfig.Project.Base.Namespace,
 		}
-		_, err := kubectl.ExecutorKubectl("create", kubectlCommandArgs)
+		_, err = kubectl.ExecutorKubectl("create", kubectlCommandArgs)
 		if err != nil {
-			loggingstate.AddErrorEntryAndDetails(fmt.Sprintf("  -> Cannot create namespace [%s]", state.Namespace), err.Error())
+			loggingstate.AddErrorEntryAndDetails(fmt.Sprintf(
+				"  -> Cannot create namespace [%s]",
+				projectConfig.Project.Base.Namespace), err.Error())
 			return err
 		}
 
-		loggingstate.AddInfoEntry(fmt.Sprintf("  -> Namespace [%s] is not available. Trying to create...done", state.Namespace))
+		loggingstate.AddInfoEntry(fmt.Sprintf(
+			"  -> Namespace [%s] is not available. Trying to create...done",
+			projectConfig.Project.Base.Namespace))
 	}
-	loggingstate.AddInfoEntry(fmt.Sprintf("  -> Namespace [%s] found.", state.Namespace))
+	loggingstate.AddInfoEntry(fmt.Sprintf(
+		"  -> Namespace [%s] found.",
+		projectConfig.Project.Base.Namespace))
 
 	loggingstate.AddInfoEntry("-> Check and create namespace if necessary...done")
 	loggingstate.AddInfoEntry("Start creating namespace...done")
+
 	return nil
 }
 
 // check if namespace is available
 func isNamespaceAvailable(namespace string) (namespaceIsAvailable bool, err error) {
-	kubectlCmdArgs := []string{
+	var kubectlCmdArgs = []string{
 		"namespaces",
 	}
 	kubectlCmdOutput, err := kubectl.ExecutorKubectl("get", kubectlCmdArgs)

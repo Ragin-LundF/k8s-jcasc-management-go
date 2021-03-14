@@ -5,13 +5,12 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
-	"k8s-management-go/app/actions/installactions"
+	"k8s-management-go/app/actions/install"
 	"k8s-management-go/app/actions/namespaceactions"
 	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/events"
 	"k8s-management-go/app/gui/uielements"
-	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/logger"
 	"k8s-management-go/app/utils/validator"
 	"time"
@@ -65,28 +64,27 @@ func ScreenInstall(window fyne.Window) fyne.CanvasObject {
 			}
 
 			// map state
-			var state = models.StateData{
-				Namespace:       namespace,
-				DeploymentName:  deploymentName,
-				HelmCommand:     installTypeOption,
-				SecretsPassword: &secretsPasswords,
-				SecretsFileName: secretsFile,
-			}
+			var projectConfig = install.NewInstallProjectConfig()
+			projectConfig.Project.SetNamespace(namespace)
+			projectConfig.Project.Base.DeploymentName = deploymentName
+			projectConfig.HelmCommand = installTypeOption
+			projectConfig.SecretsPassword = &secretsPasswords
+			projectConfig.SecretsFileName = secretsFile
 
 			// Directories
-			state, err := installactions.CalculateDirectoriesForInstall(state, state.Namespace)
+			var err = projectConfig.CalculateDirectoriesForInstall()
 			if err != nil {
 				dialog.ShowError(err, window)
 			}
 
 			// Check Jenkins directories
-			state = installactions.CheckJenkinsDirectories(state)
+			projectConfig.CheckJenkinsDirectories()
 
 			// ask for password
 			if dryRunOption == constants.InstallDryRunInactive {
-				openSecretsPasswordDialog(window, secretsPasswordEntry, state)
+				openSecretsPasswordDialog(window, secretsPasswordEntry, projectConfig)
 			} else {
-				_ = ExecuteInstallWorkflow(window, state)
+				_ = ExecuteInstallWorkflow(window, projectConfig)
 				// show output
 				uielements.ShowLogOutput(window)
 			}
@@ -100,14 +98,14 @@ func ScreenInstall(window fyne.Window) fyne.CanvasObject {
 }
 
 // Secrets password dialog
-func openSecretsPasswordDialog(window fyne.Window, secretsPasswordEntry *widget.Entry, state models.StateData) {
+func openSecretsPasswordDialog(window fyne.Window, secretsPasswordEntry *widget.Entry, projectConfig install.ProjectConfig) {
 	var secretsPasswordWindow = widget.NewForm(widget.NewFormItem("Password", secretsPasswordEntry))
 	secretsPasswordWindow.Resize(fyne.Size{Width: 300, Height: 90})
 
 	dialog.ShowCustomConfirm("Password for Secrets...", "Ok", "Cancel", secretsPasswordWindow, func(confirmed bool) {
 		if confirmed {
-			state.SecretsPassword = &secretsPasswordEntry.Text
-			_ = ExecuteInstallWorkflow(window, state)
+			projectConfig.SecretsPassword = &secretsPasswordEntry.Text
+			_ = ExecuteInstallWorkflow(window, projectConfig)
 		} else {
 			return
 		}

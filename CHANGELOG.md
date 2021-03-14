@@ -20,6 +20,11 @@ This is also used for the placeholders and associated methods that work on this 
 
 This change was urgently needed to add more features like configuration-based deployments (instead of creating the project-specific YAML files) or deploying the tool as a central instance in a Docker container.
 
+## New configuration file per project
+Every project stores now the original configuration as `k8s_jcasc_project_config.yaml`.
+This allows to deploy applications directly from the configuration with the latest templates.
+The tool checks if there are some value files available.
+If this is not the case, it generates them temporary from the configuration and deletes them after a successful deployment.
 
 # 2.9.0 Small improvements and dependency updates
 ## Dependency updates

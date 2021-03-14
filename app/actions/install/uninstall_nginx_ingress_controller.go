@@ -1,4 +1,4 @@
-package uninstallactions
+package install
 
 import (
 	"fmt"
@@ -8,13 +8,15 @@ import (
 )
 
 // ActionHelmUninstallNginxIngressController will uninstall Jenkins with Helm
-func ActionHelmUninstallNginxIngressController(namespace string) (err error) {
-	loggingstate.AddInfoEntry(fmt.Sprintf("[ActionHelmUninstallNginxIngressController] Try to uninstall nginx-ingress-controller in namespace [%s]...", namespace))
+func (projectConfig *ProjectConfig) ActionHelmUninstallNginxIngressController() (err error) {
+	loggingstate.AddInfoEntry(fmt.Sprintf(
+		"[ActionHelmUninstallNginxIngressController] Try to uninstall nginx-ingress-controller in namespace [%s]...",
+		projectConfig.Project.Base.Namespace))
 
 	// prepare Helm command
 	var helmCmdArgs = []string{
 		configuration.GetConfiguration().Nginx.Ingress.Deployment.DeploymentName,
-		"-n", namespace,
+		"-n", projectConfig.Project.Base.Namespace,
 	}
 	// add dry-run flags if necessary
 	if configuration.GetConfiguration().K8SManagement.DryRunOnly {
@@ -24,7 +26,9 @@ func ActionHelmUninstallNginxIngressController(namespace string) (err error) {
 	if err = helm.ExecutorHelm("uninstall", helmCmdArgs); err != nil {
 		return err
 	}
-	loggingstate.AddInfoEntry(fmt.Sprintf("[ActionHelmUninstallNginxIngressController] Uninstall of nginx-ingress-controller in namespace [%s] done...", namespace))
+	loggingstate.AddInfoEntry(fmt.Sprintf(
+		"[ActionHelmUninstallNginxIngressController] Uninstall of nginx-ingress-controller in namespace [%s] done...",
+		projectConfig.Project.Base.Namespace))
 
 	return nil
 }

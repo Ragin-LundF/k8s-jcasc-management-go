@@ -49,6 +49,9 @@ const FilenameNginxIngressControllerHelmValues = "nginx_ingress_helm_values.yaml
 // FilenamePvcClaim : filename of the Kubernetes PVC Claim values file
 const FilenamePvcClaim = "pvc_claim.yaml"
 
+// FilenameProjectConfiguration : filename of the project configuration
+const FilenameProjectConfiguration = "k8s_jcasc_project_config.yaml"
+
 // FilenameSecrets : base filename for secrets (without .gpg extension)
 const FilenameSecrets = "secrets.sh"
 

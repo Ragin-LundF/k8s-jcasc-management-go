@@ -7,43 +7,43 @@ import (
 // ----- Structures
 // nginx : Model which describes the NginxIngressController and load balancer
 type nginx struct {
-	Ingress      ingress
-	LoadBalancer loadBalancer
+	Ingress      ingress      `yaml:"ingress,omitempty"`
+	LoadBalancer loadBalancer `yaml:"loadBalancer,omitempty"`
 }
 
 // ingress : Model which describes the Nginx Ingress controller
 type ingress struct {
-	AnnotationIngressClass       string
-	DeploymentName               string
-	ContainerImage               string
-	ImagePullSecrets             string
-	EnableControllerForNamespace bool
+	AnnotationIngressClass       string `yaml:"annotationIngressClass,omitempty"`
+	DeploymentName               string `yaml:"deploymentName,omitempty"`
+	ContainerImage               string `yaml:"containerImage,omitempty"`
+	ImagePullSecrets             string `yaml:"imagePullSecrets,omitempty"`
+	EnableControllerForNamespace bool   `yaml:"enableControllerForNamespace,omitempty"`
 }
 
 // loadBalancer : Model which describes the Nginx load balancer
 type loadBalancer struct {
 	Enabled     bool
-	Annotations loadBalancerAnnotations
-	Ports       loadBalancerPorts
+	Annotations loadBalancerAnnotations `yaml:"annotations,omitempty"`
+	Ports       loadBalancerPorts       `yaml:"ports,omitempty"`
 }
 
 // loadBalancerPorts : Model which describes the ports of loadBalancer
 type loadBalancerPorts struct {
-	HTTP  loadBalancerPortsHTTP
-	HTTPS loadBalancerPortsHTTP
+	HTTP  loadBalancerPortsHTTP `yaml:"http,omitempty"`
+	HTTPS loadBalancerPortsHTTP `yaml:"https,omitempty"`
 }
 
 // loadBalancerPortsHTTP : Model which describes the concrete ports for loadBalancerPorts
 type loadBalancerPortsHTTP struct {
-	Port       uint64
-	TargetPort uint64
+	Port       uint64 `yaml:"port,omitempty"`
+	TargetPort uint64 `yaml:"targetPort,omitempty"`
 }
 
 // loadBalancerAnnotations : Model which describes the loadBalancer annotations
 type loadBalancerAnnotations struct {
-	Enabled             bool
-	ExternalDnsHostname string
-	ExternalDnsTtl      uint64
+	Enabled             bool   `yaml:"enabled,omitempty"`
+	ExternalDnsHostname string `yaml:"externalDNSHostName,omitempty"`
+	ExternalDnsTtl      uint64 `yaml:"externalDNSTtl,omitempty"`
 }
 
 // NewNginx : creates a new instance of Nginx

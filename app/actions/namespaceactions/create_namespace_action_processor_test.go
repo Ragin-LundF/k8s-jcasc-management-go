@@ -3,7 +3,7 @@ package namespaceactions
 import (
 	"errors"
 	"github.com/stretchr/testify/assert"
-	"k8s-management-go/app/models"
+	"k8s-management-go/app/actions/install"
 	"k8s-management-go/app/utils/cmdexecutor"
 	"strings"
 	"testing"
@@ -11,20 +11,18 @@ import (
 
 func TestProcessNamespaceCreation(t *testing.T) {
 	cmdexecutor.Executor = TestCommandExecKubectl{}
-	var stateData = models.StateData{
-		Namespace: "new-namespace",
-	}
-	err := ProcessNamespaceCreation(stateData)
+	var projectConfig = install.NewInstallProjectConfig()
+	projectConfig.Project.SetNamespace("new-namespace")
+	var err = ProcessNamespaceCreation(projectConfig)
 
 	assert.NoError(t, err)
 }
 
 func TestProcessNamespaceCreationWithErr(t *testing.T) {
 	cmdexecutor.Executor = TestCommandExecKubectlErr{}
-	var stateData = models.StateData{
-		Namespace: "new-namespace",
-	}
-	err := ProcessNamespaceCreation(stateData)
+	var projectConfig = install.NewInstallProjectConfig()
+	projectConfig.Project.SetNamespace("new-namespace")
+	var err = ProcessNamespaceCreation(projectConfig)
 
 	assert.Error(t, err)
 }

@@ -7,19 +7,19 @@ import (
 // ----- Structures
 // persistentVolumeClaim : Model which describes the persistent volume claim (PVC)
 type persistentVolumeClaim struct {
-	Spec pvcSpec
+	Spec pvcSpec `yaml:"pvcSpec,omitempty"`
 }
 
 // pvcSpec : PVC specification
 type pvcSpec struct {
-	AccessMode       string
-	StorageClassName string
-	Resources        pvcSpecResources
+	AccessMode       string           `yaml:"accessMode,omitempty"`
+	StorageClassName string           `yaml:"storageClassName,omitempty"`
+	Resources        pvcSpecResources `yaml:"resources,omitempty"`
 }
 
 // pvcSpecResources : PVC Spec Resources
 type pvcSpecResources struct {
-	StorageSize string
+	StorageSize string `yaml:"storageSize,omitempty"`
 }
 
 // NewPersistentVolumeClaim : creates a new instance of PersistentVolumeClaim

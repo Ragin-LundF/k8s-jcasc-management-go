@@ -9,51 +9,52 @@ import (
 // ----- Structures
 // jcascConfig : Model which describes the JcasC (Jenkins configuration as code) config helm values
 type jcascConfig struct {
-	Clouds        clouds
-	CredentialIDs credentialIDs
-	JobsConfig    jobsConfig
-	SecurityRealm securityRealm
-	SystemMessage string
+	Clouds        clouds        `yaml:"clouds,omitempty"`
+	CredentialIDs credentialIDs `yaml:"credentialIDs,omitempty"`
+	JobsConfig    jobsConfig    `yaml:"jobsConfig,omitempty"`
+	SecurityRealm securityRealm `yaml:"securityRealm,omitempty"`
+	SystemMessage string        `yaml:"systemMessage,omitempty"`
 }
 
 // clouds : Model which describes the Clouds section in the helm values
 type clouds struct {
-	Kubernetes kubernetes
+	Kubernetes kubernetes `yaml:"kubernetes,omitempty"`
 }
 
 // credentialIDs : Model which describes the common Kubernetes settings
 type credentialIDs struct {
-	DockerRegistryCredentialsID         string
-	MavenRepositorySecretsCredentialsID string
-	NpmRepositorySecretsCredentialsID   string
-	VcsRepositoryCredentialsID          string
+	DockerRegistryCredentialsID         string `yaml:"docker,omitempty"`
+	MavenRepositorySecretsCredentialsID string `yaml:"maven,omitempty"`
+	NpmRepositorySecretsCredentialsID   string `yaml:"npm,omitempty"`
+	VcsRepositoryCredentialsID          string `yaml:"vcs,omitempty"`
 }
 
 // jobsConfig : Model which describes the jobs configuration
 type jobsConfig struct {
-	JobsSeedRepository       string
-	JobsDefinitionRepository string
+	JobsSeedRepository       string `yaml:"seedJobRepository,omitempty"`
+	JobsDefinitionRepository string `yaml:"jobsDefinitionRepository,omitempty"`
 }
 
 // securityRealm : Model which describes the security realm section in the helm values
 type securityRealm struct {
-	LocalUsers securityRealmLocalUsers
+	LocalUsers securityRealmLocalUsers `yaml:"localUsers,omitempty"`
 }
 
 // securityRealmLocalUsers : Model which describes the security realm local users section in the helm values
 type securityRealmLocalUsers struct {
-	AdminPassword string
-	UserPassword  string
+	AdminPassword string `yaml:"adminPassword,omitempty"`
+	UserPassword  string `yaml:"userPassword,omitempty"`
 }
 
 // kubernetes : Model which describes the Kubernetes section in the helm values
 type kubernetes struct {
-	Templates kubernetesTemplates
+	Templates kubernetesTemplates `yaml:"templates,omitempty"`
 }
 
 // kubernetesTemplates : Model which describes the Kubernetes Templates section in the helm values
 type kubernetesTemplates struct {
-	AdditionalCloudTemplates string
+	AdditionalCloudTemplateFiles []string `yaml:"additionalCloudTemplateFiles"`
+	AdditionalCloudTemplates     string   `yaml:"-"`
 }
 
 // NewJCascConfig : Create new Jenkins Helm values structure
@@ -91,6 +92,11 @@ func (jcascConfig *jcascConfig) SetUserPassword(userPassword string) {
 // SetCloudKubernetesAdditionalTemplates : Set additional templates for cloud.kubernetes.templates
 func (jcascConfig *jcascConfig) SetCloudKubernetesAdditionalTemplates(additionalTemplates string) {
 	jcascConfig.Clouds.Kubernetes.Templates.AdditionalCloudTemplates = additionalTemplates
+}
+
+// SetCloudKubernetesAdditionalTemplates : Set additional templates for cloud.kubernetes.templates
+func (jcascConfig *jcascConfig) SetCloudKubernetesAdditionalTemplateFiles(additionalTemplateFiles []string) {
+	jcascConfig.Clouds.Kubernetes.Templates.AdditionalCloudTemplateFiles = additionalTemplateFiles
 }
 
 // SetJobsSeedRepository : Set seed jobs repository for jobs configuration

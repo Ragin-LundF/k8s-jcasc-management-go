@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"k8s-management-go/app/configuration"
+	"k8s-management-go/app/constants"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/loggingstate"
 	"os"
@@ -14,21 +16,21 @@ import (
 
 // Project : Structure for a complete project
 type Project struct {
-	Base                  *base
-	JCasc                 *jcascConfig
-	JenkinsHelmValues     *jenkinsHelmValues
-	PersistentVolumeClaim *persistentVolumeClaim
-	Nginx                 *nginx
+	Base                  *base                  `yaml:"base,omitempty"`
+	JCasc                 *jcascConfig           `yaml:"jcasc,omitempty"`
+	JenkinsHelmValues     *jenkinsHelmValues     `yaml:"jenkinsHelmValues,omitempty"`
+	PersistentVolumeClaim *persistentVolumeClaim `yaml:"persistentVolumeClaim,omitempty"`
+	Nginx                 *nginx                 `yaml:"nginx,omitempty"`
 }
 
 // base : represents common Jenkins settings
 type base struct {
-	DeploymentName      string
-	Domain              string
-	ExistingVolumeClaim string
-	JenkinsUriPrefix    string
-	IPAddress           string
-	Namespace           string
+	DeploymentName      string `yaml:"deploymentName,omitempty"`
+	Domain              string `yaml:"domain,omitempty"`
+	ExistingVolumeClaim string `yaml:"existingVolumeClaim,omitempty"`
+	JenkinsUriPrefix    string `yaml:"jenkinsURIPrefix,omitempty"`
+	IPAddress           string `yaml:"ipAddress,omitempty"`
+	Namespace           string `yaml:"namespace,omitempty"`
 }
 
 // NewProject : create a new Project
@@ -91,6 +93,11 @@ func (project *Project) SetCloudKubernetesAdditionalTemplates(additionalTemplate
 	project.JCasc.SetCloudKubernetesAdditionalTemplates(additionalTemplates)
 }
 
+// SetCloudKubernetesAdditionalTemplateFiles : Set additional template files for cloud.kubernetes.templates
+func (project *Project) SetCloudKubernetesAdditionalTemplateFiles(additionalTemplateFiles []string) {
+	project.JCasc.SetCloudKubernetesAdditionalTemplateFiles(additionalTemplateFiles)
+}
+
 // SetJobsSeedRepository : Set seed jobs repository for jobs configuration
 func (project *Project) SetJobsSeedRepository(seedRepository string) {
 	project.JCasc.SetJobsSeedRepository(seedRepository)
@@ -104,6 +111,19 @@ func (project *Project) SetJobsDefinitionRepository(jobsRepository string) {
 // SetPersistentVolumeClaimExistingName : Set an existing PVC
 func (project *Project) SetPersistentVolumeClaimExistingName(existingPvcName string) {
 	project.Base.ExistingVolumeClaim = existingPvcName
+}
+
+// SaveProjectConfiguration: Save the project configuration
+func (project *Project) SaveProjectConfiguration(projectDirectory string) (err error) {
+	marshalledOutput, err := yaml.Marshal(project)
+	if err != nil {
+		return err
+	}
+
+	var projectConfigPath = files.AppendPath(projectDirectory, constants.FilenameProjectConfiguration)
+	_ = ioutil.WriteFile(projectConfigPath, marshalledOutput, 0644)
+
+	return nil
 }
 
 // ProcessTemplates : Interface implementation to process templates with PVC placeholder
