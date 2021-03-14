@@ -132,7 +132,8 @@ unclassified:
   # Definition of a global pipeline library
   globalLibraries:
     libraries:
-      - defaultVersion: "master"
+      # defaultVersion is the stable branch name
+      - defaultVersion: "main"
         name: "my-pipeline-library"
         implicit: false
         allowVersionOverride: true

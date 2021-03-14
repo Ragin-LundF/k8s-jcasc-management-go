@@ -33,9 +33,9 @@ jenkins:
   jcasc:
     # This variable configures the URL, where the Jenkins configuration was checked in. This URL must have public access!
     # You can use the '##PROJECT_DIRECTORY##' template variable here to
-    configurationUrl: "https://raw.githubusercontent.com/Ragin-LundF/k8s-jcasc-project-config/master/{{ .Base.Namespace }}/jcasc_config.yaml"
+    configurationUrl: "https://raw.githubusercontent.com/Ragin-LundF/k8s-jcasc-project-config/main/{{ .Base.Namespace }}/jcasc_config.yaml"
     authorizationStrategy:
-      # Deny or allow anonymous read access to the Jenkins master
+      # Deny or allow anonymous read access to the Jenkins controller
       allowAnonymousRead: true
     credentialIDs:
       # Default Docker registry credentialsId
@@ -66,24 +66,24 @@ jenkins:
       # Default password with bcrypt for security configuration as code (jcasc_config)
       adminUserEncrypted: "$2a$04$UNxiNvJN6R3me9vybVQr/OzpMhgobih8qbxDpGy3lZmmmwc6t48ty"
       defaultUserEncrypted: "$2a$04$BFPq6fSa9KGKrlIktz/C8eSFrrG/gglnW1eXWMSjgtCSx36mMOSNm"
-    # Default label for the jenkins master to execute the seed job, which will be bind to this label.
-    customJenkinsLabel: "jenkins-master-for-seed"
-    # Jenkins Master deployment name. This will be configured globally, which makes it easier to cleanup.
-    deploymentName: "jenkins-master"
+    # Default label for the jenkins controller to execute the seed job, which will be bind to this label.
+    customJenkinsLabel: "jenkins-controller-for-seed"
+    # Jenkins controller deployment name. This will be configured globally, which makes it easier to cleanup.
+    deploymentName: "jenkins-controller"
     # Default prefix for each jenkins instance on the Kubernetes cluster.
     # This value defines the path, that has to specified for the ingress routing and ensures, that this "proxy" will be correctly used by Jenkins.
     defaultURIPrefix: "/jenkins"
 
   persistence:
-    # Define the Jenkins master accessMode for the PVC (ReadWriteMany or ReadWriteOnce)
+    # Define the Jenkins controller accessMode for the PVC (ReadWriteMany or ReadWriteOnce)
     accessMode: "ReadWriteOnce"
     # Define the persistence storage class for the Kubernetes
     storageClass: "nfs-client"
-    # Define the default storage size for the Jenkins master
-    storageSize: "8Gi"
+    # Define the default storage size for the Jenkins controller
+    storageSize: "2Gi"
 
   container:
-    # Image of the Jenkins Master
+    # Image of the Jenkins Controller
     image: "jenkins/jenkins"
     tag: "lts"
     pullPolicy: "Always"

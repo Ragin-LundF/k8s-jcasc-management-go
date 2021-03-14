@@ -10,7 +10,7 @@ controller:
   # must be exclusive for jobs distribution
   executorMode: "EXCLUSIVE"
 
-  # give a custom label to the master instance, that the seed job can run in it
+  # give a custom label to the controller instance, that the seed job can run in it
   customJenkinsLabels: [
     "{{ .JenkinsHelmValues.Controller.CustomJenkinsLabels }}"
   ]
