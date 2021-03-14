@@ -4,7 +4,7 @@ import (
 	"k8s-management-go/app/actions/project"
 )
 
-// ProjectInstall : describes the install project
+// ProjectConfig : describes the project config for install/uninstall actions
 type ProjectConfig struct {
 	Project                project.Project
 	ProjectPath            string
@@ -36,6 +36,7 @@ type PvcClaimValuesYaml struct {
 	}
 }
 
+// NewInstallProjectConfig returns a new install of the ProjectConfig
 func NewInstallProjectConfig() ProjectConfig {
 	return ProjectConfig{
 		Project:                project.NewProject(),
