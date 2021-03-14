@@ -23,7 +23,7 @@ const DirProjectScriptsInstallPrefix = "i_"
 const DirProjectScriptsUninstallPrefix = "d_"
 
 // DirHelmJenkinsMaster : directory of the Jenkins Helm Charts
-const DirHelmJenkinsMaster = "/charts/jenkins-master"
+const DirHelmJenkinsMaster = "/charts/jenkins-controller"
 
 // DirHelmNginxIngressCtrl : directory of the Nginx Ingress Controller Helm Charts
 const DirHelmNginxIngressCtrl = "/charts/nginx-ingress-controller"

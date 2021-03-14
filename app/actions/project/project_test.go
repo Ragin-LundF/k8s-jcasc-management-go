@@ -16,7 +16,7 @@ var testProjectName = testRootDirectory + testProjectRootDirectory + string(os.P
 
 const testNamespace = "my-namespace"
 const testConfigJenkinsMasterDefaultUriPrefix = "/jenkins"
-const testConfigJenkinsMasterDeploymentName = "jenkins-master"
+const testConfigJenkinsMasterDeploymentName = "jenkins-controller"
 
 const testConfigJenkinsMasterPvcAccessMode = "ReadWriteOnce"
 const testConfigJenkinsMasterPvcStorageClassName = "hostpath"
@@ -43,7 +43,7 @@ const testJenkinsHelmMasterImageTag = "latest"
 const testJenkinsHelmMasterPullPolicy = "Always"
 const testJenkinsHelmMasterPullSecret = "my-secret"
 
-const testJenkinsHelmMasterDefaultLabel = "jenkins-master-for-seed"
+const testJenkinsHelmMasterDefaultLabel = "jenkins-controller-for-seed"
 
 const testJenkinsHelmMasterDenyAnonymousReadAccess = false
 const testJenkinsHelmMasterAdminPassword = "admin"
