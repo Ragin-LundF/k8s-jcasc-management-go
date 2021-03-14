@@ -11,11 +11,11 @@ It is also possible to use the placeholders in other templates.
 
 ## Placeholder variables for Persistent Volume Claims
 
-| Placeholder | Description | Source |
-| --- | --- | --- |
-| `{{ .PersistentVolumeClaim.Spec.AccessMode }}` | Placeholder for `metadata.spec.accessModes` for PVC | configuration `JENKINS_MASTER_PERSISTENCE_ACCESS_MODE` |
-| `{{ .PersistentVolumeClaim.Spec.Resources.StorageSize }}` | Placeholder for `metadata.spec.resources.requests.storage` for PVC | configuration `JENKINS_MASTER_PERSISTENCE_STORAGE_SIZE` |
-| `{{ .PersistentVolumeClaim.Spec.StorageClassName }}` | Placeholder for `metadata.spec.storageClassName` for PVC | configuration `JENKINS_MASTER_PERSISTENCE_STORAGE_CLASS` |
+| Placeholder | Description | Source | old config |
+| --- | --- | --- | --- |
+| `{{ .PersistentVolumeClaim.Spec.AccessMode }}` | Placeholder for `metadata.spec.accessModes` for PVC | configuration `jenkins.persistence.accessMode` | `JENKINS_MASTER_PERSISTENCE_ACCESS_MODE` |
+| `{{ .PersistentVolumeClaim.Spec.Resources.StorageSize }}` | Placeholder for `metadata.spec.resources.requests.storage` for PVC | configuration `jenkins.persistence.storageSize` | `JENKINS_MASTER_PERSISTENCE_STORAGE_SIZE` |
+| `{{ .PersistentVolumeClaim.Spec.StorageClassName }}` | Placeholder for `metadata.spec.storageClassName` for PVC | configuration `jenkins.persistence.storageClass` | `JENKINS_MASTER_PERSISTENCE_STORAGE_CLASS` |
 
 ## More placeholder
 | Description | Link |

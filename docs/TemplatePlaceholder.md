@@ -2,15 +2,15 @@
 
 This documentation describes all possible template placeholders that can be used in all template files.
 
-| Placeholder | Description | Source |
-| --- | --- | --- |
-| `{{ .Base.DeploymentName }}` | Placeholder for the Jenkins deployment name | configuration `JENKINS_MASTER_DEPLOYMENT_NAME` |
-| `{{ .Base.Domain }}` | Placeholder for the domain entered by the user | user input |
-| `{{ .Base.ExistingVolumeClaim }}` | Placeholder for the existing peristent volume claim | user input |
-| `{{ .Base.IPAddress }}` | Placeholder for the IP address | user input |
-| `{{ .Base.JenkinsUriPrefix }}` | Placeholder for the Jenkins URI prefix (e.g. `/jenkins`) | configuration `JENKINS_MASTER_DEFAULT_URI_PREFIX` |
-| `{{ .Base.JenkinsURL }}` | Placeholder for a Jenkins URL. | If `NGINX_LOADBALANCER_ANNOTATIONS_ENABLED` is enabled, the entered domain or `<namespace>`.<configuration `NGINX_LOADBALANCER_ANNOTATIONS_EXT_DNS_HOSTNAME`>. Otherwise the IP address will be returned. |
-| `{{ .Base.Namespace }}` | Placeholder for the namespace | user input |
+| Placeholder | Description | Source | old config |
+| --- | --- | --- | --- |
+| `{{ .Base.DeploymentName }}` | Placeholder for the Jenkins deployment name | configuration `jenkins.controller.deploymentName` | `JENKINS_MASTER_DEPLOYMENT_NAME` |
+| `{{ .Base.Domain }}` | Placeholder for the domain entered by the user | user input | n/a |
+| `{{ .Base.ExistingVolumeClaim }}` | Placeholder for the existing peristent volume claim | user input | n/a |
+| `{{ .Base.IPAddress }}` | Placeholder for the IP address | user input | n/a |
+| `{{ .Base.JenkinsUriPrefix }}` | Placeholder for the Jenkins URI prefix (e.g. `/jenkins`) | configuration `jenkins.controller.defaultURIPrefix` | `JENKINS_MASTER_DEFAULT_URI_PREFIX` |
+| `{{ .Base.JenkinsURL }}` | Placeholder for a Jenkins URL. | If `nginx.loadbalancer.annotations.enabled` is `true`, the entered domain or `<namespace>`.<configuration `nginx.loadbalancer.externalDNS.hostName`>. Otherwise the IP address will be returned. | n/a |
+| `{{ .Base.Namespace }}` | Placeholder for the namespace | user input | n/a |
 
 ## More placeholder
 | Description | Link |
