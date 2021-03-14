@@ -74,6 +74,8 @@ Simply start the App and then go to the main menu `Tools` -> `Migrate templates 
 #### Postprocessing
 After the transformation above was done, the file `jenkins_helm_values.yaml` has to be edited by hand.
 
+_**It is best to compare the project-specific file with the original template.**_
+
 First ensure, that the file starts with:
 
 ```yaml
@@ -109,6 +111,33 @@ controller:
       loggedInUsersCanDoAnything:
         allowAnonymousRead: {{ .JenkinsHelmValues.Controller.AuthorizationStrategyAllowAnonymousRead }}
   [...]
+```
+
+Next point is the sidecar folder configuration.
+In the old templates it looks like this:
+
+```yaml
+master:
+  [...]
+  sidecars:
+    configAutoReload:
+      # folder in the pod that should hold the collected dashboards:
+      folder: "https://domain.tld/jcasc_config.yaml"
+  [...]
+```
+
+In the new template the configAutoReload needs to be disabled:
+
+```yaml
+controller:
+  [...]
+  sidecars:
+    configAutoReload:
+      # This should be disabled. If enabled Jenkins tries to mount the URL as a folder, which is not working.
+      # If it is disabled, it sets the variable only to the CASC_JENKINS_CONFIG environment variable, what we want.
+      enabled: false
+      # folder in the pod that should hold the collected dashboards:
+      folder: "https://domain.tld/jcasc_config.yaml"
 ```
 
 ## Migrating existing Helm value files

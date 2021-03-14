@@ -56,6 +56,9 @@ controller:
         allowAnonymousRead: {{ .JenkinsHelmValues.Controller.AuthorizationStrategyAllowAnonymousRead }}
   sidecars:
     configAutoReload:
+      # This should be disabled. If enabled Jenkins tries to mount the URL as a folder, which is not working.
+      # If it is disabled, it sets the variable only to the CASC_JENKINS_CONFIG environment variable, what we want.
+      enabled: false
       # folder in the pod that should hold the collected dashboards:
       folder: "{{ .JenkinsHelmValues.Controller.SidecarsConfigAutoReloadFolder }}"
 
