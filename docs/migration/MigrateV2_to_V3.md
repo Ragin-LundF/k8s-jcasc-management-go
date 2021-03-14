@@ -72,7 +72,30 @@ In GUI mode, the procedure is very similar to the configuration transformation.
 Simply start the App and then go to the main menu `Tools` -> `Migrate templates v2 -> v3`.
 
 #### Postprocessing
+##### jcasc_config.yaml
+The only step, which has to be evaluated here manually is to check, that the encrypted passwords have no `'` character inside.
+
+In this structure
+
+```yaml
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "admin"
+          password: "#jbcrypt:{{ .JCasc.SecurityRealm.LocalUsers.AdminPassword }}"
+        - id: "project-user"
+          password: "#jbcrypt:{{ .JCasc.SecurityRealm.LocalUsers.UserPassword }}"
+```
+
+the old templates (and project files) have a `#jbcrypt:'<password hash>'` inside to be compatible with the old Bash version.
+For the new configuration, those `'` characters must be removed.
+Else Jenkins is not starting and throws an `IllegalArgumentException` with the message `this method should only be called with a pre-hashed password`.
+
+##### jenkins_helm_values.yaml
 After the transformation above was done, the file `jenkins_helm_values.yaml` has to be edited by hand.
+
+**_All changes must also be made in the project templates._** 
 
 _**It is best to compare the project-specific file with the original template.**_
 

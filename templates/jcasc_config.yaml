@@ -31,9 +31,9 @@ jenkins:
       allowsSignup: false
       users:
         - id: "admin"
-          password: "#jbcrypt:'{{ .JCasc.SecurityRealm.LocalUsers.AdminPassword }}'"
+          password: "#jbcrypt:{{ .JCasc.SecurityRealm.LocalUsers.AdminPassword }}"
         - id: "project-user"
-          password: "#jbcrypt:'{{ .JCasc.SecurityRealm.LocalUsers.UserPassword }}'"
+          password: "#jbcrypt:{{ .JCasc.SecurityRealm.LocalUsers.UserPassword }}"
 
   clouds:
     - kubernetes:
