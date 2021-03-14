@@ -6,17 +6,7 @@ With version 3.0.0 this compatibility is no longer given.
 The new template system is based on Golang templates (https://golang.org/pkg/text/template/) and allows a more flexible use, as well as the usual template/placeholder syntax from the Kubernetes environment.
 
 ### Migration
-#### GUI
-To make the migration easier, a new item "Tools" has been added to the main menu, which contains the sub-item "Migrate templates v2 -> v3".
-
-This menu item automatically migrates the existing templates by replacing all previous placeholders with the new ones using the "##<placeholder>##" syntax.
-
-#### CLI
-In CLI mode the migration can be started with the argument `-migrate-templates-v2`.
-
-```bash
-go run k8s-jcasc-mgmt.go -cli -migrate-templates-v2
-```
+The migration is described under [docs/migration/MigrateV2_to_V3.md](docs/migration/MigrateV2_to_V3.md).
 
 ### Placeholder documentation
 Furthermore, the new placeholders are fully documented in [docs/TemplatePlaceholder.md](docs/TemplatePlaceholder.md) and the further linked files.
