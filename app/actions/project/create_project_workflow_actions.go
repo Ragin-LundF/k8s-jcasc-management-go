@@ -3,7 +3,6 @@ package project
 import (
 	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/events"
-	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/loggingstate"
 	"os"
@@ -14,9 +13,9 @@ import (
 const CountCreateProjectWorkflow = 13
 
 // ActionProcessProjectCreate is processing the project creation. This method controls all required actions
-func ActionProcessProjectCreate(projectConfig models.ProjectConfig, callback func()) (err error) {
+func (prj *Project) ActionProcessProjectCreate(callback func()) (err error) {
 	// calculate the target directory
-	var newProjectDir = files.AppendPath(configuration.GetConfiguration().GetProjectBaseDirectory(), projectConfig.Namespace)
+	var newProjectDir = files.AppendPath(configuration.GetConfiguration().GetProjectBaseDirectory(), prj.Base.Namespace)
 	callback()
 
 	// create new project directory
@@ -30,7 +29,7 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig, callback fun
 
 	// copy necessary files
 	loggingstate.AddInfoEntryAndDetails("-> Start to copy templates to new project directory...", "Directory: ["+newProjectDir+"]")
-	err = ActionCopyTemplatesToNewDirectory(newProjectDir, len(projectConfig.ExistingPvc) > 0, projectConfig.CreateDeploymentOnlyProject)
+	err = prj.ActionCopyTemplatesToNewDirectory(newProjectDir)
 	if err != nil {
 		_ = os.RemoveAll(newProjectDir)
 		return err
@@ -40,7 +39,7 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig, callback fun
 
 	// add IP and namespace to IP configuration
 	loggingstate.AddInfoEntry("-> Start adding IP address to ipconfig file...")
-	success, err := configuration.GetConfiguration().AddToIPConfigFile(projectConfig.Namespace, projectConfig.IPAddress, projectConfig.JenkinsDomain)
+	success, err := configuration.GetConfiguration().AddToIPConfigFile(prj.Base.Namespace, prj.Base.IPAddress, prj.Base.Domain)
 	if !success || err != nil {
 		_ = os.RemoveAll(newProjectDir)
 		return err
@@ -50,23 +49,15 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig, callback fun
 
 	// setup project
 	loggingstate.AddInfoEntry("-> Start template processing...")
-	var newProject = NewProject()
-	newProject.SetDomain(projectConfig.JenkinsDomain)
-	newProject.SetIPAddress(projectConfig.IPAddress)
-	newProject.SetJenkinsSystemMessage(projectConfig.JenkinsSystemMsg)
-	newProject.SetJobsDefinitionRepository(projectConfig.JobsCfgRepo)
-	newProject.SetNamespace(projectConfig.Namespace)
-	newProject.SetPersistentVolumeClaimExistingName(projectConfig.ExistingPvc)
 
-	cloudTemplatesString, err := ActionReadCloudTemplatesAsString(projectConfig.SelectedCloudTemplates)
+	cloudTemplatesString, err := ActionReadCloudTemplatesAsString(prj.JCasc.Clouds.Kubernetes.Templates.AdditionalCloudTemplateFiles)
 	if err != nil {
 		_ = os.RemoveAll(newProjectDir)
 		return err
 	}
-	newProject.SetCloudKubernetesAdditionalTemplateFiles(projectConfig.SelectedCloudTemplates)
-	newProject.SetCloudKubernetesAdditionalTemplates(cloudTemplatesString)
+	prj.SetCloudKubernetesAdditionalTemplates(cloudTemplatesString)
 
-	err = newProject.ProcessTemplates(newProjectDir)
+	err = prj.ProcessTemplates(newProjectDir)
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("-> Start template processing...error", err.Error())
 		_ = os.RemoveAll(newProjectDir)
@@ -76,9 +67,9 @@ func ActionProcessProjectCreate(projectConfig models.ProjectConfig, callback fun
 	callback()
 
 	// send event that new namespace was created
-	createNamespaceEvent(projectConfig.Namespace)
+	createNamespaceEvent(prj.Base.Namespace)
 
-	err = newProject.SaveProjectConfiguration(newProjectDir)
+	err = prj.SaveProjectConfiguration(newProjectDir)
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("-> Error while saving project configuration", err.Error())
 		return err

@@ -3,7 +3,6 @@ package project
 import (
 	"fmt"
 	"k8s-management-go/app/configuration"
-	"k8s-management-go/app/constants"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/loggingstate"
 	"os"
@@ -22,28 +21,8 @@ func ActionCreateNewProjectDirectory(newProjectDir string) (err error) {
 }
 
 // ActionCopyTemplatesToNewDirectory copies files to new directory
-func ActionCopyTemplatesToNewDirectory(projectDirectory string, copyPersistentVolume bool, createDeploymentOnlyProject bool) (err error) {
-	var fileNamesToCopy []string
-
-	// copy nginx-ingress-controller values.yaml
-	fileNamesToCopy = append(fileNamesToCopy, constants.FilenameNginxIngressControllerHelmValues)
-
-	// if it is not a deployment only project, copy more files
-	if !createDeploymentOnlyProject {
-		// copy Jenkins values.yaml
-		fileNamesToCopy = append(fileNamesToCopy, constants.FilenameJenkinsHelmValues)
-		// copy Jenkins JCasC config.yaml
-		fileNamesToCopy = append(fileNamesToCopy, constants.FilenameJenkinsConfigurationAsCode)
-		// copy existing PVC values.yaml
-		if copyPersistentVolume {
-			fileNamesToCopy = append(fileNamesToCopy, constants.FilenamePvcClaim)
-		}
-		// copy secrets to project
-		if configuration.GetConfiguration().K8SManagement.Project.SecretFiles == "" {
-			fileNamesToCopy = append(fileNamesToCopy, constants.FilenameSecrets)
-		}
-	}
-	err = copyTemplates(fileNamesToCopy, projectDirectory)
+func (prj *Project) ActionCopyTemplatesToNewDirectory(projectDirectory string) (err error) {
+	err = copyTemplates(prj.CalculateRequiredDeploymentFiles(), projectDirectory)
 	return err
 }
 

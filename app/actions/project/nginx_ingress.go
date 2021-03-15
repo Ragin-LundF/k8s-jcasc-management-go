@@ -46,8 +46,8 @@ type loadBalancerAnnotations struct {
 	ExternalDnsTtl      uint64 `yaml:"externalDNSTtl,omitempty"`
 }
 
-// NewNginx : creates a new instance of Nginx
-func NewNginx() *nginx {
+// newNginx : creates a new instance of Nginx
+func newNginx() *nginx {
 	return &nginx{
 		Ingress:      newDefaultIngress(),
 		LoadBalancer: newDefaultLoadBalancer(),

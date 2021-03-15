@@ -12,7 +12,7 @@ import (
 func TestCreateJCascConfig(t *testing.T) {
 	testDefaultProjectConfiguration(t, false)
 	cmdexecutor.Executor = TestCommandExec{}
-	var jcascConfig = NewJCascConfig()
+	var jcascConfig = newJCascConfig()
 
 	assert.Equal(t, testJcascKubernetesCertificate, jcascConfig.Clouds.Kubernetes.ServerCertificate())
 	assert.Empty(t, jcascConfig.Clouds.Kubernetes.Templates.AdditionalCloudTemplates)
@@ -45,7 +45,7 @@ func TestCreateJCascConfigCloudsContextCertificate(t *testing.T) {
 		"custom-k8s": customCertificate,
 	}
 
-	var jcascConfig = NewJCascConfig()
+	var jcascConfig = newJCascConfig()
 
 	assert.Equal(t, customCertificate, jcascConfig.Clouds.Kubernetes.ServerCertificate())
 	assert.Empty(t, jcascConfig.Clouds.Kubernetes.Templates.AdditionalCloudTemplates)
@@ -58,7 +58,7 @@ func TestCreateJCascConfigCloudsContextCertificate(t *testing.T) {
 func TestCreateJCascConfigSystemMessage(t *testing.T) {
 	testDefaultProjectConfiguration(t, false)
 	cmdexecutor.Executor = TestCommandExec{}
-	var jcascConfig = NewJCascConfig()
+	var jcascConfig = newJCascConfig()
 
 	assert.Empty(t, jcascConfig.SystemMessage)
 }
@@ -69,7 +69,7 @@ func TestCreateJCascConfigJobsConfig(t *testing.T) {
 
 	testDefaultProjectConfiguration(t, false)
 	cmdexecutor.Executor = TestCommandExec{}
-	var jcascConfig = NewJCascConfig()
+	var jcascConfig = newJCascConfig()
 	jcascConfig.SetJobsDefinitionRepository(jobsRepository)
 	jcascConfig.SetJobsSeedRepository(jobsSeedRepository)
 
@@ -84,7 +84,7 @@ func TestCreateJCascConfigSecurityRealmPasswords(t *testing.T) {
 
 	testDefaultProjectConfiguration(t, false)
 	cmdexecutor.Executor = TestCommandExec{}
-	var jcascConfig = NewJCascConfig()
+	var jcascConfig = newJCascConfig()
 	jcascConfig.SetAdminPassword(adminPassword)
 	jcascConfig.SetUserPassword(userPassword)
 

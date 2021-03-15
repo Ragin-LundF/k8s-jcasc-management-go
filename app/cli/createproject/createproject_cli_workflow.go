@@ -5,21 +5,20 @@ import (
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/loggingstate"
 )
 
 // ProjectWizardWorkflow represents the project wizard workflow
 func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
-	var projectConfig models.ProjectConfig
-	projectConfig.CreateDeploymentOnlyProject = deploymentOnly
+	var prj = project.NewProject()
+	prj.Base.DeploymentOnly = deploymentOnly
 
 	// Start project wizard
 	loggingstate.AddInfoEntry(constants.LogWizardStartProjectWizardDialogs)
 
 	// Ask for namespace
 	loggingstate.AddInfoEntry(constants.LogAskForNamespace)
-	projectConfig.Namespace, err = NamespaceWorkflow()
+	prj.Base.Namespace, err = NamespaceWorkflow()
 	if err != nil {
 		return err
 	}
@@ -27,7 +26,7 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 
 	// Ask for IP address
 	loggingstate.AddInfoEntry(constants.LogAskForIPAddress)
-	projectConfig.IPAddress, err = IPAddressWorkflow()
+	prj.Base.IPAddress, err = IPAddressWorkflow()
 	if err != nil {
 		return err
 	}
@@ -35,20 +34,20 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 
 	// Ask for Domain
 	loggingstate.AddInfoEntry(constants.LogAskForJenkinsUrl)
-	projectConfig.JenkinsDomain, err = JenkinsDomainWorkflow()
+	prj.Base.Domain, err = JenkinsDomainWorkflow()
 	if err != nil {
 		return err
 	}
-	if projectConfig.JenkinsDomain == "" && configuration.GetConfiguration().Nginx.Loadbalancer.ExternalDNS.HostName != "" {
-		projectConfig.JenkinsDomain = projectConfig.Namespace + configuration.GetConfiguration().Nginx.Loadbalancer.ExternalDNS.HostName
+	if prj.Base.Domain == "" && configuration.GetConfiguration().Nginx.Loadbalancer.ExternalDNS.HostName != "" {
+		prj.SetDomain(prj.Base.Domain + configuration.GetConfiguration().Nginx.Loadbalancer.ExternalDNS.HostName)
 	}
 	loggingstate.AddInfoEntry(constants.LogAskForJenkinsUrlDone)
 
 	// if it is not only a deployment project ask for other Jenkins related vars
-	if !projectConfig.CreateDeploymentOnlyProject {
+	if !prj.Base.DeploymentOnly {
 		// Select cloud templates
 		loggingstate.AddInfoEntry(constants.LogAskForCloudTemplates)
-		projectConfig.SelectedCloudTemplates, err = CloudTemplatesWorkflow()
+		prj.JCasc.Clouds.Kubernetes.Templates.AdditionalCloudTemplateFiles, err = CloudTemplatesWorkflow()
 		if err != nil {
 			return err
 		}
@@ -56,7 +55,7 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 
 		// Ask for existing persistent volume claim (PVC)
 		loggingstate.AddInfoEntry(constants.LogAskForPvc)
-		projectConfig.ExistingPvc, err = PersistentVolumeClaimWorkflow()
+		prj.Base.ExistingVolumeClaim, err = PersistentVolumeClaimWorkflow()
 		if err != nil {
 			return err
 		}
@@ -64,7 +63,7 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 
 		// Ask for Jenkins system message
 		loggingstate.AddInfoEntry(constants.LogAskForJenkinsSystemMessage)
-		projectConfig.JenkinsSystemMsg, err = JenkinsSystemMessageWorkflow()
+		prj.JCasc.SystemMessage, err = JenkinsSystemMessageWorkflow()
 		if err != nil {
 			return err
 		}
@@ -72,7 +71,7 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 
 		// Ask for Jobs Configuration repository
 		loggingstate.AddInfoEntry(constants.LogAskForJobsConfigurationRepository)
-		projectConfig.JobsCfgRepo, err = JenkinsJobsConfigRepositoryWorkflow()
+		prj.JCasc.JobsConfig.JobsDefinitionRepository, err = JenkinsJobsConfigRepositoryWorkflow()
 		if err != nil {
 			return err
 		}
@@ -91,7 +90,7 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 	}
 
 	// Create project
-	err = project.ActionProcessProjectCreate(projectConfig, progress.AddCallback)
+	err = prj.ActionProcessProjectCreate(progress.AddCallback)
 	if err != nil {
 		loggingstate.AddInfoEntry(constants.LogWizardStartProcessingTemplatesFailed)
 	}

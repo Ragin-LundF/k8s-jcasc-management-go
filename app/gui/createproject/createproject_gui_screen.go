@@ -8,15 +8,14 @@ import (
 	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/gui/uielements"
-	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/validator"
 	"strings"
 )
 
 // ScreenCreateFullProject shows the full project setup screen form
 func ScreenCreateFullProject(window fyne.Window) *widget.Form {
-	var projectConfig models.ProjectConfig
-	projectConfig.CreateDeploymentOnlyProject = false
+	var prj = project.NewProject()
+	prj.Base.DeploymentOnly = false
 
 	// Namespace
 	var namespaceErrorLabel = widget.NewLabel("")
@@ -70,39 +69,39 @@ func ScreenCreateFullProject(window fyne.Window) *widget.Form {
 		},
 		OnSubmit: func() {
 			// get variables
-			projectConfig.Namespace = namespaceEntry.Text
-			projectConfig.IPAddress = ipAddressEntry.Text
-			projectConfig.JenkinsDomain = jenkinsUrlEntry.Text
-			projectConfig.JenkinsSystemMsg = jenkinsSysMsgEntry.Text
-			projectConfig.JobsCfgRepo = jenkinsJobsCfgEntry.Text
-			projectConfig.ExistingPvc = jenkinsExistingPvcEntry.Text
-			projectConfig.SelectedCloudTemplates = checkCloudboxes(cloudTemplatesCheckBoxes)
+			prj.SetNamespace(namespaceEntry.Text)
+			prj.SetIPAddress(ipAddressEntry.Text)
+			prj.SetDomain(jenkinsUrlEntry.Text)
+			prj.SetJenkinsSystemMessage(jenkinsSysMsgEntry.Text)
+			prj.SetJobsDefinitionRepository(jenkinsJobsCfgEntry.Text)
+			prj.SetPersistentVolumeClaimExistingName(jenkinsExistingPvcEntry.Text)
+			prj.SetCloudKubernetesAdditionalTemplateFiles(checkCloudboxes(cloudTemplatesCheckBoxes))
 			hasErrors := false
 
 			// validate namespace
-			var err = validator.ValidateNewNamespace(projectConfig.Namespace)
+			var err = validator.ValidateNewNamespace(prj.Base.Namespace)
 			if err != nil {
 				namespaceErrorLabel.SetText(err.Error())
 				hasErrors = true
 			}
 
 			// validate IP address
-			err = validator.ValidateIP(projectConfig.IPAddress)
+			err = validator.ValidateIP(prj.Base.IPAddress)
 			if err != nil {
 				ipAddressErrorLabel.SetText(err.Error())
 				hasErrors = true
 			}
 
 			// validate Jenkins domain
-			if projectConfig.JenkinsDomain == "" && configuration.GetConfiguration().Nginx.Loadbalancer.ExternalDNS.HostName != "" {
-				projectConfig.JenkinsDomain = projectConfig.Namespace + configuration.GetConfiguration().Nginx.Loadbalancer.ExternalDNS.HostName
+			if prj.Base.Domain == "" && configuration.GetConfiguration().Nginx.Loadbalancer.ExternalDNS.HostName != "" {
+				prj.SetDomain(prj.Base.Namespace + configuration.GetConfiguration().Nginx.Loadbalancer.ExternalDNS.HostName)
 			} else {
-				err = validator.ValidateIP(projectConfig.JenkinsDomain)
+				err = validator.ValidateIP(prj.Base.Domain)
 				if err != nil {
 					jenkinsUrlErrorLabel.SetText(err.Error())
 					hasErrors = true
 				} else {
-					if strings.HasSuffix(projectConfig.JenkinsDomain, "/") {
+					if strings.HasSuffix(prj.Base.Domain, "/") {
 						jenkinsUrlErrorLabel.SetText("URL should not end with a slash")
 						hasErrors = true
 					}
@@ -110,27 +109,27 @@ func ScreenCreateFullProject(window fyne.Window) *widget.Form {
 			}
 
 			// without annotations enabled an IP address is required
-			if !configuration.GetConfiguration().Nginx.Loadbalancer.Annotations.Enabled && projectConfig.IPAddress == "" {
+			if !configuration.GetConfiguration().Nginx.Loadbalancer.Annotations.Enabled && prj.Base.IPAddress == "" {
 				ipAddressErrorLabel.SetText("If NGINX_LOADBALANCER_ANNOTATIONS_ENABLED is set to false, an IP address is required ")
 				hasErrors = true
 			}
 
 			// validate jenkins system message
-			err = validator.ValidateJenkinsSystemMessage(projectConfig.JenkinsSystemMsg)
+			err = validator.ValidateJenkinsSystemMessage(prj.JCasc.SystemMessage)
 			if err != nil {
 				jenkinsSysMsgErrorLabel.SetText(err.Error())
 				hasErrors = true
 			}
 
 			// validate jobs config
-			err = validator.ValidateJenkinsJobConfig(projectConfig.JobsCfgRepo)
+			err = validator.ValidateJenkinsJobConfig(prj.JCasc.JobsConfig.JobsDefinitionRepository)
 			if err != nil {
 				jenkinsJobsCfgErrorLabel.SetText(err.Error())
 				hasErrors = true
 			}
 
 			// validate PVC
-			err = validator.ValidatePersistentVolumeClaim(projectConfig.ExistingPvc)
+			err = validator.ValidatePersistentVolumeClaim(prj.Base.ExistingVolumeClaim)
 			if err != nil {
 				jenkinsExistingPvcErrorLabel.SetText(err.Error())
 				hasErrors = true
@@ -144,7 +143,7 @@ func ScreenCreateFullProject(window fyne.Window) *widget.Form {
 					MaxCount:   project.CountCreateProjectWorkflow,
 				}
 				bar.Bar.Show()
-				_ = project.ActionProcessProjectCreate(projectConfig, bar.AddCallback)
+				_ = prj.ActionProcessProjectCreate(bar.AddCallback)
 				bar.Bar.Hide()
 
 				// show output
@@ -158,8 +157,8 @@ func ScreenCreateFullProject(window fyne.Window) *widget.Form {
 
 // ScreenCreateDeployOnlyProject creates the screen form for deployment only project without Jenkins
 func ScreenCreateDeployOnlyProject(window fyne.Window) *widget.Form {
-	var projectConfig models.ProjectConfig
-	projectConfig.CreateDeploymentOnlyProject = true
+	var prj = project.NewProject()
+	prj.Base.DeploymentOnly = true
 
 	// Namespace
 	var namespaceErrorLabel = widget.NewLabel("")
@@ -187,35 +186,35 @@ func ScreenCreateDeployOnlyProject(window fyne.Window) *widget.Form {
 		},
 		OnSubmit: func() {
 			// get variables
-			projectConfig.Namespace = namespaceEntry.Text
-			projectConfig.IPAddress = ipAddressEntry.Text
-			projectConfig.JenkinsDomain = jenkinsUrlEntry.Text
+			prj.SetNamespace(namespaceEntry.Text)
+			prj.SetIPAddress(ipAddressEntry.Text)
+			prj.SetDomain(jenkinsUrlEntry.Text)
 			hasError := false
 
 			// validate namespace
-			var err = validator.ValidateNewNamespace(projectConfig.Namespace)
+			var err = validator.ValidateNewNamespace(prj.Base.Namespace)
 			if err != nil {
 				namespaceErrorLabel.SetText(err.Error())
 				hasError = true
 			}
 
 			// validate IP address
-			err = validator.ValidateIP(projectConfig.IPAddress)
+			err = validator.ValidateIP(prj.Base.IPAddress)
 			if err != nil {
 				ipAddressErrorLabel.SetText(err.Error())
 				hasError = true
 			}
 
 			// validate Jenkins domain
-			if projectConfig.JenkinsDomain == "" && configuration.GetConfiguration().Nginx.Loadbalancer.ExternalDNS.HostName != "" {
-				projectConfig.JenkinsDomain = projectConfig.Namespace + configuration.GetConfiguration().Nginx.Loadbalancer.ExternalDNS.HostName
+			if prj.Base.Domain == "" && configuration.GetConfiguration().Nginx.Loadbalancer.ExternalDNS.HostName != "" {
+				prj.SetDomain(prj.Base.Namespace + configuration.GetConfiguration().Nginx.Loadbalancer.ExternalDNS.HostName)
 			} else {
-				err = validator.ValidateIP(projectConfig.JenkinsDomain)
+				err = validator.ValidateIP(prj.Base.Domain)
 				if err != nil {
 					jenkinsUrlErrorLabel.SetText(err.Error())
 					hasError = true
 				} else {
-					if strings.HasSuffix(projectConfig.JenkinsDomain, "/") {
+					if strings.HasSuffix(prj.Base.Domain, "/") {
 						jenkinsUrlErrorLabel.SetText("URL should not end with a slash")
 						hasError = true
 					}
@@ -230,7 +229,7 @@ func ScreenCreateDeployOnlyProject(window fyne.Window) *widget.Form {
 					MaxCount:   project.CountCreateProjectWorkflow,
 				}
 				bar.Bar.Show()
-				_ = project.ActionProcessProjectCreate(projectConfig, bar.AddCallback)
+				_ = prj.ActionProcessProjectCreate(bar.AddCallback)
 				bar.Bar.Hide()
 
 				// show output

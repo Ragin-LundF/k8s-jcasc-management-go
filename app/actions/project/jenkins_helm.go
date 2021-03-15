@@ -31,8 +31,8 @@ type jenkinsHelmPersistence struct {
 	StorageClass string `yaml:"storageClass,omitempty"`
 }
 
-// NewJenkinsHelmValues : Create new Jenkins Helm values structure
-func NewJenkinsHelmValues() *jenkinsHelmValues {
+// newJenkinsHelmValues : Create new Jenkins Helm values structure
+func newJenkinsHelmValues() *jenkinsHelmValues {
 	return &jenkinsHelmValues{
 		Controller:  newDefaultJenkinsHelmController(),
 		Persistence: newDefaultJenkinsHelmPersistence(),

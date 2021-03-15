@@ -31,91 +31,92 @@ type base struct {
 	JenkinsUriPrefix    string `yaml:"jenkinsURIPrefix,omitempty"`
 	IPAddress           string `yaml:"ipAddress,omitempty"`
 	Namespace           string `yaml:"namespace,omitempty"`
+	DeploymentOnly      bool   `yaml:"deploymentOnly,omitempty"`
 }
 
 // NewProject : create a new Project
 func NewProject() Project {
 	return Project{
 		Base:                  newBase(),
-		JenkinsHelmValues:     NewJenkinsHelmValues(),
-		JCasc:                 NewJCascConfig(),
-		PersistentVolumeClaim: NewPersistentVolumeClaim(),
-		Nginx:                 NewNginx(),
+		JenkinsHelmValues:     newJenkinsHelmValues(),
+		JCasc:                 newJCascConfig(),
+		PersistentVolumeClaim: newPersistentVolumeClaim(),
+		Nginx:                 newNginx(),
 	}
 }
 
 // JenkinsURL : If load balancer annotations are enabled it returns a domain. Else the IP address.
-func (base *base) JenkinsURL() string {
+func (bse base) JenkinsURL() string {
 	if configuration.GetConfiguration().Nginx.Loadbalancer.Annotations.Enabled {
-		if base.Domain == "" {
-			return fmt.Sprintf("%v.%v", base.Namespace, configuration.GetConfiguration().Nginx.Loadbalancer.ExternalDNS.HostName)
+		if bse.Domain == "" {
+			return fmt.Sprintf("%v.%v", bse.Namespace, configuration.GetConfiguration().Nginx.Loadbalancer.ExternalDNS.HostName)
 		} else {
-			return base.Domain
+			return bse.Domain
 		}
 	} else {
-		return base.IPAddress
+		return bse.IPAddress
 	}
 }
 
 // ----- Setter to manipulate the default object
 // SetIPAddress : Set the Jenkins IP address
-func (project *Project) SetIPAddress(ipAddress string) {
-	project.Base.IPAddress = ipAddress
+func (prj *Project) SetIPAddress(ipAddress string) {
+	prj.Base.IPAddress = ipAddress
 }
 
 // SetNamespace : Set the Jenkins namespace
-func (project *Project) SetNamespace(namespace string) {
-	project.Base.Namespace = namespace
+func (prj *Project) SetNamespace(namespace string) {
+	prj.Base.Namespace = namespace
 }
 
 // SetNamespace : Set the Jenkins domain
-func (project *Project) SetDomain(domain string) {
-	project.Base.Domain = domain
+func (prj *Project) SetDomain(domain string) {
+	prj.Base.Domain = domain
 }
 
 // SetJenkinsSystemMessage : Set the Jenkins system message
-func (project *Project) SetJenkinsSystemMessage(jenkinsSystemMessage string) {
-	project.JCasc.SetJenkinsSystemMessage(jenkinsSystemMessage)
+func (prj *Project) SetJenkinsSystemMessage(jenkinsSystemMessage string) {
+	prj.JCasc.SetJenkinsSystemMessage(jenkinsSystemMessage)
 }
 
 // SetAdminPassword : Set admin password to local security realm user
-func (project *Project) SetAdminPassword(adminPassword string) {
-	project.JCasc.SetAdminPassword(adminPassword)
+func (prj *Project) SetAdminPassword(adminPassword string) {
+	prj.JCasc.SetAdminPassword(adminPassword)
 }
 
 // SetUserPassword : Set user password to local security realm user
-func (project *Project) SetUserPassword(userPassword string) {
-	project.JCasc.SetUserPassword(userPassword)
+func (prj *Project) SetUserPassword(userPassword string) {
+	prj.JCasc.SetUserPassword(userPassword)
 }
 
 // SetCloudKubernetesAdditionalTemplates : Set additional templates for cloud.kubernetes.templates
-func (project *Project) SetCloudKubernetesAdditionalTemplates(additionalTemplates string) {
-	project.JCasc.SetCloudKubernetesAdditionalTemplates(additionalTemplates)
+func (prj *Project) SetCloudKubernetesAdditionalTemplates(additionalTemplates string) {
+	prj.JCasc.SetCloudKubernetesAdditionalTemplates(additionalTemplates)
 }
 
 // SetCloudKubernetesAdditionalTemplateFiles : Set additional template files for cloud.kubernetes.templates
-func (project *Project) SetCloudKubernetesAdditionalTemplateFiles(additionalTemplateFiles []string) {
-	project.JCasc.SetCloudKubernetesAdditionalTemplateFiles(additionalTemplateFiles)
+func (prj *Project) SetCloudKubernetesAdditionalTemplateFiles(additionalTemplateFiles []string) {
+	prj.JCasc.SetCloudKubernetesAdditionalTemplateFiles(additionalTemplateFiles)
 }
 
 // SetJobsSeedRepository : Set seed jobs repository for jobs configuration
-func (project *Project) SetJobsSeedRepository(seedRepository string) {
-	project.JCasc.SetJobsSeedRepository(seedRepository)
+func (prj *Project) SetJobsSeedRepository(seedRepository string) {
+	prj.JCasc.SetJobsSeedRepository(seedRepository)
 }
 
 // SetJobsDefinitionRepository : Set jobs repository for jobs configuration
-func (project *Project) SetJobsDefinitionRepository(jobsRepository string) {
-	project.JCasc.SetJobsDefinitionRepository(jobsRepository)
+func (prj *Project) SetJobsDefinitionRepository(jobsRepository string) {
+	prj.JCasc.SetJobsDefinitionRepository(jobsRepository)
 }
 
 // SetPersistentVolumeClaimExistingName : Set an existing PVC
-func (project *Project) SetPersistentVolumeClaimExistingName(existingPvcName string) {
-	project.Base.ExistingVolumeClaim = existingPvcName
+func (prj *Project) SetPersistentVolumeClaimExistingName(existingPvcName string) {
+	prj.Base.ExistingVolumeClaim = existingPvcName
 }
 
 // SaveProjectConfiguration: Save the project configuration
-func (project *Project) SaveProjectConfiguration(projectDirectory string) (err error) {
-	marshalledOutput, err := yaml.Marshal(project)
+func (prj *Project) SaveProjectConfiguration(projectDirectory string) (err error) {
+	marshalledOutput, err := yaml.Marshal(prj)
 	if err != nil {
 		return err
 	}
@@ -127,8 +128,8 @@ func (project *Project) SaveProjectConfiguration(projectDirectory string) (err e
 }
 
 // ProcessTemplates : Interface implementation to process templates with PVC placeholder
-func (project *Project) ProcessTemplates(projectDirectory string) (err error) {
-	err = project.validateProject()
+func (prj *Project) ProcessTemplates(projectDirectory string) (err error) {
+	err = prj.validateProject()
 	if err != nil {
 		return err
 	}
@@ -139,7 +140,7 @@ func (project *Project) ProcessTemplates(projectDirectory string) (err error) {
 	}
 
 	for _, templateFile := range templateFiles {
-		err = processWithTemplateEngine(templateFile, *project)
+		err = processWithTemplateEngine(templateFile, *prj)
 		if err != nil {
 			_ = os.Remove(projectDirectory)
 			loggingstate.AddErrorEntryAndDetails(
@@ -150,6 +151,30 @@ func (project *Project) ProcessTemplates(projectDirectory string) (err error) {
 	}
 
 	return nil
+}
+
+// CalculateRequiredDeploymentFiles : calculate which project files are required
+func (prj *Project) CalculateRequiredDeploymentFiles() []string {
+	var deploymentFiles []string
+	// ingress controller
+	deploymentFiles = append(deploymentFiles, constants.FilenameNginxIngressControllerHelmValues)
+	// if it is not a deployment only project, copy more files
+	if !prj.Base.DeploymentOnly {
+		deploymentFiles = append(deploymentFiles, constants.FilenameJenkinsHelmValues)
+		// copy Jenkins values.yaml
+		deploymentFiles = append(deploymentFiles, constants.FilenameJenkinsHelmValues)
+		// copy Jenkins JCasC config.yaml
+		deploymentFiles = append(deploymentFiles, constants.FilenameJenkinsConfigurationAsCode)
+		// copy existing PVC values.yaml
+		if len(prj.Base.ExistingVolumeClaim) > 0 {
+			deploymentFiles = append(deploymentFiles, constants.FilenamePvcClaim)
+		}
+		// copy secrets to project
+		if configuration.GetConfiguration().K8SManagement.Project.SecretFiles == "" {
+			deploymentFiles = append(deploymentFiles, constants.FilenameSecrets)
+		}
+	}
+	return deploymentFiles
 }
 
 // processWithTemplateEngine : Process files with template engine
@@ -212,14 +237,14 @@ func newBase() *base {
 }
 
 // validateProject : Validate the project that it can be processed
-func (project *Project) validateProject() (err error) {
-	if project.Base.Namespace == "" {
+func (prj *Project) validateProject() (err error) {
+	if prj.Base.Namespace == "" {
 		return errors.New("Error: No namespace available ")
 	}
 
 	var enabledAnnotations = configuration.GetConfiguration().Nginx.Loadbalancer.Annotations.Enabled
-	if !enabledAnnotations && project.Base.IPAddress == "" {
-		return errors.New("Error: If NGINX_LOADBALANCER_ANNOTATIONS_ENABLED is set to false, an IP address is required ")
+	if !enabledAnnotations && prj.Base.IPAddress == "" {
+		return errors.New("Error: If nginx.loadbalancer.annotations.enabled is set to false, an IP address is required ")
 	}
 
 	return nil

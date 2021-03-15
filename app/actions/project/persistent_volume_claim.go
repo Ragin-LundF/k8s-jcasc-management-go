@@ -12,9 +12,9 @@ type persistentVolumeClaim struct {
 
 // pvcSpec : PVC specification
 type pvcSpec struct {
-	AccessMode       string           `yaml:"accessMode,omitempty"`
-	StorageClassName string           `yaml:"storageClassName,omitempty"`
-	Resources        pvcSpecResources `yaml:"resources,omitempty"`
+	AccessMode       string            `yaml:"accessMode,omitempty"`
+	StorageClassName string            `yaml:"storageClassName,omitempty"`
+	Resources        *pvcSpecResources `yaml:"resources,omitempty"`
 }
 
 // pvcSpecResources : PVC Spec Resources
@@ -22,8 +22,8 @@ type pvcSpecResources struct {
 	StorageSize string `yaml:"storageSize,omitempty"`
 }
 
-// NewPersistentVolumeClaim : creates a new instance of PersistentVolumeClaim
-func NewPersistentVolumeClaim() *persistentVolumeClaim {
+// newPersistentVolumeClaim : creates a new instance of PersistentVolumeClaim
+func newPersistentVolumeClaim() *persistentVolumeClaim {
 	var pvc = &persistentVolumeClaim{
 		Spec: newDefaultSpec(),
 	}
@@ -41,8 +41,8 @@ func newDefaultSpec() pvcSpec {
 }
 
 // newDefaultSpecResources : create new default spec resources for PVC
-func newDefaultSpecResources() pvcSpecResources {
-	return pvcSpecResources{
+func newDefaultSpecResources() *pvcSpecResources {
+	return &pvcSpecResources{
 		StorageSize: configuration.GetConfiguration().Jenkins.Persistence.StorageSize,
 	}
 }

@@ -9,11 +9,11 @@ import (
 // ----- Structures
 // jcascConfig : Model which describes the JcasC (Jenkins configuration as code) config helm values
 type jcascConfig struct {
-	Clouds        clouds        `yaml:"clouds,omitempty"`
-	CredentialIDs credentialIDs `yaml:"credentialIDs,omitempty"`
-	JobsConfig    jobsConfig    `yaml:"jobsConfig,omitempty"`
-	SecurityRealm securityRealm `yaml:"securityRealm,omitempty"`
-	SystemMessage string        `yaml:"systemMessage,omitempty"`
+	Clouds        *clouds        `yaml:"clouds,omitempty"`
+	CredentialIDs *credentialIDs `yaml:"credentialIDs,omitempty"`
+	JobsConfig    *jobsConfig    `yaml:"jobsConfig,omitempty"`
+	SecurityRealm *securityRealm `yaml:"securityRealm,omitempty"`
+	SystemMessage string         `yaml:"systemMessage,omitempty"`
 }
 
 // clouds : Model which describes the Clouds section in the helm values
@@ -37,7 +37,7 @@ type jobsConfig struct {
 
 // securityRealm : Model which describes the security realm section in the helm values
 type securityRealm struct {
-	LocalUsers securityRealmLocalUsers `yaml:"localUsers,omitempty"`
+	LocalUsers *securityRealmLocalUsers `yaml:"localUsers,omitempty"`
 }
 
 // securityRealmLocalUsers : Model which describes the security realm local users section in the helm values
@@ -57,68 +57,52 @@ type kubernetesTemplates struct {
 	AdditionalCloudTemplates     string   `yaml:"-"`
 }
 
-// NewJCascConfig : Create new Jenkins Helm values structure
-func NewJCascConfig() *jcascConfig {
-	return &jcascConfig{
-		CredentialIDs: newCredentialIDs(),
-		Clouds:        newClouds(),
-		JobsConfig: jobsConfig{
-			JobsSeedRepository:       configuration.GetConfiguration().Jenkins.Jcasc.SeedJobURL,
-			JobsDefinitionRepository: "",
-		},
-		SecurityRealm: securityRealm{
-			LocalUsers: newSecurityRealmLocalUsers(),
-		},
-		SystemMessage: "",
-	}
-}
-
 // ----- Setter to manipulate the default object
 // SetJenkinsSystemMessage : Set the Jenkins system message
-func (jcascConfig *jcascConfig) SetJenkinsSystemMessage(jenkinsSystemMessage string) {
-	jcascConfig.SystemMessage = jenkinsSystemMessage
+func (jcascCfg *jcascConfig) SetJenkinsSystemMessage(jenkinsSystemMessage string) {
+	jcascCfg.SystemMessage = jenkinsSystemMessage
 }
 
 // SetAdminPassword : Set admin password to local security realm user
-func (jcascConfig *jcascConfig) SetAdminPassword(adminPassword string) {
-	jcascConfig.SecurityRealm.LocalUsers.AdminPassword = adminPassword
+func (jcascCfg *jcascConfig) SetAdminPassword(adminPassword string) {
+	jcascCfg.SecurityRealm.LocalUsers.AdminPassword = adminPassword
 }
 
 // SetUserPassword : Set user password to local security realm user
-func (jcascConfig *jcascConfig) SetUserPassword(userPassword string) {
-	jcascConfig.SecurityRealm.LocalUsers.UserPassword = userPassword
+func (jcascCfg *jcascConfig) SetUserPassword(userPassword string) {
+	jcascCfg.SecurityRealm.LocalUsers.UserPassword = userPassword
 }
 
 // SetCloudKubernetesAdditionalTemplates : Set additional templates for cloud.kubernetes.templates
-func (jcascConfig *jcascConfig) SetCloudKubernetesAdditionalTemplates(additionalTemplates string) {
-	jcascConfig.Clouds.Kubernetes.Templates.AdditionalCloudTemplates = additionalTemplates
+func (jcascCfg *jcascConfig) SetCloudKubernetesAdditionalTemplates(additionalTemplates string) {
+	jcascCfg.Clouds.Kubernetes.Templates.AdditionalCloudTemplates = additionalTemplates
 }
 
 // SetCloudKubernetesAdditionalTemplates : Set additional templates for cloud.kubernetes.templates
-func (jcascConfig *jcascConfig) SetCloudKubernetesAdditionalTemplateFiles(additionalTemplateFiles []string) {
-	jcascConfig.Clouds.Kubernetes.Templates.AdditionalCloudTemplateFiles = additionalTemplateFiles
+func (jcascCfg *jcascConfig) SetCloudKubernetesAdditionalTemplateFiles(additionalTemplateFiles []string) {
+	jcascCfg.Clouds.Kubernetes.Templates.AdditionalCloudTemplateFiles = additionalTemplateFiles
 }
 
 // SetJobsSeedRepository : Set seed jobs repository for jobs configuration
-func (jcascConfig *jcascConfig) SetJobsSeedRepository(seedRepository string) {
-	jcascConfig.JobsConfig.JobsSeedRepository = seedRepository
+func (jcascCfg *jcascConfig) SetJobsSeedRepository(seedRepository string) {
+	jcascCfg.JobsConfig.JobsSeedRepository = seedRepository
 }
 
 // SetJobsDefinitionRepository : Set jobs repository for jobs configuration
-func (jcascConfig *jcascConfig) SetJobsDefinitionRepository(jobsRepository string) {
-	jcascConfig.JobsConfig.JobsDefinitionRepository = jobsRepository
+func (jcascCfg *jcascConfig) SetJobsDefinitionRepository(jobsRepository string) {
+	jcascCfg.JobsConfig.JobsDefinitionRepository = jobsRepository
 }
 
 // JobsAvailable : method to check if jobs are available. Can be used in the templates to disable the jobs section
-func (jobsConfig *jobsConfig) JobsAvailable() bool {
-	if jobsConfig.JobsDefinitionRepository != "" && jobsConfig.JobsSeedRepository != "" {
+func (jobsCfg *jobsConfig) JobsAvailable() bool {
+	if jobsCfg.JobsDefinitionRepository != "" && jobsCfg.JobsSeedRepository != "" {
 		return true
 	}
 	return false
 }
 
 // ServerCertificate : Get the server certificate for the current context
-func (kubernetes *kubernetes) ServerCertificate() string {
+func (k8s *kubernetes) ServerCertificate() string {
 	var currentContext = strings.ToUpper(kubernetesactions.GetKubernetesConfig().CurrentContext())
 	if configuration.GetConfiguration().Kubernetes.Certificates.Contexts != nil {
 		for context, certificate := range configuration.GetConfiguration().Kubernetes.Certificates.Contexts {
@@ -132,9 +116,26 @@ func (kubernetes *kubernetes) ServerCertificate() string {
 }
 
 // ----- internal methods
+
+// newJCascConfig : Create new Jenkins Helm values structure
+func newJCascConfig() *jcascConfig {
+	return &jcascConfig{
+		CredentialIDs: newCredentialIDs(),
+		Clouds:        newClouds(),
+		JobsConfig: &jobsConfig{
+			JobsSeedRepository:       configuration.GetConfiguration().Jenkins.Jcasc.SeedJobURL,
+			JobsDefinitionRepository: "",
+		},
+		SecurityRealm: &securityRealm{
+			LocalUsers: newSecurityRealmLocalUsers(),
+		},
+		SystemMessage: "",
+	}
+}
+
 // newCredentialIDs : create new default credential IDs
-func newCredentialIDs() credentialIDs {
-	return credentialIDs{
+func newCredentialIDs() *credentialIDs {
+	return &credentialIDs{
 		DockerRegistryCredentialsID:         configuration.GetConfiguration().Jenkins.Jcasc.CredentialIDs.Docker,
 		MavenRepositorySecretsCredentialsID: configuration.GetConfiguration().Jenkins.Jcasc.CredentialIDs.Maven,
 		NpmRepositorySecretsCredentialsID:   configuration.GetConfiguration().Jenkins.Jcasc.CredentialIDs.Npm,
@@ -143,29 +144,29 @@ func newCredentialIDs() credentialIDs {
 }
 
 // newClouds : create new default clouds
-func newClouds() clouds {
-	return clouds{
-		Kubernetes: newCloudKubernetes(),
+func newClouds() *clouds {
+	return &clouds{
+		Kubernetes: *newCloudKubernetes(),
 	}
 }
 
 // newCloudKubernetes : create new default newCloudKubernetes
-func newCloudKubernetes() kubernetes {
-	return kubernetes{
-		Templates: newCloudKubernetesSubTemplates(),
+func newCloudKubernetes() *kubernetes {
+	return &kubernetes{
+		Templates: *newCloudKubernetesSubTemplates(),
 	}
 }
 
 // newCloudKubernetesSubTemplates : create new default sub-templates for cloud.kubernetes.templates
-func newCloudKubernetesSubTemplates() kubernetesTemplates {
-	return kubernetesTemplates{
+func newCloudKubernetesSubTemplates() *kubernetesTemplates {
+	return &kubernetesTemplates{
 		AdditionalCloudTemplates: "",
 	}
 }
 
 // newSecurityRealmLocalUsers : create a new default securityRealmLocalUsers structure
-func newSecurityRealmLocalUsers() securityRealmLocalUsers {
-	return securityRealmLocalUsers{
+func newSecurityRealmLocalUsers() *securityRealmLocalUsers {
+	return &securityRealmLocalUsers{
 		AdminPassword: configuration.GetConfiguration().Jenkins.Controller.Passwords.AdminUserEncrypted,
 		UserPassword:  configuration.GetConfiguration().Jenkins.Controller.Passwords.DefaultUserEncrypted,
 	}
