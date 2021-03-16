@@ -8,7 +8,7 @@ import (
 func TestCreateNginx(t *testing.T) {
 	testDefaultProjectConfiguration(t, false)
 
-	var nginx = NewNginx()
+	var nginx = newNginx()
 	assertDefaultNginxConfiguration(nginx, t)
 }
 

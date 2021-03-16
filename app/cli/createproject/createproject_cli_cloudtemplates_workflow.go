@@ -10,7 +10,7 @@ import (
 func CloudTemplatesWorkflow() (cloudTemplates []string, err error) {
 	// look if cloud templates are available
 	var cloudTemplateDialog dialogs.CloudTemplatesDialog
-	cloudTemplateFileList := project.ActionReadCloudTemplates()
+	var cloudTemplateFileList = project.ActionReadCloudTemplates()
 
 	// prepare selection
 	cloudTemplateSelectionList := []string{constants.ActionSelectTemplatesBelowOrContinue}

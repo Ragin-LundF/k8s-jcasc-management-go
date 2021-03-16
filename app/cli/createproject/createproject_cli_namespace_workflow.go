@@ -10,7 +10,7 @@ import (
 // NamespaceWorkflow represents the namespace workflow
 func NamespaceWorkflow() (namespace string, err error) {
 	// Validator for namespace name
-	validate := validator.ValidateNewNamespace
+	var validate = validator.ValidateNewNamespace
 
 	// Prepare prompt
 	dialogs.ClearScreen()

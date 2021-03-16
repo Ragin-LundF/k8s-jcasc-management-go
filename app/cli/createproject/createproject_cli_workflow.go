@@ -1,11 +1,15 @@
 package createproject
 
 import (
+	"errors"
+	"fmt"
+	"github.com/manifoldco/promptui"
 	"k8s-management-go/app/actions/project"
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/utils/loggingstate"
+	"strings"
 )
 
 // ProjectWizardWorkflow represents the project wizard workflow
@@ -15,6 +19,12 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 
 	// Start project wizard
 	loggingstate.AddInfoEntry(constants.LogWizardStartProjectWizardDialogs)
+
+	// Ask for store config only
+	prj.StoreConfigOnly, err = StoreConfigOnlyWorkflow()
+	if err != nil {
+		return err
+	}
 
 	// Ask for namespace
 	loggingstate.AddInfoEntry(constants.LogAskForNamespace)
@@ -84,7 +94,7 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 
 	// prepare progressbar
 	var maxProgressCnt = project.CountCreateProjectWorkflow
-	bar := dialogs.CreateProgressBar(constants.ActionCreateProject, maxProgressCnt)
+	var bar = dialogs.CreateProgressBar(constants.ActionCreateProject, maxProgressCnt)
 	progress := dialogs.ProgressBar{
 		Bar: &bar,
 	}
@@ -97,4 +107,31 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 	loggingstate.AddInfoEntry(constants.LogWizardStartProcessingTemplatesDone)
 
 	return nil
+}
+
+// StoreConfigOnlyWorkflow asks if the project should only store the config
+func StoreConfigOnlyWorkflow() (storeConfigOnly bool, err error) {
+	// Prepare prompt
+	dialogs.ClearScreen()
+	var promptResult string
+	var storeConfigOnlyPrompt = promptui.Prompt{
+		Label:     "Store config only?",
+		IsConfirm: true,
+		Default:   "y",
+	}
+	promptResult, err = storeConfigOnlyPrompt.Run()
+
+	// check if everything was ok
+	if err != nil && err.Error() != "" {
+		loggingstate.AddErrorEntryAndDetails(constants.LogUnableToGetStoreConfigOnly, err.Error())
+		return storeConfigOnly, err
+	}
+
+	if strings.ToLower(promptResult) == "y" || len(promptResult) == 0 {
+		return true, nil
+	} else if strings.ToLower(promptResult) == "n" {
+		return false, nil
+	} else {
+		return true, errors.New(fmt.Sprintf("Please confirm with y or n. You typed [%v] ", promptResult))
+	}
 }

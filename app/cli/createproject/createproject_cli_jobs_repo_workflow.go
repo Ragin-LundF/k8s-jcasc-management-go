@@ -10,7 +10,7 @@ import (
 // JenkinsJobsConfigRepositoryWorkflow represents the config repository workflow
 func JenkinsJobsConfigRepositoryWorkflow() (jenkinsJobsCfgRepo string, err error) {
 	// Validator
-	validate := validator.ValidateJenkinsJobConfig
+	var validate = validator.ValidateJenkinsJobConfig
 
 	// Prepare prompt
 	dialogs.ClearScreen()

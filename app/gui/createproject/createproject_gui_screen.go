@@ -51,8 +51,13 @@ func ScreenCreateFullProject(window fyne.Window) *widget.Form {
 	var jenkinsExistingPvcEntry = widget.NewEntry()
 	jenkinsExistingPvcEntry.PlaceHolder = "pvc-jenkins"
 
+	// checkbox store config only
+	var checkboxStoreTemplates = widget.NewCheck("", func(bool) {})
+	checkboxStoreTemplates.SetChecked(true)
+
 	var form = &widget.Form{
 		Items: []*widget.FormItem{
+			{Text: "Store only config", Widget: checkboxStoreTemplates},
 			{Text: "Namespace", Widget: namespaceEntry},
 			{Text: "", Widget: namespaceErrorLabel},
 			{Text: "IP address", Widget: ipAddressEntry},
@@ -76,6 +81,7 @@ func ScreenCreateFullProject(window fyne.Window) *widget.Form {
 			prj.SetJobsDefinitionRepository(jenkinsJobsCfgEntry.Text)
 			prj.SetPersistentVolumeClaimExistingName(jenkinsExistingPvcEntry.Text)
 			prj.SetCloudKubernetesAdditionalTemplateFiles(checkCloudboxes(cloudTemplatesCheckBoxes))
+			prj.StoreConfigOnly = checkboxStoreTemplates.Checked
 			hasErrors := false
 
 			// validate namespace
@@ -175,8 +181,13 @@ func ScreenCreateDeployOnlyProject(window fyne.Window) *widget.Form {
 	var jenkinsUrlEntry = widget.NewEntry()
 	jenkinsUrlEntry.PlaceHolder = "domain.tld (or leave empty to use <namespace>.<configured nginx domain>)"
 
+	// checkbox store config only
+	var checkboxStoreTemplates = widget.NewCheck("", func(bool) {})
+	checkboxStoreTemplates.SetChecked(true)
+
 	var form = &widget.Form{
 		Items: []*widget.FormItem{
+			{Text: "Store only config", Widget: checkboxStoreTemplates},
 			{Text: "Namespace", Widget: namespaceEntry},
 			{Text: "", Widget: namespaceErrorLabel},
 			{Text: "IP address", Widget: ipAddressEntry},
@@ -189,6 +200,7 @@ func ScreenCreateDeployOnlyProject(window fyne.Window) *widget.Form {
 			prj.SetNamespace(namespaceEntry.Text)
 			prj.SetIPAddress(ipAddressEntry.Text)
 			prj.SetDomain(jenkinsUrlEntry.Text)
+			prj.StoreConfigOnly = checkboxStoreTemplates.Checked
 			hasError := false
 
 			// validate namespace

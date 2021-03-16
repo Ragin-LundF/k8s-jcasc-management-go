@@ -40,7 +40,7 @@ type PvcClaimValuesYaml struct {
 
 // NewInstallProjectConfig returns a new install of the ProjectConfig
 func NewInstallProjectConfig() ProjectConfig {
-	return ProjectConfig{
+	var prjConfig = ProjectConfig{
 		Project:         project.NewProject(),
 		ProjectPath:     "",
 		SecretsFileName: "",
@@ -48,6 +48,8 @@ func NewInstallProjectConfig() ProjectConfig {
 		HelmCommand:     "",
 		ConfigLoaded:    false,
 	}
+	prjConfig.Project.StoreConfigOnly = false
+	return prjConfig
 }
 
 // LoadProjectConfigIfExists : Load a configuration if exists.

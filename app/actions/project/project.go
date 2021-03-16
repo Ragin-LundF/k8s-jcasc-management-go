@@ -21,6 +21,7 @@ type Project struct {
 	JenkinsHelmValues     *jenkinsHelmValues     `yaml:"jenkinsHelmValues,omitempty"`
 	PersistentVolumeClaim *persistentVolumeClaim `yaml:"persistentVolumeClaim,omitempty"`
 	Nginx                 *nginx                 `yaml:"nginx,omitempty"`
+	StoreConfigOnly       bool                   `yaml:"-"`
 }
 
 // base : represents common Jenkins settings
@@ -42,6 +43,7 @@ func NewProject() Project {
 		JCasc:                 newJCascConfig(),
 		PersistentVolumeClaim: newPersistentVolumeClaim(),
 		Nginx:                 newNginx(),
+		StoreConfigOnly:       true,
 	}
 }
 
@@ -156,19 +158,24 @@ func (prj *Project) ProcessTemplates(projectDirectory string) (err error) {
 // CalculateRequiredDeploymentFiles : calculate which project files are required
 func (prj *Project) CalculateRequiredDeploymentFiles() []string {
 	var deploymentFiles []string
-	// ingress controller
-	deploymentFiles = append(deploymentFiles, constants.FilenameNginxIngressControllerHelmValues)
+	// store helm value files only if required
+	if !prj.StoreConfigOnly {
+		// ingress controller
+		deploymentFiles = append(deploymentFiles, constants.FilenameNginxIngressControllerHelmValues)
+	}
 	// if it is not a deployment only project, copy more files
 	if !prj.Base.DeploymentOnly {
-		deploymentFiles = append(deploymentFiles, constants.FilenameJenkinsHelmValues)
-		// copy Jenkins values.yaml
-		deploymentFiles = append(deploymentFiles, constants.FilenameJenkinsHelmValues)
+		// store helm value files only if required
+		if !prj.StoreConfigOnly {
+			// copy Jenkins values.yaml
+			deploymentFiles = append(deploymentFiles, constants.FilenameJenkinsHelmValues)
+			// copy existing PVC values.yaml
+			if len(prj.Base.ExistingVolumeClaim) > 0 {
+				deploymentFiles = append(deploymentFiles, constants.FilenamePvcClaim)
+			}
+		}
 		// copy Jenkins JCasC config.yaml
 		deploymentFiles = append(deploymentFiles, constants.FilenameJenkinsConfigurationAsCode)
-		// copy existing PVC values.yaml
-		if len(prj.Base.ExistingVolumeClaim) > 0 {
-			deploymentFiles = append(deploymentFiles, constants.FilenamePvcClaim)
-		}
 		// copy secrets to project
 		if configuration.GetConfiguration().K8SManagement.Project.SecretFiles == "" {
 			deploymentFiles = append(deploymentFiles, constants.FilenameSecrets)

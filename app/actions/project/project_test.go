@@ -157,7 +157,8 @@ func testDefaultProjectConfiguration(t *testing.T, setupTestProject bool) {
 	if setupTestProject {
 		var err = ActionCreateNewProjectDirectory(testProjectName)
 		assert.Nil(t, err)
-		err = ActionCopyTemplatesToNewDirectory(testProjectName, true, false)
+		var proj = NewProject()
+		err = proj.ActionCopyTemplatesToNewDirectory(testProjectName)
 		assert.Nil(t, err)
 	}
 }
