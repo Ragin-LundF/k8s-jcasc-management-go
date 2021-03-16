@@ -3,6 +3,7 @@ package version
 import (
 	"bytes"
 	"github.com/hashicorp/go-version"
+	"golang.org/x/mod/semver"
 	"io/ioutil"
 	"k8s-management-go/app/utils/logger"
 	"net/http"
@@ -25,6 +26,13 @@ func CheckVersion() bool {
 
 	if remoteVersion == "" || localVersion == "" {
 		return false
+	}
+
+	// check if version is valid to ensure that no 404 response throws errors later.
+	// If the remote version is not valid, it returns true to avoid infinite no update info
+	// if i.e. the repository was moved.
+	if !semver.IsValid(remoteVersion) {
+		return true
 	}
 
 	return compareVersions(localVersion, remoteVersion)
@@ -50,7 +58,7 @@ func readLocalVersion() (version string, err error) {
 }
 
 func receiveVersionFromGit() (version string, err error) {
-	resp, err := http.Get("https://raw.githubusercontent.com/Ragin-LundF/k8s-jcasc-management-go/master/VERSION")
+	resp, err := http.Get("https://raw.githubusercontent.com/Ragin-LundF/k8s-jcasc-management-go/main/VERSION")
 	if err != nil {
 		return "", err
 	}

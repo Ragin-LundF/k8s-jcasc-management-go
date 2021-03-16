@@ -18,7 +18,7 @@ func main() {
 }
 
 func checkVersion() string {
-	newVersionAvailable := version.CheckVersion()
+	var newVersionAvailable = version.CheckVersion()
 	var info = ""
 	if newVersionAvailable {
 		info = "A new version is available!"
