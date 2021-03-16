@@ -3,14 +3,14 @@
 This directory contains the helm charts, that will be used for the deployment.
 
 ## jenkins-master ##
-This is an edited copy of https://github.com/helm/charts/tree/master/stable/jenkins.
+This is an edited copy of https://github.com/jenkinsci/helm-charts.
 
 ### Changes ###
 To have more flexibility and to add the possibility to deploy directly from Jenkins, it was necessary to change some things in the default Helm Charts.
 
 These changes are listed here:
- - added: `jenkins-master/templates/k8s-mgmt-jenkins-agent-deploy-rbac.yaml`
- - added: `jenkins-master/templates/k8s-mgmt-jenkins-agent-deploy-ns-rbac.yaml`
+ - added: `jenkins-controller/templates/k8s-mgmt-jenkins-agent-deploy-rbac.yaml`
+ - added: `jenkins-controller/templates/k8s-mgmt-jenkins-agent-deploy-ns-rbac.yaml`
 
 ### k8s-mgmt-jenkins-agent-deploy-rbac.yaml ###
 This file defines additional roles, that the Jenkins slaves are able to deploy an application.
