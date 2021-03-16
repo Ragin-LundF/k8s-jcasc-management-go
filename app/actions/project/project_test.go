@@ -46,9 +46,9 @@ const testJenkinsHelmMasterPullSecret = "my-secret"
 const testJenkinsHelmMasterDefaultLabel = "jenkins-controller-for-seed"
 
 const testJenkinsHelmMasterDenyAnonymousReadAccess = false
-const testJenkinsHelmMasterAdminPassword = "admin"
-const testJenkinsHelmMasterAdminPasswordEncrypted = "$2a$04$UNxiNvJN6R3me9vybVQr/OzpMhgobih8qbxDpGy3lZmmmwc6t48ty"
-const testJenkinsHelmMasterUserPasswordEncrypted = "$2a$04$BFPq6fSa9KGKrlIktz/C8eSFrrG/gglnW1eXWMSjgtCSx36mMOSNm"
+const testJenkinsHelmMasterAdminPassword = "admin"                                                                 //NOSONAR
+const testJenkinsHelmMasterAdminPasswordEncrypted = "$2a$04$UNxiNvJN6R3me9vybVQr/OzpMhgobih8qbxDpGy3lZmmmwc6t48ty" //NOSONAR
+const testJenkinsHelmMasterUserPasswordEncrypted = "$2a$04$BFPq6fSa9KGKrlIktz/C8eSFrrG/gglnW1eXWMSjgtCSx36mMOSNm"  //NOSONAR
 
 const testJcascDockerCredentialsId = "docker-credentials"
 const testJcascMavenCredentialsId = "maven-credentials"
