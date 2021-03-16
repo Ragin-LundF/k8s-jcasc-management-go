@@ -145,8 +145,8 @@ type config struct {
 var conf *config
 
 // EmptyConfiguration returns an empty instance of config. This should only be used for migration.
-func EmptyConfiguration() config {
-	return config{}
+func EmptyConfiguration() *config {
+	return &config{}
 }
 
 // GetConfiguration returns the current configuration.
@@ -314,8 +314,8 @@ func LoadConfiguration(basePath string, dryRunDebug bool, cliOnly bool) {
 	conf.readDeploymentConfigurationFromYamlFile()
 }
 
+// initBaseConfig : read main configuration
 func (conf *config) initBaseConfig(basePath string) {
-	// read main configuration
 	if err := conf.readConfigFromYAMLFile(files.AppendPath(files.AppendPath(basePath, constants.DirConfig), constants.FilenameConfigurationYaml), conf); err != nil {
 		log.Panicf("Unable to load base configuration: %v", err.Error())
 	}
@@ -336,7 +336,11 @@ func (conf *config) initBaseConfig(basePath string) {
 		conf.K8SManagement.BasePath = conf.CustomConfig.K8SManagement.BasePath
 	}
 
-	// load custom configuration if found.
+	conf.loadCustomConfig()
+}
+
+// loadCustomConfig : load custom configuration if found.
+func (conf *config) loadCustomConfig() {
 	if conf.CustomConfig.K8SManagement.ConfigFile != "" {
 		var customConfig = files.AppendPath(conf.CustomConfig.K8SManagement.BasePath, conf.CustomConfig.K8SManagement.ConfigFile)
 		if files.FileOrDirectoryExists(customConfig) {

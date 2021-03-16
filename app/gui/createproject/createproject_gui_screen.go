@@ -52,7 +52,9 @@ func ScreenCreateFullProject(window fyne.Window) *widget.Form {
 	jenkinsExistingPvcEntry.PlaceHolder = "pvc-jenkins"
 
 	// checkbox store config only
-	var checkboxStoreTemplates = widget.NewCheck("", func(bool) {})
+	var checkboxStoreTemplates = widget.NewCheck("", func(bool) {
+		// the result is computed with checkboxStoreTemplates.Checked
+	})
 	checkboxStoreTemplates.SetChecked(true)
 
 	var form = &widget.Form{
@@ -182,7 +184,9 @@ func ScreenCreateDeployOnlyProject(window fyne.Window) *widget.Form {
 	jenkinsUrlEntry.PlaceHolder = "domain.tld (or leave empty to use <namespace>.<configured nginx domain>)"
 
 	// checkbox store config only
-	var checkboxStoreTemplates = widget.NewCheck("", func(bool) {})
+	var checkboxStoreTemplates = widget.NewCheck("", func(bool) {
+		// the result is computed with checkboxStoreTemplates.Checked
+	})
 	checkboxStoreTemplates.SetChecked(true)
 
 	var form = &widget.Form{

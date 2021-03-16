@@ -95,7 +95,7 @@ func parseConfigurationLine(line string) (key string, value string) {
 	return "", ""
 }
 
-// NOSONAR
+//NOSONAR
 // assignToConfiguration assigns a key / value pair to the configuration object
 func assignToConfiguration(key string, value string) {
 	if key != "" && value != "" {

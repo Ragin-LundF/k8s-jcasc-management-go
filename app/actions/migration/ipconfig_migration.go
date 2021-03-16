@@ -16,6 +16,7 @@ func MigrateDeploymentIPConfigurationV3() string {
 	return migrateIpConfigFromCnfToYaml()
 }
 
+//NOSONAR
 // readIPConfig reads the IP configuration file
 func readIPConfig() *configuration.DeploymentYAMLConfig {
 	var ipDeploymentCfgFile = configuration.GetConfiguration().GetIPConfigurationFile()
