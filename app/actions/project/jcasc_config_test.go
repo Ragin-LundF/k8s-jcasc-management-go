@@ -80,8 +80,8 @@ func TestCreateJCascConfigJobsConfig(t *testing.T) {
 
 //NOSONAR
 func TestCreateJCascConfigSecurityRealmPasswords(t *testing.T) {
-	var adminPassword = "new_enc_pass_admin"
-	var userPassword = "new_enc_pass_user"
+	var adminPassword = "new_enc_pass_admin" //NOSONAR
+	var userPassword = "new_enc_pass_user"   //NOSONAR
 
 	testDefaultProjectConfiguration(t, false)
 	cmdexecutor.Executor = TestCommandExec{}
