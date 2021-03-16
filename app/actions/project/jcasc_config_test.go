@@ -78,7 +78,6 @@ func TestCreateJCascConfigJobsConfig(t *testing.T) {
 	assert.Equal(t, jobsSeedRepository, jcascConfig.JobsConfig.JobsSeedRepository)
 }
 
-//NOSONAR
 func TestCreateJCascConfigSecurityRealmPasswords(t *testing.T) {
 	var adminPassword = "new_enc_pass_admin" //NOSONAR
 	var userPassword = "new_enc_pass_user"   //NOSONAR
