@@ -140,7 +140,7 @@ func (prj *Project) ProcessTemplates(projectDirectory string) (err error) {
 	}
 
 	for _, templateFile := range templateFiles {
-		err = processWithTemplateEngine(templateFile, *prj)
+		err = prj.ProcessWithTemplateEngine(templateFile)
 		if err != nil {
 			_ = os.Remove(projectDirectory)
 			loggingstate.AddErrorEntryAndDetails(
@@ -177,33 +177,44 @@ func (prj *Project) CalculateRequiredDeploymentFiles() []string {
 	return deploymentFiles
 }
 
-// processWithTemplateEngine : Process files with template engine
-func processWithTemplateEngine(filename string, project Project) (err error) {
+// CalculateIfDeploymentFileIsRequired : calculates if deployment file is required
+func (prj *Project) CalculateIfDeploymentFileIsRequired(filename string) bool {
+	var deploymentFiles = prj.CalculateRequiredDeploymentFiles()
+	for _, cFile := range deploymentFiles {
+		if cFile == filename {
+			return true
+		}
+	}
+	return false
+}
+
+// ProcessWithTemplateEngine : Process files with template engine
+func (prj *Project) ProcessWithTemplateEngine(filename string) (err error) {
 	// replace JCasC URL
 	var jcascUrl bytes.Buffer
-	jcascUrlTemplate, err := template.New("JcasC-URL").Parse(project.JenkinsHelmValues.Controller.SidecarsConfigAutoReloadFolder)
+	jcascUrlTemplate, err := template.New("JcasC-URL").Parse(prj.JenkinsHelmValues.Controller.SidecarsConfigAutoReloadFolder)
 	if err != nil {
 		return err
 	}
 
-	err = jcascUrlTemplate.Execute(&jcascUrl, project)
+	err = jcascUrlTemplate.Execute(&jcascUrl, prj)
 	if err != nil {
 		return err
 	}
-	project.JenkinsHelmValues.Controller.SidecarsConfigAutoReloadFolder = jcascUrl.String()
+	prj.JenkinsHelmValues.Controller.SidecarsConfigAutoReloadFolder = jcascUrl.String()
 
 	// replace sub-templates
 	var jcascCloudsKubernetesSubTemplates bytes.Buffer
-	jcascCloudsKuberentesTemplate, err := template.New("JcasC-CloudKuberetesTemplates").Parse(project.JCasc.Clouds.Kubernetes.Templates.AdditionalCloudTemplates)
+	jcascCloudsKuberentesTemplate, err := template.New("JcasC-CloudKuberetesTemplates").Parse(prj.JCasc.Clouds.Kubernetes.Templates.AdditionalCloudTemplates)
 	if err != nil {
 		return err
 	}
 
-	err = jcascCloudsKuberentesTemplate.Execute(&jcascCloudsKubernetesSubTemplates, project)
+	err = jcascCloudsKuberentesTemplate.Execute(&jcascCloudsKubernetesSubTemplates, prj)
 	if err != nil {
 		return err
 	}
-	project.JCasc.SetCloudKubernetesAdditionalTemplates(jcascCloudsKubernetesSubTemplates.String())
+	prj.JCasc.SetCloudKubernetesAdditionalTemplates(jcascCloudsKubernetesSubTemplates.String())
 
 	// replace templates
 	templates, err := template.ParseFiles(filename)
@@ -212,7 +223,7 @@ func processWithTemplateEngine(filename string, project Project) (err error) {
 	}
 
 	var processedTemplate bytes.Buffer
-	err = templates.Execute(&processedTemplate, project)
+	err = templates.Execute(&processedTemplate, prj)
 	if err != nil {
 		return err
 	}

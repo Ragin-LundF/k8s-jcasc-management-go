@@ -26,6 +26,12 @@ This allows to deploy applications directly from the configuration with the late
 The tool checks if there are some value files available.
 If this is not the case, it generates them temporary from the configuration and deletes them after a successful deployment.
 
+The skippable files are:
+
+- `jenkins_helm_values.yaml`
+- `nginx_ingress_helm_values.yaml`
+- `pvc_claim.yaml`
+
 # 2.9.0 Small improvements and dependency updates
 ## Dependency updates
 This release updates the base libraries.

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
-	"k8s-management-go/app/configuration"
+	"k8s-management-go/app/actions/project"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/kubectl"
@@ -18,10 +18,8 @@ func (projectConfig *ProjectConfig) ActionPersistenceVolumeClaimInstall() (err e
 		projectConfig.Project.Base.Namespace))
 
 	// prepare file directories
-	var projectDir = files.AppendPath(
-		configuration.GetConfiguration().GetProjectBaseDirectory(),
-		projectConfig.Project.Base.Namespace)
-	var pvcClaimValuesFilePath = files.AppendPath(projectDir, constants.FilenamePvcClaim)
+	var pvcClaimValuesFilePath string
+	pvcClaimValuesFilePath, err = projectConfig.PrepareInstallYAML(constants.FilenamePvcClaim)
 
 	// open file
 	if files.FileOrDirectoryExists(pvcClaimValuesFilePath) {
@@ -30,19 +28,21 @@ func (projectConfig *ProjectConfig) ActionPersistenceVolumeClaimInstall() (err e
 			projectConfig.Project.Base.Namespace))
 
 		// variable to check, if pvc already exists
-		var err = projectConfig.readPvcNameFromFile(pvcClaimValuesFilePath)
+		err = projectConfig.readPvcNameFromFile(pvcClaimValuesFilePath)
 		if err != nil {
+			project.RemoveTempFile(pvcClaimValuesFilePath)
 			return err
 		}
 
 		// if no name was found, something was wrong here...
-		if projectConfig.Project.Base.ExistingVolumeClaim == "" {
+		if len(projectConfig.Project.Base.ExistingVolumeClaim) == 0 {
 			loggingstate.AddErrorEntry(fmt.Sprintf(
 				"  -> PVC specification was found for namespace [%s], but no name was specified.",
 				projectConfig.Project.Base.Namespace))
 			err = fmt.Errorf(
 				"[PVC Install] PVC specification was found for namespace [%s], but no name was specified. ",
 				projectConfig.Project.Base.Namespace)
+			project.RemoveTempFile(pvcClaimValuesFilePath)
 			return err
 		}
 
@@ -65,11 +65,12 @@ func (projectConfig *ProjectConfig) ActionPersistenceVolumeClaimInstall() (err e
 				"-n", projectConfig.Project.Base.Namespace,
 				"-f", pvcClaimValuesFilePath,
 			}
-			if _, err := kubectl.ExecutorKubectl("apply", kubectlCmdArgs); err != nil {
+			if _, err = kubectl.ExecutorKubectl("apply", kubectlCmdArgs); err != nil {
 				loggingstate.AddErrorEntryAndDetails(fmt.Sprintf(
 					"  -> Cannot create PVC [%s] for namespace [%s]",
 					projectConfig.Project.Base.ExistingVolumeClaim,
 					projectConfig.Project.Base.Namespace), err.Error())
+				project.RemoveTempFile(pvcClaimValuesFilePath)
 				return err
 			}
 
@@ -84,15 +85,17 @@ func (projectConfig *ProjectConfig) ActionPersistenceVolumeClaimInstall() (err e
 				projectConfig.Project.Base.Namespace))
 		}
 	}
+	project.RemoveTempFile(pvcClaimValuesFilePath)
 
 	return err
 }
 
 // read PVC specification and find name if not already in configuration
 func (projectConfig *ProjectConfig) readPvcNameFromFile(pvcClaimValuesFilePath string) (err error) {
-	if projectConfig.Project.Base.ExistingVolumeClaim == "" {
+	if len(projectConfig.Project.Base.ExistingVolumeClaim) == 0 {
 		// read PVC claim values.yaml file
-		yamlFile, err := ioutil.ReadFile(pvcClaimValuesFilePath)
+		var yamlFile []byte
+		yamlFile, err = ioutil.ReadFile(pvcClaimValuesFilePath)
 		if err != nil {
 			loggingstate.AddErrorEntryAndDetails(fmt.Sprintf(
 				"  -> Unable to read pvc file [%s]...",

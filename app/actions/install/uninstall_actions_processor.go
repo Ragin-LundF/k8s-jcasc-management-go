@@ -2,15 +2,13 @@ package install
 
 import (
 	"fmt"
-	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/loggingstate"
 )
 
 // ProcessJenkinsUninstallIfExists processes Jenkins uninstall if Jenkins Helm values exists
 func (projectConfig *ProjectConfig) ProcessJenkinsUninstallIfExists() (err error) {
-	if projectConfig.JenkinsHelmValuesExist {
+	if projectConfig.Project.CalculateIfDeploymentFileIsRequired(constants.FilenameJenkinsHelmValues) {
 		loggingstate.AddInfoEntry(fmt.Sprintf(
 			"-> Uninstalling deployment [%s] on namespace [%s]...",
 			projectConfig.Project.Base.DeploymentName,
@@ -32,7 +30,7 @@ func (projectConfig *ProjectConfig) ProcessJenkinsUninstallIfExists() (err error
 
 // ProcessNginxIngressControllerUninstall processes the nginx ingress controller uninstall
 func (projectConfig *ProjectConfig) ProcessNginxIngressControllerUninstall() (err error) {
-	if projectConfig.NginxHelmValuesExist {
+	if projectConfig.Project.CalculateIfDeploymentFileIsRequired(constants.FilenameNginxIngressControllerHelmValues) {
 		loggingstate.AddInfoEntry(fmt.Sprintf(
 			"-> Uninstalling nginx-ingress-controller on namespace [%s]...",
 			projectConfig.Project.Base.Namespace))
@@ -71,16 +69,4 @@ func (projectConfig *ProjectConfig) ProcessK8sCleanup() {
 	loggingstate.AddInfoEntry(fmt.Sprintf(
 		"-> Try to cleanup configuration of [%s]...done",
 		projectConfig.Project.Base.Namespace))
-}
-
-// ProcessCheckNginxDirectoryExists checks if nginx ingress controller helm values file exists
-func (projectConfig *ProjectConfig) ProcessCheckNginxDirectoryExists() {
-	var nginxHelmValueFile = files.AppendPath(
-		files.AppendPath(
-			configuration.GetConfiguration().GetProjectBaseDirectory(),
-			projectConfig.Project.Base.Namespace,
-		),
-		constants.FilenameNginxIngressControllerHelmValues,
-	)
-	projectConfig.NginxHelmValuesExist = files.FileOrDirectoryExists(nginxHelmValueFile)
 }

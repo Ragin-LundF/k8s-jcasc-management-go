@@ -3,9 +3,9 @@ package install
 import (
 	"errors"
 	"fmt"
+	"k8s-management-go/app/actions/project"
 	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/helm"
 	"k8s-management-go/app/utils/loggingstate"
 )
@@ -22,13 +22,13 @@ func (projectConfig *ProjectConfig) ActionHelmInstallJenkins() (err error) {
 	if projectConfig.HelmCommand == constants.HelmCommandInstall || projectConfig.HelmCommand == constants.HelmCommandUpgrade {
 		// prepare files and directories
 		var helmChartsJenkinsDirectory = configuration.GetConfiguration().FilePathWithBasePath(constants.DirHelmJenkinsMaster)
-		var helmChartsJenkinsValuesFile = files.AppendPath(
-			files.AppendPath(
-				configuration.GetConfiguration().GetProjectBaseDirectory(),
-				projectConfig.Project.Base.Namespace,
-			),
-			constants.FilenameJenkinsHelmValues,
-		)
+		// prepare file directories
+		var helmChartsJenkinsValuesFile string
+		helmChartsJenkinsValuesFile, err = projectConfig.PrepareInstallYAML(constants.FilenameJenkinsHelmValues)
+		if err != nil {
+			project.RemoveTempFile(helmChartsJenkinsValuesFile)
+			return err
+		}
 
 		// execute Helm command
 		var argsForCommand = []string{
@@ -52,7 +52,9 @@ func (projectConfig *ProjectConfig) ActionHelmInstallJenkins() (err error) {
 		loggingstate.AddInfoEntry(fmt.Sprintf(
 			"-> Start installing/upgrading Jenkins with Helm on namespace [%s]...",
 			projectConfig.Project.Base.Namespace))
-		var err = helm.ExecutorHelm(projectConfig.HelmCommand, argsForCommand)
+		err = helm.ExecutorHelm(projectConfig.HelmCommand, argsForCommand)
+
+		project.RemoveTempFile(helmChartsJenkinsValuesFile)
 		if err != nil {
 			loggingstate.AddErrorEntryAndDetails(fmt.Sprintf(
 				"-> Unable to install/upgrade Jenkins on namespace [%s] with deployment name [%s]",
@@ -60,6 +62,7 @@ func (projectConfig *ProjectConfig) ActionHelmInstallJenkins() (err error) {
 				projectConfig.Project.Base.DeploymentName), err.Error())
 			return err
 		}
+
 		loggingstate.AddInfoEntry(fmt.Sprintf(
 			"-> Start installing/upgrading Jenkins with Helm on namespace [%s]...done",
 			projectConfig.Project.Base.Namespace))

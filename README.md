@@ -429,8 +429,6 @@ _Namespace selection in CLI mode_
 You can use this tool to export the complete Kubernetes configuration to a local `k8s-manifests` directory.
 This can help to figure out differences between clusters.
 
-
-
 # Helpful links #
 
 - K8S JCasC Management internal Processes: [Processes overview](docs/processes/README.md)

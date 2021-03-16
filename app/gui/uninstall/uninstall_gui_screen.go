@@ -71,9 +71,6 @@ func ScreenUninstall(window fyne.Window) fyne.CanvasObject {
 				dialog.ShowError(err, window)
 			}
 
-			// Check Jenkins directories
-			projectConfig.CheckJenkinsDirectories()
-
 			_ = ExecuteUninstallWorkflow(window, projectConfig)
 			// show output
 			uielements.ShowLogOutput(window)

@@ -11,12 +11,10 @@ import (
 
 // ProcessCheckAndCreatePvc checks for existing PVC and creates new one if it does not exist
 func (projectConfig *ProjectConfig) ProcessCheckAndCreatePvc() (err error) {
-	loggingstate.AddInfoEntry("-> Check and create pvc if necessary...")
 	if err = projectConfig.ActionPersistenceVolumeClaimInstall(); err != nil {
 		loggingstate.AddErrorEntryAndDetails("-> Check and create pvc if necessary...failed", err.Error())
 		return err
 	}
-	loggingstate.AddInfoEntry("-> Check and create pvc if necessary...done")
 
 	return nil
 }
@@ -45,7 +43,7 @@ func (projectConfig *ProjectConfig) ProcessCreateSecrets() (err error) {
 // ProcessInstallJenkins processes the Jenkins master installation
 func (projectConfig *ProjectConfig) ProcessInstallJenkins() (err error) {
 	// install Jenkins
-	if projectConfig.JenkinsHelmValuesExist {
+	if projectConfig.Project.CalculateIfDeploymentFileIsRequired(constants.FilenameJenkinsHelmValues) {
 		loggingstate.AddInfoEntry("-> Jenkins Helm values.yaml found. Installing Jenkins...")
 
 		err = projectConfig.ActionHelmInstallJenkins()
@@ -58,7 +56,7 @@ func (projectConfig *ProjectConfig) ProcessInstallJenkins() (err error) {
 	}
 	loggingstate.AddInfoEntry(fmt.Sprintf(
 		"-> No Jenkins Helm chart found in path [%s]. Skipping installation...",
-		projectConfig.JenkinsHelmValuesFile))
+		projectConfig.ProjectPath))
 
 	return nil
 }
@@ -109,7 +107,7 @@ func (projectConfig *ProjectConfig) CalculateBarCounter() int {
 		dryRunOnly = 2
 	} else {
 		notDryRunOnly = 4
-		if projectConfig.JenkinsHelmValuesExist {
+		if projectConfig.Project.CalculateIfDeploymentFileIsRequired(constants.FilenameJenkinsHelmValues) {
 			jenkinsInstallation = 2
 		}
 	}
@@ -131,14 +129,4 @@ func (projectConfig *ProjectConfig) CalculateDirectoriesForInstall() (err error)
 	}
 	loggingstate.AddInfoEntry("-> Checking existing directories...done")
 	return err
-}
-
-// CheckJenkinsDirectories checks if Jenkins Helm values file exists
-func (projectConfig *ProjectConfig) CheckJenkinsDirectories() {
-	// check if project configuration contains Jenkins Helm values file
-	projectConfig.JenkinsHelmValuesFile = files.AppendPath(
-		projectConfig.ProjectPath,
-		constants.FilenameJenkinsHelmValues,
-	)
-	projectConfig.JenkinsHelmValuesExist = files.FileOrDirectoryExists(projectConfig.JenkinsHelmValuesFile)
 }

@@ -28,9 +28,6 @@ func ExecuteUninstallWorkflow(window fyne.Window, projectConfig install.ProjectC
 		return err
 	}
 
-	// uninstall nginx ingress controller
-	projectConfig.ProcessCheckNginxDirectoryExists()
-
 	// uninstall Nginx ingress controller is exists
 	err = projectConfig.ProcessNginxIngressControllerUninstall()
 	bar.SetValue(float64(1) / float64(progressMaxCnt) * float64(progressCnt))

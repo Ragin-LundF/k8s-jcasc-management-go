@@ -6,6 +6,7 @@ import (
 	"k8s-management-go/app/actions/install"
 	"k8s-management-go/app/actions/namespaceactions"
 	"k8s-management-go/app/configuration"
+	"k8s-management-go/app/constants"
 	"k8s-management-go/app/gui/uielements"
 	"k8s-management-go/app/utils/loggingstate"
 	"time"
@@ -45,7 +46,7 @@ func ExecuteInstallWorkflow(window fyne.Window, projectConfig install.ProjectCon
 		}
 
 		// Jenkins exists and it is not a dry-run install secrets
-		if projectConfig.JenkinsHelmValuesExist {
+		if projectConfig.Project.CalculateIfDeploymentFileIsRequired(constants.FilenameJenkinsHelmValues) {
 			// apply secrets
 			err = projectConfig.ProcessCreateSecrets()
 			bar.SetValue(float64(1) / float64(progressMaxCnt) * float64(progressCnt))

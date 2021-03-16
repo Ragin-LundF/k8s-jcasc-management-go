@@ -2,6 +2,7 @@ package install
 
 import (
 	"fmt"
+	"k8s-management-go/app/actions/project"
 	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/utils/files"
@@ -16,16 +17,11 @@ func (projectConfig *ProjectConfig) ActionHelmInstallNginxIngressController() (e
 		"[Install NginxIngressCtrl] Trying to %s nginx-ingress-controller on namespace [%s] while Jenkins exists [%s]...",
 		projectConfig.HelmCommand,
 		projectConfig.Project.Base.Namespace,
-		strconv.FormatBool(projectConfig.JenkinsHelmValuesExist)))
+		strconv.FormatBool(projectConfig.Project.CalculateIfDeploymentFileIsRequired(constants.FilenameJenkinsHelmValues))))
 
 	// create var with path to ingress controller helm values
-	var helmChartsNginxIngressCtrlValuesFile = files.AppendPath(
-		files.AppendPath(
-			configuration.GetConfiguration().GetProjectBaseDirectory(),
-			projectConfig.Project.Base.Namespace,
-		),
-		constants.FilenameNginxIngressControllerHelmValues,
-	)
+	var helmChartsNginxIngressCtrlValuesFile string
+	helmChartsNginxIngressCtrlValuesFile, err = projectConfig.PrepareInstallYAML(constants.FilenameNginxIngressControllerHelmValues)
 
 	// check if nginx ingress controller helm values are existing
 	// if this is the case -> install it
@@ -49,7 +45,7 @@ func (projectConfig *ProjectConfig) ActionHelmInstallNginxIngressController() (e
 			}
 
 			// if Jenkins is not active for this namespace, then disable Jenkins ingress routing
-			if projectConfig.JenkinsHelmValuesExist == false {
+			if projectConfig.Project.CalculateIfDeploymentFileIsRequired(constants.FilenameJenkinsHelmValues) == false {
 				loggingstate.AddInfoEntry(fmt.Sprintf(
 					"[Install NginxIngressCtrl] Jenkins is not available for the namespace [%s]. Disabling Jenkins ingress routing.",
 					projectConfig.Project.Base.Namespace))
@@ -65,7 +61,9 @@ func (projectConfig *ProjectConfig) ActionHelmInstallNginxIngressController() (e
 			loggingstate.AddInfoEntry(fmt.Sprintf(
 				"-> Start installing/upgrading nginx-ingress-controller with Helm on namespace [%s]...",
 				projectConfig.Project.Base.Namespace))
-			err := helm.ExecutorHelm(projectConfig.HelmCommand, argsForCommand)
+			err = helm.ExecutorHelm(projectConfig.HelmCommand, argsForCommand)
+
+			project.RemoveTempFile(helmChartsNginxIngressCtrlValuesFile)
 			if err != nil {
 				loggingstate.AddErrorEntryAndDetails(fmt.Sprintf(
 					"-> Unable to install/upgrade nginx-ingress-controller on namespace [%s]",
@@ -92,7 +90,9 @@ func (projectConfig *ProjectConfig) ActionHelmInstallNginxIngressController() (e
 		"[Install NginxIngressCtrl] Trying to %s nginx-ingress-controller on namespace [%s] while Jenkins exists [%s]...done",
 		projectConfig.HelmCommand,
 		projectConfig.Project.Base.Namespace,
-		strconv.FormatBool(projectConfig.JenkinsHelmValuesExist)))
+		strconv.FormatBool(projectConfig.Project.CalculateIfDeploymentFileIsRequired(constants.FilenameJenkinsHelmValues))))
+
+	project.RemoveTempFile(helmChartsNginxIngressCtrlValuesFile)
 
 	return err
 }

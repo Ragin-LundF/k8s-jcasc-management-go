@@ -5,6 +5,7 @@ import (
 	"k8s-management-go/app/cli/dialogs"
 	"k8s-management-go/app/cli/secrets"
 	"k8s-management-go/app/configuration"
+	"k8s-management-go/app/constants"
 	"k8s-management-go/app/utils/logger"
 	"k8s-management-go/app/utils/loggingstate"
 )
@@ -20,7 +21,12 @@ func ShowInstallDialogs() (projectConfig install.ProjectConfig, err error) {
 	}
 	loggingstate.AddInfoEntry("-> Ask for namespace...done")
 
+	// instantiate a new project config
 	projectConfig = install.NewInstallProjectConfig()
+	err = projectConfig.LoadProjectConfigIfExists(namespace)
+	if err != nil {
+		return projectConfig, err
+	}
 	projectConfig.Project.SetNamespace(namespace)
 
 	// Directories
@@ -29,11 +35,8 @@ func ShowInstallDialogs() (projectConfig install.ProjectConfig, err error) {
 		return projectConfig, err
 	}
 
-	// check if project configuration contains Jenkins Helm values file
-	projectConfig.CheckJenkinsDirectories()
-
 	// if it is Jenkins installation ask more things
-	if projectConfig.JenkinsHelmValuesExist {
+	if projectConfig.Project.CalculateIfDeploymentFileIsRequired(constants.FilenameJenkinsHelmValues) {
 		// if it is no dry-run, ask for secrets password
 		if !configuration.GetConfiguration().K8SManagement.DryRunOnly {
 			secretsFileName, secretsPassword, err := secrets.AskForSecretsPassword("Password for secrets file", true)

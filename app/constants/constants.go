@@ -31,8 +31,8 @@ const DirHelmNginxIngressCtrl = "/charts/nginx-ingress-controller"
 // FilenameConfigurationYaml : filename of the yaml configuration file
 const FilenameConfigurationYaml = "k8s_jcasc_mgmt.yaml"
 
-// FilenameConfigurationCustom : filename of the custom configuration file for overwrites
-const FilenameConfigurationCustom = "k8s_jcasc_custom.cnf"
+// FilenameTempPrefix : filename prefix for temporary generated files for deployment from config
+const FilenameTempPrefix = "__k8smgmt__"
 
 // FilenameConfigurationCustomYaml : filename of the custom configuration file for overwrites
 const FilenameConfigurationCustomYaml = "k8s_jcasc_custom.yaml"

@@ -65,20 +65,14 @@ func ScreenInstall(window fyne.Window) fyne.CanvasObject {
 
 			// map state
 			var projectConfig = install.NewInstallProjectConfig()
-			projectConfig.Project.SetNamespace(namespace)
+			var err = projectConfig.LoadProjectConfigIfExists(namespace)
+			if err != nil {
+				dialog.ShowError(err, window)
+			}
 			projectConfig.Project.Base.DeploymentName = deploymentName
 			projectConfig.HelmCommand = installTypeOption
 			projectConfig.SecretsPassword = &secretsPasswords
 			projectConfig.SecretsFileName = secretsFile
-
-			// Directories
-			var err = projectConfig.CalculateDirectoriesForInstall()
-			if err != nil {
-				dialog.ShowError(err, window)
-			}
-
-			// Check Jenkins directories
-			projectConfig.CheckJenkinsDirectories()
 
 			// ask for password
 			if dryRunOption == constants.InstallDryRunInactive {

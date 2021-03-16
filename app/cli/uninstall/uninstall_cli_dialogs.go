@@ -3,9 +3,6 @@ package uninstall
 import (
 	"k8s-management-go/app/actions/install"
 	"k8s-management-go/app/cli/dialogs"
-	"k8s-management-go/app/configuration"
-	"k8s-management-go/app/constants"
-	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/loggingstate"
 )
 
@@ -31,14 +28,5 @@ func ShowUninstallDialogs() (projectConfig install.ProjectConfig, err error) {
 	}
 	loggingstate.AddInfoEntry("-> Ask for deployment name...done")
 
-	// start uninstalling Jenkins
-	var jenkinsHelmValuesFile = files.AppendPath(
-		files.AppendPath(
-			configuration.GetConfiguration().GetProjectBaseDirectory(),
-			projectConfig.Project.Base.Namespace,
-		),
-		constants.FilenameJenkinsHelmValues,
-	)
-	projectConfig.JenkinsHelmValuesExist = files.FileOrDirectoryExists(jenkinsHelmValuesFile)
 	return projectConfig, err
 }

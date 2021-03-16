@@ -23,11 +23,6 @@ func DoUninstall() (err error) {
 	}
 	_ = bar.Add(1)
 
-	// uninstall nginx ingress controller
-	bar.Describe("Check for Nginx installation...")
-	projectConfig.ProcessCheckNginxDirectoryExists()
-	_ = bar.Add(1)
-
 	bar.Describe("Nginx-ingress-controller found...Uninstalling...")
 	err = projectConfig.ProcessNginxIngressControllerUninstall()
 	if err != nil {
