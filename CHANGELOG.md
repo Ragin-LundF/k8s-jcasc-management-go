@@ -1,7 +1,41 @@
+# 3.0.0
+## Introducing better template placeholder
+The previous versions were still fully compatible with the deprecated bash version.
+With version 3.0.0 this compatibility is no longer given.
+
+The new template system is based on Golang templates (https://golang.org/pkg/text/template/) and allows a more flexible use, as well as the usual template/placeholder syntax from the Kubernetes environment.
+
+### Migration
+The migration is described under [docs/migration/MigrateV2_to_V3.md](docs/migration/MigrateV2_to_V3.md).
+
+### Placeholder documentation
+Furthermore, the new placeholders are fully documented in [docs/TemplatePlaceholder.md](docs/TemplatePlaceholder.md) and the further linked files.
+
+## Refactored Project Generation
+
+The "Create Project" area has also been completely redesigned under the hood.
+It now relies on a complete project structure instead of individual variables and substructures and associated methods that operate on this structure.
+
+This is also used for the placeholders and associated methods that work on this structure.
+
+This change was urgently needed to add more features like configuration-based deployments (instead of creating the project-specific YAML files) or deploying the tool as a central instance in a Docker container.
+
+## New configuration file per project
+Every project stores now the original configuration as `k8s_jcasc_project_config.yaml`.
+This allows to deploy applications directly from the configuration with the latest templates.
+The tool checks if there are some value files available.
+If this is not the case, it generates them temporary from the configuration and deletes them after a successful deployment.
+
+The skippable files are:
+
+- `jenkins_helm_values.yaml`
+- `nginx_ingress_helm_values.yaml`
+- `pvc_claim.yaml`
+
 # 2.9.0 Small improvements and dependency updates
 ## Dependency updates
 This release updates the base libraries.
-Mainly fyne.io to 1.4.3.
+Mainly fyne.io to 2.0.0.
 
 ## Bugfixes
 Fixed a minor bug where the GUI does not initially display the namespace dropdown.

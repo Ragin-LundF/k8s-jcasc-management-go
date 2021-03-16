@@ -21,4 +21,8 @@ func TestCreateMainMenu(t *testing.T) {
 	assert.Equal(t, "Dark Theme", mainMenu.Items[1].Items[0].Label)
 	assert.Equal(t, "Light Theme", mainMenu.Items[1].Items[1].Label)
 
+	assert.Equal(t, "Tools", mainMenu.Items[2].Label)
+	assert.Equal(t, "Migrate config v2 -> v3", mainMenu.Items[2].Items[0].Label)
+	assert.Equal(t, "Migrate templates v2 -> v3", mainMenu.Items[2].Items[1].Label)
+
 }

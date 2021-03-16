@@ -1,0 +1,135 @@
+k8sManagement:
+  log:
+    # log level can be INFO | NONE | DEBUG
+    level: INFO
+    # output file for loggings
+    file: "output.log"
+    # Logging encoding (json | console)
+    encoding: "console"
+    # Overwrite logging file on start (true | false)
+    overwriteOnRestart: true
+
+  ipconfig:
+    # defines the file, in which the ip addresses for each namespace should be stored
+    file: "./config/ip_config.yaml"
+    # Dummy prefix for reserved IPs.
+    # If a namespace was prefixed with this, it will not be used for actions that are working with the {{ ipconfig.file }} (like global update of credentials)
+    dummyPrefix: "dummy"
+
+  project:
+    # directory, where the projects are located. Must contain a trailing slash!
+    baseDirectory: "./projects/"
+    # directory for templates.
+    # If own templates should be used, it is possible to store them in a separate repository and to configure the path to this repo here.
+    templateDirectory: "./templates/"
+    # Use this file as a global secrets file. If you want to use different secrets for each project, comment this line.
+    # If this line is commented, then the secrets will be stored under PROJECTS_DIRECTORY/secrets.sh.enc
+    secretFiles: "./config/secrets.sh"
+
+  # activate version check to get informed about new version
+  versionCheck: true
+
+jenkins:
+  jcasc:
+    # This variable configures the URL, where the Jenkins configuration was checked in. This URL must have public access!
+    # You can use the '##PROJECT_DIRECTORY##' template variable here to
+    configurationUrl: "https://raw.githubusercontent.com/Ragin-LundF/k8s-jcasc-project-config/main/{{ .Base.Namespace }}/jcasc_config.yaml"
+    authorizationStrategy:
+      # Deny or allow anonymous read access to the Jenkins controller
+      allowAnonymousRead: true
+    credentialIDs:
+      # Default Docker registry credentialsId
+      docker: "docker-registry-credentialsid"
+      # Maven repository secrets credentialsId of the maven repository service account/technical user, if a private repository should be used.
+      # if you do not need this: look into the 'jcasc_config.yaml' file and remove the environment variable settings
+      maven: "repository-credentialsid"
+      # NPM repository secrets credentialsId of the npm repository service account/technical user, if a private repository should be used.
+      # if you do not need this: look into the 'jcasc_config.yaml' file and remove the environment variable settings
+      npm: "repository-credentialsid"
+      # Version Control System (VCS) repository secrets credentialsId for service account/technical user, if a private repository should be used.
+      # if you do not need this: look into the 'jcasc_config.yaml' file and remove the environment variable settings
+      vcs: "vcs-notification-credentialsid"
+    # URL to the seed job script, that creates/deletes jobs from a simple repository file
+    seedJobURL: "https://github.com/Ragin-LundF/jenkins-jobdsl-remote.git"
+
+  jobDSL:
+    # If this variable is set, it is possible to add only the URI of the JobDSL configuration instead the full URL.
+    # Leave empty if only full URLs are allowed
+    baseURL: "http://github.com"
+    # Validation pattern for Jenkins JobDSL URI/URL. Please use single-quotes to avoid issues with escaping.
+    repoValidatePattern: '.*\.git'
+
+  controller:
+    passwords:
+      # Default admin password for Jenkins if security configuration in the jcasc_config should not be used
+      adminUser: "admin"
+      # Default password with bcrypt for security configuration as code (jcasc_config)
+      adminUserEncrypted: "$2a$04$UNxiNvJN6R3me9vybVQr/OzpMhgobih8qbxDpGy3lZmmmwc6t48ty"
+      defaultUserEncrypted: "$2a$04$BFPq6fSa9KGKrlIktz/C8eSFrrG/gglnW1eXWMSjgtCSx36mMOSNm"
+    # Default label for the jenkins controller to execute the seed job, which will be bind to this label.
+    customJenkinsLabel: "jenkins-controller-for-seed"
+    # Jenkins controller deployment name. This will be configured globally, which makes it easier to cleanup.
+    deploymentName: "jenkins-controller"
+    # Default prefix for each jenkins instance on the Kubernetes cluster.
+    # This value defines the path, that has to specified for the ingress routing and ensures, that this "proxy" will be correctly used by Jenkins.
+    defaultURIPrefix: "/jenkins"
+
+  persistence:
+    # Define the Jenkins controller accessMode for the PVC (ReadWriteMany or ReadWriteOnce)
+    accessMode: "ReadWriteOnce"
+    # Define the persistence storage class for the Kubernetes
+    storageClass: "nfs-client"
+    # Define the default storage size for the Jenkins controller
+    storageSize: "2Gi"
+
+  container:
+    # Image of the Jenkins Controller
+    image: "jenkins/jenkins"
+    tag: "lts"
+    pullPolicy: "Always"
+    pullSecret: ""
+
+nginx:
+  ingress:
+    # Image of the Nginx ingress controller
+    container:
+      image: "bitnami/nginx-ingress-controller:latest"
+      pullSecret: ""
+    deployment:
+      # Deploy Nginx ingress controller for each namespace
+      forEachNamespace: false
+      # Name of the nginx-ingress-controller deployment
+      # This name will also be used as prefix for roles/rolebindings...
+      deploymentName: "nginx-ingress"
+    # Annotation for ingress class. Default is nginx.
+    annotationclass: "nginx"
+
+  loadbalancer:
+    # enable load balancer
+    enabled: false
+    ports:
+      http: 80
+      httpTarget: 80
+      https: 443
+      httpsTarget: 443
+    annotations:
+      # enable annotations on the load balancer service
+      enabled: false
+    externalDNS:
+      # external DNS hostname
+      hostName: "domain.tld"
+      # external DNS TTL time in seconds
+      ttl: 60
+
+kubernetes:
+  certificates:
+    # default certificate of the Kubernetes server
+    default: "LS0tLS1DeUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM3akNDQWRhZ0F4SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFvTVJJd0VBWURWUVFLRXdsMGFHVXQKY21GdVkyZ3hFakFRQmdOVkJBTVRDV05oZEhSc1pTMWpZVEFlRncweE9URXdNalV3TnpNMU5UaGFGdzB5T1RFdwpNakl3TnpNMU5UaGFNQ2d4RWpBUUJnTlZCQW9UQ1hSb1pTMXlZVzVqYURFU01CQUdBMVVFQXhNSlkyRjBkR3hsCkxXTmhNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUJDZ0tDQVFFQXZmSU5NdFJCN1liRzVvbEsKL0lpckdFZlZVbWxhZXcyR0RzMm5od2NOZC9Ha09NdmVMdThySDUzdUMwRm1QTXYvd21CdWRKMGJ0anF3RldxQgpubHlVL0VPQWhzeUN3Z1FFeE0xY2ZmQTUzRDZlQncyVHVsZ3ZudTNoYzRmbmZvTEdVbUNyTVNiVXplMjBncm43CjI4UWdmcXBxcVRQMm42b21OUzlLSm9obmp4VDZpaVVYZExwS29nNEhhcndiUVNmdmdnWHFrTGNRVmpucjllWkYKTEhGY1hpanpVK1pES3BIT2tyNGlsc1FiOFhiT2xpK01Sa0p2OWVOdEhYajRoeVFYakpBdHdzUUhTeXdja1lYUQpGUFRFQi9IejBQUUJpTC9jaTk0dGUrWHRSNDJMNFgrZlh2eUpIOGFNQ09VMTZkaEhuUjBxOW1jLzJjTlZMYjJ0CmxOWWVWUUlEQVFBQm95TXdJVEFPQmdOVkhROEJBZjhFQkFNQ0FxUXdEd1lEVlIwVEFRSC9CQVV3QXdFQi96QU4KQmdrcWhraUc5dzBCQVFzRkFBT0NBUUVBZ3UzSDVkRHA5d0FNZlg0V0pUSWlEGUxjTU0wSElkMFJGbDhaTU9oUgowRTB0YnUrbkduaHh0d3lIMUE5UFRjRm9pU3h1THNNNktrSWNZL1ZLallqRnBPemxXZVJuVW12WnpTdDkyaTRuCjRoa2duA8ZEa1l6bzVPb1FEF21nRXhFVlpsRnJKaXFZYjYwR3Z6Q0RHblZUc3ljT2xqaVJmeGdWSFQvR8t6bkEKbG9scTY4Z2VlVGFZMWZjdWZTK3FPcHBKcm9CNjZvZENtenhuMExVZE4yRU9ucDJYZUdIZ0hjRzRFcFVXODdXcQpJZVZTTkY3SDFIYVlqY0Z2ZD3SZHFseVVpRjkvaWwxMFJYVHTSbzNPa3loZ3BzWnPUNWRBTk9jOXA0M0MKNHF0CjNwZDJvN2hHRGxVc3g4cFpsaZZHamo4ZA8rVy9qRXY1K1VTQzVPQ09kRHJJU2c9PQotLS0tLUVORCBDRVJUSUZMR0FUSS0tBT0t"
+    # contexts can be added as "key: value" objects (not a list)
+    contexts:
+      # example: certificate map of the Kubernetes server for the context "scratch-ctx"
+      # scratch-ctx: "SW0tLS1DeUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM3akNDQWRhZ0F4SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFvTVJJd0VBWURWUVFLRXdsMGFHVXQKY21GdVkyZ3hFakFRQmdOVkJBTVRDV05oZEhSc1pTMWpZVEFlRncweE9URXdNalV3TnpNMU5UaGFGdzB5T1RFdwpNakl3TnpNMU5UaGFNQ2d4RWpBUUJnTlZCQW9UQ1hSb1pTMXlZVzVqYURFU01CQUdBMVVFQXhNSlkyRjBkR3hsCkxXTmhNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUJDZ0tDQVFFQXZmSU5NdFJCN1liRzVvbEsKL0lpckdFZlZVbWxhZXcyR0RzMm5od2NOZC9Ha09NdmVMdThySDUzdUMwRm1QTXYvd21CdWRKMGJ0anF3RldxQgpubHlVL0VPQWhzeUN3Z1FFeE0xY2ZmQTUzRDZlQncyVHVsZ3ZudTNoYzRmbmZvTEdVbUNyTVNiVXplMjBncm43CjI4UWdmcXBxcVRQMm42b21OUzlLSm9obmp4VDZpaVVYZExwS29nNEhhcndiUVNmdmdnWHFrTGNRVmpucjllWkYKTEhGY1hpanpVK1pES3BIT2tyNGlsc1FiOFhiT2xpK01Sa0p2OWVOdEhYajRoeVFYakpBdHdzUUhTeXdja1lYUQpGUFRFQi9IejBQUUJpTC9jaTk0dGUrWHRSNDJMNFgrZlh2eUpIOGFNQ09VMTZkaEhuUjBxOW1jLzJjTlZMYjJ0CmxOWWVWUUlEQVFBQm95TXdJVEFPQmdOVkhROEJBZjhFQkFNQ0FxUXdEd1lEVlIwVEFRSC9CQVV3QXdFQi96QU4KQmdrcWhraUc5dzBCQVFzRkFBT0NBUUVBZ3UzSDVkRHA5d0FNZlg0V0pUSWlEGUxjTU0wSElkMFJGbDhaTU9oUgowRTB0YnUrbkduaHh0d3lIMUE5UFRjRm9pU3h1THNNNktrSWNZL1ZLallqRnBPemxXZVJuVW12WnpTdDkyaTRuCjRoa2duA8ZEa1l6bzVPb1FEF21nRXhFVlpsRnJKaXFZYjYwR3Z6Q0RHblZUc3ljT2xqaVJmeGdWSFQvR8t6bkEKbG9scTY4Z2VlVGFZMWZjdWZTK3FPcHBKcm9CNjZvZENtenhuMExVZE4yRU9ucDJYZUdIZ0hjRzRFcFVXODdXcQpJZVZTTkY3SDFIYVlqY0Z2ZD3SZHFseVVpRjkvaWwxMFJYVHTSbzNPa3loZ3BzWnPUNWRBTk9jOXA0M0MKNHF0CjNwZDJvN2hHRGxVc3g4cFpsaZZHamo4ZA8rVy9qRXY1K1VTQzVPQ09kRHJJU2c9PQotLS0tLUVORCBDRVJUSUZMR0FUSS0tBT0t"
+
+
+
+

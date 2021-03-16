@@ -12,7 +12,7 @@ import (
 // GpgEncryptSecrets encrypts secrets
 func GpgEncryptSecrets(secretsFilePath string, password string) (err error) {
 	// first encrypt file
-	gpgCmdArgs := []string{
+	var gpgCmdArgs = []string{
 		"--batch", "--yes", "--passphrase", password, "-c", secretsFilePath,
 	}
 	loggingstate.AddInfoEntryAndDetails("  -> Executing Gpg encrypt command...", fmt.Sprintf("gpg %s", maskedGpgCmdArgsAsString(gpgCmdArgs, 4)))
@@ -31,7 +31,7 @@ func GpgEncryptSecrets(secretsFilePath string, password string) (err error) {
 
 // GpgDecryptSecrets decrypts secrets
 func GpgDecryptSecrets(secretsFilePath string, password string) (err error) {
-	gpgCmdArgs := []string{
+	var gpgCmdArgs = []string{
 		"--batch", "--yes", "--passphrase", password, secretsFilePath,
 	}
 	loggingstate.AddInfoEntryAndDetails("  -> Executing Gpg decrypt command...", fmt.Sprintf("gpg %s", maskedGpgCmdArgsAsString(gpgCmdArgs, 4)))
@@ -45,7 +45,7 @@ func GpgDecryptSecrets(secretsFilePath string, password string) (err error) {
 	}
 
 	// check if result is ok
-	newSecretsFile := strings.Replace(secretsFilePath, ".gpg", "", -1)
+	var newSecretsFile = strings.Replace(secretsFilePath, ".gpg", "", -1)
 	if !files.FileOrDirectoryExists(newSecretsFile) {
 		loggingstate.AddErrorEntry(fmt.Sprintf("  -> Decrypting was not successful. Script file [%s] does not exist.", newSecretsFile))
 		return errors.New("No decrypted secrets file found! ")
@@ -58,7 +58,7 @@ func GpgDecryptSecrets(secretsFilePath string, password string) (err error) {
 
 // output masked gpg cmd args
 func maskedGpgCmdArgsAsString(gpgCmdArgs []string, passwordPos int8) string {
-	maskedGpgCmdArgs := make([]string, len(gpgCmdArgs))
+	var maskedGpgCmdArgs = make([]string, len(gpgCmdArgs))
 	copy(maskedGpgCmdArgs, gpgCmdArgs)
 	maskedGpgCmdArgs[passwordPos-1] = "*****"
 	return strings.Join(maskedGpgCmdArgs, " ")

@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Tests k8s-jcasc-mgmt" type="GoTestRunConfiguration" factoryName="Go Test">
+    <module name="k8s-jcasc-management-go" />
+    <working_directory value="$PROJECT_DIR$/" />
+    <framework value="gotest" />
+    <kind value="DIRECTORY" />
+    <directory value="$PROJECT_DIR$/" />
+    <filePath value="$PROJECT_DIR$" />
+    <pattern value="./..." />
+    <method v="2" />
+  </configuration>
+</component>

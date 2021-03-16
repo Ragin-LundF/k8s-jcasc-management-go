@@ -2,7 +2,7 @@ package validator
 
 import (
 	"errors"
-	"k8s-management-go/app/models"
+	"k8s-management-go/app/configuration"
 	"regexp"
 )
 
@@ -13,7 +13,7 @@ func ValidateJenkinsJobConfig(input string) error {
 		return errors.New("Should not be longer than 512 characters. ")
 	}
 	// Regex regex to validate repository
-	regex := regexp.MustCompile(models.GetConfiguration().Jenkins.JobDSL.RepoValidatePattern)
+	var regex = regexp.MustCompile(configuration.GetConfiguration().Jenkins.JobDSL.RepoValidatePattern)
 	if !regex.Match([]byte(input)) {
 		return errors.New("Wrong repository name! ")
 	}

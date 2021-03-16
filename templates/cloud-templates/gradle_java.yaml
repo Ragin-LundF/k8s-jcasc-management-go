@@ -2,14 +2,14 @@
 # This POD inherits from 'pipeline-base-container', which results in parallel deployment of all containers.
 # With this, all containers, that are defined under 'pipeline-base-container' can also be used in the pipeline.
 - name: "gradle_java"
-  serviceAccount: "##JENKINS_MASTER_DEPLOYMENT_NAME##-agent"
+  serviceAccount: "{{ .Base.DeploymentName }}-agent"
   instanceCap: 10
   idleMinutes: 0
   slaveConnectTimeout: "500"
   label: "gradle_java"
   inheritFrom: "pipeline-base-container"
   imagePullSecrets:
-    - name: ##KUBERNETES_DOCKER_REGISTRY_CREDENTIALS_ID##
+    - name: {{ .JCasc.CredentialIDs.DockerRegistryCredentialsID }}
   containers:
     # add container with the name 'gradle'. This can be used in the pipeline to execute commands on this container
     - name: "gradle"
@@ -29,9 +29,9 @@
       envVars:
         - secretEnvVar:
             key: 'ORG_GRADLE_PROJECT_mavenUser'
-            secretName: '##MAVEN_REPOSITORY_SECRETS_CREDENTIALS_ID##'
+            secretName: '{{ .JCasc.CredentialIDs.MavenRepositorySecretsCredentialsID }}'
             secretKey: 'username'
         - secretEnvVar:
             key: 'ORG_GRADLE_PROJECT_mavenPassword'
-            secretName: '##MAVEN_REPOSITORY_SECRETS_CREDENTIALS_ID##'
+            secretName: '{{ .JCasc.CredentialIDs.MavenRepositorySecretsCredentialsID }}'
             secretKey: 'password'

@@ -10,10 +10,10 @@ import (
 
 // ExecutorKubectl executes kubectl commands
 func ExecutorKubectl(command string, args []string) (output string, err error) {
-	log := logger.Log()
+	var log = logger.Log()
 
 	// create args
-	argsForCommand := []string{
+	var argsForCommand = []string{
 		command,
 	}
 

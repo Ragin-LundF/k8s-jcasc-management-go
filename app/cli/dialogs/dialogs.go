@@ -4,7 +4,7 @@ import (
 	"github.com/inancgumus/screen"
 	"github.com/manifoldco/promptui"
 	"github.com/schollz/progressbar/v3"
-	"k8s-management-go/app/models"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/utils/arrays"
 	"k8s-management-go/app/utils/logger"
 	"k8s-management-go/app/utils/loggingstate"
@@ -105,7 +105,7 @@ func DialogAskForDeploymentName(label string, validate promptui.ValidateFunc) (d
 	log := logger.Log()
 
 	// try to read deployment name from configuration
-	deploymentName = models.GetConfiguration().Jenkins.Helm.Master.DeploymentName
+	deploymentName = configuration.GetConfiguration().Jenkins.Controller.DeploymentName
 	// check if something was set
 	if deploymentName == "" {
 		ClearScreen()
@@ -139,7 +139,7 @@ func DialogAskForNamespace() (namespace string, err error) {
 
 	// searcher (with "/")
 	searcher := func(input string, index int) bool {
-		namespaceItem := models.GetIPConfiguration().IPs[index]
+		namespaceItem := configuration.GetConfiguration().K8SManagement.IPConfig.Deployments[index]
 		name := strings.Replace(strings.ToLower(namespaceItem.Namespace), " ", "", -1)
 		input = strings.Replace(strings.ToLower(input), " ", "", -1)
 
@@ -148,7 +148,7 @@ func DialogAskForNamespace() (namespace string, err error) {
 
 	prompt := promptui.Select{
 		Label:     "Please select the namespace to which the secrets should be applied",
-		Items:     models.GetIPConfiguration().IPs,
+		Items:     configuration.GetConfiguration().K8SManagement.IPConfig.Deployments,
 		Templates: templates,
 		Size:      12,
 		Searcher:  searcher,
@@ -159,7 +159,7 @@ func DialogAskForNamespace() (namespace string, err error) {
 	if err != nil {
 		log.Errorf("[DialogAskForNamespace] Prompt ask for namespace failed %s\n", err.Error())
 	} else {
-		namespace = models.GetIPConfiguration().IPs[i].Namespace
+		namespace = configuration.GetConfiguration().K8SManagement.IPConfig.Deployments[i].Namespace
 	}
 
 	return namespace, err
@@ -169,7 +169,7 @@ func DialogAskForNamespace() (namespace string, err error) {
 func DialogAskForSecretsFile() (secretsFile string, err error) {
 	log := logger.Log()
 	ClearScreen()
-	var secretFilesArray = models.GetSecretsFiles()
+	var secretFilesArray = configuration.GetConfiguration().GetSecretsFiles()
 
 	// Template for displaying menu
 	templates := &promptui.SelectTemplates{

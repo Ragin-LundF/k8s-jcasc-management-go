@@ -1,5 +1,5 @@
 jenkins:
-  systemMessage: "##K8S_MGMT_JENKINS_SYSTEM_MESSAGE##"
+  systemMessage: "{{ .JCasc.SystemMessage }}"
 
   authorizationStrategy:
     roleBased:
@@ -31,36 +31,36 @@ jenkins:
       allowsSignup: false
       users:
         - id: "admin"
-          password: "#jbcrypt:##JENKINS_MASTER_ADMIN_PASSWORD_ENCRYPTED##"
+          password: "#jbcrypt:{{ .JCasc.SecurityRealm.LocalUsers.AdminPassword }}"
         - id: "project-user"
-          password: "#jbcrypt:##JENKINS_MASTER_PROJECT_USER_PASSWORD_ENCRYPTED##"
+          password: "#jbcrypt:{{ .JCasc.SecurityRealm.LocalUsers.UserPassword }}"
 
   clouds:
     - kubernetes:
         name: "jenkins-build-slaves"
         serverUrl: ""
-        serverCertificate: ##KUBERNETES_SERVER_CERTIFICATE##
+        serverCertificate: {{ .JCasc.Clouds.Kubernetes.ServerCertificate }}
         directConnection: false
         skipTlsVerify: true
-        namespace: "##NAMESPACE##"
-        jenkinsUrl: "http://##JENKINS_MASTER_DEPLOYMENT_NAME##:8080"
+        namespace: "{{ .Base.Namespace }}"
+        jenkinsUrl: "http://{{ .Base.DeploymentName }}:8080"
         maxRequestsPerHostStr: 64
         retentionTimeout: 5
         connectTimeout: 10
         readTimeout: 20
         templates:
-##K8S_MGMT_JENKINS_CLOUD_TEMPLATES##
+{{ .JCasc.Clouds.Kubernetes.Templates.AdditionalCloudTemplates }}
           # POD with pipeline base container. Add here container, that you need in multiple build environments (like docker).
           # Add this name as 'inheritFrom: "pipeline-base-container"' to the other container to inherit all defined containers of
           # this POD.
           - name: "pipeline-base-container"
-            serviceAccount: "##JENKINS_MASTER_DEPLOYMENT_NAME##-agent"
+            serviceAccount: "{{ .Base.DeploymentName }}-agent"
             instanceCap: 10
             idleMinutes: 0
             slaveConnectTimeout: "500"
             label: "pipeline-base-container"
             imagePullSecrets:
-              - name: ##KUBERNETES_DOCKER_REGISTRY_CREDENTIALS_ID##
+              - name: {{ .JCasc.CredentialIDs.DockerRegistryCredentialsID }}
             # add the Docker sockets to the hostPathVolume, that we can use docker commands
             volumes:
               - hostPathVolume:
@@ -106,17 +106,17 @@ jenkins:
             envVars:
               - envVar:
                   key: "JENKINS_URL"
-                  value: "http://##JENKINS_MASTER_DEPLOYMENT_NAME##:8080##JENKINS_MASTER_DEFAULT_URI_PREFIX##"
+                  value: "http://{{ .Base.DeploymentName }}:8080{{ .Base.JenkinsUriPrefix }}"
               - envVar:
                   key: "JENKINS_TUNNEL"
-                  value: "##JENKINS_MASTER_DEPLOYMENT_NAME##-agent:50000"
+                  value: "{{ .Base.DeploymentName }}-agent:50000"
 
 # JcasC configuration for unclassified plugins
 unclassified:
   # URL under which the Jenkins is reachable.
   # This URL will also be used for notifying the VCS like Github or Bitbucket to link to build number results.
   location:
-    url: "http://##JENKINS_URL####JENKINS_MASTER_DEFAULT_URI_PREFIX##"
+    url: "http://{{ .Base.JenkinsURL }}{{ .Base.JenkinsUriPrefix }}"
 
   # Definition of the metrics plugin to monitor Jenkins via Prometheus
   metricsaccesskey:
@@ -132,7 +132,8 @@ unclassified:
   # Definition of a global pipeline library
   globalLibraries:
     libraries:
-      - defaultVersion: "master"
+      # defaultVersion is the stable branch name
+      - defaultVersion: "main"
         name: "my-pipeline-library"
         implicit: false
         allowVersionOverride: true
@@ -143,7 +144,7 @@ unclassified:
               git:
                 id: "my-pipeline-library"
                 remote: "https://github.com/Ragin-LundF/k8s-jcasc-pipeline-library.git"
-                credentialsId: "##VCS_REPOSITORY_SECRETS_CREDENTIALS_ID##"
+                credentialsId: "{{ .JCasc.CredentialIDs.VcsRepositoryCredentialsID }}"
 
   # Definition of a sonar server if required
   sonarglobalconfiguration:
@@ -162,6 +163,7 @@ unclassified:
           skipScmCause: false
           skipUpstreamCause: false
 
+{{ if .JCasc.JobsConfig.JobsAvailable }}
 # JobDSL definition of the seed-job.
 # This job creates all other jobs from a Bitbucket repository.
 # With this mechanism, it is possible to have a simple job definition in your VCS and there is no need to make
@@ -170,7 +172,7 @@ unclassified:
 jobs:
   - script: >
       job('seed_job') {
-          label('##JENKINS_MASTER_DEFAULT_LABEL##')
+          label('{{ .JenkinsHelmValues.Controller.CustomJenkinsLabels }}')
           logRotator {
               numToKeep(5)
               artifactNumToKeep(1)
@@ -178,8 +180,8 @@ jobs:
           multiscm {
               git {
                   remote {
-                      url('##JENKINS_JOBDSL_SEED_JOB_SCRIPT_URL##')
-                      credentials("##VCS_REPOSITORY_SECRETS_CREDENTIALS_ID##")
+                      url('{{ .JCasc.JobsConfig.JobsSeedRepository}}')
+                      credentials("{{ .JCasc.CredentialIDs.VcsRepositoryCredentialsID }}")
                   }
                   extensions {
                     relativeTargetDirectory('jobdslscript')
@@ -187,8 +189,8 @@ jobs:
               }
               git {
                   remote {
-                      url('##PROJECT_JENKINS_JOB_DEFINITION_REPOSITORY##')
-                      credentials("##VCS_REPOSITORY_SECRETS_CREDENTIALS_ID##")
+                      url('{{ .JCasc.JobsConfig.JobsDefinitionRepository }}')
+                      credentials("{{ .JCasc.CredentialIDs.VcsRepositoryCredentialsID }}")
                   }
                   extensions {
                     relativeTargetDirectory('jobdefinition')
@@ -205,3 +207,4 @@ jobs:
               scm('* * * * *')
           }
       }
+{{ end }}

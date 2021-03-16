@@ -2,14 +2,14 @@ package validator
 
 import (
 	"errors"
-	"k8s-management-go/app/models"
+	"k8s-management-go/app/configuration"
 	"regexp"
 	"strings"
 )
 
 // ValidateNamespaceAvailableInConfig checks selected namespace against namespace list
 func ValidateNamespaceAvailableInConfig(namespaceToValidate string) bool {
-	for _, ip := range models.GetIPConfiguration().IPs {
+	for _, ip := range configuration.GetConfiguration().K8SManagement.IPConfig.Deployments {
 		if ip.Namespace == namespaceToValidate {
 			return true
 		}
@@ -24,12 +24,12 @@ func ValidateNewNamespace(input string) error {
 		return errors.New("Namespace name is too long! You can only use max. 63 characters. ")
 	}
 	// Regex to have DNS compatible string
-	regex := regexp.MustCompile(`^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$`)
+	var regex = regexp.MustCompile(`^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$`)
 	if !regex.Match([]byte(input)) {
 		return errors.New("Namespace is not valid! It must fit to DNS specification! ")
 	}
 	// check, that namespace was not already used
-	for _, ipConfig := range models.GetIPConfiguration().IPs {
+	for _, ipConfig := range configuration.GetConfiguration().K8SManagement.IPConfig.Deployments {
 		if strings.ToLower(ipConfig.Namespace) == strings.ToLower(input) {
 			return errors.New("Namespace already in use! ")
 		}

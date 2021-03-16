@@ -1,24 +1,34 @@
 package createproject
 
 import (
-	"k8s-management-go/app/actions/createprojectactions"
+	"errors"
+	"fmt"
+	"github.com/manifoldco/promptui"
+	"k8s-management-go/app/actions/project"
 	"k8s-management-go/app/cli/dialogs"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/loggingstate"
+	"strings"
 )
 
 // ProjectWizardWorkflow represents the project wizard workflow
 func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
-	var projectConfig models.ProjectConfig
-	projectConfig.CreateDeploymentOnlyProject = deploymentOnly
+	var prj = project.NewProject()
+	prj.Base.DeploymentOnly = deploymentOnly
 
 	// Start project wizard
 	loggingstate.AddInfoEntry(constants.LogWizardStartProjectWizardDialogs)
 
+	// Ask for store config only
+	prj.StoreConfigOnly, err = StoreConfigOnlyWorkflow()
+	if err != nil {
+		return err
+	}
+
 	// Ask for namespace
 	loggingstate.AddInfoEntry(constants.LogAskForNamespace)
-	projectConfig.Namespace, err = NamespaceWorkflow()
+	prj.Base.Namespace, err = NamespaceWorkflow()
 	if err != nil {
 		return err
 	}
@@ -26,7 +36,7 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 
 	// Ask for IP address
 	loggingstate.AddInfoEntry(constants.LogAskForIPAddress)
-	projectConfig.IPAddress, err = IPAddressWorkflow()
+	prj.Base.IPAddress, err = IPAddressWorkflow()
 	if err != nil {
 		return err
 	}
@@ -34,20 +44,20 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 
 	// Ask for Domain
 	loggingstate.AddInfoEntry(constants.LogAskForJenkinsUrl)
-	projectConfig.JenkinsDomain, err = JenkinsDomainWorkflow()
+	prj.Base.Domain, err = JenkinsDomainWorkflow()
 	if err != nil {
 		return err
 	}
-	if projectConfig.JenkinsDomain == "" && models.GetConfiguration().LoadBalancer.Annotations.ExtDNS.Hostname != "" {
-		projectConfig.JenkinsDomain = projectConfig.Namespace + models.GetConfiguration().LoadBalancer.Annotations.ExtDNS.Hostname
+	if prj.Base.Domain == "" && configuration.GetConfiguration().Nginx.Loadbalancer.ExternalDNS.HostName != "" {
+		prj.SetDomain(prj.Base.Domain + configuration.GetConfiguration().Nginx.Loadbalancer.ExternalDNS.HostName)
 	}
 	loggingstate.AddInfoEntry(constants.LogAskForJenkinsUrlDone)
 
 	// if it is not only a deployment project ask for other Jenkins related vars
-	if !projectConfig.CreateDeploymentOnlyProject {
+	if !prj.Base.DeploymentOnly {
 		// Select cloud templates
 		loggingstate.AddInfoEntry(constants.LogAskForCloudTemplates)
-		projectConfig.SelectedCloudTemplates, err = CloudTemplatesWorkflow()
+		prj.JCasc.Clouds.Kubernetes.Templates.AdditionalCloudTemplateFiles, err = CloudTemplatesWorkflow()
 		if err != nil {
 			return err
 		}
@@ -55,7 +65,7 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 
 		// Ask for existing persistent volume claim (PVC)
 		loggingstate.AddInfoEntry(constants.LogAskForPvc)
-		projectConfig.ExistingPvc, err = PersistentVolumeClaimWorkflow()
+		prj.Base.ExistingVolumeClaim, err = PersistentVolumeClaimWorkflow()
 		if err != nil {
 			return err
 		}
@@ -63,7 +73,7 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 
 		// Ask for Jenkins system message
 		loggingstate.AddInfoEntry(constants.LogAskForJenkinsSystemMessage)
-		projectConfig.JenkinsSystemMsg, err = JenkinsSystemMessageWorkflow()
+		prj.JCasc.SystemMessage, err = JenkinsSystemMessageWorkflow()
 		if err != nil {
 			return err
 		}
@@ -71,7 +81,7 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 
 		// Ask for Jobs Configuration repository
 		loggingstate.AddInfoEntry(constants.LogAskForJobsConfigurationRepository)
-		projectConfig.JobsCfgRepo, err = JenkinsJobsConfigRepositoryWorkflow()
+		prj.JCasc.JobsConfig.JobsDefinitionRepository, err = JenkinsJobsConfigRepositoryWorkflow()
 		if err != nil {
 			return err
 		}
@@ -83,18 +93,45 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 	loggingstate.AddInfoEntry(constants.LogWizardStartProcessingTemplates)
 
 	// prepare progressbar
-	var maxProgressCnt = createprojectactions.CountCreateProjectWorkflow
-	bar := dialogs.CreateProgressBar(constants.ActionCreateProject, maxProgressCnt)
+	var maxProgressCnt = project.CountCreateProjectWorkflow
+	var bar = dialogs.CreateProgressBar(constants.ActionCreateProject, maxProgressCnt)
 	progress := dialogs.ProgressBar{
 		Bar: &bar,
 	}
 
 	// Create project
-	err = createprojectactions.ActionProcessProjectCreate(projectConfig, progress.AddCallback)
+	err = prj.ActionProcessProjectCreate(progress.AddCallback)
 	if err != nil {
 		loggingstate.AddInfoEntry(constants.LogWizardStartProcessingTemplatesFailed)
 	}
 	loggingstate.AddInfoEntry(constants.LogWizardStartProcessingTemplatesDone)
 
 	return nil
+}
+
+// StoreConfigOnlyWorkflow asks if the project should only store the config
+func StoreConfigOnlyWorkflow() (storeConfigOnly bool, err error) {
+	// Prepare prompt
+	dialogs.ClearScreen()
+	var promptResult string
+	var storeConfigOnlyPrompt = promptui.Prompt{
+		Label:     "Store config only?",
+		IsConfirm: true,
+		Default:   "y",
+	}
+	promptResult, err = storeConfigOnlyPrompt.Run()
+
+	// check if everything was ok
+	if err != nil && err.Error() != "" {
+		loggingstate.AddErrorEntryAndDetails(constants.LogUnableToGetStoreConfigOnly, err.Error())
+		return storeConfigOnly, err
+	}
+
+	if strings.ToLower(promptResult) == "y" || len(promptResult) == 0 {
+		return true, nil
+	} else if strings.ToLower(promptResult) == "n" {
+		return false, nil
+	} else {
+		return true, errors.New(fmt.Sprintf("Please confirm with y or n. You typed [%v] ", promptResult))
+	}
 }

@@ -5,14 +5,19 @@ import (
 	"fyne.io/fyne/v2/test"
 	"fyne.io/fyne/v2/widget"
 	"github.com/stretchr/testify/assert"
+	"k8s-management-go/app/configuration"
 	"testing"
 )
 
 func TestScreenCreateFullProject(t *testing.T) {
+	configuration.LoadConfiguration("../../../", false, false)
 	var deployOnlyPrjForm = ScreenCreateFullProject(test.NewApp().NewWindow("test"))
 	var i = 0
 
-	assert.Len(t, deployOnlyPrjForm.Items, 13)
+	assert.Len(t, deployOnlyPrjForm.Items, 14)
+	assert.Equal(t, "Store only config", deployOnlyPrjForm.Items[i].Text)
+	assert.IsType(t, &widget.Check{}, deployOnlyPrjForm.Items[i].Widget)
+	i++
 	assert.Equal(t, "Namespace", deployOnlyPrjForm.Items[i].Text)
 	assert.IsType(t, &widget.Entry{}, deployOnlyPrjForm.Items[i].Widget)
 	i++
@@ -57,7 +62,10 @@ func TestScreenCreateDeployOnlyProject(t *testing.T) {
 	var deployOnlyPrjForm = ScreenCreateDeployOnlyProject(test.NewApp().NewWindow("test"))
 	var i = 0
 
-	assert.Len(t, deployOnlyPrjForm.Items, 6)
+	assert.Len(t, deployOnlyPrjForm.Items, 7)
+	assert.Equal(t, "Store only config", deployOnlyPrjForm.Items[i].Text)
+	assert.IsType(t, &widget.Check{}, deployOnlyPrjForm.Items[i].Widget)
+	i++
 	assert.Equal(t, "Namespace", deployOnlyPrjForm.Items[i].Text)
 	assert.IsType(t, &widget.Entry{}, deployOnlyPrjForm.Items[i].Widget)
 	i++

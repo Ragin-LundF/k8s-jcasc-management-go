@@ -1,36 +1,29 @@
-master:
-  image: "##JENKINS_MASTER_CONTAINER_IMAGE##"
-  tag: "##JENKINS_MASTER_CONTAINER_IMAGE_TAG##"
-  imagePullPolicy: "##JENKINS_MASTER_CONTAINER_PULL_POLICY##"
-  imagePullSecretName: ##JENKINS_MASTER_CONTAINER_IMAGE_PULL_SECRET_NAME##
+controller:
+  # Used for label app.kubernetes.io/component
+  componentName: "{{ .Base.DeploymentName }}"
+  image: "{{ .JenkinsHelmValues.Controller.Image }}"
+  tag: "{{ .JenkinsHelmValues.Controller.Tag }}"
+  imagePullPolicy: "{{ .JenkinsHelmValues.Controller.ImagePullPolicy }}"
+  imagePullSecretName: {{ .JenkinsHelmValues.Controller.ImagePullSecretName }}
   # need 1 executor as default to execute the seed job
   numExecutors: 1
   # must be exclusive for jobs distribution
   executorMode: "EXCLUSIVE"
 
-  # give a custom label to the master instance, that the seed job can run in it
+  # give a custom label to the controller instance, that the seed job can run in it
   customJenkinsLabels: [
-    "##JENKINS_MASTER_DEFAULT_LABEL##"
+    "{{ .JenkinsHelmValues.Controller.CustomJenkinsLabels }}"
   ]
-  # Define, if we want to allow anonymous read access
-  authorizationStrategy: |-
-      <authorizationStrategy class="hudson.security.FullControlOnceLoggedInAuthorizationStrategy">
-        <denyAnonymousReadAccess>##JENKINS_MASTER_DENY_ANONYMOUS_READ_ACCESS##</denyAnonymousReadAccess>
-      </authorizationStrategy>
   # Define a admin password here. Normally it does not matter who has access, because settings can be reloaded from the repository.
   # But for security reasons try to use a password, that is not easy and avoid to give anonymous read access to the project where Jenkins is located.
-  adminPassword: "##JENKINS_MASTER_ADMIN_PASSWORD##"
-  # We do not want to execute Jenkins as root. The Jenkins container are using 1000:1000 as jenkins:jenkins user/group
-  runAsUser: 1000
-  fsGroup: 1000
+  adminPassword: "{{ .JenkinsHelmValues.Controller.AdminPassword }}"
   # because we want to "proxy" jenkins via ingress routing, we have to set the Uri Prefix here
-  jenkinsUriPrefix: "##JENKINS_MASTER_DEFAULT_URI_PREFIX##"
+  jenkinsUriPrefix: "{{ .Base.JenkinsUriPrefix }}"
   installPlugins:
     - authorize-project:latest
     - blueocean:latest
     - blueocean-bitbucket-pipeline:latest
     - configuration-as-code:latest
-    - configuration-as-code-support:latest
     - credentials-binding:latest
     - cucumber-reports:latest
     - docker-build-step:latest
@@ -57,16 +50,23 @@ master:
   ]
   JCasC:
     enabled: true
+    # Define, if we want to allow anonymous read access
+    authorizationStrategy: |-
+      loggedInUsersCanDoAnything:
+        allowAnonymousRead: {{ .JenkinsHelmValues.Controller.AuthorizationStrategyAllowAnonymousRead }}
   sidecars:
     configAutoReload:
+      # This should be disabled. If enabled Jenkins tries to mount the URL as a folder, which is not working.
+      # If it is disabled, it sets the variable only to the CASC_JENKINS_CONFIG environment variable, what we want.
+      enabled: false
       # folder in the pod that should hold the collected dashboards:
-      folder: "##JENKINS_JCASC_CONFIGURATION_URL##"
+      folder: "{{ .JenkinsHelmValues.Controller.SidecarsConfigAutoReloadFolder }}"
 
 persistence:
-  existingClaim: ##JENKINS_MASTER_PERSISTENCE_EXISTING_CLAIM##
-  storageClass: ##JENKINS_MASTER_PERSISTENCE_STORAGE_CLASS##
-  accessMode: ##JENKINS_MASTER_PERSISTENCE_ACCESS_MODE##
-  size: ##JENKINS_MASTER_PERSISTENCE_STORAGE_SIZE##
+  existingClaim: {{ .Base.ExistingVolumeClaim }}
+  storageClass: {{ .JenkinsHelmValues.Persistence.StorageClass }}
+  accessMode: {{ .JenkinsHelmValues.Persistence.AccessMode }}
+  size: {{ .JenkinsHelmValues.Persistence.Size }}
 
 ## Install Default RBAC roles and bindings
 rbac:

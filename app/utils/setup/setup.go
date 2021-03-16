@@ -3,10 +3,10 @@ package setup
 import (
 	"flag"
 	"fmt"
-	"k8s-management-go/app/models"
+	"k8s-management-go/app/actions/migration"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/server"
 	"k8s-management-go/app/utils/cmdexecutor"
-	"k8s-management-go/app/utils/config"
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/logger"
 	"os"
@@ -16,21 +16,23 @@ import (
 // Setup is the initial setup and reads the configuration
 func Setup() {
 	// configure flags
-	logFileFlag := flag.String("logfile", "", "Logging output file. If empty it logs to console.")
-	logEncoding := flag.String("logencoding", "", "Logging output encoding. If empty it logs as json.")
-	basePathFlag := flag.String("basepath", "", "base path to k8s-jcasc-management")
-	serverStartFlag := flag.Bool("server", false, "start k8s-jcasc-management-go as a server")
-	dryRunFlag := flag.Bool("dry-run", false, "execute helm charts with --dry-run --debug flags")
-	cliOnly := flag.Bool("cli", false, "Start in CLI mode")
-	helpFlag := flag.Bool("help", false, "show help")
+	var logFileFlag = flag.String("logfile", "", "Logging output file. If empty it logs to console.")
+	var logEncoding = flag.String("logencoding", "", "Logging output encoding. If empty it logs as json.")
+	var basePathFlag = flag.String("basepath", "", "base path to k8s-jcasc-management")
+	var serverStartFlag = flag.Bool("server", false, "start k8s-jcasc-management-go as a server")
+	var dryRunFlag = flag.Bool("dry-run", false, "execute helm charts with --dry-run --debug flags")
+	var cliOnly = flag.Bool("cli", false, "Start in CLI mode")
+	var migrateTemplatesV2 = flag.Bool("migrate-templates-v2", false, "Migrate templates from v2 to v3")
+	var migrateConfigsV2 = flag.Bool("migrate-configs-v2", false, "Migrate configs from v2 to v3")
+	var helpFlag = flag.Bool("help", false, "show help")
 	flag.Parse()
 
 	// define main path
 	logger.LogFilePath = *logFileFlag
 	logger.LogEncoding = *logEncoding
-	basePath := ""
-	serverStart := *serverStartFlag
-	dryRunDebug := *dryRunFlag
+	var basePath = ""
+	var serverStart = *serverStartFlag
+	var dryRunDebug = *dryRunFlag
 	if os.Getenv("K8S_MGMT_BASE_PATH") != "" {
 		// base path from environment variables
 		basePath = os.Getenv("K8S_MGMT_BASE_PATH")
@@ -45,7 +47,7 @@ func Setup() {
 	}
 
 	// Logger
-	log := logger.Log()
+	var log = logger.Log()
 
 	// read configuration if base path was set, else go into panic mode
 	if basePath != "" {
@@ -67,6 +69,25 @@ func Setup() {
 	// configure (read configuration and do additional configuration)
 	configure(basePath, dryRunDebug, *cliOnly)
 
+	var migrationStarted bool = false
+	if *migrateTemplatesV2 {
+		println("Starting template migration...")
+		var migrationStatus = migration.MigrateTemplatesToV3()
+		println(migrationStatus)
+		migrationStarted = true
+	}
+	if *migrateConfigsV2 {
+		println("Starting config migration...")
+		var migrationStatus = migration.MigrateConfigurationV3()
+		println(migrationStatus)
+		migrationStarted = true
+	}
+
+	if migrationStarted {
+		println("Migration finished...")
+		os.Exit(1)
+	}
+
 	// start experimental server
 	if serverStart {
 		server.StartServer()
@@ -77,20 +98,22 @@ func Setup() {
 }
 
 func configure(basePath string, dryRunDebug bool, cliOnly bool) {
-	// read configuration
-	config.ReadConfiguration(basePath, dryRunDebug, cliOnly)
-	config.ReadIPConfig()
+	configuration.LoadConfiguration(basePath, dryRunDebug, cliOnly)
+	var configYaml = configuration.GetConfiguration()
+	if configYaml == nil {
+		os.Exit(1)
+	}
 
 	// overwrite logging
-	if logger.LogEncoding == "" && models.GetConfiguration().K8sManagement.Logging.LogEncoding != "" {
-		logger.LogEncoding = models.GetConfiguration().K8sManagement.Logging.LogEncoding
+	if logger.LogEncoding == "" && configuration.GetConfiguration().K8SManagement.Log.Encoding != "" {
+		logger.LogEncoding = configuration.GetConfiguration().K8SManagement.Log.Encoding
 	}
-	if logger.LogFilePath == "" && models.GetConfiguration().K8sManagement.Logging.LogFile != "" {
-		logger.LogFilePath = models.GetConfiguration().K8sManagement.Logging.LogFile
+	if logger.LogFilePath == "" && configuration.GetConfiguration().K8SManagement.Log.File != "" {
+		logger.LogFilePath = configuration.GetConfiguration().K8SManagement.Log.File
 	}
-	if logger.LogFilePath != "" && models.GetConfiguration().K8sManagement.Logging.LogOverwriteOnStart {
+	if logger.LogFilePath != "" && configuration.GetConfiguration().K8SManagement.Log.OverwriteOnRestart {
 		if files.FileOrDirectoryExists(logger.LogFilePath) {
-			os.Rename(logger.LogFilePath, logger.LogFilePath+".1")
+			_ = os.Rename(logger.LogFilePath, logger.LogFilePath+".1")
 		}
 	}
 }
@@ -110,6 +133,12 @@ func showHelp() {
 	fmt.Println("  -server")
 	fmt.Println("      * Optional *")
 	fmt.Println("      Start k8s-jcasc-mgmt as a server with a REST API (experimental; limited functionality)")
+	fmt.Println("  -migrate-templates-v2")
+	fmt.Println("      * Optional *")
+	fmt.Println("      Migrate the templates from v2 to v3")
+	fmt.Println("  -migrate-configs-v2")
+	fmt.Println("      * Optional *")
+	fmt.Println("      Migrate the configs from v2 to v3")
 	fmt.Println("  -help")
 	fmt.Println("       * Optional *")
 	fmt.Println("       Show this help")

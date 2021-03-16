@@ -10,7 +10,7 @@ import (
 // PersistentVolumeClaimWorkflow represents the PVC workflow
 func PersistentVolumeClaimWorkflow() (pvcName string, err error) {
 	// Validator for pvc
-	validate := validator.ValidatePersistentVolumeClaim
+	var validate = validator.ValidatePersistentVolumeClaim
 
 	// Prepare prompt
 	dialogs.ClearScreen()

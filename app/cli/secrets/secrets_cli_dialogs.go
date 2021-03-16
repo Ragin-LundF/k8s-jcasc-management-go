@@ -4,8 +4,8 @@ import (
 	"errors"
 	"k8s-management-go/app/actions/secretsactions"
 	"k8s-management-go/app/cli/dialogs"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/constants"
-	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/loggingstate"
 	"strings"
 )
@@ -116,7 +116,7 @@ func ApplySecretsToAllNamespaces() (err error) {
 	}
 
 	// prepare progressbar
-	bar := dialogs.CreateProgressBar(constants.ActionInstalling, len(models.GetIPConfiguration().IPs))
+	bar := dialogs.CreateProgressBar(constants.ActionInstalling, len(configuration.GetConfiguration().K8SManagement.IPConfig.Deployments))
 	progress := dialogs.ProgressBar{
 		Bar: &bar,
 	}
