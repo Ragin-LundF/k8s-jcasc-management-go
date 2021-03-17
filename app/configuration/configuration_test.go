@@ -16,6 +16,46 @@ func TestGetAlternativeSecretsFilesEmpty(t *testing.T) {
 	assert.True(t, len(conf.GetSecretsFiles()) == 1)
 }
 
+func TestConfigurationPath(t *testing.T) {
+	const expectedPath = "target/dir"
+	var conf = EmptyConfiguration()
+	var calculatedDir = conf.calculateFullDirectoryPath(expectedPath)
+
+	assert.Equal(t, expectedPath, calculatedDir)
+}
+
+func TestIPConfiguration(t *testing.T) {
+	const ipConfigFile = "ip_config.yaml"
+	const expectedIP = "127.0.0.1"
+	const expectedDomain = "my.domain.tld"
+	const expectedNamespace = "my-namespace"
+
+	// write IP config
+	var conf = EmptyConfiguration()
+	conf.K8SManagement.IPConfig.File = ipConfigFile
+	var success, err = conf.AddToIPConfigFile(expectedNamespace, expectedIP, expectedDomain)
+	assert.True(t, success)
+	assert.Nil(t, err)
+
+	// reset IP config
+	conf.K8SManagement.IPConfig.Deployments = nil
+	assert.Nil(t, conf.K8SManagement.IPConfig.Deployments)
+
+	// reload config and compare if it was correct
+	conf.readDeploymentConfigurationFromYamlFile()
+	assert.NotNil(t, conf.K8SManagement.IPConfig.Deployments)
+	assert.True(t, len(conf.K8SManagement.IPConfig.Deployments) == 1)
+	assert.NotNil(t, conf.K8SManagement.IPConfig.Deployments[0].IPAddress)
+	assert.Equal(t, conf.K8SManagement.IPConfig.Deployments[0].IPAddress, expectedIP)
+	assert.NotNil(t, conf.K8SManagement.IPConfig.Deployments[0].Domain)
+	assert.Equal(t, conf.K8SManagement.IPConfig.Deployments[0].Domain, expectedDomain)
+	assert.NotNil(t, conf.K8SManagement.IPConfig.Deployments[0].Namespace)
+	assert.Equal(t, conf.K8SManagement.IPConfig.Deployments[0].Namespace, expectedNamespace)
+
+	// remove created ip config file
+	_ = os.Remove(ipConfigFile)
+}
+
 func TestGetAlternativeSecretsFilesWithDifferentBasePath(t *testing.T) {
 	var conf = EmptyConfiguration()
 	conf.K8SManagement.BasePath = "../"
@@ -149,6 +189,8 @@ func assertK8SManagement(conf *config, t *testing.T) {
 
 	assert.NotNil(t, conf.K8SManagement.DryRunOnly)
 	assert.True(t, conf.K8SManagement.DryRunOnly)
+	conf.SetDryRun(false)
+	assert.False(t, conf.K8SManagement.DryRunOnly)
 
 	assert.NotNil(t, conf.K8SManagement.IPConfig)
 	assert.NotNil(t, conf.K8SManagement.IPConfig.DummyPrefix)

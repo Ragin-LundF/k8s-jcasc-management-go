@@ -171,10 +171,8 @@ func (conf *config) GetIPConfigurationFile() string {
 
 // calculateFullDirectoryPath calculates full directory path
 func (conf *config) calculateFullDirectoryPath(targetDir string) string {
-	if strings.HasPrefix(targetDir, "./") {
-		// if it starts with current directory add base path
-		return conf.FilePathWithBasePath(targetDir)
-	} else if strings.HasPrefix(targetDir, "../") {
+	if strings.HasPrefix(targetDir, "./") || strings.HasPrefix(targetDir, "../") {
+		// if it starts with current directory add base path or
 		// if it starts with subdirectory add base path
 		return conf.FilePathWithBasePath(targetDir)
 	} else {
