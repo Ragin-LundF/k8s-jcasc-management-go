@@ -88,9 +88,15 @@ func TestScreenCreateDeployOnlyProject(t *testing.T) {
 func TestCheckCloudboxes(t *testing.T) {
 	var selectLabelB = "label B"
 	var checkboxes []*widget.Check
-	var checkboxA = widget.NewCheck("label A", func(b bool) {})
-	var checkboxB = widget.NewCheck(selectLabelB, func(b bool) {})
-	var checkboxC = widget.NewCheck("label C", func(b bool) {})
+	var checkboxA = widget.NewCheck("label A", func(b bool) {
+		// check with .Checked
+	})
+	var checkboxB = widget.NewCheck(selectLabelB, func(b bool) {
+		// check with .Checked
+	})
+	var checkboxC = widget.NewCheck("label C", func(b bool) {
+		// check with .Checked
+	})
 
 	// set B as checked
 	checkboxB.Checked = true
@@ -108,9 +114,15 @@ func TestCheckCloudboxes(t *testing.T) {
 func TestCheckCloudboxesWithoutCheck(t *testing.T) {
 	var selectLabelB = "label B"
 	var checkboxes []*widget.Check
-	var checkboxA = widget.NewCheck("label A", func(b bool) {})
-	var checkboxB = widget.NewCheck(selectLabelB, func(b bool) {})
-	var checkboxC = widget.NewCheck("label C", func(b bool) {})
+	var checkboxA = widget.NewCheck("label A", func(b bool) {
+		// check with .Checked
+	})
+	var checkboxB = widget.NewCheck(selectLabelB, func(b bool) {
+		// check with .Checked
+	})
+	var checkboxC = widget.NewCheck("label C", func(b bool) {
+		// check with .Checked
+	})
 
 	// append boxes to array
 	checkboxes = append(checkboxes, checkboxA, checkboxB, checkboxC)

@@ -11,7 +11,6 @@ import (
 // ProcessNamespaceCreation processes the namespace creation
 func ProcessNamespaceCreation(projectConfig install.ProjectConfig) (err error) {
 	loggingstate.AddInfoEntry("Start creating namespace...")
-	loggingstate.AddInfoEntry("-> Check and create namespace if necessary...")
 
 	// check if namespace is existing
 	loggingstate.AddInfoEntry(fmt.Sprintf(
@@ -53,8 +52,6 @@ func ProcessNamespaceCreation(projectConfig install.ProjectConfig) (err error) {
 	loggingstate.AddInfoEntry(fmt.Sprintf(
 		"  -> Namespace [%s] found.",
 		projectConfig.Project.Base.Namespace))
-
-	loggingstate.AddInfoEntry("-> Check and create namespace if necessary...done")
 	loggingstate.AddInfoEntry("Start creating namespace...done")
 
 	return nil

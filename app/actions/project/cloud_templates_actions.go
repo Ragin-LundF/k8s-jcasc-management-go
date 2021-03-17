@@ -22,7 +22,7 @@ func ActionReadCloudTemplates() (cloudTemplates []string) {
 	}
 
 	// The cloud-templates directory is existing -> read files
-	fileArray, _ := files.ListFilesOfDirectory(cloudTemplatePath)
+	var fileArray, _ = files.ListFilesOfDirectory(cloudTemplatePath)
 	if fileArray != nil && len(*fileArray) > 0 {
 		// Prepare prompt
 		cloudTemplates = append(cloudTemplates, *fileArray...)
@@ -48,8 +48,8 @@ func ActionReadCloudTemplatesAsString(cloudTemplateFiles []string) (cloudTemplat
 	}
 
 	// Prefix the lines with spaces for correct yaml template
-	prefixReader := prefixer.New(strings.NewReader(cloudTemplateContent), "          ")
-	buffer, _ := ioutil.ReadAll(prefixReader)
+	var prefixReader = prefixer.New(strings.NewReader(cloudTemplateContent), "          ")
+	var buffer, _ = ioutil.ReadAll(prefixReader)
 	cloudTemplateContent = string(buffer)
 
 	return cloudTemplateContent, nil

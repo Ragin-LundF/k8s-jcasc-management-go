@@ -62,6 +62,14 @@ func receiveVersionFromGit() (version string, err error) {
 	if err != nil {
 		return "", err
 	}
+
+	// temporary hack for getting version from both URLs
+	if resp.StatusCode == 404 {
+		resp, err = http.Get("https://raw.githubusercontent.com/Ragin-LundF/k8s-jcasc-management-go/master/VERSION")
+		if err != nil {
+			return "", err
+		}
+	}
 	defer resp.Body.Close()
 
 	var buffer = new(bytes.Buffer)

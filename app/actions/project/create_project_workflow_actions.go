@@ -49,7 +49,6 @@ func (prj *Project) ActionProcessProjectCreate(callback func()) (err error) {
 
 	// setup project
 	loggingstate.AddInfoEntry("-> Start template processing...")
-
 	cloudTemplatesString, err := ActionReadCloudTemplatesAsString(prj.JCasc.Clouds.Kubernetes.Templates.AdditionalCloudTemplateFiles)
 	if err != nil {
 		_ = os.RemoveAll(newProjectDir)
@@ -78,6 +77,7 @@ func (prj *Project) ActionProcessProjectCreate(callback func()) (err error) {
 	return nil
 }
 
+// create event for namespace update
 func createNamespaceEvent(namespace string) {
 	if !configuration.GetConfiguration().K8SManagement.CliOnly {
 		events.NamespaceCreated.Trigger(events.NamespaceCreatedPayload{
