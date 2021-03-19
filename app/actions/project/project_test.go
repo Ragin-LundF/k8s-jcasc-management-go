@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"k8s-management-go/app/configuration"
+	"k8s-management-go/app/constants"
 	"os"
 	"strings"
 	"testing"
@@ -60,6 +61,175 @@ const testJenkinsHelmMasterJcascConfigSeedUrl = "https://seed-job.domain.tld/see
 
 const testJcascKubernetesCertificate = "LN2-test-certificate"
 
+const testExpectedDomain = "manual.domain.tld"
+const testExpectedIPAddress = "127.0.0.1"
+const testExistingPvc = "my-pvc-test"
+
+func TestJenkinsURL(t *testing.T) {
+
+	createTestConfiguration()
+	var prj = NewProject()
+	prj.SetDomain(testExpectedDomain)
+	prj.SetNamespace(testNamespace)
+	prj.SetIPAddress(testExpectedIPAddress)
+
+	configuration.GetConfiguration().Nginx.Loadbalancer.Annotations.Enabled = true
+	var jenkinsDomain = prj.Base.JenkinsURL()
+	assert.Equal(t, testExpectedDomain, jenkinsDomain)
+
+	prj.Base.Domain = ""
+	jenkinsDomain = prj.Base.JenkinsURL()
+	assert.Equal(t, testNamespace+"."+testNginxLoadBalancerAnnotationsExtDnsHostname, jenkinsDomain)
+
+	configuration.GetConfiguration().Nginx.Loadbalancer.Annotations.Enabled = false
+	jenkinsDomain = prj.Base.JenkinsURL()
+	assert.Equal(t, testExpectedIPAddress, jenkinsDomain)
+}
+
+func TestProjectSetter(t *testing.T) {
+	const testJenkinsMessage = "Welcome to Jnkns"
+	const testCloudAdditionalTmpl = "my-template here"
+	var testCloudAdditionalTmplFiles = []string{"my-template", "my-second-template"}
+
+	var prj = NewProject()
+	prj.SetIPAddress(testExpectedIPAddress)
+	prj.SetDomain(testExpectedDomain)
+	prj.SetNamespace(testNamespace)
+	prj.SetPersistentVolumeClaimExistingName(testExistingPvc)
+	prj.SetJobsDefinitionRepository(testJenkinsHelmMasterJcascConfigUrl)
+	prj.SetJobsSeedRepository(testJenkinsHelmMasterJcascConfigSeedUrl)
+	prj.SetJenkinsSystemMessage(testJenkinsMessage)
+	prj.SetAdminPassword(testJenkinsHelmMasterAdminPasswordEncrypted)
+	prj.SetUserPassword(testJenkinsHelmMasterUserPasswordEncrypted)
+	prj.SetCloudKubernetesAdditionalTemplates(testCloudAdditionalTmpl)
+	prj.SetCloudKubernetesAdditionalTemplateFiles(testCloudAdditionalTmplFiles)
+
+	assert.Equal(t, testExpectedIPAddress, prj.Base.IPAddress)
+	assert.Equal(t, testExpectedDomain, prj.Base.Domain)
+	assert.Equal(t, testNamespace, prj.Base.Namespace)
+	assert.Equal(t, testExistingPvc, prj.Base.ExistingVolumeClaim)
+	assert.Equal(t, testJenkinsHelmMasterJcascConfigUrl, prj.JCasc.JobsConfig.JobsDefinitionRepository)
+	assert.Equal(t, testJenkinsHelmMasterJcascConfigSeedUrl, prj.JCasc.JobsConfig.JobsSeedRepository)
+	assert.Equal(t, testJenkinsMessage, prj.JCasc.SystemMessage)
+	assert.Equal(t, testJenkinsHelmMasterAdminPasswordEncrypted, prj.JCasc.SecurityRealm.LocalUsers.AdminPassword)
+	assert.Equal(t, testJenkinsHelmMasterUserPasswordEncrypted, prj.JCasc.SecurityRealm.LocalUsers.UserPassword)
+	assert.Equal(t, testCloudAdditionalTmpl, prj.JCasc.Clouds.Kubernetes.Templates.AdditionalCloudTemplates)
+	assert.Equal(t, testCloudAdditionalTmplFiles, prj.JCasc.Clouds.Kubernetes.Templates.AdditionalCloudTemplateFiles)
+}
+
+func TestCalculateRequiredDeploymentFilesStoreOnlyTrueDeploymentOnlyTrue(t *testing.T) {
+	createTestConfiguration()
+	var prj = NewProject()
+	prj.StoreConfigOnly = true
+	prj.Base.DeploymentOnly = true
+
+	var deploymentFiles = prj.CalculateRequiredDeploymentFiles()
+	assert.Nil(t, deploymentFiles)
+
+	assert.False(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenameJenkinsConfigurationAsCode))
+	assert.False(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenameJenkinsHelmValues))
+	assert.False(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenamePvcClaim))
+	assert.False(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenameNginxIngressControllerHelmValues))
+
+	prj.SetPersistentVolumeClaimExistingName(testExistingPvc)
+	deploymentFiles = prj.CalculateRequiredDeploymentFiles()
+	assert.Nil(t, deploymentFiles)
+
+	assert.False(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenameJenkinsConfigurationAsCode))
+	assert.False(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenameJenkinsHelmValues))
+	assert.False(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenamePvcClaim))
+	assert.False(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenameNginxIngressControllerHelmValues))
+}
+
+func TestCalculateRequiredDeploymentFilesStoreOnlyTrueDeploymentOnlyFalse(t *testing.T) {
+	createTestConfiguration()
+	var prj = NewProject()
+	prj.StoreConfigOnly = true
+	prj.Base.DeploymentOnly = false
+
+	var deploymentFiles = prj.CalculateRequiredDeploymentFiles()
+	assert.NotNil(t, deploymentFiles)
+	assert.True(t, len(deploymentFiles) == 1)
+	assert.Equal(t, constants.FilenameJenkinsConfigurationAsCode, deploymentFiles[0])
+
+	assert.True(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenameJenkinsConfigurationAsCode))
+	assert.False(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenameJenkinsHelmValues))
+	assert.False(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenamePvcClaim))
+	assert.False(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenameNginxIngressControllerHelmValues))
+
+	prj.SetPersistentVolumeClaimExistingName(testExistingPvc)
+	deploymentFiles = prj.CalculateRequiredDeploymentFiles()
+	assert.NotNil(t, deploymentFiles)
+	assert.True(t, len(deploymentFiles) == 1)
+	assert.Equal(t, constants.FilenameJenkinsConfigurationAsCode, deploymentFiles[0])
+
+	assert.True(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenameJenkinsConfigurationAsCode))
+	assert.False(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenameJenkinsHelmValues))
+	assert.False(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenamePvcClaim))
+	assert.False(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenameNginxIngressControllerHelmValues))
+}
+
+func TestCalculateRequiredDeploymentFilesStoreOnlyFalseDeploymentOnlyFalse(t *testing.T) {
+	createTestConfiguration()
+	var prj = NewProject()
+	prj.StoreConfigOnly = false
+	prj.Base.DeploymentOnly = false
+
+	var deploymentFiles = prj.CalculateRequiredDeploymentFiles()
+	assert.NotNil(t, deploymentFiles)
+	assert.True(t, len(deploymentFiles) == 3)
+	assert.Equal(t, constants.FilenameNginxIngressControllerHelmValues, deploymentFiles[0])
+	assert.Equal(t, constants.FilenameJenkinsHelmValues, deploymentFiles[1])
+	assert.Equal(t, constants.FilenameJenkinsConfigurationAsCode, deploymentFiles[2])
+
+	assert.True(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenameJenkinsConfigurationAsCode))
+	assert.True(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenameJenkinsHelmValues))
+	assert.False(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenamePvcClaim))
+	assert.True(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenameNginxIngressControllerHelmValues))
+
+	prj.SetPersistentVolumeClaimExistingName(testExistingPvc)
+	deploymentFiles = prj.CalculateRequiredDeploymentFiles()
+	assert.NotNil(t, deploymentFiles)
+	assert.True(t, len(deploymentFiles) == 4)
+	assert.Equal(t, constants.FilenameNginxIngressControllerHelmValues, deploymentFiles[0])
+	assert.Equal(t, constants.FilenameJenkinsHelmValues, deploymentFiles[1])
+	assert.Equal(t, constants.FilenamePvcClaim, deploymentFiles[2])
+	assert.Equal(t, constants.FilenameJenkinsConfigurationAsCode, deploymentFiles[3])
+
+	assert.True(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenameJenkinsConfigurationAsCode))
+	assert.True(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenameJenkinsHelmValues))
+	assert.True(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenamePvcClaim))
+	assert.True(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenameNginxIngressControllerHelmValues))
+}
+
+func TestCalculateRequiredDeploymentFilesStoreOnlyFalseDeploymentOnlyTrue(t *testing.T) {
+	createTestConfiguration()
+	var prj = NewProject()
+	prj.StoreConfigOnly = false
+	prj.Base.DeploymentOnly = true
+
+	var deploymentFiles = prj.CalculateRequiredDeploymentFiles()
+	assert.NotNil(t, deploymentFiles)
+	assert.True(t, len(deploymentFiles) == 1)
+	assert.Equal(t, constants.FilenameNginxIngressControllerHelmValues, deploymentFiles[0])
+
+	assert.False(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenameJenkinsConfigurationAsCode))
+	assert.False(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenameJenkinsHelmValues))
+	assert.False(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenamePvcClaim))
+	assert.True(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenameNginxIngressControllerHelmValues))
+
+	prj.SetPersistentVolumeClaimExistingName(testExistingPvc)
+	deploymentFiles = prj.CalculateRequiredDeploymentFiles()
+	assert.NotNil(t, deploymentFiles)
+	assert.True(t, len(deploymentFiles) == 1)
+	assert.Equal(t, constants.FilenameNginxIngressControllerHelmValues, deploymentFiles[0])
+
+	assert.False(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenameJenkinsConfigurationAsCode))
+	assert.False(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenameJenkinsHelmValues))
+	assert.False(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenamePvcClaim))
+	assert.True(t, prj.CalculateIfDeploymentFileIsRequired(constants.FilenameNginxIngressControllerHelmValues))
+}
+
 func TestProjectTemplates(t *testing.T) {
 	testDefaultProjectConfiguration(t, true)
 	var cloudTemplates = []string{"gradle_java.yaml", "node.yaml"}
@@ -105,6 +275,18 @@ func TestProjectValidationErrorWithEmptyNamespace(t *testing.T) {
 }
 
 func testDefaultProjectConfiguration(t *testing.T, setupTestProject bool) {
+	createTestConfiguration()
+
+	if setupTestProject {
+		var err = ActionCreateNewProjectDirectory(testProjectName)
+		assert.Nil(t, err)
+		var proj = NewProject()
+		err = proj.ActionCopyTemplatesToNewDirectory(testProjectName)
+		assert.Nil(t, err)
+	}
+}
+
+func createTestConfiguration() {
 	configuration.LoadConfiguration("../../../", false, false)
 
 	var cfg = configuration.GetConfiguration()
@@ -153,14 +335,6 @@ func testDefaultProjectConfiguration(t *testing.T, setupTestProject bool) {
 	cfg.Jenkins.Jcasc.SeedJobURL = testJenkinsHelmMasterJcascConfigSeedUrl
 
 	cfg.Kubernetes.Certificates.Default = testJcascKubernetesCertificate
-
-	if setupTestProject {
-		var err = ActionCreateNewProjectDirectory(testProjectName)
-		assert.Nil(t, err)
-		var proj = NewProject()
-		err = proj.ActionCopyTemplatesToNewDirectory(testProjectName)
-		assert.Nil(t, err)
-	}
 }
 
 // TestCommandExec is the test executor for mocks
