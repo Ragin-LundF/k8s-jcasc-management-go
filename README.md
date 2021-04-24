@@ -14,7 +14,7 @@
   * [Prerequisites](#prerequisites)
 * [Basic concept](#basic-concept)
   * [Advantages](#advantages)
-* [Build slaves](#build-slaves)
+* [Build worker](#build-worker)
 * [Configuration](#configuration)
   * [Configure alternative configuration with overlays](#configure-alternative-configuration-with-overlays)
   * [Setup with multiple secret files](#setup-with-multiple-secret-files)
@@ -115,17 +115,17 @@ Also, every develops maybe can have admin access to play around with the Jenkins
 
 If the K8S cluster or server crashes, it is possible to redeploy everything as it was in minutes, because also the job definition is stored in a VCS repository.
 
-# Build slaves #
-The pre-defined slave-containers will not work directly.
-Every build slave container needs to set up the jenkins home work directory and jenkins user/group with `uid`/`gid` `1000`.
+# Build worker #
+The pre-defined worker-containers will not work directly.
+Every build worker container needs to set up the jenkins home work directory and jenkins user/group with `uid`/`gid` `1000`.
 
-Also, the build slaves did not need to have any jenkins agent or something else. Only the user/group and the workdir is needed.
+Also, the build worker did not need to have any jenkins agent or something else. Only the user/group and the workdir is needed.
 
 To resolve the problem, that build containers directly shut down, simply add an entrypoint with a `tail -f /dev/null`.
 
-You can also create a Jenkins build slave base container and build your own build tools container on top of it.
+You can also create a Jenkins build worker base container and build your own build tools container on top of it.
 
-Example of a jenkins-build-slave-base-container:
+Example of a jenkins-build-worker-base-image:
 
 ```Dockerfile
 ARG UBI_CORE_VERSION=ubi8
@@ -167,12 +167,12 @@ WORKDIR /home/${user}
 ENTRYPOINT ["tail", "-f", "/dev/null"]
 ```
 
-A build-slave container for docker can look then like this:
+A build-worker image for nodejs can look then like this:
 
 ```Dockerfile
-FROM jenkins-slave-base
+FROM jenkins-worker-base
 ARG VERSION=1.0.0
-LABEL Description="Docker container with Docker for executing docker build and docker push" Vendor="K8S_MGMT" Version="${VERSION}"
+LABEL Description="Jenkins Worker image for NodeJS" Vendor="K8S_MGMT" Version="${VERSION}"
 
 # install base packages
 RUN microdnf update -y && \
@@ -333,7 +333,7 @@ The file `jcasc_config.yaml` should now have a `{{ .JCasc.Clouds.Kubernetes.Temp
 ```yaml
   clouds:
     - kubernetes:
-        name: "jenkins-build-slaves"
+        name: "jenkins-build-worker"
         serverUrl: ""
         serverCertificate: {{ .JCasc.Clouds.Kubernetes.ServerCertificate }}
         directConnection: false
