@@ -418,3 +418,4 @@ This can help to figure out differences between clusters.
 - JCasC Examples: https://github.com/jenkinsci/configuration-as-code-plugin/tree/master/demos
 - Jenkins Seed Job script to create jobs from a JSON in a GIT repository: https://github.com/Ragin-LundF/jenkins-jobdsl-remote
 - Medium article about the background: https://medium.com/@ragin/jenkins-jenkins-configuration-as-code-jcasc-together-with-jobdsl-on-kubernetes-2f5a173491ab
+- Medium article about a concept how to work with Jenkins and Kubernetes: https://ragin.medium.com/kubernetes-and-ci-cd-how-to-integrate-in-your-development-process-9b483b194975
