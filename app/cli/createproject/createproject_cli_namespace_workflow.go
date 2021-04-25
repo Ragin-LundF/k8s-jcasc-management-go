@@ -37,7 +37,7 @@ func AdditionalNamespaceWorkflow() (additionalNamespacesArr []string, err error)
 	additionalNamespaces, err := dialogs.DialogPrompt(constants.TextEnterAdditionalNamespaceName, validateAddNamespace)
 	// check if everything was ok
 	if err != nil {
-		loggingstate.AddErrorEntryAndDetails(constants.LogUnableToGetNameOfNewNamespace, err.Error())
+		loggingstate.AddErrorEntryAndDetails(constants.LogUnableToGetNameOfAdditionalNamespace, err.Error())
 		return []string{}, err
 	}
 

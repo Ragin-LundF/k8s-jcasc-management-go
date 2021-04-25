@@ -214,7 +214,7 @@ func (conf *config) GetSecretsFiles() []string {
 		var secretFiles []string
 
 		secretFiles = appendUnique(secretFiles, strings.Replace(conf.getGlobalSecretsFile(), secretsFilePath, "", -1))
-		if secretFilesWithPath != nil && len(secretFilesWithPath) > 0 {
+		if len(secretFilesWithPath) > 0 {
 			for _, secretFile := range secretFilesWithPath {
 				secretFile = strings.Replace(secretFile, secretsFilePath, "", -1)
 				secretFile = strings.Replace(secretFile, ".gpg", "", -1)
@@ -280,7 +280,6 @@ func (conf *config) AddToIPConfigFile(namespace string, ip string, domain string
 		logging.Errorf("[AddToIPConfigFile] Unable to open IP config file [%s]. \n%s", conf.GetIPConfigurationFile(), err.Error())
 		return false, err
 	}
-	defer ipConfigFile.Close()
 
 	// assign current IP configuration to smaller file structure
 	var yamlIPConfig = DeploymentYAMLConfig{}
@@ -291,6 +290,7 @@ func (conf *config) AddToIPConfigFile(namespace string, ip string, domain string
 	if err != nil {
 		loggingstate.AddErrorEntryAndDetails("Unable to marshall yaml IP deployment configuration.", err.Error())
 		logging.Error("Unable to marshall yaml IP deployment configuration.", err.Error())
+		_ = ipConfigFile.Close()
 		return false, err
 	}
 
@@ -298,8 +298,10 @@ func (conf *config) AddToIPConfigFile(namespace string, ip string, domain string
 	if _, err := ipConfigFile.Write(yamlFileOutput); err != nil {
 		loggingstate.AddErrorEntryAndDetails("Unable to write YAML IP deployment configuration.", err.Error())
 		logging.Error("Unable to write YAML IP deployment configuration.", err.Error())
+		_ = ipConfigFile.Close()
 		return false, err
 	}
+	_ = ipConfigFile.Close()
 	return true, err
 }
 
@@ -361,10 +363,7 @@ func (conf *config) readConfigFromYAMLFile(file string, target interface{}) erro
 		return err
 	}
 	err = yaml.Unmarshal(yamlFile, target)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func (conf *config) readDeploymentConfigurationFromYamlFile() {

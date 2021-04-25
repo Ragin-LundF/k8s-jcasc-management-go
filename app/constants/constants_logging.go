@@ -32,6 +32,7 @@ const LogApplySecretsToNamespaceFailed = "  -> Apply secrets to namespace......f
 const LogApplySecretsToNamespaceDone = "  -> Apply secrets to namespace......done"
 
 const LogUnableToGetNameOfNewNamespace = "  -> Unable to get name of new namespace!"
+const LogUnableToGetNameOfAdditionalNamespace = "  -> Unable to get name of additional namespace!"
 const LogUnableToGetStoreConfigOnly = "  -> Unable to get store config only prompt!"
 
 // IP address

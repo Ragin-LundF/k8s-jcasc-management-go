@@ -100,7 +100,7 @@ func (projectConfig *ProjectConfig) PrepareInstallYAML(filename string) (fileWit
 		}
 	}
 
-	return fileWithPath, nil
+	return fileWithPath, err
 }
 
 func calculateTempFilename(projectDir string, filename string) string {

@@ -95,7 +95,7 @@ func createMigrationPlaceholderMap() map[string]string {
 
 // replacePlaceholderInTemplates : Replace placeholder with value in all project files
 func replacePlaceholderInTemplates(directory string, placeholder string, newValue string) (err error) {
-	templateFiles, err := files.LoadTemplateFilesOfDirectory(directory)
+	var templateFiles, _ = files.LoadTemplateFilesOfDirectory(directory)
 	for _, templateFile := range templateFiles {
 		err = replacePlaceholderInTemplate(templateFile, placeholder, newValue)
 		if err != nil {

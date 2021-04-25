@@ -149,13 +149,12 @@ func (projectConfig *ProjectConfig) deleteFromKubernetes(kubernetesType string, 
 
 		// found relevant roles, now uninstall them
 		if len(fieldValuesToDelete) > 0 {
-			kubectlUninstallCmdArgs := []string{
+			var kubectlUninstallCmdArgs = []string{
 				"-n", projectConfig.Project.Base.Namespace,
 				kubernetesType,
 			}
-			for _, fieldValueToDelete := range fieldValuesToDelete {
-				kubectlUninstallCmdArgs = append(kubectlUninstallCmdArgs, fieldValueToDelete)
-			}
+
+			kubectlUninstallCmdArgs = append(kubectlUninstallCmdArgs, fieldValuesToDelete...)
 
 			// Execute delete command
 			_, err := kubectl.ExecutorKubectl("delete", kubectlUninstallCmdArgs)

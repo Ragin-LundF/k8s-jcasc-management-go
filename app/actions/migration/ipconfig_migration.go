@@ -27,7 +27,6 @@ func readIPConfig() *configuration.DeploymentYAMLConfig {
 	if files.FileOrDirectoryExists(ipDeploymentCfgFile) {
 		// read configuration file. Replace unneeded double quotes if needed.
 		data, err := os.Open(ipDeploymentCfgFile)
-		defer data.Close()
 
 		// check for error
 		if err != nil {
@@ -58,6 +57,7 @@ func readIPConfig() *configuration.DeploymentYAMLConfig {
 					deploymentYaml.K8SManagement.IPConfig.Deployments = append(deploymentYaml.K8SManagement.IPConfig.Deployments, deploymentIpConfig)
 				}
 			}
+			_ = data.Close()
 			return &deploymentYaml
 		}
 	}

@@ -58,6 +58,7 @@ type kubernetesTemplates struct {
 }
 
 // ----- Setter to manipulate the default object
+
 // SetJenkinsSystemMessage : Set the Jenkins system message
 func (jcascCfg *jcascConfig) SetJenkinsSystemMessage(jenkinsSystemMessage string) {
 	jcascCfg.SystemMessage = jenkinsSystemMessage
@@ -78,7 +79,7 @@ func (jcascCfg *jcascConfig) SetCloudKubernetesAdditionalTemplates(additionalTem
 	jcascCfg.Clouds.Kubernetes.Templates.AdditionalCloudTemplates = additionalTemplates
 }
 
-// SetCloudKubernetesAdditionalTemplates : Set additional templates for cloud.kubernetes.templates
+// SetCloudKubernetesAdditionalTemplateFiles : Set additional templates for cloud.kubernetes.templates
 func (jcascCfg *jcascConfig) SetCloudKubernetesAdditionalTemplateFiles(additionalTemplateFiles []string) {
 	jcascCfg.Clouds.Kubernetes.Templates.AdditionalCloudTemplateFiles = additionalTemplateFiles
 }
@@ -106,7 +107,7 @@ func (k8s *kubernetes) ServerCertificate() string {
 	var currentContext = strings.ToUpper(kubernetesactions.GetKubernetesConfig().CurrentContext())
 	if configuration.GetConfiguration().Kubernetes.Certificates.Contexts != nil {
 		for context, certificate := range configuration.GetConfiguration().Kubernetes.Certificates.Contexts {
-			if strings.ToUpper(currentContext) == strings.ToUpper(context) {
+			if strings.EqualFold(currentContext, context) {
 				return certificate
 			}
 		}

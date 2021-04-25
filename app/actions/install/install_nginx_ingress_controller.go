@@ -45,7 +45,7 @@ func (projectConfig *ProjectConfig) ActionHelmInstallNginxIngressController() (e
 			}
 
 			// if Jenkins is not active for this namespace, then disable Jenkins ingress routing
-			if projectConfig.Project.CalculateIfDeploymentFileIsRequired(constants.FilenameJenkinsHelmValues) == false {
+			if !projectConfig.Project.CalculateIfDeploymentFileIsRequired(constants.FilenameJenkinsHelmValues) {
 				loggingstate.AddInfoEntry(fmt.Sprintf(
 					"[Install NginxIngressCtrl] Jenkins is not available for the namespace [%s]. Disabling Jenkins ingress routing.",
 					projectConfig.Project.Base.Namespace))

@@ -1,7 +1,6 @@
 package createproject
 
 import (
-	"errors"
 	"fmt"
 	"github.com/manifoldco/promptui"
 	"k8s-management-go/app/actions/project"
@@ -141,6 +140,6 @@ func StoreConfigOnlyWorkflow() (storeConfigOnly bool, err error) {
 	} else if strings.ToLower(promptResult) == "n" {
 		return false, nil
 	} else {
-		return true, errors.New(fmt.Sprintf("Please confirm with y or n. You typed [%v] ", promptResult))
+		return true, fmt.Errorf("Please confirm with y or n. You typed [%v] ", promptResult)
 	}
 }

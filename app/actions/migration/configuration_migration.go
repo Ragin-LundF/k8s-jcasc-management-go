@@ -49,9 +49,6 @@ func readConfigurationFromFile(configFile string) {
 		log.Errorf(err.Error())
 		panic(err)
 	} else {
-		// close file after this method was finished
-		defer data.Close()
-
 		// everything seems to be ok. Read data with line scanner
 		scanner := bufio.NewScanner(data)
 		scanner.Split(bufio.ScanLines)
@@ -63,6 +60,7 @@ func readConfigurationFromFile(configFile string) {
 			processLine(line)
 		}
 	}
+	_ = data.Close()
 }
 
 // function to check if line is empty / a comment or a valid configuration.
@@ -127,10 +125,7 @@ func assignToConfiguration(key string, value string) {
 		if success {
 			return
 		}
-		success = addK8sManagementConfig(key, value)
-		if success {
-			return
-		}
+		_ = addK8sManagementConfig(key, value)
 	}
 }
 
@@ -362,7 +357,6 @@ func addK8sManagementConfig(key string, value string) (success bool) {
 	case "K8S_MGMT_VERSION_CHECK":
 		yamlCfg.K8SManagement.VersionCheck, _ = strconv.ParseBool(value)
 		success = true
-		break
 	}
 
 	return success
