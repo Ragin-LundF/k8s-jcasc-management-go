@@ -86,6 +86,15 @@ func ProjectWizardWorkflow(deploymentOnly bool) (err error) {
 			return err
 		}
 		loggingstate.AddInfoEntry(constants.LogAskForJobsConfigurationRepositoryDone)
+
+		// Ask for additional namespaces
+		loggingstate.AddInfoEntry(constants.LogAskForNamespace)
+		additionalNamespaces, err := AdditionalNamespaceWorkflow()
+		if err != nil {
+			return err
+		}
+		prj.SetAdditionalNamespaces(additionalNamespaces)
+		loggingstate.AddInfoEntry(constants.LogAskForNamespaceDone)
 	}
 	loggingstate.AddInfoEntry(constants.LogWizardStartProjectWizardDialogsDone)
 

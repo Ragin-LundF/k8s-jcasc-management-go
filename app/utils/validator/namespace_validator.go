@@ -2,6 +2,7 @@ package validator
 
 import (
 	"errors"
+	"k8s-management-go/app/actions/project"
 	"k8s-management-go/app/configuration"
 	"regexp"
 	"strings"
@@ -32,6 +33,21 @@ func ValidateNewNamespace(input string) error {
 	for _, ipConfig := range configuration.GetConfiguration().K8SManagement.IPConfig.Deployments {
 		if strings.ToLower(ipConfig.Namespace) == strings.ToLower(input) {
 			return errors.New("Namespace already in use! ")
+		}
+	}
+	return nil
+}
+
+// ValidateAdditionalNamespaces validates the namespace
+func ValidateAdditionalNamespaces(input string) error {
+	if len(input) > 0 {
+		var err error
+		var additionalNamespaces = project.ProcessAdditionalNamespaces(input)
+		for _, additionalNamespace := range additionalNamespaces {
+			err = ValidateNewNamespace(additionalNamespace)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil

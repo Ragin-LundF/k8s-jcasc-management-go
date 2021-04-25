@@ -26,4 +26,5 @@ func assertDefaultJenkinsHelmValues(jenkinsHelmValues *jenkinsHelmValues, t *tes
 	assert.Equal(t, testConfigJenkinsMasterPvcStorageClassName, jenkinsHelmValues.Persistence.StorageClass)
 	assert.Equal(t, testConfigJenkinsMasterPvcAccessMode, jenkinsHelmValues.Persistence.AccessMode)
 	assert.Equal(t, testConfigJenkinsMasterPvcSize, jenkinsHelmValues.Persistence.Size)
+	assert.Equal(t, []string{}, jenkinsHelmValues.AdditionalNamespaces)
 }

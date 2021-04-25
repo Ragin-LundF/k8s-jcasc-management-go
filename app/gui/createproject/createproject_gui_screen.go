@@ -32,6 +32,11 @@ func ScreenCreateFullProject(window fyne.Window) *widget.Form {
 	var jenkinsUrlEntry = widget.NewEntry()
 	jenkinsUrlEntry.PlaceHolder = "domain.tld (or leave empty to use <namespace>.<configured nginx domain>)"
 
+	// Additional namespaces
+	var additionalNsErrorLabel = widget.NewLabel("")
+	var additionalNsEntry = widget.NewEntry()
+	additionalNsEntry.PlaceHolder = "comma separated list of additional namespaces"
+
 	// Jenkins system message
 	var jenkinsSysMsgErrorLabel = widget.NewLabel("")
 	var jenkinsSysMsgEntry = widget.NewEntry()
@@ -40,7 +45,7 @@ func ScreenCreateFullProject(window fyne.Window) *widget.Form {
 	// Jenkins jobs config repository
 	var jenkinsJobsCfgErrorLabel = widget.NewLabel("")
 	var jenkinsJobsCfgEntry = widget.NewEntry()
-	jenkinsJobsCfgEntry.PlaceHolder = "http://vcs.domain.tld/project/repo/jenkins-jobs.git"
+	jenkinsJobsCfgEntry.PlaceHolder = "https://vcs.domain.tld/project/repo/jenkins-jobs.git"
 
 	// Cloud templates
 	var cloudTemplatesCheckBoxes = createCloudTemplates()
@@ -72,9 +77,20 @@ func ScreenCreateFullProject(window fyne.Window) *widget.Form {
 			{Text: "", Widget: jenkinsJobsCfgErrorLabel},
 			{Text: "Jenkins Existing PVC", Widget: jenkinsExistingPvcEntry},
 			{Text: "", Widget: jenkinsExistingPvcErrorLabel},
+			{Text: "Additional Namespaces", Widget: additionalNsEntry},
+			{Text: "", Widget: additionalNsErrorLabel},
 			{Text: "Cloud Templates", Widget: cloudBox},
 		},
 		OnSubmit: func() {
+			// reset error labels
+			namespaceErrorLabel.Text = ""
+			ipAddressErrorLabel.Text = ""
+			jenkinsUrlErrorLabel.Text = ""
+			jenkinsSysMsgErrorLabel.Text = ""
+			jenkinsJobsCfgErrorLabel.Text = ""
+			jenkinsExistingPvcErrorLabel.Text = ""
+			additionalNsErrorLabel.Text = ""
+
 			// get variables
 			prj.SetNamespace(namespaceEntry.Text)
 			prj.SetIPAddress(ipAddressEntry.Text)
@@ -82,6 +98,7 @@ func ScreenCreateFullProject(window fyne.Window) *widget.Form {
 			prj.SetJenkinsSystemMessage(jenkinsSysMsgEntry.Text)
 			prj.SetJobsDefinitionRepository(jenkinsJobsCfgEntry.Text)
 			prj.SetPersistentVolumeClaimExistingName(jenkinsExistingPvcEntry.Text)
+			prj.SetAdditionalNamespaces(project.ProcessAdditionalNamespaces(additionalNsEntry.Text))
 			prj.SetCloudKubernetesAdditionalTemplateFiles(checkCloudboxes(cloudTemplatesCheckBoxes))
 			prj.StoreConfigOnly = checkboxStoreTemplates.Checked
 			hasErrors := false
@@ -91,6 +108,18 @@ func ScreenCreateFullProject(window fyne.Window) *widget.Form {
 			if err != nil {
 				namespaceErrorLabel.SetText(err.Error())
 				hasErrors = true
+			}
+
+			// validate additional namespaces
+			if len(prj.JenkinsHelmValues.AdditionalNamespaces) > 0 {
+				for _, additionalNs := range prj.JenkinsHelmValues.AdditionalNamespaces {
+					var err = validator.ValidateNewNamespace(additionalNs)
+					if err != nil {
+						additionalNsErrorLabel.SetText(err.Error())
+						hasErrors = true
+						break
+					}
+				}
 			}
 
 			// validate IP address
@@ -200,6 +229,11 @@ func ScreenCreateDeployOnlyProject(window fyne.Window) *widget.Form {
 			{Text: "", Widget: jenkinsUrlErrorLabel},
 		},
 		OnSubmit: func() {
+			// reset error labels
+			namespaceErrorLabel.Text = ""
+			ipAddressErrorLabel.Text = ""
+			jenkinsUrlErrorLabel.Text = ""
+
 			// get variables
 			prj.SetNamespace(namespaceEntry.Text)
 			prj.SetIPAddress(ipAddressEntry.Text)

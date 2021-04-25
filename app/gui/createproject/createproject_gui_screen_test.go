@@ -14,7 +14,7 @@ func TestScreenCreateFullProject(t *testing.T) {
 	var deployOnlyPrjForm = ScreenCreateFullProject(test.NewApp().NewWindow("test"))
 	var i = 0
 
-	assert.Len(t, deployOnlyPrjForm.Items, 14)
+	assert.Len(t, deployOnlyPrjForm.Items, 16)
 	assert.Equal(t, "Store only config", deployOnlyPrjForm.Items[i].Text)
 	assert.IsType(t, &widget.Check{}, deployOnlyPrjForm.Items[i].Widget)
 	i++
@@ -54,6 +54,12 @@ func TestScreenCreateFullProject(t *testing.T) {
 	assert.Equal(t, "", deployOnlyPrjForm.Items[i].Text)
 	assert.IsType(t, &widget.Label{}, deployOnlyPrjForm.Items[i].Widget)
 	i++
+	assert.Equal(t, "Additional Namespaces", deployOnlyPrjForm.Items[i].Text)
+	assert.IsType(t, &widget.Entry{}, deployOnlyPrjForm.Items[i].Widget)
+	i++
+	assert.Equal(t, "", deployOnlyPrjForm.Items[i].Text)
+	assert.IsType(t, &widget.Label{}, deployOnlyPrjForm.Items[i].Widget)
+	i++
 	assert.Equal(t, "Cloud Templates", deployOnlyPrjForm.Items[i].Text)
 	assert.IsType(t, &container.Scroll{}, deployOnlyPrjForm.Items[i].Widget)
 }
@@ -83,6 +89,7 @@ func TestScreenCreateDeployOnlyProject(t *testing.T) {
 	i++
 	assert.Equal(t, "", deployOnlyPrjForm.Items[i].Text)
 	assert.IsType(t, &widget.Label{}, deployOnlyPrjForm.Items[i].Widget)
+	i++
 }
 
 func TestCheckCloudboxes(t *testing.T) {

@@ -9,6 +9,7 @@ It is also possible to use the placeholders in other templates.
 
 | Placeholder | Description | Source | old config |
 | --- | --- | --- | --- |
+| `{{ .JenkinsHelmValues.AdditionalNamespaces }}` | Placeholder for `k8smanagement.rbac.additionalNamespaces` for Jenkins Helm Values | n/a |
 | `{{ .JenkinsHelmValues.Controller.Image }}` | Placeholder for `controller.image` for Jenkins Helm Values | configuration `jenkins.container.image` | `JENKINS_MASTER_CONTAINER_IMAGE` |
 | `{{ .JenkinsHelmValues.Controller.Tag }}` | Placeholder for `controller.tag` for Jenkins Helm Values | configuration `jenkins.container.tag` | `JENKINS_MASTER_CONTAINER_IMAGE_TAG` |
 | `{{ .JenkinsHelmValues.Controller.ImagePullPolicy }}` | Placeholder for `controller.imagePullPolicy` for Jenkins Helm Values | configuration `jenkins.container.pullPolicy` | `JENKINS_MASTER_CONTAINER_PULL_POLICY` |

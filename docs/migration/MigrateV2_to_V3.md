@@ -163,6 +163,26 @@ controller:
       folder: "https://domain.tld/jcasc_config.yaml"
 ```
 
+To support the new additional namespaces in the templates, please change
+
+```yaml
+k8smanagement:
+  rbac:
+    # list of additional namespaces that should be deployable (adds RBAC roles to those namespaces)
+    additionalNamespaces: {}
+```
+
+to
+
+```yaml
+k8smanagement:
+  rbac:
+    # list of additional namespaces that should be deployable (adds RBAC roles to those namespaces)
+    additionalNamespaces: {{ if not .JenkinsHelmValues.AdditionalNamespaces }}{}{{ end }}
+      {{ range .JenkinsHelmValues.AdditionalNamespaces }}{{ if . }}- {{ . }}{{ end }}
+      {{ end }}
+```
+
 ## Migrating existing Helm value files
 
 For already created projects, some manual changes are also needed.

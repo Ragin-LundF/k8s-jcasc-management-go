@@ -8,8 +8,9 @@ import (
 // ----- Structures
 // jenkinsHelm : Model which describes the jenkins helm values
 type jenkinsHelmValues struct {
-	Controller  jenkinsHelmMaster      `yaml:"controller,omitempty"`
-	Persistence jenkinsHelmPersistence `yaml:"persistence,omitempty"`
+	Controller           jenkinsHelmMaster      `yaml:"controller,omitempty"`
+	Persistence          jenkinsHelmPersistence `yaml:"persistence,omitempty"`
+	AdditionalNamespaces []string               `yaml:"additionalNamespaces,omitempty"`
 }
 
 // jenkinsHelmMaster : Model which describes the Jenkins master section in the helm values
@@ -34,8 +35,9 @@ type jenkinsHelmPersistence struct {
 // newJenkinsHelmValues : Create new Jenkins Helm values structure
 func newJenkinsHelmValues() *jenkinsHelmValues {
 	return &jenkinsHelmValues{
-		Controller:  newDefaultJenkinsHelmController(),
-		Persistence: newDefaultJenkinsHelmPersistence(),
+		Controller:           newDefaultJenkinsHelmController(),
+		Persistence:          newDefaultJenkinsHelmPersistence(),
+		AdditionalNamespaces: newDefaultAdditionalNamespaces(),
 	}
 }
 
@@ -60,4 +62,8 @@ func newDefaultJenkinsHelmPersistence() jenkinsHelmPersistence {
 		AccessMode:   configuration.GetConfiguration().Jenkins.Persistence.AccessMode,
 		Size:         configuration.GetConfiguration().Jenkins.Persistence.StorageSize,
 	}
+}
+
+func newDefaultAdditionalNamespaces() []string {
+	return []string{}
 }

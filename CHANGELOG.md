@@ -32,6 +32,10 @@ The skippable files are:
 - `nginx_ingress_helm_values.yaml`
 - `pvc_claim.yaml`
 
+## New input field for additional Namespaces
+Additional namespaces are now supported in the UI and the CLI version.
+Multiple namespaces can be added comma separated.
+
 # 2.9.0 Small improvements and dependency updates
 ## Dependency updates
 This release updates the base libraries.

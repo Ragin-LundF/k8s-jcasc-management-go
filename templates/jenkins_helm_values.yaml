@@ -81,4 +81,6 @@ serviceAccountAgent:
 k8smanagement:
   rbac:
     # list of additional namespaces that should be deployable (adds RBAC roles to those namespaces)
-    additionalNamespaces: {}
+    additionalNamespaces: {{ if not .JenkinsHelmValues.AdditionalNamespaces }}{}{{ end }}
+      {{ range .JenkinsHelmValues.AdditionalNamespaces }}{{ if . }}- {{ . }}{{ end }}
+      {{ end }}

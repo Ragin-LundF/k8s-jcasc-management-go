@@ -11,6 +11,7 @@ import (
 	"k8s-management-go/app/utils/files"
 	"k8s-management-go/app/utils/loggingstate"
 	"os"
+	"strings"
 	"text/template"
 )
 
@@ -61,6 +62,7 @@ func (bse base) JenkinsURL() string {
 }
 
 // ----- Setter to manipulate the default object
+
 // SetIPAddress : Set the Jenkins IP address
 func (prj *Project) SetIPAddress(ipAddress string) {
 	prj.Base.IPAddress = ipAddress
@@ -71,9 +73,14 @@ func (prj *Project) SetNamespace(namespace string) {
 	prj.Base.Namespace = namespace
 }
 
-// SetNamespace : Set the Jenkins domain
+// SetDomain : Set the Jenkins domain
 func (prj *Project) SetDomain(domain string) {
 	prj.Base.Domain = domain
+}
+
+// SetAdditionalNamespaces : Set additional namespaces
+func (prj *Project) SetAdditionalNamespaces(additionalNamespaces []string) {
+	prj.JenkinsHelmValues.AdditionalNamespaces = additionalNamespaces
 }
 
 // SetJenkinsSystemMessage : Set the Jenkins system message
@@ -116,7 +123,7 @@ func (prj *Project) SetPersistentVolumeClaimExistingName(existingPvcName string)
 	prj.Base.ExistingVolumeClaim = existingPvcName
 }
 
-// SaveProjectConfiguration: Save the project configuration
+// SaveProjectConfiguration : Save the project configuration
 func (prj *Project) SaveProjectConfiguration(projectDirectory string) (err error) {
 	marshalledOutput, err := yaml.Marshal(prj)
 	if err != nil {
@@ -252,6 +259,20 @@ func newBase() *base {
 		IPAddress:           "",
 		Namespace:           "",
 	}
+}
+
+// ProcessAdditionalNamespaces : split and trim additional namespaces
+func ProcessAdditionalNamespaces(additionalNamespaces string) []string {
+	if len(strings.TrimSpace(additionalNamespaces)) > 0 {
+		var additionalNamespaceArr = strings.Split(additionalNamespaces, ",")
+		var retVal []string
+		for _, additionalNamespace := range additionalNamespaceArr {
+			retVal = append(retVal, strings.TrimSpace(additionalNamespace))
+		}
+		return retVal
+	}
+
+	return []string{}
 }
 
 // validateProject : Validate the project that it can be processed
