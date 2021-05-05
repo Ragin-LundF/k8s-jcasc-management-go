@@ -5,12 +5,12 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
-	"k8s-management-go/app/actions/installactions"
+	"k8s-management-go/app/actions/install"
 	"k8s-management-go/app/actions/namespaceactions"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/constants"
 	"k8s-management-go/app/events"
 	"k8s-management-go/app/gui/uielements"
-	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/logger"
 	"k8s-management-go/app/utils/validator"
 	"time"
@@ -48,9 +48,9 @@ func ScreenUninstall(window fyne.Window) fyne.CanvasObject {
 			deploymentName = deploymentNameEntry.Text
 			dryRunOption = dryRunRadio.Selected
 			if dryRunOption == constants.InstallDryRunActive {
-				models.AssignDryRun(true)
+				configuration.GetConfiguration().SetDryRun(true)
 			} else {
-				models.AssignDryRun(false)
+				configuration.GetConfiguration().SetDryRun(false)
 			}
 			if !validator.ValidateNamespaceAvailableInConfig(namespace) {
 				namespaceErrorLabel.SetText("Error: namespace is unknown!")
@@ -59,23 +59,19 @@ func ScreenUninstall(window fyne.Window) fyne.CanvasObject {
 			}
 
 			// map state
-			var state = models.StateData{
-				Namespace:       namespace,
-				DeploymentName:  deploymentName,
-				HelmCommand:     installTypeOption,
-				SecretsPassword: &secretsPasswords,
-			}
+			var projectConfig = install.NewInstallProjectConfig()
+			projectConfig.Project.SetNamespace(namespace)
+			projectConfig.Project.Base.DeploymentName = deploymentName
+			projectConfig.HelmCommand = installTypeOption
+			projectConfig.SecretsPassword = &secretsPasswords
 
 			// Directories
-			state, err := installactions.CalculateDirectoriesForInstall(state, state.Namespace)
+			err := projectConfig.CalculateDirectoriesForInstall()
 			if err != nil {
 				dialog.ShowError(err, window)
 			}
 
-			// Check Jenkins directories
-			state = installactions.CheckJenkinsDirectories(state)
-
-			_ = ExecuteUninstallWorkflow(window, state)
+			_ = ExecuteUninstallWorkflow(window, projectConfig)
 			// show output
 			uielements.ShowLogOutput(window)
 		},

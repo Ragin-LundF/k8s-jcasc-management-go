@@ -14,7 +14,7 @@
   * [Prerequisites](#prerequisites)
 * [Basic concept](#basic-concept)
   * [Advantages](#advantages)
-* [Build slaves](#build-slaves)
+* [Build worker](#build-worker)
 * [Configuration](#configuration)
   * [Configure alternative configuration with overlays](#configure-alternative-configuration-with-overlays)
   * [Setup with multiple secret files](#setup-with-multiple-secret-files)
@@ -115,60 +115,48 @@ Also, every develops maybe can have admin access to play around with the Jenkins
 
 If the K8S cluster or server crashes, it is possible to redeploy everything as it was in minutes, because also the job definition is stored in a VCS repository.
 
-# Build slaves #
-The pre-defined slave-containers will not work directly.
-Every build slave container needs to set up the jenkins home work directory and jenkins user/group with `uid`/`gid` `1000`.
+# Build worker #
+The pre-defined worker-containers will not work directly.
+Every build worker container needs to set up the jenkins home work directory and jenkins user/group with `uid`/`gid` `1000`.
 
-Also, the build slaves did not need to have any jenkins agent or something else. Only the user/group and the workdir is needed.
+Also, the build worker did not need to have any jenkins agent or something else. Only the user/group and the workdir is needed.
 
 To resolve the problem, that build containers directly shut down, simply add an entrypoint with a `tail -f /dev/null`.
 
-You can also create a Jenkins build slave base container and build your own build tools container on top of it.
+You can also create a Jenkins build worker base container and build your own build tools container on top of it.
 
-Example of a jenkins-build-slave-base-container:
+Example of a jenkins-build-worker-base-image:
 
 ```Dockerfile
-FROM alpine:3.10
+ARG UBI_CORE_VERSION=ubi8
+ARG UBI_TAG_VERSION=latest
+
+FROM registry.access.redhat.com/${UBI_CORE_VERSION}/ubi-minimal:${UBI_TAG_VERSION}
 
 ARG VERSION=1.0.0
-LABEL Description="Jenkins Build Slave Base Container" Vendor="K8S_MGMT" Version="${VERSION}"
+LABEL Description="Jenkins Node Base Container" Vendor="K8S_MGMT" Version="${VERSION}"
 
-###### GLIBC for alpine image
-# GLIBC-ENVIROMENT
-ENV GLIBC_LANG=en_US
-ENV GLIBC_VERSION=2.28-r0
-ENV LANG=${GLIBC_LANG}.UTF-8
-ENV LANGUAGE=${GLIBC_LANG}.UTF-8
-
-# install_actions base packages, that will be used in most containers
-RUN apk update && apk -U upgrade -a && \
-    apk add --no-cache xz tar zip unzip sudo curl wget bash git git-lfs procps ca-certificates
-
-# GET GLIBC FROM SGERRAND: https://github.com/sgerrand/alpine-pkg-glibc
-RUN wget -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
-    wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-${GLIBC_VERSION}.apk && \
-    wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-bin-${GLIBC_VERSION}.apk && \
-    wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-i18n-${GLIBC_VERSION}.apk && \
-    apk add --no-cache glibc-${GLIBC_VERSION}.apk glibc-bin-${GLIBC_VERSION}.apk glibc-i18n-${GLIBC_VERSION}.apk && \
-    rm -f /etc/apk/keys/sgerrand.* && \
-    echo "export GLIBC_LANG=${LANG}" > /etc/profile.d/locale.sh && \
-    echo "LANG=${LANG}" >> /etc/environment && \
-    /usr/glibc-compat/bin/localedef -i ${GLIBC_LANG} -f UTF-8 ${GLIBC_LANG}.UTF-8 && \
-    rm *.apk && \
-    echo "Installing additional packages... done"
-
-###### Jenkins setup
-# Required Jenkins user/group/gid/uid/workdir
+# Jenkins user settings
 ARG user=jenkins
 ARG group=jenkins
 ARG uid=1000
 ARG gid=1000
 ARG AGENT_WORKDIR=/home/${user}/agent
 
-# create jenkins user
-RUN addgroup -g ${gid} ${group} && adduser -h /home/${user} -u ${uid} -G ${group} -D ${user}
+# GLIBC-ENVIRONMENT
+ENV GLIBC_LANG=en_US
+ENV LANG=${GLIBC_LANG}.UTF-8
+ENV LANGUAGE=${GLIBC_LANG}.UTF-8
 
-# create directories and permissions
+# install base packages
+RUN microdnf update -y && \
+    microdnf install -y shadow-utils xz tar zip unzip sudo curl wget bash git procps ca-certificates glibc glibc-langpack-en &&  \
+    microdnf clean all
+
+# create jenkins user
+RUN groupadd -g ${gid} ${group} && useradd -d /home/${user} -u ${uid} -g ${group} ${user}
+
+# setup jenkins directories and permissions
 RUN mkdir /home/${user}/.jenkins && mkdir -p ${AGENT_WORKDIR}
 
 VOLUME /home/${user}/.jenkins
@@ -176,59 +164,53 @@ VOLUME ${AGENT_WORKDIR}
 
 WORKDIR /home/${user}
 
-# let the container tail /dev/null, that Kubernetes will not shut down the container directly after startup.
 ENTRYPOINT ["tail", "-f", "/dev/null"]
 ```
 
-A build-slave container for docker can look then like this:
+A build-worker image for nodejs can look then like this:
 
 ```Dockerfile
-FROM jenkins-slave-base
+FROM jenkins-worker-base
 ARG VERSION=1.0.0
-LABEL Description="Docker container with Docker for executing docker build and docker push" Vendor="K8S_MGMT" Version="${VERSION}"
+LABEL Description="Jenkins Worker image for NodeJS" Vendor="K8S_MGMT" Version="${VERSION}"
 
-# Installing docker
-RUN apk update && apk -U upgrade -a && \
-    apk add --no-cache docker
-
-# adding jenkins user to docker group
-RUN addgroup -S ${user} docker
+# install base packages
+RUN microdnf update -y && \
+    microdnf install -y nodejs && \
+    microdnf clean all
 ```
 
 # Configuration #
 
 The system has a basic configuration file to pre-configure some global settings.
-This file is located under [config/k8s_jcasc_mgmt.cnf](config/k8s_jcasc_mgmt.cnf).
+This file is located under [config/k8s_jcasc_mgmt.yaml](config/k8s_jcasc_mgmt.yaml).
 
-It is recommended to change the `PROJECTS_BASE_DIRECTORY` to a directory outside of this project.
+It is recommended to change the project base directory to a directory outside of this project.
 The `createproject` command will create new projects as subfolders of this directory.
-All files and directories under the `PROJECTS_BASE_DIRECTORY' should be passed to a git repository which is backed up.
+All files and directories under this directory should be passed to a git repository which is backed up.
 
 Then your existing Jenkins projects can be fully recovered from this repository.
 
 ## Configure alternative configuration with overlays ##
 
-To use this repository "as-it-is", it is possible to create a `config/k8s_jcasc_custom.cnf` file.
+To use this repository "as-it-is", it is possible to create a `config/k8s_jcasc_custom.yaml` file.
 
 This file can contain the following configuration:
 
-```bash
-# Define path to alternative configuration file
-K8S_MGMT_ALTERNATIVE_CONFIG_FILE=/my/path/to/my.config
-
-# Defines the basepath of the project to use relative pathes
-# inside of the configuration of the project
-K8S_MGMT_BASE_PATH=/my/path/to
+```yaml
+k8sManagement:
+  # Configuration file for project specific overrides. This file must be relative to the `basePath`.
+  configFile: "./config/k8s_jcasc_mgmt_custom.yaml"
+  # Base path for all projects. The path can be specified absolutely.
+  basePath: "/deployments/k8s-jcasc-manaagement"
 ```
+
 
 The script checks, if this file exists.
 If this is the case, it loads this configuration and checks the argument for the path of the alternative config file.
 
-This means, that the `K8S_MGMT_ALTERNATIVE_CONFIG_FILE` key can define, where the alternative of the `k8s_jcasc_mgmt.cnf` is located.
+This means, that the `k8sManagement.configFile` key can define, where the alternative of the `k8s_jcasc_mgmt.cnf` is located.
 In the `.gitignore` file, this file is set to ignore, to prevent a commit.
-
-It is also possible to use any other variable from the `k8s_jcasc_mgmt.cnf` file here. In most cases this file should only link to the target configuration and configure the base path.
-Any other configuration should be versioned inside of the project directory.
 
 For base paths like templates, the system searches first for the configured base path and if the directory does not exist, it tries to find the directory in the local (`./`) directory.
 With this mechanism it is not required to copy for example also the templates into the project directory if they are ok.
@@ -346,24 +328,24 @@ If this directory does not exist, the `create project` wizard will not ask for o
 
 All files stored there can be selected with the process/menu `create project` and will added to the `jcasc_config.yaml`. 
 
-The file `jcasc_config.yaml` should now have a `##K8S_MGMT_JENKINS_CLOUD_TEMPLATES##` placeholder:
+The file `jcasc_config.yaml` should now have a `{{ .JCasc.Clouds.Kubernetes.Templates.AdditionalCloudTemplates }}` placeholder:
 
 ```yaml
   clouds:
     - kubernetes:
-        name: "jenkins-build-slaves"
+        name: "jenkins-build-worker"
         serverUrl: ""
-        serverCertificate: ##KUBERNETES_SERVER_CERTIFICATE##
+        serverCertificate: {{ .JCasc.Clouds.Kubernetes.ServerCertificate }}
         directConnection: false
         skipTlsVerify: true
-        namespace: "##NAMESPACE##"
-        jenkinsUrl: "http://##JENKINS_MASTER_DEPLOYMENT_NAME##:8080"
+        namespace: "{{ .Base.Namespace }}"
+        jenkinsUrl: "http://{{ .Base.DeploymentName }}:8080"
         maxRequestsPerHostStr: 64
         retentionTimeout: 5
         connectTimeout: 10
         readTimeout: 20
         templates:
-##K8S_MGMT_JENKINS_CLOUD_TEMPLATES##
+{{ .JCasc.Clouds.Kubernetes.Templates.AdditionalCloudTemplates }}
 ```
 
 **It is important, that the placeholder is at the beginning of the line.**
@@ -429,8 +411,6 @@ _Namespace selection in CLI mode_
 You can use this tool to export the complete Kubernetes configuration to a local `k8s-manifests` directory.
 This can help to figure out differences between clusters.
 
-
-
 # Helpful links #
 
 - K8S JCasC Management internal Processes: [Processes overview](docs/processes/README.md)
@@ -438,3 +418,4 @@ This can help to figure out differences between clusters.
 - JCasC Examples: https://github.com/jenkinsci/configuration-as-code-plugin/tree/master/demos
 - Jenkins Seed Job script to create jobs from a JSON in a GIT repository: https://github.com/Ragin-LundF/jenkins-jobdsl-remote
 - Medium article about the background: https://medium.com/@ragin/jenkins-jenkins-configuration-as-code-jcasc-together-with-jobdsl-on-kubernetes-2f5a173491ab
+- Medium article about a concept how to work with Jenkins and Kubernetes: https://ragin.medium.com/kubernetes-and-ci-cd-how-to-integrate-in-your-development-process-9b483b194975

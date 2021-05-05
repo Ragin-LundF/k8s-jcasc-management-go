@@ -9,9 +9,9 @@ import (
 
 // CheckIfKubectlOutputContainsValueForField is a function to check if a kubectl output contains a value for a field
 func CheckIfKubectlOutputContainsValueForField(kubectlOutput string, fieldName string, searchedValue string) bool {
-	found := false
+	var found = false
 
-	fieldValues, err := FindFieldValuesInKubectlOutput(kubectlOutput, fieldName)
+	var fieldValues, err = FindFieldValuesInKubectlOutput(kubectlOutput, fieldName)
 	if err != nil || len(fieldValues) == 0 {
 		return false
 	}
@@ -36,12 +36,12 @@ func FindFieldValuesInKubectlOutput(kubectlOutput string, fieldName string) (fie
 	}
 
 	if fieldIndex >= 0 {
-		kubectlOutputLineArr := strings.Split(kubectlOutput, "\n")
+		var kubectlOutputLineArr = strings.Split(kubectlOutput, "\n")
 		// analyze output and try to find name
 		if len(kubectlOutputLineArr) > 0 {
 			for lIdx, kubectlOutputLine := range kubectlOutputLineArr {
 				if lIdx > lineIndex {
-					kubectlLineFields := strings.Fields(kubectlOutputLine)
+					var kubectlLineFields = strings.Fields(kubectlOutputLine)
 					if len(kubectlLineFields) > fieldIndex {
 						fieldValues = append(fieldValues, kubectlLineFields[fieldIndex])
 					}
@@ -56,21 +56,21 @@ func FindFieldValuesInKubectlOutput(kubectlOutput string, fieldName string) (fie
 // FindFieldIndexInKubectlOutput finds the field index in output.
 // it returns also the line index where the field was found.
 func FindFieldIndexInKubectlOutput(kubectlOutput string, fieldName string) (lineIndex int, fieldIndex int, err error) {
-	log := logger.Log()
+	var log = logger.Log()
 	// set default
-	fieldIdx := -1
+	var fieldIdx = -1
 
 	if !strings.Contains(kubectlOutput, fieldName) {
 		log.Errorf("[FindFieldIndexInKubectlOutput] Kubectl output does not contain field name [%s]", fieldName)
 	} else {
 		// split output in array with lines
-		kubectlOutputLineArr := strings.Split(kubectlOutput, "\n")
+		var kubectlOutputLineArr = strings.Split(kubectlOutput, "\n")
 		// analyze output and try to find name
 		if len(kubectlOutputLineArr) > 0 {
 			for lIdx, kubectlOutputLine := range kubectlOutputLineArr {
 				if strings.Contains(kubectlOutputLine, fieldName) {
 					lineIndex = lIdx
-					kubectlLineFields := strings.Fields(kubectlOutputLine)
+					var kubectlLineFields = strings.Fields(kubectlOutputLine)
 					fieldIdx = arrays.IndexOfArr(fieldName, kubectlLineFields)
 					// found index, abort loop
 					if fieldIdx > -1 {

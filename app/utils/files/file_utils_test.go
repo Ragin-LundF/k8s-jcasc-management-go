@@ -5,6 +5,38 @@ import (
 	"testing"
 )
 
+func TestFileOrDirectoryExists(t *testing.T) {
+	var exists = FileOrDirectoryExists("../../utils")
+	assert.True(t, exists)
+}
+
+func TestFileOrDirectoryExistsErr(t *testing.T) {
+	var exists = FileOrDirectoryExists("../../abcdefg")
+	assert.False(t, exists)
+}
+
+func TestListFilesOfDirectory(t *testing.T) {
+	directoryContent, err := ListFilesOfDirectory("./")
+	assert.Nil(t, err)
+	assert.NotNil(t, directoryContent)
+	assert.True(t, len(*directoryContent) == 2)
+}
+
+func TestListFilesOfDirectoryWithFilter(t *testing.T) {
+	var fileUtils = "file_utils.go"
+	var fileFilter = FileFilter{
+		Prefix: &fileUtils,
+	}
+	directoryContent, err := ListFilesOfDirectoryWithFilter("./", &fileFilter)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, directoryContent)
+	assert.True(t, len(*directoryContent) == 1)
+
+	var directoryArray = *directoryContent
+	assert.Equal(t, directoryArray[0], fileUtils)
+}
+
 func TestFilterFilenamePrefix(t *testing.T) {
 	var filename = "my_file.txt"
 	var prefix = "my_"
@@ -126,4 +158,21 @@ func TestAppendPathWithoutSlashes(t *testing.T) {
 	path := AppendPath(basepath, secondpath)
 
 	assert.Equal(t, expectedPath, path)
+}
+
+func TestLoadTemplateFiles(t *testing.T) {
+	var expectedFiles = []string{
+		"../../../templates/jcasc_config.yaml",
+		"../../../templates/jenkins_helm_values.yaml",
+		"../../../templates/nginx_ingress_helm_values.yaml",
+		"../../../templates/pvc_claim.yaml",
+	}
+
+	templates, err := LoadTemplateFilesOfDirectory("../../../templates/")
+	assert.Nil(t, err)
+	assert.NotNil(t, templates)
+
+	for i := 0; i < len(expectedFiles); i++ {
+		assert.Equal(t, expectedFiles[i], templates[i])
+	}
 }

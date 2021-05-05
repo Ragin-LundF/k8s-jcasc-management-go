@@ -20,15 +20,15 @@ var tabs *container.AppTabs
 
 // StartApp will start app with GUI
 func StartApp(info string) {
-	k8sJcascApp := app.NewWithID("k8s_jcasc_mgmt_go_ui")
+	var k8sJcascApp = app.NewWithID("k8s_jcasc_mgmt_go_ui")
 	k8sJcascApp.SetIcon(resources.K8sJcascMgmtIcon())
 
 	// set theme
 	setTheme(k8sJcascApp)
 
-	k8sJcascWindow := k8sJcascApp.NewWindow(uiconstants.K8sJcasCMgmtTitle + kubernetesactions.GetKubernetesConfig().CurrentContext())
+	var k8sJcascWindow = k8sJcascApp.NewWindow(uiconstants.K8sJcasCMgmtTitle + kubernetesactions.GetKubernetesConfig().CurrentContext())
 	k8sJcascWindow.SetIcon(resources.K8sJcascMgmtIcon())
-	mainMenu := menu.CreateMainMenu(k8sJcascApp, k8sJcascWindow)
+	var mainMenu = menu.CreateMainMenu(k8sJcascApp, k8sJcascWindow)
 
 	k8sJcascWindow.SetMainMenu(mainMenu)
 	k8sJcascWindow.SetMaster()
@@ -37,7 +37,7 @@ func StartApp(info string) {
 
 	k8sJcascWindow.SetContent(tabs)
 	k8sJcascWindow.Resize(fyne.Size{
-		Width:  900,
+		Width:  980,
 		Height: 400,
 	})
 	k8sJcascWindow.ShowAndRun()
@@ -58,7 +58,7 @@ func setTheme(app fyne.App) {
 
 func init() {
 	// register as finalizer
-	notifierRefreshTabs := tabsRefreshNotifier{}
+	var notifierRefreshTabs = tabsRefreshNotifier{}
 	events.RefreshTabs.Register(notifierRefreshTabs)
 }
 

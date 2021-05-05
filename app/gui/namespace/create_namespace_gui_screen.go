@@ -4,10 +4,10 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
+	"k8s-management-go/app/actions/install"
 	"k8s-management-go/app/actions/namespaceactions"
 	"k8s-management-go/app/events"
 	"k8s-management-go/app/gui/uielements"
-	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/logger"
 	"time"
 )
@@ -30,11 +30,10 @@ func ScreenNamespaceCreate(window fyne.Window) fyne.CanvasObject {
 			namespace = namespaceSelectEntry.Text
 
 			// map state
-			var state = models.StateData{
-				Namespace: namespace,
-			}
+			var projectConfig = install.NewInstallProjectConfig()
+			projectConfig.Project.SetNamespace(namespace)
 
-			_ = ExecuteCreateNamespaceWorkflow(window, state)
+			_ = ExecuteCreateNamespaceWorkflow(window, projectConfig)
 			// show output
 			uielements.ShowLogOutput(window)
 		},

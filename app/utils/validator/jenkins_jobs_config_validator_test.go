@@ -2,7 +2,7 @@ package validator
 
 import (
 	"github.com/stretchr/testify/assert"
-	"k8s-management-go/app/models"
+	"k8s-management-go/app/configuration"
 	"testing"
 )
 
@@ -25,5 +25,6 @@ func TestValidateJenkinsJobConfigWithoutGitRepo(t *testing.T) {
 }
 
 func assignPattern() {
-	models.AssignToConfiguration("JENKINS_JOBDSL_REPO_VALIDATE_PATTERN", ".*\\.git")
+	configuration.LoadConfiguration("../../../", false, false)
+	configuration.GetConfiguration().Jenkins.JobDSL.RepoValidatePattern = ".*\\.git"
 }

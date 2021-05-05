@@ -6,9 +6,9 @@ import (
 	"fyne.io/fyne/v2/widget"
 	"k8s-management-go/app/actions/namespaceactions"
 	"k8s-management-go/app/actions/secretsactions"
+	"k8s-management-go/app/configuration"
 	"k8s-management-go/app/events"
 	"k8s-management-go/app/gui/uielements"
-	"k8s-management-go/app/models"
 	"k8s-management-go/app/utils/logger"
 	"time"
 )
@@ -36,7 +36,7 @@ func ScreenApplySecretsToAllNamespace(window fyne.Window) fyne.CanvasObject {
 				var bar = uielements.ProgressBar{
 					Bar:        widget.NewProgressBar(), //NewProgress("Apply secrets to all namespaces", "Progress", window),
 					CurrentCnt: 0,
-					MaxCount:   float64(len(models.GetIPConfiguration().IPs)),
+					MaxCount:   float64(len(configuration.GetConfiguration().K8SManagement.IPConfig.Deployments)),
 				}
 				bar.Bar.Show()
 				_ = secretsactions.ActionApplySecretsToAllNamespaces(secretsFiles.Selected, bar.AddCallback)

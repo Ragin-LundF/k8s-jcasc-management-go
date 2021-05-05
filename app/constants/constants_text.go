@@ -1,24 +1,27 @@
 package constants
 
-// Password related texts
+// TextPasswordForSecretsFile : Password related texts
 const TextPasswordForSecretsFile = "Password for secrets file"                          // NOSONAR
 const TextPasswordForSecretsFileConfirmation = "Confirmation password for secrets file" // NOSONAR
 const TextPasswordDidNotMatch = "Passwords did not match! "                             // NOSONAR
 
-// Load balancer related texts
+// TextEnterLoadBalancerIPAddress : Load balancer related texts
 const TextEnterLoadBalancerIPAddress = "Enter the load balancer IP address"
 
-// Jenkins URL text
+// TextEnterJenkinsUrl : Jenkins URL text
 const TextEnterJenkinsUrl = "Enter the public domain or leave empty to use the <namespace>.<configured nginx domain>"
 
-// Jenkins system message related texts
+// TextEnterJenkinsSystemMessageOrLeaveEmptyForDefault : Jenkins system message related texts
 const TextEnterJenkinsSystemMessageOrLeaveEmptyForDefault = "Enter the Jenkins system message or leave empty for default"
 
-// Jobs configuration related texts
+// TextEnterJobsConfigurationRepository : Jobs configuration related texts
 const TextEnterJobsConfigurationRepository = "Enter jobs configuration repository"
 
-// Namespace related texts
+// TextEnterNamespaceName : Namespace related texts
 const TextEnterNamespaceName = "Enter namespace name"
 
-// PVC related texts
+// TextEnterAdditionalNamespaceName : Additional namespace related texts
+const TextEnterAdditionalNamespaceName = "Enter additional namespace(s) for deployments as comma separated list or leave empty"
+
+// TextEnterExistingPvcOrLeaveEmpty : PVC related texts
 const TextEnterExistingPvcOrLeaveEmpty = "Enter existing Persistent Volume Claim (PVC) or leave empty for emptyDir"

@@ -47,7 +47,7 @@ func GetLoggingStateEntries() []LoggingState {
 
 // LogLoggingStateEntries logs the StateEntries to the logfile
 func LogLoggingStateEntries() {
-	log := logger.Log()
+	var log = logger.Log()
 	if loggingStateEntries != nil && len(loggingStateEntries) > 0 {
 		log.Info("---- Output of internal Logging history start ----")
 

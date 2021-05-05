@@ -10,7 +10,7 @@ import (
 // JenkinsSystemMessageWorkflow represents the Jenkins system message workflow
 func JenkinsSystemMessageWorkflow() (jenkinsSysMsg string, err error) {
 	// Validator for jenkins system message
-	validate := validator.ValidateJenkinsSystemMessage
+	var validate = validator.ValidateJenkinsSystemMessage
 
 	// Prepare prompt
 	dialogs.ClearScreen()

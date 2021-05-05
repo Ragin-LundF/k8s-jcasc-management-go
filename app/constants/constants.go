@@ -23,16 +23,19 @@ const DirProjectScriptsInstallPrefix = "i_"
 const DirProjectScriptsUninstallPrefix = "d_"
 
 // DirHelmJenkinsMaster : directory of the Jenkins Helm Charts
-const DirHelmJenkinsMaster = "/charts/jenkins-master"
+const DirHelmJenkinsMaster = "/charts/jenkins-controller"
 
 // DirHelmNginxIngressCtrl : directory of the Nginx Ingress Controller Helm Charts
 const DirHelmNginxIngressCtrl = "/charts/nginx-ingress-controller"
 
-// FilenameConfiguration : filename of the configuration file
-const FilenameConfiguration = "k8s_jcasc_mgmt.cnf"
+// FilenameConfigurationYaml : filename of the yaml configuration file
+const FilenameConfigurationYaml = "k8s_jcasc_mgmt.yaml"
 
-// FilenameConfigurationCustom : filename of the custom configuration file for overwrites
-const FilenameConfigurationCustom = "k8s_jcasc_custom.cnf"
+// FilenameTempPrefix : filename prefix for temporary generated files for deployment from config
+const FilenameTempPrefix = "__k8smgmt__"
+
+// FilenameConfigurationCustomYaml : filename of the custom configuration file for overwrites
+const FilenameConfigurationCustomYaml = "k8s_jcasc_custom.yaml"
 
 // FilenameJenkinsConfigurationAsCode : filename of the Jenkins Configuration-as-Code Helm Values file
 const FilenameJenkinsConfigurationAsCode = "jcasc_config.yaml"
@@ -45,6 +48,9 @@ const FilenameNginxIngressControllerHelmValues = "nginx_ingress_helm_values.yaml
 
 // FilenamePvcClaim : filename of the Kubernetes PVC Claim values file
 const FilenamePvcClaim = "pvc_claim.yaml"
+
+// FilenameProjectConfiguration : filename of the project configuration
+const FilenameProjectConfiguration = "k8s_jcasc_project_config.yaml"
 
 // FilenameSecrets : base filename for secrets (without .gpg extension)
 const FilenameSecrets = "secrets.sh"
@@ -89,6 +95,9 @@ const CommandCreateNamespace = "createNamespace"
 
 // CommandCreateJenkinsUserPassword : create Jenkins user password command
 const CommandCreateJenkinsUserPassword = "createJenkinsUserPassword"
+
+// CommandTools : tools section in the main menu
+const CommandTools = "tools"
 
 // CommandQuit : quit command
 const CommandQuit = "quit"
