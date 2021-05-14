@@ -1,5 +1,7 @@
 jenkins:
   systemMessage: "{{ .JCasc.SystemMessage }}"
+  labelString: "{{ .JenkinsHelmValues.Controller.CustomJenkinsLabels }}"
+  mode: "EXCLUSIVE"
 
   authorizationStrategy:
     roleBased:
@@ -37,7 +39,7 @@ jenkins:
 
   clouds:
     - kubernetes:
-        name: "jenkins-build-slaves"
+        name: "jenkins-build-nodes"
         serverUrl: ""
         serverCertificate: {{ .JCasc.Clouds.Kubernetes.ServerCertificate }}
         directConnection: false
