@@ -1,3 +1,20 @@
+# 3.1.0
+# Bugfixes
+- The uninstall was unable to load the configuration, which made it impossible to uninstall only namespaces for deployment.
+- In Jenkins there were changes in the charts regarding the `mode` and the label for the controller.
+
+The `jcasc_config.yaml` files in the `templates` directory and in the `project` directories must start with this:
+
+```yaml
+jenkins:
+  systemMessage: "{{ .JCasc.SystemMessage }}"
+  labelString: "{{ .JenkinsHelmValues.Controller.CustomJenkinsLabels }}"
+  mode: "EXCLUSIVE"
+```
+
+- `labelString` defines the old custom Jenkins label to allow the controller to execute the seed job.
+- `mode` was also set in the `jenkins_helm_values.yaml`, but is now also required in the JCasC configuration.
+
 # 3.0.0
 ## Introducing better template placeholder
 The previous versions were still fully compatible with the deprecated bash version.
