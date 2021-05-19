@@ -1,5 +1,5 @@
 # 3.1.0
-# Bugfixes
+## Bugfixes
 - The uninstall was unable to load the configuration, which made it impossible to uninstall only namespaces for deployment.
 - In Jenkins there were changes in the charts regarding the `mode` and the label for the controller.
 
