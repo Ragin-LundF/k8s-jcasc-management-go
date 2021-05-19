@@ -24,7 +24,7 @@
       ttyEnabled: true
       resourceRequestCpu: "500m"
       resourceLimitCpu: "3000m"
-      resourceRequestMemory: "500Mi"
+      resourceRequestMemory: "128Mi"
       resourceLimitMemory: "2Gi"
       envVars:
         - secretEnvVar:
