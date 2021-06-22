@@ -57,10 +57,12 @@ func CopyTemplate(projectDirectory string, filename string, useTemplatePrefix bo
 
 // RemoveTempFile : removes a temporary file if it exists
 func RemoveTempFile(tempFile string) {
-	var _, file = filepath.Split(tempFile)
-	if strings.HasPrefix(file, constants.FilenameTempPrefix) {
-		if files.FileOrDirectoryExists(tempFile) {
-			_ = os.Remove(tempFile)
+	if !configuration.GetConfiguration().K8SManagement.KeepGeneratedTemplates {
+		var _, file = filepath.Split(tempFile)
+		if strings.HasPrefix(file, constants.FilenameTempPrefix) {
+			if files.FileOrDirectoryExists(tempFile) {
+				_ = os.Remove(tempFile)
+			}
 		}
 	}
 }
