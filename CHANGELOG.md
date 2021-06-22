@@ -1,3 +1,27 @@
+# 3.2.0
+## Configuration to keep temporary files
+
+Now it is possible to set a configuration to keep the temporary files for the configuration deployments.
+The configuration can be set in the main or in the project configuration:
+
+```yaml
+k8sManagement:
+  # keep generated temporary files
+  keepGeneratedTemplates: false
+```
+
+(see [config/k8s_jcasc_mgmt.yaml](config/k8s_jcasc_mgmt.yaml))
+
+To avoid to check those files in, please add the following line to your `.gitignore`
+
+```bash
+__k8smgmt__*
+```
+
+## Bugfixes
+
+There was a path error for the migration assistant, which should be fixed now.
+
 # 3.1.0
 ## Bugfixes
 - The uninstall was unable to load the configuration, which made it impossible to uninstall only namespaces for deployment.

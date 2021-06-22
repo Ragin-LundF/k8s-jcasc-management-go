@@ -59,10 +59,11 @@ type config struct {
 			TemplateDirectory string `yaml:"templateDirectory,omitempty"`
 			SecretFiles       string `yaml:"secretFiles,omitempty"`
 		} `yaml:"project,omitempty"`
-		VersionCheck bool   `yaml:"versionCheck,omitempty"`
-		DryRunOnly   bool   `yaml:"-"`
-		CliOnly      bool   `yaml:"-"`
-		BasePath     string `yaml:"-"`
+		VersionCheck           bool   `yaml:"versionCheck,omitempty"`
+		KeepGeneratedTemplates bool   `yaml:"keepGeneratedTemplates,omitempty"`
+		DryRunOnly             bool   `yaml:"-"`
+		CliOnly                bool   `yaml:"-"`
+		BasePath               string `yaml:"-"`
 	} `yaml:"k8sManagement,omitempty"`
 	Jenkins struct {
 		Jcasc struct {
@@ -352,7 +353,7 @@ func (conf *config) loadCustomConfig() {
 				log.Panicf("Unable to merge custom config with config: %v", err)
 			}
 		} else {
-			log.Panicf("Unable to load defined custom config from path [%v]", customConfig)
+			log.Fatalf("Unable to load defined custom config from path [%v]", customConfig)
 		}
 	}
 }

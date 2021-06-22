@@ -383,7 +383,9 @@ func migrateFromCnfToYaml() (string, bool) {
 	var yamlConfig = string(yamlOutByte)
 	loggingstate.AddInfoEntryAndDetails("New custom configuration", yamlConfig)
 
-	var configFile = configuration.GetConfiguration().CustomConfig.K8SManagement.ConfigFile
+	var basePath = configuration.GetConfiguration().GetProjectBaseDirectory()
+	var k8sConfigFile = configuration.GetConfiguration().CustomConfig.K8SManagement.ConfigFile
+	var configFile = files.AppendPath(basePath, k8sConfigFile)
 	if files.FileOrDirectoryExists(configFile) {
 		return "FAILED - Config already exists", false
 	}
