@@ -32,18 +32,17 @@ type jenkinsHelmPersistence struct {
 	StorageClass string `yaml:"storageClass,omitempty"`
 }
 
-// newJenkinsHelmValues : Create new Jenkins Helm values structure
-func newJenkinsHelmValues() *jenkinsHelmValues {
+// NewJenkinsHelmValues : Create new Jenkins Helm values structure
+func NewJenkinsHelmValues() *jenkinsHelmValues {
 	return &jenkinsHelmValues{
-		Controller:           newDefaultJenkinsHelmController(),
-		Persistence:          newDefaultJenkinsHelmPersistence(),
-		AdditionalNamespaces: newDefaultAdditionalNamespaces(),
+		Controller:           NewDefaultJenkinsHelmController(),
+		Persistence:          NewDefaultJenkinsHelmPersistence(),
+		AdditionalNamespaces: NewDefaultAdditionalNamespaces(),
 	}
 }
 
-// ----- internal methods
-// newDefaultJenkinsHelmController : create a new default jenkinsHelmMaster structure
-func newDefaultJenkinsHelmController() jenkinsHelmMaster {
+// NewDefaultJenkinsHelmController : create a new default jenkinsHelmMaster structure
+func NewDefaultJenkinsHelmController() jenkinsHelmMaster {
 	return jenkinsHelmMaster{
 		Image:                                   configuration.GetConfiguration().Jenkins.Container.Image,
 		Tag:                                     configuration.GetConfiguration().Jenkins.Container.Tag,
@@ -56,7 +55,7 @@ func newDefaultJenkinsHelmController() jenkinsHelmMaster {
 	}
 }
 
-func newDefaultJenkinsHelmPersistence() jenkinsHelmPersistence {
+func NewDefaultJenkinsHelmPersistence() jenkinsHelmPersistence {
 	return jenkinsHelmPersistence{
 		StorageClass: configuration.GetConfiguration().Jenkins.Persistence.StorageClass,
 		AccessMode:   configuration.GetConfiguration().Jenkins.Persistence.AccessMode,
@@ -64,6 +63,6 @@ func newDefaultJenkinsHelmPersistence() jenkinsHelmPersistence {
 	}
 }
 
-func newDefaultAdditionalNamespaces() []string {
+func NewDefaultAdditionalNamespaces() []string {
 	return []string{}
 }
