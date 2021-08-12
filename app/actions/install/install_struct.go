@@ -76,9 +76,18 @@ func (projectConfig *ProjectConfig) LoadProjectConfigIfExists(namespace string) 
 		// config loaded successfully, assign it
 		projectConfig.Project = prj
 		projectConfig.ConfigLoaded = true
+	} else {
+		configureProjectWithoutConfig(projectConfig)
 	}
 
 	return nil
+}
+
+func configureProjectWithoutConfig(projectConfig *ProjectConfig) {
+	// Jenkins
+	if !files.FileOrDirectoryExists(files.AppendPath(projectConfig.ProjectPath, constants.FilenameJenkinsHelmValues)) {
+		projectConfig.Project.Base.DeploymentOnly = true
+	}
 }
 
 // PrepareInstallYAML : Prepare temporary YAML if required or return path to project file
