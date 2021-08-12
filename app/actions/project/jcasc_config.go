@@ -118,8 +118,8 @@ func (k8s *kubernetes) ServerCertificate() string {
 
 // ----- internal methods
 
-// newJCascConfig : Create new Jenkins Helm values structure
-func newJCascConfig() *jcascConfig {
+// NewJCascConfig : Create new Jenkins Helm values structure
+func NewJCascConfig() *jcascConfig {
 	return &jcascConfig{
 		CredentialIDs: newCredentialIDs(),
 		Clouds:        newClouds(),

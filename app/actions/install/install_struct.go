@@ -76,9 +76,34 @@ func (projectConfig *ProjectConfig) LoadProjectConfigIfExists(namespace string) 
 		// config loaded successfully, assign it
 		projectConfig.Project = prj
 		projectConfig.ConfigLoaded = true
+
+		updateLoadedConfigWithDefaults(projectConfig)
+	} else {
+		configureProjectWithoutConfig(projectConfig)
 	}
 
 	return nil
+}
+
+func updateLoadedConfigWithDefaults(projectConfig *ProjectConfig) {
+	if projectConfig.Project.JCasc == nil {
+		projectConfig.Project.JCasc = project.NewJCascConfig()
+	}
+
+	if projectConfig.Project.JenkinsHelmValues == nil {
+		projectConfig.Project.JenkinsHelmValues = project.NewJenkinsHelmValues()
+	}
+
+	if projectConfig.Project.PersistentVolumeClaim == nil {
+		projectConfig.Project.PersistentVolumeClaim = project.NewPersistentVolumeClaim()
+	}
+}
+
+func configureProjectWithoutConfig(projectConfig *ProjectConfig) {
+	// Jenkins
+	if !files.FileOrDirectoryExists(files.AppendPath(projectConfig.ProjectPath, constants.FilenameJenkinsHelmValues)) {
+		projectConfig.Project.Base.DeploymentOnly = true
+	}
 }
 
 // PrepareInstallYAML : Prepare temporary YAML if required or return path to project file

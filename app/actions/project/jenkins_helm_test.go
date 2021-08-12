@@ -9,7 +9,7 @@ import (
 func TestCreateJenkinsHelmValues(t *testing.T) {
 	testDefaultProjectConfiguration(t, false)
 
-	var jenkinsHelmValues = newJenkinsHelmValues()
+	var jenkinsHelmValues = NewJenkinsHelmValues()
 
 	assertDefaultJenkinsHelmValues(jenkinsHelmValues, t)
 }

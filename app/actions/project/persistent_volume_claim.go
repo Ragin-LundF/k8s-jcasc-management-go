@@ -22,8 +22,8 @@ type pvcSpecResources struct {
 	StorageSize string `yaml:"storageSize,omitempty"`
 }
 
-// newPersistentVolumeClaim : creates a new instance of PersistentVolumeClaim
-func newPersistentVolumeClaim() *persistentVolumeClaim {
+// NewPersistentVolumeClaim : creates a new instance of PersistentVolumeClaim
+func NewPersistentVolumeClaim() *persistentVolumeClaim {
 	var pvc = &persistentVolumeClaim{
 		Spec: newDefaultSpec(),
 	}

@@ -1,3 +1,11 @@
+# 3.3.0
+## Bugfixes
+- Fixed issue with old deploy only nginx value files [#48](https://github.com/Ragin-LundF/k8s-jcasc-management-go/issues/48)
+- Fixed issue with reduced project config files for Nginx deploy only. Now only the nginx and base config is still required. [#47](https://github.com/Ragin-LundF/k8s-jcasc-management-go/issues/47)
+
+## Library Updates
+- Updated the base libraries to current versions
+
 # 3.2.0
 ## Configuration to keep temporary files
 
