@@ -8,7 +8,7 @@ import (
 func TestCreatePersistentVolumeClaim(t *testing.T) {
 	testDefaultProjectConfiguration(t, false)
 
-	var pvc = newPersistentVolumeClaim()
+	var pvc = NewPersistentVolumeClaim()
 
 	assert.Equal(t, testConfigJenkinsMasterPvcSize, pvc.Spec.Resources.StorageSize)
 	assert.Equal(t, testConfigJenkinsMasterPvcAccessMode, pvc.Spec.AccessMode)

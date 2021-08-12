@@ -40,9 +40,9 @@ type base struct {
 func NewProject() Project {
 	return Project{
 		Base:                  newBase(),
-		JenkinsHelmValues:     newJenkinsHelmValues(),
-		JCasc:                 newJCascConfig(),
-		PersistentVolumeClaim: newPersistentVolumeClaim(),
+		JenkinsHelmValues:     NewJenkinsHelmValues(),
+		JCasc:                 NewJCascConfig(),
+		PersistentVolumeClaim: NewPersistentVolumeClaim(),
 		Nginx:                 newNginx(),
 		StoreConfigOnly:       true,
 	}

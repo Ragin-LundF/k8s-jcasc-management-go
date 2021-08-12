@@ -76,11 +76,27 @@ func (projectConfig *ProjectConfig) LoadProjectConfigIfExists(namespace string) 
 		// config loaded successfully, assign it
 		projectConfig.Project = prj
 		projectConfig.ConfigLoaded = true
+
+		updateLoadedConfigWithDefaults(projectConfig)
 	} else {
 		configureProjectWithoutConfig(projectConfig)
 	}
 
 	return nil
+}
+
+func updateLoadedConfigWithDefaults(projectConfig *ProjectConfig) {
+	if projectConfig.Project.JCasc == nil {
+		projectConfig.Project.JCasc = project.NewJCascConfig()
+	}
+
+	if projectConfig.Project.JenkinsHelmValues == nil {
+		projectConfig.Project.JenkinsHelmValues = project.NewJenkinsHelmValues()
+	}
+
+	if projectConfig.Project.PersistentVolumeClaim == nil {
+		projectConfig.Project.PersistentVolumeClaim = project.NewPersistentVolumeClaim()
+	}
 }
 
 func configureProjectWithoutConfig(projectConfig *ProjectConfig) {
