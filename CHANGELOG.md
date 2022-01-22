@@ -1,3 +1,7 @@
+# 3.4.0
+## Library updates
+- Update of all dependencies to the latest versions.
+
 # 3.3.0
 ## Bugfixes
 - Fixed issue with old deploy only nginx value files [#48](https://github.com/Ragin-LundF/k8s-jcasc-management-go/issues/48)
