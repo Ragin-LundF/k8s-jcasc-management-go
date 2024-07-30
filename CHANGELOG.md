@@ -1,3 +1,8 @@
+# 3.6.0
+## Library updates
+- Update of all dependencies to the latest versions.
+- Min. GoLang Version is 1.22.5
+
 # 3.5.0
 ## Library updates
 - Update of all dependencies to the latest versions.
